@@ -1,0 +1,5 @@
+# Schedules for the scheduler container (supercronic, standard cron syntax, UTC).
+# Collectors are added here as they land; each one fetches any days it missed.
+
+# Every hour: confirm the database and object storage are reachable.
+0 * * * * dr check

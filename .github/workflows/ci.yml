@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: dr
+          POSTGRES_PASSWORD: dr
+          POSTGRES_DB: date_romania
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U dr" --health-interval 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://dr:dr@localhost:5432/date_romania
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run dr db upgrade
+      - run: uv run alembic check
+      - run: uv run pytest
+
+  image:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/cristianpopa96/date-romania-api:latest
+            ghcr.io/cristianpopa96/date-romania-api:${{ github.sha }}

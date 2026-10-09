@@ -1,0 +1,89 @@
+# The whole Date România stack on one machine: `docker compose up -d`.
+# Everything is configured through .env (copy .env.example), so the same file
+# runs on a laptop today and on any Docker host later.
+
+name: date-romania
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dr}
+      POSTGRES_DB: ${POSTGRES_DB:-date_romania}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      retries: 10
+
+  # S3-compatible storage for raw files (SeaweedFS, Apache-2.0). Swap for any S3
+  # provider (Hetzner, Cloudflare R2, AWS) by changing S3_* in .env.
+  s3:
+    image: chrislusf/seaweedfs:4.48
+    command: ["mini", "-dir=/data", "-bucket=${S3_BUCKET:-raw}"]
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-dr}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-dr-secret}
+    volumes:
+      - s3-data:/data
+    ports:
+      - "127.0.0.1:8333:8333"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8333/healthz || exit 1"]
+      interval: 5s
+      retries: 20
+
+  migrate:
+    build: .
+    image: ghcr.io/cristianpopa96/date-romania-api:${API_TAG:-latest}
+    command: ["dr", "db", "upgrade"]
+    env_file: [{ path: .env, required: false }]
+    environment: &backend-env
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-dr}:${POSTGRES_PASSWORD:-dr}@postgres:5432/${POSTGRES_DB:-date_romania}
+      S3_ENDPOINT: ${S3_ENDPOINT:-http://s3:8333}
+      S3_BUCKET: ${S3_BUCKET:-raw}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-dr}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-dr-secret}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    image: ghcr.io/cristianpopa96/date-romania-api:${API_TAG:-latest}
+    command: ["dr", "serve"]
+    environment: *backend-env
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  scheduler:
+    image: ghcr.io/cristianpopa96/date-romania-api:${API_TAG:-latest}
+    command: ["/usr/local/bin/supercronic", "/app/infra/crontab"]
+    environment: *backend-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      s3:
+        condition: service_healthy
+
+  # The site, from the date-romania-web repository. Set WEB_DIR to build it from a
+  # local checkout instead of pulling the published image.
+  web:
+    image: ghcr.io/cristianpopa96/date-romania-web:${WEB_TAG:-latest}
+    build: ${WEB_DIR:-../date-romania-web}
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
+  s3-data:
