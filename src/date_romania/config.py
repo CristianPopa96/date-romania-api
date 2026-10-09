@@ -8,10 +8,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    database_url: str = "postgresql+psycopg://dr:dr@localhost:5432/date_romania"
+    # Defaults use 127.0.0.1, not localhost: Compose publishes the ports on IPv4 only.
+    database_url: str = "postgresql+psycopg://dr:dr@127.0.0.1:5432/date_romania"
 
     # Any S3-compatible store: SeaweedFS locally, Hetzner, Cloudflare R2 or AWS later.
-    s3_endpoint: str = "http://localhost:8333"
+    s3_endpoint: str = "http://127.0.0.1:8333"
     s3_bucket: str = "raw"
     s3_access_key: str = "dr"
     s3_secret_key: str = "dr-secret"
