@@ -1,8 +1,19 @@
 """Data model. Release 0 holds only what every collector needs; release 1 adds procurement."""
 
 from datetime import datetime
+from decimal import Decimal
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    BigInteger,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -18,6 +29,8 @@ class SourceDocument(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     source: Mapped[str] = mapped_column(String(64), index=True)
     url: Mapped[str] = mapped_column(Text)
+    # Body sent with a POST, so the exact request can be repeated.
+    request_body: Mapped[str | None] = mapped_column(Text)
     sha256: Mapped[str] = mapped_column(String(64), unique=True)
     storage_key: Mapped[str] = mapped_column(Text)
     content_type: Mapped[str | None] = mapped_column(String(128))
@@ -53,6 +66,36 @@ class Entity(Base):
     locality: Mapped[str | None] = mapped_column(String(128))
     parent_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"))
     source_document_id: Mapped[int | None] = mapped_column(ForeignKey("source_document.id"))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class DirectPurchase(Base):
+    """One SEAP direct purchase (achiziție directă), as the public list shows it."""
+
+    __tablename__ = "direct_purchase"
+
+    # SEAP's own directAcquisitionId, so a purchase fetched twice is updated, not duplicated.
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    code: Mapped[str | None] = mapped_column(String(32), index=True)  # e.g. DA41316672
+    name: Mapped[str | None] = mapped_column(Text)
+    state_id: Mapped[int | None] = mapped_column(SmallInteger)
+    state: Mapped[str | None] = mapped_column(String(64))
+    cpv_code: Mapped[str | None] = mapped_column(String(16), index=True)
+    cpv_name: Mapped[str | None] = mapped_column(Text)
+    # The CUI is null when SEAP's text holds no valid Romanian tax ID; the text is always kept.
+    buyer_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
+    buyer_text: Mapped[str | None] = mapped_column(Text)
+    supplier_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
+    supplier_text: Mapped[str | None] = mapped_column(Text)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finalized_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    estimated_value_ron: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
+    # SEAP names no currency for the closing value.
+    closing_value: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
+    source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
+    parser_version: Mapped[int] = mapped_column(SmallInteger)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
