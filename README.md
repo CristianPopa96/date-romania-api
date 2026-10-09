@@ -77,7 +77,7 @@ Nothing in the code is tied to this machine. Everything is set through `.env`, r
 files go through the S3 API, and the images are published to GitHub Container
 Registry. To move: copy `compose.yaml` and `.env` to the new server, restore a
 `pg_dump` of the database, and sync the raw files with `rclone`. For a hosted S3
-service (Hetzner Object Storage, Cloudflare R2, AWS), set `S3_ENDPOINT` and the keys
+service (Hetzner Object Storage, Cloudflare R2, AWS), uncomment `S3_ENDPOINT`, set the keys
 and drop the `s3` service.
 
 ## Licence
