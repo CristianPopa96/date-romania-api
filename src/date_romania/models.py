@@ -117,7 +117,8 @@ class DirectPurchase(Base):
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     finalized_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
     estimated_value_ron: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
-    # SEAP names no currency for the closing value.
+    # The list names no currency for the closing value; the purchase's page gives it in lei
+    # without VAT.
     closing_value: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
     parser_version: Mapped[int] = mapped_column(SmallInteger)
