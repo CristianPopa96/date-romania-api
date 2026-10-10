@@ -64,7 +64,8 @@ class Purchase(BaseModel):
     estimated_value: float | None
     value: float | None = Field(description="The closing value.")
     above_limit: bool = Field(
-        description="The value is above 900,400 lei, the highest legal limit for a direct purchase."
+        description="The purchase was accepted with a value above 900,400 lei, the highest "
+        "legal limit for a direct purchase. Always false for a purchase that was not accepted."
     )
     source: Source
 
