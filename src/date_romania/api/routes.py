@@ -131,7 +131,13 @@ def _purchase(row) -> Purchase:
         finalized_at=purchase.finalized_at,
         estimated_value=purchase.estimated_value_ron,
         value=value,
-        above_limit=value is not None and value > DIRECT_PURCHASE_LIMIT_RON,
+        # As in the totals: only an accepted purchase can be "above the limit". A refused
+        # offer is left out because it was refused, whatever value it carries.
+        above_limit=(
+            purchase.state_id == DIRECT_PURCHASE_ACCEPTED
+            and value is not None
+            and value > DIRECT_PURCHASE_LIMIT_RON
+        ),
         source=Source(
             publisher=SEAP,
             record=purchase.code,

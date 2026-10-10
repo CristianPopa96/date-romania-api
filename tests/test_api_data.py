@@ -158,6 +158,14 @@ def test_direct_purchase_carries_its_parties_and_its_source(client):
     assert foreign["above_limit"] is False
 
 
+def test_a_refused_purchase_is_never_above_the_limit(client, session):
+    refused = session.get(DirectPurchase, 4)
+    refused.closing_value = 250_000_000
+    session.flush()
+    row = client.get("/v1/direct-purchases/4").json()
+    assert (row["state_id"], row["value"], row["above_limit"]) == (3, 250000000.0, False)
+
+
 def test_rankings_order_by_accepted_value(client):
     suppliers = client.get("/v1/rankings/suppliers").json()
     assert [(r["rank"], r["cui"], r["value"]) for r in suppliers["items"]] == [
