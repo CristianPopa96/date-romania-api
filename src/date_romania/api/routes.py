@@ -4,9 +4,10 @@ from datetime import date
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import ColumnElement, Date, Select, String, and_, cast, func, or_, select
+from sqlalchemy import ColumnElement, Select, String, and_, cast, func, or_, select
 from sqlalchemy.orm import Session, aliased
 
+from date_romania import money
 from date_romania.api.schemas import (
     EntityOut,
     EntityPage,
@@ -21,16 +22,9 @@ from date_romania.api.schemas import (
     Stats,
     Summary,
 )
-from date_romania.dates import BUCHAREST, day_bounds
+from date_romania.dates import day_bounds
 from date_romania.db import get_session
-from date_romania.models import (
-    DIRECT_PURCHASE_ACCEPTED,
-    DIRECT_PURCHASE_LIMIT_RON,
-    DirectPurchase,
-    Entity,
-    SourceDocument,
-    search_text,
-)
+from date_romania.models import DirectPurchase, Entity, SourceDocument, search_text
 from date_romania.sources import SEAP_DIRECT
 
 router = APIRouter(prefix="/v1")
@@ -42,24 +36,6 @@ Day = Annotated[date | None, Query(description="A day in Romanian time, YYYY-MM-
 Buyer, Supplier = aliased(Entity), aliased(Entity)
 
 _LIKE_ESCAPES = str.maketrans({"\\": r"\\", "%": r"\%", "_": r"\_"})
-
-_accepted = DirectPurchase.state_id == DIRECT_PURCHASE_ACCEPTED
-_counted = and_(_accepted, DirectPurchase.closing_value <= DIRECT_PURCHASE_LIMIT_RON)
-_above = and_(_accepted, DirectPurchase.closing_value > DIRECT_PURCHASE_LIMIT_RON)
-_day = cast(func.timezone(BUCHAREST.key, DirectPurchase.finalized_at), Date)
-_value = func.coalesce(func.sum(DirectPurchase.closing_value).filter(_counted), 0)
-
-_SUMMARY = (
-    func.count().label("purchases"),
-    func.count().filter(_accepted).label("accepted"),
-    _value.label("value"),
-    func.count().filter(_above).label("above_limit"),
-    func.coalesce(func.sum(DirectPurchase.closing_value).filter(_above), 0).label(
-        "above_limit_value"
-    ),
-    func.min(_day).label("first_day"),
-    func.max(_day).label("last_day"),
-)
 
 
 def _in_period(date_from: date | None, date_to: date | None) -> list[ColumnElement[bool]]:
@@ -73,7 +49,7 @@ def _in_period(date_from: date | None, date_to: date | None) -> list[ColumnEleme
 
 
 def _summary(session: Session, *filters: ColumnElement[bool]) -> Summary:
-    row = session.execute(select(*_SUMMARY).where(*filters)).one()
+    row = session.execute(select(*money.SUMMARY).where(*filters)).one()
     return Summary.model_validate(row._mapping)
 
 
@@ -127,13 +103,7 @@ def _purchase(row) -> Purchase:
         finalized_at=purchase.finalized_at,
         estimated_value=purchase.estimated_value_ron,
         value=value,
-        # As in the totals: only an accepted purchase can be "above the limit". A refused
-        # offer is left out because it was refused, whatever value it carries.
-        above_limit=(
-            purchase.state_id == DIRECT_PURCHASE_ACCEPTED
-            and value is not None
-            and value > DIRECT_PURCHASE_LIMIT_RON
-        ),
+        above_limit=money.is_above_limit(purchase.state_id, value),
         source=Source(
             publisher=SEAP_DIRECT.publisher,
             record=purchase.code,
@@ -152,11 +122,11 @@ def _top(
 ) -> list[Partner]:
     """Entities on one side of the accepted purchases, by value, largest first."""
     rows = session.execute(
-        select(Entity, func.count().label("accepted"), _value.label("value"))
+        select(Entity, func.count().label("accepted"), money.value.label("value"))
         .join(Entity, Entity.cui == group_by)
-        .where(_counted, *filters)
+        .where(money.counted, *filters)
         .group_by(Entity.cui)
-        .order_by(_value.desc(), Entity.cui)
+        .order_by(money.value.desc(), Entity.cui)
         .limit(limit)
     )
     return [
@@ -178,7 +148,7 @@ def stats(session: Db) -> Stats:
         direct_purchases=_summary(session),
         institutions=institutions,
         suppliers=suppliers,
-        limit=DIRECT_PURCHASE_LIMIT_RON,
+        limit=money.DIRECT_PURCHASE_LIMIT_RON,
         source=_list_source(session),
     )
 
