@@ -28,37 +28,11 @@ STATES = (3, 4, 6, 7, 8)
 STATES_WITHOUT_CA_DEADLINE = (3, 4)
 CONTRACT_TYPES = (1, 2, 3)  # goods, services, works
 # All divisions of the CPV 2008 vocabulary (first two digits of a code).
-CPV_DIVISIONS = tuple(
-    f"{division:02d}"
-    for division in (
-        *(3, 9, 14, 15, 16, 18, 19, 22, 24, 30, 31, 32, 33, 34, 35, 37, 38, 39, 41, 42, 43, 44),
-        *(
-            45,
-            48,
-            50,
-            51,
-            55,
-            60,
-            63,
-            64,
-            65,
-            66,
-            70,
-            71,
-            72,
-            73,
-            75,
-            76,
-            77,
-            79,
-            80,
-            85,
-            90,
-            92,
-            98,
-        ),
-    )
+_CPV_DIVISIONS = (
+    "03 09 14 15 16 18 19 22 24 30 31 32 33 34 35 37 38 39 41 42 43 44 "
+    "45 48 50 51 55 60 63 64 65 66 70 71 72 73 75 76 77 79 80 85 90 92 98"
 )
+CPV_DIVISIONS = tuple(_CPV_DIVISIONS.split())
 
 DateRange = tuple[date | None, date | None]
 OPEN: DateRange = (None, None)
