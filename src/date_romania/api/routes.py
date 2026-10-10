@@ -21,7 +21,7 @@ from date_romania.api.schemas import (
     Stats,
     Summary,
 )
-from date_romania.collectors.jobs import day_bounds
+from date_romania.dates import BUCHAREST, day_bounds
 from date_romania.db import get_session
 from date_romania.models import (
     DIRECT_PURCHASE_ACCEPTED,
@@ -31,17 +31,13 @@ from date_romania.models import (
     SourceDocument,
     search_text,
 )
+from date_romania.sources import SEAP_DIRECT
 
 router = APIRouter(prefix="/v1")
 
 Db = Annotated[Session, Depends(get_session)]
 Limit = Annotated[int, Query(ge=1, le=100)]
 Day = Annotated[date | None, Query(description="A day in Romanian time, YYYY-MM-DD.")]
-
-SEAP = "SEAP"
-SEAP_SOURCE = "seap-direct"
-SEAP_LIST_URL = "https://e-licitatie.ro/pub/direct-acquisitions/list/1"
-SEAP_VIEW_URL = "https://e-licitatie.ro/pub/direct-acquisition/view/{id}"
 
 Buyer, Supplier = aliased(Entity), aliased(Entity)
 
@@ -50,7 +46,7 @@ _LIKE_ESCAPES = str.maketrans({"\\": r"\\", "%": r"\%", "_": r"\_"})
 _accepted = DirectPurchase.state_id == DIRECT_PURCHASE_ACCEPTED
 _counted = and_(_accepted, DirectPurchase.closing_value <= DIRECT_PURCHASE_LIMIT_RON)
 _above = and_(_accepted, DirectPurchase.closing_value > DIRECT_PURCHASE_LIMIT_RON)
-_day = cast(func.timezone("Europe/Bucharest", DirectPurchase.finalized_at), Date)
+_day = cast(func.timezone(BUCHAREST.key, DirectPurchase.finalized_at), Date)
 _value = func.coalesce(func.sum(DirectPurchase.closing_value).filter(_counted), 0)
 
 _SUMMARY = (
@@ -84,9 +80,9 @@ def _summary(session: Session, *filters: ColumnElement[bool]) -> Summary:
 def _list_source(session: Session) -> Source:
     """The source of a figure added up from many purchases: the SEAP list as last fetched."""
     fetched = session.scalar(
-        select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == SEAP_SOURCE)
+        select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == SEAP_DIRECT.key)
     )
-    return Source(publisher=SEAP, url=SEAP_LIST_URL, fetched_at=fetched)
+    return Source(publisher=SEAP_DIRECT.publisher, url=SEAP_DIRECT.list_url, fetched_at=fetched)
 
 
 def _ref(entity: Entity | None) -> EntityRef | None:
@@ -139,9 +135,9 @@ def _purchase(row) -> Purchase:
             and value > DIRECT_PURCHASE_LIMIT_RON
         ),
         source=Source(
-            publisher=SEAP,
+            publisher=SEAP_DIRECT.publisher,
             record=purchase.code,
-            url=SEAP_VIEW_URL.format(id=purchase.id),
+            url=SEAP_DIRECT.record_url.format(id=purchase.id),
             fetched_at=fetched_at,
             document_id=purchase.source_document_id,
         ),

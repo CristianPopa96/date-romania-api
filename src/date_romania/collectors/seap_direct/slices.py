@@ -7,13 +7,14 @@ from dataclasses import dataclass, replace
 from datetime import date, timedelta
 
 from date_romania.collectors.http import PoliteClient
+from date_romania.sources import SEAP_DIRECT
 
 log = logging.getLogger(__name__)
 
 LIST_URL = "https://e-licitatie.ro/api-pub/DirectAcquisitionCommon/GetDirectAcquisitionList/"
 HEADERS = {
     "Content-Type": "application/json;charset=UTF-8",
-    "Referer": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "Referer": SEAP_DIRECT.list_url,
 }
 
 CAP = 2000
