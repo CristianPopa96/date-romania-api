@@ -91,8 +91,10 @@ without VAT, as SEAP publishes them, and every answer names its source.
 | `/v1/rankings/suppliers`, `/v1/rankings/institutions` | The largest by value in a period |
 
 Totals count only purchases whose offer was accepted. An accepted purchase published with
-a value above the legal limit for a direct purchase (900,400 lei) is left out of the totals
-and reported next to them as `above_limit`, because one such value can outweigh a whole day.
+a value above 900,400 lei is left out of the totals and reported next to them as
+`above_limit`, because one such value can outweigh a whole day. 900,400 lei is the legal
+limit for works, the highest a direct purchase may have. Goods and services have a lower
+limit, 270,120 lei, which is not applied: the list does not give the contract type.
 
 ## Layout
 

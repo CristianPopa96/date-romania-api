@@ -22,8 +22,10 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 # as money spent.
 DIRECT_PURCHASE_ACCEPTED = 7
 # Law 98/2016 art. 7(5): a direct purchase must stay under 900,400 lei without VAT for works
-# (270,120 for goods and services). A higher published value is an error at the source, so
-# totals leave it out and report it separately.
+# and 270,120 lei for goods and services. We use the works limit for every purchase, as the
+# highest value any direct purchase may have: the list does not give the contract type, and
+# the CPV code does not tell works from the rest reliably (see NOTES.md 3.2). An accepted
+# purchase published above it is not counted in totals and is listed separately.
 DIRECT_PURCHASE_LIMIT_RON = Decimal("900400")
 
 

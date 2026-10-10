@@ -35,10 +35,12 @@ class Summary(BaseModel):
 
     purchases: int = Field(description="All finished purchases, whatever their outcome.")
     accepted: int = Field(description="Purchases where the offer was accepted.")
-    value: float = Field(description="Sum of the accepted purchases at or under the legal limit.")
+    value: float = Field(description="Sum of the accepted purchases at or under `limit`.")
     above_limit: int = Field(
-        description="Accepted purchases published with a value above the legal limit for a "
-        "direct purchase. They are left out of `value` and listed separately."
+        description="Accepted purchases published with a value above 900,400 lei, the highest "
+        "legal limit for a direct purchase (the one for works). They are not counted in "
+        "`value` and are listed separately. A goods or services purchase between its own "
+        "limit of 270,120 lei and this one is not marked."
     )
     above_limit_value: float
     first_day: date | None = Field(description="First day we have data for.")
@@ -61,7 +63,9 @@ class Purchase(BaseModel):
     finalized_at: datetime | None
     estimated_value: float | None
     value: float | None = Field(description="The closing value.")
-    above_limit: bool = Field(description="The value is above the legal limit.")
+    above_limit: bool = Field(
+        description="The value is above 900,400 lei, the highest legal limit for a direct purchase."
+    )
     source: Source
 
 
@@ -105,5 +109,8 @@ class Stats(BaseModel):
     direct_purchases: Summary
     institutions: int = Field(description="Institutions with at least one purchase.")
     suppliers: int
-    limit: float = Field(description="The legal limit used, in lei without VAT.")
+    limit: float = Field(
+        description="The limit used for `above_limit`: the legal one for works, the highest a "
+        "direct purchase may have, in lei without VAT."
+    )
     source: Source
