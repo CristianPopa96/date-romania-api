@@ -1,0 +1,41 @@
+name: PR comment
+
+# Posts a comment on a pull request as github-actions[bot], so that comments written by a
+# tool do not appear under a person's account. Started by hand or through the API; only
+# people with write access to the repository can start it.
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number
+        required: true
+        type: number
+      body:
+        description: Comment text (Markdown)
+        required: true
+        type: string
+      reply_to:
+        description: Id of a review comment to answer in its thread (empty for a new comment)
+        required: false
+        type: string
+
+permissions:
+  pull-requests: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post the comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ inputs.pr }}
+          BODY: ${{ inputs.body }}
+          REPLY_TO: ${{ inputs.reply_to }}
+        run: |
+          if [ -n "$REPLY_TO" ]; then
+            gh api "repos/$REPO/pulls/$PR/comments/$REPLY_TO/replies" -f body="$BODY" --jq .html_url
+          else
+            gh api "repos/$REPO/issues/$PR/comments" -f body="$BODY" --jq .html_url
+          fi
