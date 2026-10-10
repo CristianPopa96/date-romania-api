@@ -1,4 +1,4 @@
-"""Loading into PostgreSQL, inside a transaction that is rolled back. Skipped with no database."""
+"""Loading into PostgreSQL, inside a transaction that is rolled back (see conftest.py)."""
 
 import json
 from datetime import date
@@ -10,21 +10,9 @@ from sqlalchemy.orm import Session
 
 from date_romania.collectors.jobs import DONE, job_run, run_days
 from date_romania.collectors.seap_direct import PARSER_VERSION, load, parse_page
-from date_romania.db import database_ok, get_engine
 from date_romania.models import DirectPurchase, Entity, SourceDocument
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"
-
-pytestmark = pytest.mark.skipif(not database_ok(), reason="needs the PostgreSQL database")
-
-
-@pytest.fixture
-def session():
-    with get_engine().connect() as connection:
-        transaction = connection.begin()
-        with Session(bind=connection, join_transaction_mode="create_savepoint") as session:
-            yield session
-        transaction.rollback()
 
 
 def document(session: Session, sha256: str) -> SourceDocument:

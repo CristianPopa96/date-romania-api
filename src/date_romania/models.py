@@ -5,8 +5,10 @@ from decimal import Decimal
 
 from sqlalchemy import (
     BigInteger,
+    ColumnElement,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     SmallInteger,
@@ -15,6 +17,19 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+# SEAP's state id for a direct purchase whose offer was accepted: the only ones that count
+# as money spent.
+DIRECT_PURCHASE_ACCEPTED = 7
+# Law 98/2016 art. 7(5): a direct purchase must stay under 900,400 lei without VAT for works
+# (270,120 for goods and services). A higher published value is an error at the source, so
+# totals leave it out and report it separately.
+DIRECT_PURCHASE_LIMIT_RON = Decimal("900400")
+
+
+def search_text(text) -> ColumnElement[str]:
+    """Text as search compares it: lower case, no diacritics (`dr_unaccent` is our SQL function)."""
+    return func.dr_unaccent(func.lower(text))
 
 
 class Base(DeclarativeBase):
@@ -68,6 +83,16 @@ class Entity(Base):
     source_document_id: Mapped[int | None] = mapped_column(ForeignKey("source_document.id"))
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    __table_args__ = (
+        # Trigram index for search by name, with diacritics and small typos forgiven.
+        Index(
+            "ix_entity_name_search",
+            search_text(name).label("search"),
+            postgresql_using="gin",
+            postgresql_ops={"search": "gin_trgm_ops"},
+        ),
     )
 
 
