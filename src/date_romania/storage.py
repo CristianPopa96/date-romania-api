@@ -42,6 +42,10 @@ def put_raw(source: str, content: bytes, content_type: str | None = None) -> Sto
     return StoredObject(key=key, sha256=sha256, size_bytes=len(content))
 
 
+def get_raw(key: str) -> bytes:
+    return _client().get_object(Bucket=get_settings().s3_bucket, Key=key)["Body"].read()
+
+
 def storage_ok() -> bool:
     try:
         _client().head_bucket(Bucket=get_settings().s3_bucket)

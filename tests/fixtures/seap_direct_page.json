@@ -1,0 +1,167 @@
+{
+ "total": 7,
+ "items": [
+  {
+   "directAcquisitionId": 123157827,
+   "directAcquisitionName": "Servicii inchiriere autocar pentru transport rutier intern",
+   "sysDirectAcquisitionState": {
+    "id": 7,
+    "text": "Oferta acceptata",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41324626",
+   "cpvCode": "60100000-9 - Servicii de transport rutier (Rev.2)",
+   "publicationDate": "2026-10-04T17:55:20+03:00",
+   "finalizationDate": "2026-10-04T18:03:12+03:00",
+   "caDecisionDeadline": "2026-10-09T17:00:00+03:00",
+   "supplierDecisionDeadline": "2026-10-07T17:00:00+03:00",
+   "supplier": "RO 17886786 B.T.T. TOURS",
+   "contractingAuthority": "4981310 TEATRUL LUCEAFARUL IASI",
+   "estimatedValueRon": 4950.0,
+   "estimatedValueOtherCurrency": 977.01,
+   "closingValue": 4950.0,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  },
+  {
+   "directAcquisitionId": 123157821,
+   "directAcquisitionName": "STUDIU GEOTEHNIC",
+   "sysDirectAcquisitionState": {
+    "id": 7,
+    "text": "Oferta acceptata",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41324620",
+   "cpvCode": "71330000-0 - Diverse servicii de inginerie (Rev.2)",
+   "publicationDate": "2026-10-04T12:22:50+03:00",
+   "finalizationDate": "2026-10-04T12:55:30+03:00",
+   "caDecisionDeadline": "2026-10-09T17:00:00+03:00",
+   "supplierDecisionDeadline": "2026-10-07T17:00:00+03:00",
+   "supplier": "39230218 VICTORIA ECO SOLAR",
+   "contractingAuthority": "4491342 Comuna Vladila",
+   "estimatedValueRon": 4000.0,
+   "estimatedValueOtherCurrency": 789.5,
+   "closingValue": 4000.0,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  },
+  {
+   "directAcquisitionId": 123125128,
+   "directAcquisitionName": "Servicii de revizie tehnica generatoare de avarie",
+   "sysDirectAcquisitionState": {
+    "id": 8,
+    "text": "Oferta neacceptata in termen",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41293938",
+   "cpvCode": "50532300-6 - Servicii de reparare si de intretinere a generatoarelor (Rev.2)",
+   "publicationDate": "2026-09-29T16:23:42+03:00",
+   "finalizationDate": "2026-10-04T17:00:00+03:00",
+   "caDecisionDeadline": "2026-10-04T17:00:00+03:00",
+   "supplierDecisionDeadline": "2026-10-01T17:00:00+03:00",
+   "supplier": "37181658 OCTAVTOP STING",
+   "contractingAuthority": "11055818 AUTORITATEA NAVALA ROMANA",
+   "estimatedValueRon": 5750.0,
+   "estimatedValueOtherCurrency": 1134.91,
+   "closingValue": 5750.0,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  },
+  {
+   "directAcquisitionId": 123124812,
+   "directAcquisitionName": "Achizitionare autoutilitară electrică tip furgon",
+   "sysDirectAcquisitionState": {
+    "id": 8,
+    "text": "Oferta neacceptata in termen",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41293727",
+   "cpvCode": "34110000-1 - Autoturisme (Rev.2)",
+   "publicationDate": "2026-09-29T15:50:54+03:00",
+   "finalizationDate": "2026-10-04T17:00:00+03:00",
+   "caDecisionDeadline": "2026-10-04T17:00:00+03:00",
+   "supplierDecisionDeadline": "2026-10-05T17:00:00+03:00",
+   "supplier": "RO 2258503 APAN",
+   "contractingAuthority": "4089095 COMUNA CERTESTI",
+   "estimatedValueRon": 99062.61,
+   "estimatedValueOtherCurrency": 19552.47,
+   "closingValue": 99062.61,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  },
+  {
+   "directAcquisitionId": 123147059,
+   "directAcquisitionName": "Reamenajare spații parter Clădire Administrativă",
+   "sysDirectAcquisitionState": {
+    "id": 3,
+    "text": "Conditii refuzate",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41314574",
+   "cpvCode": "45453000-7 - Lucrari de reparatii generale si de renovare (Rev.2)",
+   "publicationDate": "2026-10-01T15:05:03+03:00",
+   "finalizationDate": "2026-10-04T21:28:12+03:00",
+   "caDecisionDeadline": null,
+   "supplierDecisionDeadline": "2026-10-05T17:00:00+03:00",
+   "supplier": "RO 30280786 SC BUILDECO NSB SRL",
+   "contractingAuthority": "47113359 CENTRUL DE CULTURA, ARTA SI AGREMENT TARGU MURES",
+   "estimatedValueRon": 198347.11,
+   "estimatedValueOtherCurrency": 39148.74,
+   "closingValue": 211577.81,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  },
+  {
+   "directAcquisitionId": 123146248,
+   "directAcquisitionName": "Reparații Clădire Administrativă",
+   "sysDirectAcquisitionState": {
+    "id": 3,
+    "text": "Conditii refuzate",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41313918",
+   "cpvCode": "45453000-7 - Lucrari de reparatii generale si de renovare (Rev.2)",
+   "publicationDate": "2026-10-01T14:31:34+03:00",
+   "finalizationDate": "2026-10-04T21:28:45+03:00",
+   "caDecisionDeadline": null,
+   "supplierDecisionDeadline": "2026-10-05T17:00:00+03:00",
+   "supplier": "RO 30280786 SC BUILDECO NSB SRL",
+   "contractingAuthority": "47113359 CENTRUL DE CULTURA, ARTA SI AGREMENT TARGU MURES",
+   "estimatedValueRon": 198347.1,
+   "estimatedValueOtherCurrency": 39148.74,
+   "closingValue": 201875.29,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  },
+  {
+   "directAcquisitionId": 123157333,
+   "directAcquisitionName": "clickSIGN PDF Ultimate",
+   "sysDirectAcquisitionState": {
+    "id": 7,
+    "text": "Oferta acceptata",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "uniqueIdentificationCode": "DA41324135",
+   "cpvCode": "79132100-9 - Servicii de certificare a semnaturii electronice (Rev.2)",
+   "publicationDate": "2026-10-02T15:20:55+03:00",
+   "finalizationDate": "2026-10-04T17:37:52+03:00",
+   "caDecisionDeadline": "2026-10-07T17:00:00+03:00",
+   "supplierDecisionDeadline": "2026-10-09T17:00:00+03:00",
+   "supplier": "ro18288250 CERTSIGN",
+   "contractingAuthority": "14970806 SCOALA PROFESIONALA \"ANASTASE SIMU\" CIRESU",
+   "estimatedValueRon": 550.0,
+   "estimatedValueOtherCurrency": 108.56,
+   "closingValue": 550.0,
+   "isOpenForCorrection": null,
+   "isOpenForContractCorrection": false
+  }
+ ],
+ "searchTooLong": false
+}

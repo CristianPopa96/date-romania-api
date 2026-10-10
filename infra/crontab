@@ -3,3 +3,6 @@
 
 # Every hour: confirm the database and object storage are reachable.
 0 * * * * dr check
+
+# Every day at 04:30 UTC: SEAP direct purchases finalized up to yesterday.
+30 4 * * * dr collect seap-direct

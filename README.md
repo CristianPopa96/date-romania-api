@@ -56,6 +56,25 @@ New migration after changing `src/date_romania/models.py`:
 uv run alembic revision --autogenerate -m "what changed"
 ```
 
+## Collectors
+
+Each collector is a `dr collect` command, scheduled in `infra/crontab`. It keeps every
+response untouched in the raw store before parsing it, and records each run in `job_run`.
+A day that fails does not stop the days after it; it is tried again on the next run, and
+the command exits with code 1. A day the source would not give in full ends as `partial`
+and is not retried by itself: collect it again with `--date` once the cause is fixed.
+
+```bash
+uv run dr collect seap-direct                     # every day missed so far (first run: yesterday)
+uv run dr collect seap-direct --date 2026-10-06   # one day
+uv run dr collect seap-direct --since 2026-10-01  # from a day up to yesterday
+uv run dr reparse seap-direct                     # rebuild the rows from the raw store
+```
+
+| Collector | Source | Table |
+| --- | --- | --- |
+| `seap-direct` | SEAP direct purchases, by finalization day | `direct_purchase` |
+
 ## Layout
 
 ```
