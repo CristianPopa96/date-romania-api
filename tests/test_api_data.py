@@ -1,11 +1,15 @@
 """The data endpoints, over a handful of purchases in a throwaway schema (see conftest.py)."""
 
+import json
+import os
 from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
+from date_romania.api import main
 from date_romania.api.main import app
 from date_romania.db import get_session
 from date_romania.models import DirectPurchase, Entity, SourceDocument
@@ -209,3 +213,53 @@ def test_search_by_cui_and_by_kind(client):
     assert found("44") == [HOSPITAL]
     assert found("44", kind="company") == []
     assert client.get("/v1/search", params={"q": "a"}).status_code == 422
+
+
+# The calls the site makes for the pages its browser tests open. Their answers are kept in
+# a file that the site's stub API serves, so those tests run on what this API really says.
+SITE_STUB = Path(__file__).parent / "fixtures" / "site_stub.json"
+SITE_CALLS = (
+    "/v1/health",
+    "/v1/stats",
+    "/v1/search?q=tantareni&limit=30",
+    "/v1/search?q=zzzz&limit=30",
+    f"/v1/institutions/{TOWN_HALL}?partners=10",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=value&state=7&limit=20&offset=0",
+    f"/v1/suppliers/{BUILDER}?partners=10",
+    f"/v1/direct-purchases?supplier={BUILDER}&sort=newest&limit=20&offset=0",
+    "/v1/institutions/12345674?partners=10",
+    "/v1/direct-purchases?buyer=12345674&sort=newest&limit=20&offset=0",
+    "/v1/rankings/suppliers?limit=20",
+    "/v1/rankings/institutions?limit=20",
+)
+
+
+def _steady(value):
+    """The same answer on every run: the time a file was fetched is the time of the test."""
+    if isinstance(value, dict):
+        return {
+            key: "2026-10-07T04:30:00Z" if key == "fetched_at" and item else _steady(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [_steady(item) for item in value]
+    return value
+
+
+def test_the_site_stub_holds_what_the_api_answers(client, monkeypatch):
+    """Fails when an answer the site depends on changes.
+
+    Then run `WRITE_SITE_STUB=1 uv run pytest tests/test_api_data.py`, and copy the file to
+    `e2e/stub/answers.json` in date-romania-web, where the browser tests will show what the
+    change does to the pages.
+    """
+    monkeypatch.setattr(main, "database_ok", lambda: True)
+    answers = {}
+    for call in SITE_CALLS:
+        response = client.get(call)
+        answers[call] = {"status": response.status_code, "body": _steady(response.json())}
+    text = json.dumps(answers, ensure_ascii=False, indent=1) + "\n"
+    if os.environ.get("WRITE_SITE_STUB"):
+        SITE_STUB.write_bytes(text.encode("utf-8"))
+    assert SITE_STUB.read_text(encoding="utf-8") == text
