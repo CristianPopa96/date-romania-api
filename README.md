@@ -69,11 +69,24 @@ uv run dr collect seap-direct                     # every day missed so far (fir
 uv run dr collect seap-direct --date 2026-10-06   # one day
 uv run dr collect seap-direct --since 2026-10-01  # from a day up to yesterday
 uv run dr reparse seap-direct                     # rebuild the rows from the raw store
+uv run dr collect seap-awards                     # the same options for every collector
 ```
 
 | Collector | Source | Table |
 | --- | --- | --- |
 | `seap-direct` | SEAP direct purchases, by finalization day | `direct_purchase` |
+| `seap-awards` | SEAP award notices, by publication day, with the contracts and winners of each | `award_notice`, `award_contract`, `award_winner` |
+
+Award notices are collected but not served by the API yet. Three things to know before
+adding them up:
+
+- A notice is published again whenever a contract is added or changed, so the notices of
+  one day carry contracts signed over several years. Count by `contract_date`, not by the
+  day the notice was published.
+- A framework agreement (`kind` 2) is a ceiling, not money committed. What is committed
+  under it are its subsequent contracts (`kind` 3). Totals count kinds 1 and 3.
+- An association wins one contract with one value; `award_winner` has a row per member and
+  the value is not split between them.
 
 ## API
 
@@ -100,8 +113,9 @@ limit, 270,120 lei, which is not applied: the list does not give the contract ty
 
 ```
 src/date_romania/
-  api/          FastAPI app: `routes.py` the endpoints, `schemas.py` the answers
-  collectors/   one module per public source
+  api/          FastAPI app: `routes/` the endpoints by area, `schemas.py` the answers
+  collectors/   one package per public source
+  money.py      what counts as money spent
   models.py     SQLAlchemy models, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256
   cui.py        Romanian tax ID parsing and checksum

@@ -1,7 +1,8 @@
 """`dr` command line: what the scheduler and developers run."""
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
+from types import ModuleType
 from typing import Annotated
 
 import typer
@@ -10,14 +11,12 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
-from date_romania.collectors import seap_direct
+from date_romania.collectors import seap_awards, seap_direct
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import DONE, missing_days, run_days
+from date_romania.collectors.jobs import collect_days, due_days
 from date_romania.dates import yesterday
 from date_romania.db import database_ok, get_engine
 from date_romania.storage import storage_ok
-
-log = logging.getLogger(__name__)
 
 app = typer.Typer(no_args_is_help=True, help="Date România data tools.")
 db_app = typer.Typer(no_args_is_help=True, help="Database tasks.")
@@ -28,6 +27,8 @@ app.add_typer(collect_app, name="collect")
 app.add_typer(reparse_app, name="reparse")
 
 DAY = ["%Y-%m-%d"]
+Date = Annotated[datetime | None, typer.Option(formats=DAY, help="Collect only this day.")]
+Since = Annotated[datetime | None, typer.Option(formats=DAY, help="Collect from this day on.")]
 
 
 @app.callback()
@@ -60,44 +61,48 @@ def serve(host: str = "0.0.0.0", port: int = 8000, reload: bool = False) -> None
     uvicorn.run("date_romania.api.main:app", host=host, port=port, reload=reload)
 
 
-@collect_app.command("seap-direct")
-def collect_seap_direct(
-    date: Annotated[
-        datetime | None, typer.Option(formats=DAY, help="Collect only this day.")
-    ] = None,
-    since: Annotated[
-        datetime | None, typer.Option(formats=DAY, help="Collect from this day on.")
-    ] = None,
+def _collect(
+    collector: ModuleType, records: str, date: datetime | None, since: datetime | None
 ) -> None:
-    """SEAP direct purchases by finalization day. With no option, every day missed so far."""
-    last = yesterday()
+    """Run a day collector for one day, a range, or every day it missed so far."""
     with Session(get_engine()) as session, PoliteClient() as client:
-        if date:
-            days = [date.date()]
-        elif since:
-            days = [since.date() + timedelta(days=n) for n in range((last - since.date()).days + 1)]
-        else:
-            tried = run_days(session, seap_direct.JOB)
-            days = missing_days(
-                run_days(session, seap_direct.JOB, *DONE), last, first=min(tried, default=None)
-            )
-        # One day that keeps failing must not hold back the days after it.
-        failed = []
-        for day in days:
-            try:
-                count = seap_direct.collect_day(session, client, day)
-            except Exception:
-                log.exception("%s: failed", day)
-                failed.append(day)
-            else:
-                typer.echo(f"{day}: {count} direct purchases")
+        days = due_days(
+            session, collector.JOB, yesterday(), date and date.date(), since and since.date()
+        )
+        failed = collect_days(
+            days,
+            lambda day: collector.collect_day(session, client, day),
+            lambda day, count: typer.echo(f"{day}: {count} {records}"),
+        )
     if failed:
         typer.echo(f"failed: {', '.join(str(day) for day in failed)}", err=True)
         raise typer.Exit(1)
 
 
+def _reparse(collector: ModuleType) -> None:
+    with Session(get_engine()) as session:
+        typer.echo(f"{collector.reparse(session)} files parsed again")
+
+
+@collect_app.command("seap-direct")
+def collect_seap_direct(date: Date = None, since: Since = None) -> None:
+    """SEAP direct purchases by finalization day. With no option, every day missed so far."""
+    _collect(seap_direct, "direct purchases", date, since)
+
+
+@collect_app.command("seap-awards")
+def collect_seap_awards(date: Date = None, since: Since = None) -> None:
+    """SEAP award notices by publication day. With no option, every day missed so far."""
+    _collect(seap_awards, "award notices", date, since)
+
+
 @reparse_app.command("seap-direct")
 def reparse_seap_direct() -> None:
     """Parse the stored SEAP direct purchase responses again, without calling SEAP."""
-    with Session(get_engine()) as session:
-        typer.echo(f"{seap_direct.reparse(session)} files parsed again")
+    _reparse(seap_direct)
+
+
+@reparse_app.command("seap-awards")
+def reparse_seap_awards() -> None:
+    """Parse the stored SEAP award notice responses again, without calling SEAP."""
+    _reparse(seap_awards)

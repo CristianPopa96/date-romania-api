@@ -1,0 +1,342 @@
+{
+ "total": 6,
+ "items": [
+  {
+   "caNoticeId": 100660237,
+   "noticeId": 101405737,
+   "procedureId": 100262877,
+   "noticeNo": "CAN1138069",
+   "sysNoticeTypeId": 3,
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureState": {
+    "id": 5,
+    "text": "Atribuita",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "contractingAuthorityNameAndFN": "4364349 - ADMINISTRATIA DOMENIULUI PUBLIC SI DEZVOLTARE URBANA SECTOR 6",
+   "contractTitle": "Regenerare urbană zona Lacul Morii din Sectorul 6 al Municipiului București: Obiect 2 - Amenajarea Parcului Insula Lacul Morii",
+   "sysAcquisitionContractType": {
+    "id": 3,
+    "text": "Lucrari",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureType": {
+    "id": 1,
+    "text": "Licitatie deschisa",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysContractAssigmentType": {
+    "id": 1,
+    "text": "Contract de achizitii publice",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "cpvCodeAndName": "45112711-2 - Lucrari de arhitectura peisagistica a parcurilor (Rev.2)",
+   "ronContractValue": 38800893.45,
+   "isOnline": true,
+   "noticeStateDate": "2026-10-08T19:00:02+03:00",
+   "minTenderReceiptDeadline": null,
+   "maxTenderReceiptDeadline": null,
+   "errataNo": 0,
+   "versionNo": null,
+   "sysNoticeVersionId": 2,
+   "tenderReceiptDeadlineExport": null,
+   "estimatedValueExport": "38800893,45 RON",
+   "highestOfferValue": 0.0,
+   "lowestOfferValue": 0.0,
+   "hasSubsequentContracts": false,
+   "isUtility": false,
+   "isPPP": false,
+   "currencyCode": "RON"
+  },
+  {
+   "caNoticeId": 100660252,
+   "noticeId": 101405786,
+   "procedureId": 100322615,
+   "noticeNo": "SCNA1137910",
+   "sysNoticeTypeId": 18,
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureState": {
+    "id": 5,
+    "text": "Atribuita",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "contractingAuthorityNameAndFN": "3228764 - MUNICIPIUL RESITA",
+   "contractTitle": "Execuție lucrări pentru obiectivul: ,,Reabilitare si dotare corp C-Colegiul National Mircea Eliade”",
+   "sysAcquisitionContractType": {
+    "id": 3,
+    "text": "Lucrari",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureType": {
+    "id": 20,
+    "text": "Procedura simplificata",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysContractAssigmentType": {
+    "id": 1,
+    "text": "Contract de achizitii publice",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "cpvCodeAndName": "45453000-7 - Lucrari de reparatii generale si de renovare (Rev.2)",
+   "ronContractValue": 11062489.14,
+   "isOnline": true,
+   "noticeStateDate": "2026-10-08T17:27:50+03:00",
+   "minTenderReceiptDeadline": null,
+   "maxTenderReceiptDeadline": null,
+   "errataNo": 0,
+   "versionNo": null,
+   "sysNoticeVersionId": 2,
+   "tenderReceiptDeadlineExport": null,
+   "estimatedValueExport": "11062489,14 RON",
+   "highestOfferValue": 0.0,
+   "lowestOfferValue": 0.0,
+   "hasSubsequentContracts": false,
+   "isUtility": false,
+   "isPPP": false,
+   "currencyCode": "RON"
+  },
+  {
+   "caNoticeId": 100660209,
+   "noticeId": 101405685,
+   "procedureId": 100217630,
+   "noticeNo": "CAN1101786",
+   "sysNoticeTypeId": 3,
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureState": {
+    "id": 5,
+    "text": "Atribuita",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "contractingAuthorityNameAndFN": "RO 2684940 - APA  CANAL  SIBIU SA",
+   "contractTitle": "CL 17 – Statii de epurare ape uzate menajere in, Saliste(Lot 1), Cristian(Lot 2) Miercurea Sibiului si Slimnic(Lot 3)”",
+   "sysAcquisitionContractType": {
+    "id": 3,
+    "text": "Lucrari",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureType": {
+    "id": 1,
+    "text": "Licitatie deschisa",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysContractAssigmentType": {
+    "id": 1,
+    "text": "Contract de achizitii publice",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "cpvCodeAndName": "45252100-9 - Lucrari de constructii de statii de epurare (Rev.2)",
+   "ronContractValue": 15545444.52,
+   "isOnline": true,
+   "noticeStateDate": "2026-10-08T17:00:09+03:00",
+   "minTenderReceiptDeadline": null,
+   "maxTenderReceiptDeadline": null,
+   "errataNo": 0,
+   "versionNo": null,
+   "sysNoticeVersionId": 2,
+   "tenderReceiptDeadlineExport": null,
+   "estimatedValueExport": "15545444,52 RON",
+   "highestOfferValue": 0.0,
+   "lowestOfferValue": 0.0,
+   "hasSubsequentContracts": false,
+   "isUtility": true,
+   "isPPP": false,
+   "currencyCode": "RON"
+  },
+  {
+   "caNoticeId": 100660193,
+   "noticeId": 101405656,
+   "procedureId": 100316455,
+   "noticeNo": "CAN1167934",
+   "sysNoticeTypeId": 3,
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureState": {
+    "id": 5,
+    "text": "Atribuita",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "contractingAuthorityNameAndFN": "24014380 - SPITALUL CLINIC JUDETEAN MURES",
+   "contractTitle": "acord cadru de furnizare alimente: oua de gaina calitatea I",
+   "sysAcquisitionContractType": {
+    "id": 1,
+    "text": "Furnizare",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureType": {
+    "id": 1,
+    "text": "Licitatie deschisa",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysContractAssigmentType": {
+    "id": 3,
+    "text": "Acord-cadru",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "cpvCodeAndName": "03142500-3 - Oua (Rev.2)",
+   "ronContractValue": 49226.4,
+   "isOnline": true,
+   "noticeStateDate": "2026-10-08T14:01:08+03:00",
+   "minTenderReceiptDeadline": null,
+   "maxTenderReceiptDeadline": null,
+   "errataNo": 0,
+   "versionNo": null,
+   "sysNoticeVersionId": 2,
+   "tenderReceiptDeadlineExport": null,
+   "estimatedValueExport": "49226,4 RON",
+   "highestOfferValue": 311600.0,
+   "lowestOfferValue": 273600.0,
+   "hasSubsequentContracts": true,
+   "isUtility": false,
+   "isPPP": false,
+   "currencyCode": "RON"
+  },
+  {
+   "caNoticeId": 100657509,
+   "noticeId": 101400507,
+   "procedureId": 100320763,
+   "noticeNo": "CAN1175575",
+   "sysNoticeTypeId": 3,
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureState": {
+    "id": 3,
+    "text": "Anulata",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "contractingAuthorityNameAndFN": "RO28627965 - BlueSpace TECHNOLOGY SA",
+   "contractTitle": "Stații grafice – 6 bucăți",
+   "sysAcquisitionContractType": {
+    "id": 1,
+    "text": "Furnizare",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureType": {
+    "id": 1,
+    "text": "Licitatie deschisa",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysContractAssigmentType": {
+    "id": 1,
+    "text": "Contract de achizitii publice",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "cpvCodeAndName": "30213300-8 - Computer de birou (Rev.2)",
+   "ronContractValue": 0.0,
+   "isOnline": true,
+   "noticeStateDate": "2026-10-08T11:32:52+03:00",
+   "minTenderReceiptDeadline": null,
+   "maxTenderReceiptDeadline": null,
+   "errataNo": 0,
+   "versionNo": null,
+   "sysNoticeVersionId": 2,
+   "tenderReceiptDeadlineExport": null,
+   "estimatedValueExport": "0 RON",
+   "highestOfferValue": 0.0,
+   "lowestOfferValue": 0.0,
+   "hasSubsequentContracts": false,
+   "isUtility": false,
+   "isPPP": false,
+   "currencyCode": "RON"
+  },
+  {
+   "caNoticeId": 100660082,
+   "noticeId": 101405442,
+   "procedureId": null,
+   "noticeNo": "PCA1004155",
+   "sysNoticeTypeId": 16,
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureState": {
+    "id": 5,
+    "text": "Atribuita",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "contractingAuthorityNameAndFN": "4791420 - DIRECTIA SANITARA VETERINARA SI PENTRU SIGURANTA ALIMENTELOR GIURGIU",
+   "contractTitle": "ANULARE ATRIBUIRE CONTRACT CONCSIUNE CSV SCHITU",
+   "sysAcquisitionContractType": {
+    "id": 2,
+    "text": "Servicii",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysProcedureType": {
+    "id": 17,
+    "text": "Norme proprii (Anexa 2)",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "sysContractAssigmentType": {
+    "id": 1,
+    "text": "Contract de achizitii publice",
+    "localeKey": null,
+    "apiActionResult": null
+   },
+   "cpvCodeAndName": "85200000-1 - Servicii veterinare (Rev.2)",
+   "ronContractValue": 597916.0,
+   "isOnline": false,
+   "noticeStateDate": "2026-10-08T10:50:52+03:00",
+   "minTenderReceiptDeadline": null,
+   "maxTenderReceiptDeadline": null,
+   "errataNo": 0,
+   "versionNo": null,
+   "sysNoticeVersionId": 2,
+   "tenderReceiptDeadlineExport": null,
+   "estimatedValueExport": "597916 RON",
+   "highestOfferValue": 0.0,
+   "lowestOfferValue": 0.0,
+   "hasSubsequentContracts": false,
+   "isUtility": false,
+   "isPPP": false,
+   "currencyCode": "RON"
+  }
+ ],
+ "searchTooLong": false
+}

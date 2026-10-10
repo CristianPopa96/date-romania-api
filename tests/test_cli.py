@@ -33,3 +33,12 @@ def test_collect_exits_cleanly_when_every_day_works(monkeypatch):
     result = runner.invoke(cli.app, ["collect", "seap-direct", "--date", "2026-10-06"])
     assert result.exit_code == 0
     assert "2026-10-06: 7 direct purchases" in result.output
+
+
+def test_every_day_collector_runs_through_the_same_loop(monkeypatch):
+    monkeypatch.setattr(cli, "yesterday", lambda: date(2026, 10, 3))
+    monkeypatch.setattr(cli.seap_awards, "collect_day", lambda session, client, day: 3)
+    result = runner.invoke(cli.app, ["collect", "seap-awards", "--since", "2026-10-02"])
+    assert result.exit_code == 0
+    assert "2026-10-02: 3 award notices" in result.output
+    assert "2026-10-03: 3 award notices" in result.output

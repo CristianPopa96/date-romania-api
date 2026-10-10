@@ -1,0 +1,758 @@
+{
+ "total": 9,
+ "items": [
+  {
+   "caNoticeContractId": 108187624,
+   "contractId": null,
+   "caNoticeId": 100660237,
+   "noticeNo": "CAN1138069",
+   "contractNo": "387",
+   "contractDate": "2024-11-22T00:00:00+02:00",
+   "contractTitle": "Regenerare urbană zona Lacul Morii din Sectorul 6 al Municipiului București: Obiect 2 - Amenajarea Parcului Insula Lacul Morii",
+   "winnerCaption": "RO-VERDE LANDSCAPING S.R.L.,ISCHIA,GECA IMPEX P.M.,CRIS GARDEN,GARDEN CENTER GRUP S.R.L.",
+   "winner": {
+    "name": "GARDEN CENTER GRUP S.R.L.",
+    "fiscalNumber": "15148952",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "GARDEN CENTER GRUP S.R.L.",
+     "fiscalNumber": "15148952",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "CRIS GARDEN",
+     "fiscalNumber": "RO 15425816",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "GECA IMPEX P.M.",
+     "fiscalNumber": "RO 15071050",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "ISCHIA",
+     "fiscalNumber": "RO17789473",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "RO-VERDE LANDSCAPING S.R.L.",
+     "fiscalNumber": "28503819",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 38800893.45,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 38800893.45,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": true,
+   "modifiedCount": 29,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 1,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108187218,
+   "contractId": null,
+   "caNoticeId": 100660209,
+   "noticeNo": "CAN1101786",
+   "contractNo": "127",
+   "contractDate": "2023-07-26T00:00:00+03:00",
+   "contractTitle": "CL 17 – Statie de epurare ape uzate menajere in Saliste(Lot 1)",
+   "winnerCaption": "UTB Envirotec,DIMEX-2000 COMPANY S.R.L.,MATEI CONSTRUCT CONSTRUCTII SPECIALE",
+   "winner": {
+    "name": "MATEI CONSTRUCT CONSTRUCTII SPECIALE",
+    "fiscalNumber": "RO31018946",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "MATEI CONSTRUCT CONSTRUCTII SPECIALE",
+     "fiscalNumber": "RO31018946",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "DIMEX-2000 COMPANY S.R.L.",
+     "fiscalNumber": "RO 13027407",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "UTB Envirotec",
+     "fiscalNumber": "23049996241",
+     "address": {
+      "countryItem": {
+       "id": 98,
+       "text": "Hungary",
+       "localeKey": "HU",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. LOT 1- Reabiliare SEAU  Săliște",
+   "lotsNoCaption": "1",
+   "contractValue": 15545444.52,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 15545444.52,
+   "currencyRate": null,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": true,
+   "modifiedCount": 3,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 1,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108186804,
+   "contractId": null,
+   "caNoticeId": 100660193,
+   "noticeNo": "CAN1167934",
+   "contractNo": "1553",
+   "contractDate": "2026-05-05T00:00:00+03:00",
+   "contractTitle": "Contract subsecvent de furnizare alimente: oua de gaina calitatea I",
+   "winnerCaption": "PARHAN COM",
+   "winner": {
+    "name": "PARHAN COM",
+    "fiscalNumber": "RO 4491776",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "PARHAN COM",
+     "fiscalNumber": "RO 4491776",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 11520.0,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 11520.0,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 3,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108186805,
+   "contractId": null,
+   "caNoticeId": 100660193,
+   "noticeNo": "CAN1167934",
+   "contractNo": "AC-134",
+   "contractDate": "2026-05-05T00:00:00+03:00",
+   "contractTitle": "Acord cadru de furnizare alimente: oua de gaina calitatea I",
+   "winnerCaption": "PARHAN COM,STEDYAN COM,JOLDOS PROIMPEX S.R.L.",
+   "winner": {
+    "name": "JOLDOS PROIMPEX S.R.L.",
+    "fiscalNumber": "RO 9399070",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "JOLDOS PROIMPEX S.R.L.",
+     "fiscalNumber": "RO 9399070",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "STEDYAN COM",
+     "fiscalNumber": "RO 15779023",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    },
+    {
+     "name": "PARHAN COM",
+     "fiscalNumber": "RO 4491776",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 311600.0,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 311600.0,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": 273600.0,
+   "contractValueMaxOffer": 311600.0,
+   "defaultCurrencyContractValueMinOffer": 273600.0,
+   "defaultCurrencyContractValueMaxOffer": 311600.0,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 2,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108186803,
+   "contractId": null,
+   "caNoticeId": 100660193,
+   "noticeNo": "CAN1167934",
+   "contractNo": "2061",
+   "contractDate": "2026-06-03T00:00:00+03:00",
+   "contractTitle": "Contract subsecvent de furnizare alimente: oua de gaina calitatea I",
+   "winnerCaption": "PARHAN COM",
+   "winner": {
+    "name": "PARHAN COM",
+    "fiscalNumber": "RO 4491776",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "PARHAN COM",
+     "fiscalNumber": "RO 4491776",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 10800.0,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 10800.0,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 3,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108186806,
+   "contractId": null,
+   "caNoticeId": 100660193,
+   "noticeNo": "CAN1167934",
+   "contractNo": "2414",
+   "contractDate": "2026-07-01T00:00:00+03:00",
+   "contractTitle": "Contract subsecvent de furnizare alimente: oua de gaina calitatea I",
+   "winnerCaption": "PARHAN COM",
+   "winner": {
+    "name": "PARHAN COM",
+    "fiscalNumber": "RO 4491776",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "PARHAN COM",
+     "fiscalNumber": "RO 4491776",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 7192.8,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 7192.8,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 3,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108186802,
+   "contractId": null,
+   "caNoticeId": 100660193,
+   "noticeNo": "CAN1167934",
+   "contractNo": "2730",
+   "contractDate": "2026-08-03T00:00:00+03:00",
+   "contractTitle": "Contract subsecvent de furnizare alimente: oua de gaina calitatea I",
+   "winnerCaption": "PARHAN COM",
+   "winner": {
+    "name": "PARHAN COM",
+    "fiscalNumber": "RO 4491776",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "PARHAN COM",
+     "fiscalNumber": "RO 4491776",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 11181.6,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 11181.6,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 3,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108186807,
+   "contractId": null,
+   "caNoticeId": 100660193,
+   "noticeNo": "CAN1167934",
+   "contractNo": "3215",
+   "contractDate": "2026-09-01T00:00:00+03:00",
+   "contractTitle": "Contract ssubsecvent de furnizare alimente: oua de gaina calitatea I",
+   "winnerCaption": "PARHAN COM",
+   "winner": {
+    "name": "PARHAN COM",
+    "fiscalNumber": "RO 4491776",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "PARHAN COM",
+     "fiscalNumber": "RO 4491776",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "1. Default lot",
+   "lotsNoCaption": "1",
+   "contractValue": 8532.0,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 8532.0,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 3,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  },
+  {
+   "caNoticeContractId": 108185372,
+   "contractId": null,
+   "caNoticeId": 100660082,
+   "noticeNo": "PCA1004155",
+   "contractNo": "00000",
+   "contractDate": "2026-09-25T00:00:00+03:00",
+   "contractTitle": "ANULARE ATRIBUIRE CONTRACT CONCSIUNE CSV SCHITU",
+   "winnerCaption": "0",
+   "winner": {
+    "name": "0",
+    "fiscalNumber": "00",
+    "address": {
+     "countryItem": {
+      "id": 1,
+      "text": "Romania",
+      "localeKey": "RO",
+      "apiActionResult": null
+     }
+    }
+   },
+   "winners": [
+    {
+     "name": "0",
+     "fiscalNumber": "00",
+     "address": {
+      "countryItem": {
+       "id": 1,
+       "text": "Romania",
+       "localeKey": "RO",
+       "apiActionResult": null
+      }
+     }
+    }
+   ],
+   "lotsCaption": "",
+   "lotsNoCaption": "",
+   "contractValue": 597916.0,
+   "currency": {
+    "id": 1,
+    "text": "RON",
+    "localeKey": "RON",
+    "apiActionResult": null
+   },
+   "defaultCurrencyContractValue": 597916.0,
+   "currencyRate": 1.0,
+   "hasElectronicContract": false,
+   "electronicContractId": null,
+   "sysElectronicContractStateId": null,
+   "parentElectronicContractId": null,
+   "contractValueMinOffer": null,
+   "contractValueMaxOffer": null,
+   "defaultCurrencyContractValueMinOffer": null,
+   "defaultCurrencyContractValueMaxOffer": null,
+   "hasModifiedVersions": false,
+   "modifiedCount": 0,
+   "actions": {
+    "canEdit": false,
+    "canView": true,
+    "canDelete": false,
+    "canModify": false,
+    "canOpenContract": false,
+    "canCreateContract": false,
+    "canCorrectContract": false,
+    "canModifyCompetitionResume": false
+   },
+   "conditions": {
+    "hasCompetitionResumeSection": false
+   },
+   "contractType": 1,
+   "hasEquipmentRegistry": false,
+   "noOfEquipment": 0
+  }
+ ]
+}
