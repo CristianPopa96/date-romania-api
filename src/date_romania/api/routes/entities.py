@@ -6,8 +6,8 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import ColumnElement, String, and_, cast, func, or_, select
 from sqlalchemy.orm import Session
 
-from date_romania.api.routes.common import Db, Limit, entity_out, list_source, summary, top
-from date_romania.api.schemas import EntityPage, SearchResults
+from date_romania.api.routes.common import Db, Limit, list_source, summary, top
+from date_romania.api.schemas import EntityOut, EntityPage, SearchResults
 from date_romania.models import DirectPurchase, Entity, search_text
 
 router = APIRouter()
@@ -44,7 +44,9 @@ def search(
             func.length(Entity.name),
             Entity.cui,
         )
-    return SearchResults(items=[entity_out(e) for e in session.scalars(query.limit(limit))])
+    return SearchResults(
+        items=[EntityOut.model_validate(e) for e in session.scalars(query.limit(limit))]
+    )
 
 
 def _entity_page(
@@ -54,7 +56,7 @@ def _entity_page(
     if entity is None:
         raise HTTPException(404, f"No institution or company with CUI {cui}")
     return EntityPage(
-        entity=entity_out(entity),
+        entity=EntityOut.model_validate(entity),
         direct_purchases=summary(session, own == cui),
         partners=top(session, other, [own == cui], partners),
         source=list_source(session),

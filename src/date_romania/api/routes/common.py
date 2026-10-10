@@ -8,7 +8,7 @@ from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
 from date_romania import money
-from date_romania.api.schemas import EntityOut, EntityRef, Partner, Source, Summary
+from date_romania.api.schemas import EntityRef, Partner, Source, Summary
 from date_romania.dates import day_bounds
 from date_romania.db import get_session
 from date_romania.models import DirectPurchase, Entity, SourceDocument
@@ -43,17 +43,7 @@ def list_source(session: Session) -> Source:
 
 
 def ref(entity: Entity | None) -> EntityRef | None:
-    return entity and EntityRef(cui=entity.cui, name=entity.name, kind=entity.kind)
-
-
-def entity_out(entity: Entity) -> EntityOut:
-    return EntityOut(
-        cui=entity.cui,
-        name=entity.name,
-        kind=entity.kind,
-        county=entity.county,
-        locality=entity.locality,
-    )
+    return entity and EntityRef.model_validate(entity)
 
 
 def top(
@@ -72,6 +62,6 @@ def top(
         .limit(limit)
     )
     return [
-        Partner(cui=entity.cui, name=entity.name, kind=entity.kind, accepted=accepted, value=value)
+        Partner(**ref(entity).model_dump(), accepted=accepted, value=value)
         for entity, accepted, value in rows
     ]

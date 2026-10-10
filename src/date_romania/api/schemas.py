@@ -2,7 +2,16 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from date_romania.money import (
+    DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON,
+    DIRECT_PURCHASE_LIMIT_RON,
+)
+
+# The legal limits as the descriptions print them, e.g. "900,400 lei".
+_LIMIT = f"{DIRECT_PURCHASE_LIMIT_RON:,.0f} lei"
+_LIMIT_GOODS_SERVICES = f"{DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON:,.0f} lei"
 
 
 class Source(BaseModel):
@@ -16,6 +25,9 @@ class Source(BaseModel):
 
 
 class EntityRef(BaseModel):
+    # Filled straight from an `Entity` row.
+    model_config = ConfigDict(from_attributes=True)
+
     cui: int
     name: str
     kind: str = Field(description="authority, company or other")
@@ -37,10 +49,10 @@ class Summary(BaseModel):
     accepted: int = Field(description="Purchases where the offer was accepted.")
     value: float = Field(description="Sum of the accepted purchases at or under `limit`.")
     above_limit: int = Field(
-        description="Accepted purchases published with a value above 900,400 lei, the highest "
+        description=f"Accepted purchases published with a value above {_LIMIT}, the highest "
         "legal limit for a direct purchase (the one for works). They are not counted in "
         "`value` and are listed separately. A goods or services purchase between its own "
-        "limit of 270,120 lei and this one is not marked."
+        f"limit of {_LIMIT_GOODS_SERVICES} and this one is not marked."
     )
     above_limit_value: float
     first_day: date | None = Field(description="First day we have data for.")
@@ -64,7 +76,7 @@ class Purchase(BaseModel):
     estimated_value: float | None
     value: float | None = Field(description="The closing value.")
     above_limit: bool = Field(
-        description="The purchase was accepted with a value above 900,400 lei, the highest "
+        description=f"The purchase was accepted with a value above {_LIMIT}, the highest "
         "legal limit for a direct purchase. Always false for a purchase that was not accepted."
     )
     source: Source
@@ -90,13 +102,8 @@ class EntityPage(BaseModel):
     source: Source
 
 
-class RankingRow(BaseModel):
+class RankingRow(Partner):
     rank: int
-    cui: int
-    name: str
-    kind: str
-    accepted: int
-    value: float
 
 
 class Ranking(BaseModel):
