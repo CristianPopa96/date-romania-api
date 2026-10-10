@@ -10,7 +10,8 @@ def parse_cui(raw: str | int) -> int | None:
     digits = re.sub(r"\D", "", str(raw))
     if not 2 <= len(digits) <= 10:
         return None
-    return int(digits) if is_valid_cui(digits) else None
+    # All zeros pass the checksum but name nobody; SEAP has them as placeholders.
+    return int(digits) if int(digits) and is_valid_cui(digits) else None
 
 
 def is_valid_cui(digits: str) -> bool:

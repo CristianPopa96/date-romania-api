@@ -1,6 +1,7 @@
 """Run bookkeeping shared by collectors: which days are missing, and one `job_run` row per run."""
 
-from collections.abc import Iterator
+import logging
+from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from datetime import UTC, date, datetime, timedelta
 
@@ -10,6 +11,8 @@ from sqlalchemy.orm import Session
 from date_romania.dates import BUCHAREST, day_bounds
 from date_romania.models import JobRun, SourceDocument
 from date_romania.storage import put_raw
+
+log = logging.getLogger(__name__)
 
 
 def missing_days(done: set[date], last: date, first: date | None = None) -> list[date]:
@@ -41,6 +44,37 @@ def run_days(session: Session, job: str, *statuses: str) -> set[date]:
     return {
         start.astimezone(BUCHAREST).date() for start in session.scalars(query) if start is not None
     }
+
+
+def due_days(
+    session: Session, job: str, last: date, day: date | None = None, since: date | None = None
+) -> list[date]:
+    """The days to fetch now: one day, every day from `since`, or the ones missed so far."""
+    if day:
+        return [day]
+    if since:
+        return missing_days(set(), last, first=since)
+    tried = run_days(session, job)
+    return missing_days(run_days(session, job, *DONE), last, first=min(tried, default=None))
+
+
+def collect_days(
+    days: Iterable[date], collect_day: Callable[[date], int], report: Callable[[date, int], None]
+) -> list[date]:
+    """Collect each day in turn and return the days that failed.
+
+    One day that keeps failing must not hold back the days after it.
+    """
+    failed = []
+    for day in days:
+        try:
+            count = collect_day(day)
+        except Exception:
+            log.exception("%s: failed", day)
+            failed.append(day)
+        else:
+            report(day, count)
+    return failed
 
 
 def store_document(
