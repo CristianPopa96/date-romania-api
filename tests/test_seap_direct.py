@@ -6,17 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from date_romania.collectors.seap_direct import (
+from date_romania.collectors.seap_direct.parse import is_cnp, parse_page, split_party
+from date_romania.collectors.seap_direct.slices import (
     CAP,
     CPV_DIVISIONS,
     Page,
     SeapError,
     Slice,
     _split_range,
-    is_cnp,
     iter_pages,
-    parse_page,
-    split_party,
 )
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"
