@@ -24,8 +24,9 @@ DIRECT_PURCHASE_ACCEPTED = 7
 # Law 98/2016 art. 7(5): a direct purchase must stay under 900,400 lei without VAT for works
 # and 270,120 lei for goods and services. We use the works limit for every purchase, as the
 # highest value any direct purchase may have: the list does not give the contract type, and
-# the CPV code does not tell works from the rest reliably (see NOTES.md 3.2). An accepted
-# purchase published above it is not counted in totals and is listed separately.
+# the CPV code does not tell works from the rest reliably (street lighting works, for one,
+# are filed under a goods code). An accepted purchase published above it is not counted in
+# totals and is listed separately.
 DIRECT_PURCHASE_LIMIT_RON = Decimal("900400")
 
 
