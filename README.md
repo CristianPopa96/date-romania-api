@@ -75,11 +75,32 @@ uv run dr reparse seap-direct                     # rebuild the rows from the ra
 | --- | --- | --- |
 | `seap-direct` | SEAP direct purchases, by finalization day | `direct_purchase` |
 
+## API
+
+Read-only, under `/v1/`, documented at http://localhost:8000/docs. Amounts are in lei
+without VAT, as SEAP publishes them, and every answer names its source.
+
+| Endpoint | What it gives |
+| --- | --- |
+| `/v1/stats` | How many direct purchases the database holds, their value, the days covered |
+| `/v1/search?q=` | Institutions and companies by name (diacritics and small typos forgiven) or CUI |
+| `/v1/institutions/{cui}` | An institution as a buyer: totals and its suppliers by value |
+| `/v1/suppliers/{cui}` | A company as a supplier: totals and the institutions it sold to |
+| `/v1/direct-purchases` | Purchases, filtered by `buyer`, `supplier`, `cpv`, `state`, `date_from`, `date_to` |
+| `/v1/direct-purchases/{id}` | One purchase, with a link to its SEAP page |
+| `/v1/rankings/suppliers`, `/v1/rankings/institutions` | The largest by value in a period |
+
+Totals count only purchases whose offer was accepted. An accepted purchase published with
+a value above 900,400 lei is left out of the totals and reported next to them as
+`above_limit`, because one such value can outweigh a whole day. 900,400 lei is the legal
+limit for works, the highest a direct purchase may have. Goods and services have a lower
+limit, 270,120 lei, which is not applied: the list does not give the contract type.
+
 ## Layout
 
 ```
 src/date_romania/
-  api/          FastAPI app
+  api/          FastAPI app: `routes.py` the endpoints, `schemas.py` the answers
   collectors/   one module per public source
   models.py     SQLAlchemy models, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256

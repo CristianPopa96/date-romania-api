@@ -5,8 +5,10 @@ from decimal import Decimal
 
 from sqlalchemy import (
     BigInteger,
+    ColumnElement,
     DateTime,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     SmallInteger,
@@ -15,6 +17,21 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+# SEAP's state id for a direct purchase whose offer was accepted: the only ones that count
+# as money spent.
+DIRECT_PURCHASE_ACCEPTED = 7
+# Law 98/2016 art. 7(5): a direct purchase must stay under 900,400 lei without VAT for works
+# and 270,120 lei for goods and services. We use the works limit for every purchase, as the
+# highest value any direct purchase may have: the list does not give the contract type, and
+# the CPV code does not tell works from the rest reliably (see NOTES.md 3.2). An accepted
+# purchase published above it is not counted in totals and is listed separately.
+DIRECT_PURCHASE_LIMIT_RON = Decimal("900400")
+
+
+def search_text(text) -> ColumnElement[str]:
+    """Text as search compares it: lower case, no diacritics (`dr_unaccent` is our SQL function)."""
+    return func.dr_unaccent(func.lower(text))
 
 
 class Base(DeclarativeBase):
@@ -70,6 +87,16 @@ class Entity(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
+    __table_args__ = (
+        # Trigram index for search by name, with diacritics and small typos forgiven.
+        Index(
+            "ix_entity_name_search",
+            search_text(name).label("search"),
+            postgresql_using="gin",
+            postgresql_ops={"search": "gin_trgm_ops"},
+        ),
+    )
+
 
 class DirectPurchase(Base):
     """One SEAP direct purchase (achiziție directă), as the public list shows it."""
@@ -92,7 +119,8 @@ class DirectPurchase(Base):
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     finalized_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
     estimated_value_ron: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
-    # SEAP names no currency for the closing value.
+    # The list names no currency for the closing value; the purchase's page gives it in lei
+    # without VAT.
     closing_value: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
     parser_version: Mapped[int] = mapped_column(SmallInteger)
