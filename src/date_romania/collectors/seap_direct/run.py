@@ -13,11 +13,12 @@ from date_romania.collectors.seap_direct.load import load
 from date_romania.collectors.seap_direct.parse import Parsed, parse_page
 from date_romania.collectors.seap_direct.slices import CAP, LIST_URL, fetch, iter_pages
 from date_romania.models import SourceDocument
+from date_romania.sources import SEAP_DIRECT
 from date_romania.storage import get_raw
 
 log = logging.getLogger(__name__)
 
-SOURCE = JOB = "seap-direct"
+SOURCE = JOB = SEAP_DIRECT.key
 
 
 def _parse_and_load(session: Session, data: dict, doc: SourceDocument) -> Parsed:

@@ -2,26 +2,14 @@
 
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import UTC, date, datetime, time, timedelta
-from zoneinfo import ZoneInfo
+from datetime import UTC, date, datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from date_romania.dates import BUCHAREST, day_bounds
 from date_romania.models import JobRun, SourceDocument
 from date_romania.storage import put_raw
-
-# Public sources publish by Romanian calendar day.
-BUCHAREST = ZoneInfo("Europe/Bucharest")
-
-
-def day_bounds(day: date) -> tuple[datetime, datetime]:
-    start = datetime.combine(day, time.min, tzinfo=BUCHAREST)
-    return start, datetime.combine(day + timedelta(days=1), time.min, tzinfo=BUCHAREST)
-
-
-def yesterday() -> date:
-    return datetime.now(BUCHAREST).date() - timedelta(days=1)
 
 
 def missing_days(done: set[date], last: date, first: date | None = None) -> list[date]:

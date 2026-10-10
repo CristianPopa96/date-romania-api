@@ -1,6 +1,6 @@
-from datetime import UTC, date, timedelta
+from datetime import date
 
-from date_romania.collectors.jobs import day_bounds, missing_days
+from date_romania.collectors.jobs import missing_days
 
 
 def test_first_run_collects_only_the_last_day():
@@ -32,12 +32,3 @@ def test_missing_days_counts_from_the_first_day_tried():
 
 def test_nothing_is_missing_when_up_to_date():
     assert missing_days({date(2026, 10, 9)}, date(2026, 10, 9)) == []
-
-
-def test_day_bounds_are_romanian_midnights():
-    start, end = day_bounds(date(2026, 10, 6))
-    assert start.isoformat() == "2026-10-06T00:00:00+03:00"
-    assert end.isoformat() == "2026-10-07T00:00:00+03:00"
-    # The day the clocks go back has 25 hours.
-    start, end = day_bounds(date(2026, 10, 25))
-    assert end.astimezone(UTC) - start.astimezone(UTC) == timedelta(hours=25)

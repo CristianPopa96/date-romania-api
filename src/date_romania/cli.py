@@ -12,7 +12,8 @@ from sqlalchemy.orm import Session
 
 from date_romania.collectors import seap_direct
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import DONE, missing_days, run_days, yesterday
+from date_romania.collectors.jobs import DONE, missing_days, run_days
+from date_romania.dates import yesterday
 from date_romania.db import database_ok, get_engine
 from date_romania.storage import storage_ok
 
