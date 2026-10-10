@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 import boto3
-from botocore.exceptions import ClientError
 
 from date_romania.config import get_settings
 
@@ -50,5 +49,5 @@ def storage_ok() -> bool:
     try:
         _client().head_bucket(Bucket=get_settings().s3_bucket)
         return True
-    except (ClientError, Exception):
+    except Exception:
         return False

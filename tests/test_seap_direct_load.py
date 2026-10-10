@@ -9,7 +9,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.jobs import DONE, job_run, run_days
-from date_romania.collectors.seap_direct import PARSER_VERSION, load, parse_page
+from date_romania.collectors.seap_direct.load import load
+from date_romania.collectors.seap_direct.parse import PARSER_VERSION, parse_page
 from date_romania.models import DirectPurchase, Entity, SourceDocument
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"

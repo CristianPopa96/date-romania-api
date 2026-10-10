@@ -6,17 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from date_romania.collectors.seap_direct import (
+from date_romania.collectors.seap_direct.parse import parse_page, split_party
+from date_romania.collectors.seap_direct.slices import (
     CAP,
     CPV_DIVISIONS,
     Page,
     SeapError,
     Slice,
     _split_range,
-    is_cnp,
     iter_pages,
-    parse_page,
-    split_party,
 )
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"
@@ -83,12 +81,6 @@ def test_parse_page_masks_a_personal_numeric_code():
     row = parse_page(data).purchases[0]
     assert row["supplier_cui"] is None
     assert row["supplier_text"] == "[CNP] Popescu Ion PFA"
-
-
-def test_is_cnp_checks_the_birth_date_and_the_control_digit():
-    assert is_cnp("1800101123450")
-    assert not is_cnp("1800101123451")  # wrong control digit
-    assert not is_cnp("4052899926516")  # a barcode: month 52
 
 
 def test_parse_page_masks_only_a_valid_personal_code_in_the_name():
