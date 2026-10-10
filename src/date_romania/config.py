@@ -6,7 +6,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # An empty variable counts as not set, so Compose can pass every setting through.
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", env_ignore_empty=True)
 
     # Defaults use 127.0.0.1, not localhost: Compose publishes the ports on IPv4 only.
     database_url: str = "postgresql+psycopg://dr:dr@127.0.0.1:5432/date_romania"
