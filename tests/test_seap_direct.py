@@ -13,6 +13,7 @@ from date_romania.collectors.seap_direct import (
     SeapError,
     Slice,
     _split_range,
+    is_cnp,
     iter_pages,
     parse_page,
     split_party,
@@ -84,6 +85,36 @@ def test_parse_page_masks_a_personal_numeric_code():
     assert row["supplier_text"] == "[CNP] Popescu Ion PFA"
 
 
+def test_is_cnp_checks_the_birth_date_and_the_control_digit():
+    assert is_cnp("1800101123450")
+    assert not is_cnp("1800101123451")  # wrong control digit
+    assert not is_cnp("4052899926516")  # a barcode: month 52
+
+
+def test_parse_page_masks_only_a_valid_personal_code_in_the_name():
+    data = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    data["items"][0]["directAcquisitionName"] = "Servicii Popescu Ion 1800101123450"
+    data["items"][1]["directAcquisitionName"] = "BEC LED E27 OSRAM VALUE 4052899926516"
+    names = {row["id"]: row["name"] for row in parse_page(data).purchases}
+    assert names[data["items"][0]["directAcquisitionId"]] == "Servicii Popescu Ion [CNP]"
+    assert names[data["items"][1]["directAcquisitionId"]] == (
+        "BEC LED E27 OSRAM VALUE 4052899926516"
+    )
+
+
+def test_parse_page_counts_rows_without_an_expected_deadline():
+    data = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    # States 3 and 4 never have a CA deadline; the fixture has two such rows.
+    assert sum(item["caDecisionDeadline"] is None for item in data["items"]) == 2
+    assert parse_page(data).missing_deadlines == 0
+
+    accepted = next(i for i in data["items"] if i["sysDirectAcquisitionState"]["id"] == 7)
+    accepted["caDecisionDeadline"] = None
+    refused = next(i for i in data["items"] if i["sysDirectAcquisitionState"]["id"] == 3)
+    refused["supplierDecisionDeadline"] = None
+    assert parse_page(data).missing_deadlines == 2
+
+
 def test_parse_page_keeps_the_last_copy_of_a_repeated_purchase():
     data = json.loads(FIXTURE.read_text(encoding="utf-8"))
     data["items"].append({**data["items"][0], "directAcquisitionName": "later copy"})
@@ -120,6 +151,16 @@ def test_slice_children_always_run_out():
         assert depth < 60
 
 
+def test_states_without_a_ca_deadline_are_not_split_by_it():
+    for state in (3, 4):
+        sl = Slice(DAY, state=state, contract_type=1)
+        while children := sl.children():
+            assert all(child.ca_deadline == (None, None) for child in children)
+            sl = children[0]
+    children = Slice(DAY, state=7, contract_type=1).children()
+    assert all(child.ca_deadline != (None, None) for child in children)
+
+
 def test_split_range_narrows_to_single_days():
     spans = [(DAY, DAY + timedelta(days=7))]
     days = []
@@ -152,7 +193,7 @@ def _item(n: int, rng: random.Random, busy: bool) -> dict:
         "state": state,
         "type": rng.choice([1, 2, 3]),
         "ca": None if state in (3, 4) else DAY + timedelta(days=rng.randrange(-40, 9)),
-        "su": None if state in (3, 4) else DAY + timedelta(days=rng.randrange(-3, 40)),
+        "su": DAY + timedelta(days=rng.randrange(-3, 40)),
         "multiple": rng.random() < 0.2,
         "eu": rng.random() < 0.1,
         "cpv": rng.choice(CPV_DIVISIONS) + f"{rng.randrange(10**6):06d}",

@@ -24,14 +24,16 @@ def yesterday() -> date:
     return datetime.now(BUCHAREST).date() - timedelta(days=1)
 
 
-def missing_days(done: set[date], last: date) -> list[date]:
-    """Days up to `last` with no successful run, counted from the first day ever collected.
+def missing_days(done: set[date], last: date, first: date | None = None) -> list[date]:
+    """Days from `first` up to `last` that are not in `done`.
 
-    With no history only `last` is due: older days come from bulk exports, not from a first run.
+    `first` is the first day ever tried, so a first run that failed is tried again; without
+    it, the first day done. With no history only `last` is due: older days come from bulk
+    exports, not from a first run.
     """
-    if not done:
+    first = first or min(done, default=None)
+    if first is None:
         return [last]
-    first = min(done)
     return [
         day
         for day in (first + timedelta(days=n) for n in range((last - first).days + 1))
@@ -39,11 +41,18 @@ def missing_days(done: set[date], last: date) -> list[date]:
     ]
 
 
-def succeeded_days(session: Session, job: str) -> set[date]:
-    starts = session.scalars(
-        select(JobRun.period_start).where(JobRun.job == job, JobRun.status == "succeeded")
-    )
-    return {start.astimezone(BUCHAREST).date() for start in starts if start is not None}
+# A partial day is not fetched again by itself: the source would cut it at the same place.
+DONE = ("succeeded", "partial")
+
+
+def run_days(session: Session, job: str, *statuses: str) -> set[date]:
+    """The days `job` has a run for, in any of `statuses` (all of them if none is given)."""
+    query = select(JobRun.period_start).where(JobRun.job == job)
+    if statuses:
+        query = query.where(JobRun.status.in_(statuses))
+    return {
+        start.astimezone(BUCHAREST).date() for start in session.scalars(query) if start is not None
+    }
 
 
 def store_document(
@@ -74,7 +83,10 @@ def store_document(
 
 @contextmanager
 def job_run(session: Session, job: str, day: date) -> Iterator[JobRun]:
-    """Record one run for one day. The caller sets `records`; a raised error marks it failed."""
+    """Record one run for one day. The caller sets `records`; a raised error marks it failed.
+
+    The caller sets the status to `partial` when it knows the day is incomplete.
+    """
     start, end = day_bounds(day)
     run = JobRun(job=job, period_start=start, period_end=end, status="running", records=0)
     session.add(run)
@@ -87,6 +99,7 @@ def job_run(session: Session, job: str, day: date) -> Iterator[JobRun]:
         run.finished_at = datetime.now(UTC)
         session.commit()
         raise
-    run.status = "succeeded"
+    if run.status == "running":
+        run.status = "succeeded"
     run.finished_at = datetime.now(UTC)
     session.commit()

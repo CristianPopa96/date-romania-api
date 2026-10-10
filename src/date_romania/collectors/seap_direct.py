@@ -27,7 +27,7 @@ from date_romania.storage import get_raw
 log = logging.getLogger(__name__)
 
 SOURCE = JOB = "seap-direct"
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 LIST_URL = "https://e-licitatie.ro/api-pub/DirectAcquisitionCommon/GetDirectAcquisitionList/"
 HEADERS = {
@@ -43,6 +43,8 @@ MAX_REQUESTS_PER_DAY = 3000
 # 3 refused by supplier, 4 not answered by supplier, 6 refused by buyer, 7 accepted,
 # 8 not answered by buyer.
 STATES = (3, 4, 6, 7, 8)
+# Where the supplier said no or nothing, the buyer never got a deadline to decide.
+STATES_WITHOUT_CA_DEADLINE = (3, 4)
 CONTRACT_TYPES = (1, 2, 3)  # goods, services, works
 # All divisions of the CPV 2008 vocabulary (first two digits of a code).
 CPV_DIVISIONS = tuple(
@@ -152,15 +154,18 @@ class Slice:
         """The next finer slices, which together hold every row of this one; [] at the end.
 
         State and contract type come first because they split exactly. The deadline filters
-        skip rows that have no deadline; those were only seen in states 3 and 4, which stay
-        far under the cap. The CPV filter matches its text anywhere in the code, so its
-        slices overlap; rows are deduplicated by id on load.
+        skip rows that have no deadline, so states 3 and 4, which have no CA deadline, are
+        never split by it; `parse_page` counts rows that lack a deadline anywhere else. The
+        CPV filter matches its text anywhere in the code, so its slices overlap; rows are
+        deduplicated by id on load.
         """
         if self.state is None:
             return [replace(self, state=state) for state in STATES]
         if self.contract_type is None:
             return [replace(self, contract_type=kind) for kind in CONTRACT_TYPES]
-        if spans := _split_range(self.ca_deadline, self.day):
+        if self.state not in STATES_WITHOUT_CA_DEADLINE and (
+            spans := _split_range(self.ca_deadline, self.day)
+        ):
             return [replace(self, ca_deadline=span) for span in spans]
         if spans := _split_range(self.supplier_deadline, self.day):
             return [replace(self, supplier_deadline=span) for span in spans]
@@ -251,9 +256,28 @@ _PARTY = re.compile(r"\s*(?:RO?)?\s*(\d{2,10})\s+(.*)", re.IGNORECASE | re.DOTAL
 _CNP = re.compile(r"\b[1-9]\d{12}\b")
 
 
-def mask_cnp(text: str | None) -> str | None:
-    """Hide personal numeric codes (GDPR); the name of a sole trader stays."""
-    return _CNP.sub("[CNP]", text) if text else text
+_CNP_KEY = "279146358279"
+
+
+def is_cnp(digits: str) -> bool:
+    """True for 13 digits with a possible birth date and the right control digit."""
+    if not (1 <= int(digits[3:5]) <= 12 and 1 <= int(digits[5:7]) <= 31):
+        return False
+    control = sum(int(d) * int(k) for d, k in zip(digits, _CNP_KEY, strict=False)) % 11
+    return (1 if control == 10 else control) == int(digits[12])
+
+
+def mask_cnp(text: str | None, checked: bool = False) -> str | None:
+    """Hide personal numeric codes (GDPR); the name of a sole trader stays.
+
+    Where a party is named, any 13-digit number is hidden. In free text most such numbers
+    are barcodes and permit numbers, so `checked` hides only those that are valid codes.
+    """
+    if not text:
+        return text
+    return _CNP.sub(
+        lambda found: "[CNP]" if not checked or is_cnp(found.group()) else found.group(), text
+    )
 
 
 def split_party(text: str | None) -> tuple[int | None, str | None]:
@@ -281,6 +305,8 @@ class Parsed:
     # (item, reason) for rows that could not be read at all
     rejected: list[tuple[object, str]] = field(default_factory=list)
     invalid_cuis: int = 0
+    # Rows without a deadline where one is expected: a slice split by deadline would miss them.
+    missing_deadlines: int = 0
 
 
 def parse_page(data: dict) -> Parsed:
@@ -296,7 +322,7 @@ def parse_page(data: dict) -> Parsed:
             row = {
                 "id": int(item["directAcquisitionId"]),
                 "code": item.get("uniqueIdentificationCode"),
-                "name": item.get("directAcquisitionName"),
+                "name": mask_cnp(item.get("directAcquisitionName"), checked=True),
                 "state_id": state.get("id"),
                 "state": state.get("text"),
                 "cpv_code": cpv_code.strip() or None,
@@ -315,6 +341,10 @@ def parse_page(data: dict) -> Parsed:
             continue
         by_id[row["id"]] = row
         parsed.invalid_cuis += (buyer_cui is None) + (supplier_cui is None)
+        parsed.missing_deadlines += item.get("supplierDecisionDeadline") is None or (
+            item.get("caDecisionDeadline") is None
+            and row["state_id"] not in STATES_WITHOUT_CA_DEADLINE
+        )
         if supplier_cui is not None and supplier_cui not in parsed.entities:
             parsed.entities[supplier_cui] = (supplier_name or f"CUI {supplier_cui}", "company")
         if buyer_cui is not None:
@@ -380,7 +410,7 @@ def collect_day(session: Session, client: PoliteClient, day: date) -> int:
     """Fetch, store and load every direct purchase finalized on `day`; returns how many."""
     with job_run(session, JOB, day) as run:
         ids: set[int] = set()
-        pages = truncated = invalid_cuis = 0
+        pages = truncated = invalid_cuis = missing_deadlines = 0
         for page in iter_pages(day, lambda sl, size: fetch(client, sl, size)):
             doc = store_document(
                 session, SOURCE, LIST_URL, page.content, page.request_body, "application/json"
@@ -391,9 +421,18 @@ def collect_day(session: Session, client: PoliteClient, day: date) -> int:
             pages += 1
             truncated += page.truncated
             invalid_cuis += parsed.invalid_cuis
+            missing_deadlines += parsed.missing_deadlines
         run.records = len(ids)
         if truncated:
+            run.status = "partial"
             run.error = f"{truncated} slices stayed over the cap of {CAP}: the day is incomplete"
+        if missing_deadlines:
+            log.warning(
+                "%s: %d rows lack a deadline where one is expected; "
+                "slices split by deadline may have missed such rows",
+                day,
+                missing_deadlines,
+            )
         log.info(
             "%s: %d purchases in %d pages, %d names without a valid CUI",
             day,

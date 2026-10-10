@@ -47,7 +47,7 @@ class JobRun(Base):
     job: Mapped[str] = mapped_column(String(64), index=True)
     period_start: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     period_end: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    status: Mapped[str] = mapped_column(String(16))  # running, succeeded, failed
+    status: Mapped[str] = mapped_column(String(16))  # running, succeeded, partial, failed
     started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     records: Mapped[int] = mapped_column(Integer, default=0)

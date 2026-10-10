@@ -12,9 +12,11 @@ from sqlalchemy.orm import Session
 
 from date_romania.collectors import seap_direct
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import missing_days, succeeded_days, yesterday
+from date_romania.collectors.jobs import DONE, missing_days, run_days, yesterday
 from date_romania.db import database_ok, get_engine
 from date_romania.storage import storage_ok
+
+log = logging.getLogger(__name__)
 
 app = typer.Typer(no_args_is_help=True, help="Date România data tools.")
 db_app = typer.Typer(no_args_is_help=True, help="Database tasks.")
@@ -74,9 +76,23 @@ def collect_seap_direct(
         elif since:
             days = [since.date() + timedelta(days=n) for n in range((last - since.date()).days + 1)]
         else:
-            days = missing_days(succeeded_days(session, seap_direct.JOB), last)
+            tried = run_days(session, seap_direct.JOB)
+            days = missing_days(
+                run_days(session, seap_direct.JOB, *DONE), last, first=min(tried, default=None)
+            )
+        # One day that keeps failing must not hold back the days after it.
+        failed = []
         for day in days:
-            typer.echo(f"{day}: {seap_direct.collect_day(session, client, day)} direct purchases")
+            try:
+                count = seap_direct.collect_day(session, client, day)
+            except Exception:
+                log.exception("%s: failed", day)
+                failed.append(day)
+            else:
+                typer.echo(f"{day}: {count} direct purchases")
+    if failed:
+        typer.echo(f"failed: {', '.join(str(day) for day in failed)}", err=True)
+        raise typer.Exit(1)
 
 
 @reparse_app.command("seap-direct")

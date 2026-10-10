@@ -1,12 +1,14 @@
 """Loading into PostgreSQL, inside a transaction that is rolled back. Skipped with no database."""
 
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from date_romania.collectors.jobs import DONE, job_run, run_days
 from date_romania.collectors.seap_direct import PARSER_VERSION, load, parse_page
 from date_romania.db import database_ok, get_engine
 from date_romania.models import DirectPurchase, Entity, SourceDocument
@@ -68,3 +70,18 @@ def test_load_adds_entities_and_a_buyer_becomes_an_authority(session):
         select(func.count()).select_from(DirectPurchase).where(DirectPurchase.buyer_cui == 17886786)
     )
     assert linked >= 1
+
+
+def test_job_run_records_how_each_day_ended(session):
+    job = "test-job-statuses"
+    with job_run(session, job, date(2026, 10, 1)) as run:
+        run.records = 3
+    with job_run(session, job, date(2026, 10, 2)) as run:
+        run.status = "partial"
+    with pytest.raises(RuntimeError), job_run(session, job, date(2026, 10, 3)):
+        raise RuntimeError("source is down")
+
+    assert run_days(session, job, "succeeded") == {date(2026, 10, 1)}
+    # A partial day counts as done, a failed one does not, and all three were tried.
+    assert run_days(session, job, *DONE) == {date(2026, 10, 1), date(2026, 10, 2)}
+    assert run_days(session, job) == {date(2026, 10, d) for d in (1, 2, 3)}

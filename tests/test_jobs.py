@@ -17,6 +17,19 @@ def test_missing_days_fills_every_gap_since_the_first_collected_day():
     ]
 
 
+def test_missing_days_counts_from_the_first_day_tried():
+    # The first run, for 1 Oct, failed: it is still due, with the days after it.
+    assert missing_days(set(), date(2026, 10, 3), first=date(2026, 10, 1)) == [
+        date(2026, 10, 1),
+        date(2026, 10, 2),
+        date(2026, 10, 3),
+    ]
+    assert missing_days({date(2026, 10, 2)}, date(2026, 10, 3), first=date(2026, 10, 1)) == [
+        date(2026, 10, 1),
+        date(2026, 10, 3),
+    ]
+
+
 def test_nothing_is_missing_when_up_to_date():
     assert missing_days({date(2026, 10, 9)}, date(2026, 10, 9)) == []
 
