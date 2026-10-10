@@ -21,4 +21,12 @@ SEAP_DIRECT = PublicSource(
     record_url="https://e-licitatie.ro/pub/direct-acquisition/view/{id}",
 )
 
-SOURCES = {source.key: source for source in (SEAP_DIRECT,)}
+SEAP_AWARDS = PublicSource(
+    key="seap-awards",
+    publisher="SEAP",
+    list_url="https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    # Checked for notices of type 3 (CAN) only; the other types may use another page.
+    record_url="https://e-licitatie.ro/pub/notices/ca-notices/view-c/{id}",
+)
+
+SOURCES = {source.key: source for source in (SEAP_DIRECT, SEAP_AWARDS)}

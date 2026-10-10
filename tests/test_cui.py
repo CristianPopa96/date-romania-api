@@ -20,3 +20,4 @@ def test_parse_rejects_invalid():
     assert parse_cui("12345675") is None
     assert parse_cui("") is None
     assert parse_cui("12345678901") is None
+    assert parse_cui("00") is None

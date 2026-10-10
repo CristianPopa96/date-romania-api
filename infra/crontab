@@ -6,3 +6,7 @@
 
 # Every day at 04:30 UTC: SEAP direct purchases finalized up to yesterday.
 30 4 * * * dr collect seap-direct
+
+# Every day at 05:30 UTC: SEAP award notices published up to yesterday, with the
+# contracts and winners of each (one request per notice, a few minutes a day).
+30 5 * * * dr collect seap-awards

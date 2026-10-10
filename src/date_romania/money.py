@@ -22,6 +22,13 @@ DIRECT_PURCHASE_ACCEPTED = 7
 DIRECT_PURCHASE_LIMIT_RON = Decimal("900400")
 DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON = Decimal("270120")
 
+# SEAP's contractType for a contract in an award notice. A framework agreement carries a
+# ceiling, not money committed: what is committed under it are its subsequent contracts.
+# Totals over award contracts must count kinds 1 and 3 and never add kind 2 to them.
+AWARD_CONTRACT = 1
+AWARD_FRAMEWORK = 2
+AWARD_SUBSEQUENT = 3
+
 accepted = DirectPurchase.state_id == DIRECT_PURCHASE_ACCEPTED
 counted = and_(accepted, DirectPurchase.closing_value <= DIRECT_PURCHASE_LIMIT_RON)
 above_limit = and_(accepted, DirectPurchase.closing_value > DIRECT_PURCHASE_LIMIT_RON)
