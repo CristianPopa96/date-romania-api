@@ -2,8 +2,15 @@
 
 from fastapi import APIRouter
 
-from date_romania.api.routes import entities, purchases, rankings, stats
+from date_romania.api.routes import (
+    award_totals,
+    awards,
+    entities,
+    purchases,
+    rankings,
+    stats,
+)
 
 router = APIRouter(prefix="/v1")
-for module in (stats, entities, purchases, rankings):
+for module in (stats, entities, purchases, rankings, awards, award_totals):
     router.include_router(module.router)

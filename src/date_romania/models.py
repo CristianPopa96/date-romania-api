@@ -259,7 +259,9 @@ class AwardNoticeVersion(Base):
         ForeignKey("award_notice.id", ondelete="CASCADE"), primary_key=True
     )
     # SEAP's caNoticeID of this version; equal to `notice_id` for the one in force.
-    version_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    version_id: Mapped[int] = mapped_column(
+        BigInteger, primary_key=True, autoincrement=False, index=True
+    )
     published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     # 2 published, 10 withdrawn (replaced by a later version).
     state_id: Mapped[int | None] = mapped_column(SmallInteger)
