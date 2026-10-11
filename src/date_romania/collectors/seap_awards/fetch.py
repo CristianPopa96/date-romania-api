@@ -1,4 +1,4 @@
-"""Asking SEAP for the notices of a day and for the contracts of a notice."""
+"""Asking SEAP for the notices of a day, and for the contracts, detail and versions of one."""
 
 import json
 import logging
@@ -13,6 +13,9 @@ log = logging.getLogger(__name__)
 
 LIST_URL = "https://e-licitatie.ro/api-pub/NoticeCommon/GetCANoticeList/"
 CONTRACTS_URL = "https://e-licitatie.ro/api-pub/C_PUBLIC_CANotice/GetCANoticeContracts/"
+# Both end with the notice id.
+DETAIL_URL = "https://e-licitatie.ro/api-pub/C_PUBLIC_CANotice/get/"
+VERSIONS_URL = "https://e-licitatie.ro/api-pub/C_PUBLIC_CANotice/GetAllVersions/"
 HEADERS = {
     "Content-Type": "application/json;charset=UTF-8",
     "Referer": SEAP_AWARDS.list_url,
@@ -31,9 +34,9 @@ class SeapError(RuntimeError):
 @dataclass(frozen=True)
 class Page:
     url: str
-    request_body: str
+    request_body: str | None
     content: bytes
-    data: dict
+    data: dict | list
     # True when the day has more notices than the list will give: rows are missing.
     truncated: bool = False
 
@@ -104,3 +107,24 @@ def contract_pages(client: PoliteClient, notice_id: int) -> Iterator[Page]:
         seen += len(page.data["items"])
         if not page.data["items"] or seen >= (page.data.get("total") or 0):
             return
+
+
+def _get(client: PoliteClient, url: str, kind: type) -> Page:
+    response = client.request("GET", url, headers={"Referer": SEAP_AWARDS.list_url})
+    try:
+        data = response.json()
+    except ValueError:
+        data = None
+    if not isinstance(data, kind):
+        raise SeapError(f"unexpected answer from {url}: {response.text[:200]!r}")
+    return Page(url, None, response.content, data)
+
+
+def detail_page(client: PoliteClient, notice_id: int) -> Page:
+    """The notice as its own page shows it: the form sections, lot by lot."""
+    return _get(client, f"{DETAIL_URL}{notice_id}", dict)
+
+
+def versions_page(client: PoliteClient, notice_id: int) -> Page:
+    """Every publication of the notice, newest first; a notice never changed has one."""
+    return _get(client, f"{VERSIONS_URL}{notice_id}", list)

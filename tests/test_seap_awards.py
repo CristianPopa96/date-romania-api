@@ -1,4 +1,4 @@
-"""Parsing and fetching award notices, from answers saved on 10 Oct 2026. No network."""
+"""Parsing and fetching award notices, from answers saved on 10 and 11 Oct 2026. No network."""
 
 import json
 from datetime import date
@@ -11,14 +11,20 @@ import pytest
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.seap_awards.fetch import (
     CONTRACTS_URL,
+    DETAIL_URL,
     LIST_URL,
+    VERSIONS_URL,
     SeapError,
     contract_pages,
+    detail_page,
     notice_pages,
+    versions_page,
 )
 from date_romania.collectors.seap_awards.parse import (
     parse_contracts,
+    parse_detail,
     parse_notices,
+    parse_versions,
     split_buyer,
     winner_cui,
 )
@@ -220,3 +226,84 @@ def test_an_answer_that_is_not_a_list_is_an_error():
 
     with client(handler) as http, pytest.raises(SeapError):
         list(contract_pages(http, 1))
+
+
+def test_parse_detail_reads_the_earlier_notice_and_the_financing():
+    row = parse_detail(fixture("seap_award_details")["eu"]).details[0]
+
+    assert row["notice_id"] == 100660503
+    assert row["call_notice_no"] == "CN1056026"
+    assert row["call_published_at"].date() == date(2023, 6, 9)
+    assert row["ted_notice_no"] == "2023/S 111-348303"
+    assert (row["lots"], row["eu_funded"]) == (1, True)
+    assert row["financing_types"] == ["Program / Proiect"]
+    assert row["eu_funds"] == ["Planul National de Redresare si Rezilienta – PNRR"]
+    assert row["eu_project"].startswith("Proiect de finantare cu titlul")
+
+
+def test_parse_detail_keeps_silence_apart_from_no():
+    """A notice that says nothing about EU funds is not one that says "no"."""
+    silent = parse_detail(fixture("seap_award_details")["plain"]).details[0]
+    assert silent["eu_funded"] is None
+    assert (silent["call_notice_no"], silent["call_published_at"]) == (None, None)
+    assert (silent["financing_types"], silent["eu_funds"], silent["eu_project"]) == ([], [], None)
+
+    two_lots = parse_detail(fixture("seap_award_details")["two_lots"]).details[0]
+    assert (two_lots["lots"], two_lots["eu_funded"]) == (2, False)
+    # Both lots say the same; it is kept once.
+    assert two_lots["financing_types"] == ["Fonduri bugetare"]
+
+
+def test_parse_detail_reads_a_utility_notice():
+    """Utilities name every form section with `_U` at the end."""
+    row = parse_detail(fixture("seap_award_details")["utility"]).details[0]
+    assert (row["notice_id"], row["call_notice_no"]) == (100660509, "SCN1177260")
+    assert (row["lots"], row["eu_funded"]) == (1, False)
+
+
+def test_parse_detail_rejects_an_answer_without_a_notice():
+    parsed = parse_detail({"caNoticeEdit_New": {}})
+    assert parsed.details == []
+    assert len(parsed.rejected) == 1
+
+
+def test_parse_versions_gives_one_row_per_publication():
+    parsed = parse_versions(fixture("seap_award_versions")["many"], 100660503)
+
+    assert parsed.versions_of == 100660503
+    assert len(parsed.versions) == 15
+    assert {row["notice_id"] for row in parsed.versions} == {100660503}
+    in_force = [row for row in parsed.versions if row["state_id"] == 2]
+    assert [row["version_id"] for row in in_force] == [100660503]
+    first = min(row["published_at"] for row in parsed.versions)
+    assert first.date() == date(2024, 1, 26)
+
+
+def test_parse_versions_of_a_notice_never_changed():
+    parsed = parse_versions(fixture("seap_award_versions")["one"], 100660082)
+    assert [(row["version_id"], row["state"]) for row in parsed.versions] == [
+        (100660082, "Publicat")
+    ]
+
+
+def test_detail_and_versions_are_asked_by_notice_id():
+    asked = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        asked.append((request.method, str(request.url)))
+        return httpx.Response(200, json=[] if "GetAllVersions" in str(request.url) else {})
+
+    with PoliteClient(transport=httpx.MockTransport(handler), sleep=lambda s: None) as client:
+        assert detail_page(client, 7).data == {}
+        assert versions_page(client, 7).data == []
+
+    assert asked == [("GET", f"{DETAIL_URL}7"), ("GET", f"{VERSIONS_URL}7")]
+
+
+def test_a_detail_that_is_not_an_object_is_an_error():
+    transport = httpx.MockTransport(lambda request: httpx.Response(200, json=[]))
+    with (
+        PoliteClient(transport=transport, sleep=lambda s: None) as client,
+        pytest.raises(SeapError),
+    ):
+        detail_page(client, 7)
