@@ -8,5 +8,10 @@
 30 4 * * * dr collect seap-direct
 
 # Every day at 05:30 UTC: SEAP award notices published up to yesterday, with the
-# contracts and winners of each (one request per notice, a few minutes a day).
+# contracts, winners, detail and versions of each (three requests or more per notice,
+# a few minutes a day).
 30 5 * * * dr collect seap-awards
+
+# Every day at 07:30 UTC: the detail and versions of the notices that a failed request
+# left without them. Nothing to ask for on most days.
+30 7 * * * dr collect seap-award-details

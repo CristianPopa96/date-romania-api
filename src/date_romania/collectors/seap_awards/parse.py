@@ -177,10 +177,15 @@ def _each_once(values: list[str | None]) -> list[str]:
     return list(dict.fromkeys(value.strip() for value in values if value and value.strip()))
 
 
-def parse_detail(data: dict) -> Parsed:
-    """Turn the detail of one notice into its `award_notice_detail` row."""
+def parse_detail(data: dict, notice_id: int | None = None) -> Parsed:
+    """Turn the detail of one notice into its `award_notice_detail` row.
+
+    `notice_id` is the notice that was asked for: an answer about another one is rejected.
+    """
     parsed = Parsed()
     try:
+        if notice_id is not None and int(data["caNoticeID"]) != notice_id:
+            raise ValueError(f"asked for notice {notice_id}, got {data['caNoticeID']}")
         form = _part(data, "caNoticeEdit_New")
         earlier = form.get("publicationDetailsModel") or {}
         lots = _part(_part(form, "section2_New"), "section2_2_New").get("descriptionList") or []

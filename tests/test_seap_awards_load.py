@@ -16,6 +16,7 @@ from date_romania.collectors.seap_awards.fetch import (
     DETAIL_URL,
     LIST_URL,
     VERSIONS_URL,
+    Page,
 )
 from date_romania.collectors.seap_awards.load import load
 from date_romania.collectors.seap_awards.parse import (
@@ -199,6 +200,51 @@ def test_collect_details_fills_what_is_missing_and_goes_on_past_a_failure(sessio
         assert run.collect_details(session, client) == 0
     assert (count(session, AwardNoticeDetail), count(session, AwardNoticeVersion)) == (6, 6)
     assert session.get(AwardNoticeDetail, 100660193).lots == 1
+
+
+def test_collect_day_goes_on_past_a_detail_that_fails(session, monkeypatch):
+    monkeypatch.setattr(
+        "date_romania.collectors.jobs.put_raw",
+        lambda source, content, content_type=None: StoredObject(
+            key="k", sha256=hashlib.sha256(content).hexdigest(), size_bytes=len(content)
+        ),
+    )
+    notices, contracts = fixture("seap_award_notices"), fixture("seap_award_contracts")
+
+    broken = seap(notices, contracts, broken={100660193})
+    with PoliteClient(transport=broken, sleep=lambda seconds: None) as client:
+        assert run.collect_day(session, client, date(2026, 10, 8)) == 6
+
+    # The day is done, with every notice and contract; one notice waits for its detail.
+    job = session.scalars(select(JobRun).where(JobRun.job == run.JOB)).one()
+    assert (job.status, job.records) == ("succeeded", 6)
+    assert (count(session, AwardNotice), count(session, AwardContract)) == (6, 9)
+    assert count(session, AwardNoticeDetail) == 5
+
+    with PoliteClient(transport=seap(notices, contracts), sleep=lambda seconds: None) as client:
+        assert run.collect_details(session, client) == 1
+    assert (count(session, AwardNoticeDetail), count(session, AwardNoticeVersion)) == (6, 6)
+
+
+def test_versions_with_the_same_bytes_go_to_the_notice_asked(session, monkeypatch):
+    """Two answers with the same bytes share a document; each still loads its own notice."""
+    monkeypatch.setattr(
+        "date_romania.collectors.jobs.put_raw",
+        lambda source, content, content_type=None: StoredObject(
+            key="k", sha256=hashlib.sha256(content).hexdigest(), size_bytes=len(content)
+        ),
+    )
+    load(session, parse_notices(fixture("seap_award_notices")), document(session, "a" * 64).id)
+    first, second = session.scalars(select(AwardNotice.id).order_by(AwardNotice.id).limit(2)).all()
+    content = json.dumps([{"caNoticeID": 5, "sysNoticeState": {"id": 10, "text": "Retras"}}])
+
+    for notice_id in (first, second):
+        url = f"{VERSIONS_URL}{notice_id}"
+        run._store_and_load(session, Page(url, None, content.encode(), json.loads(content)))
+
+    held = session.scalars(select(AwardNoticeVersion.notice_id)).all()
+    assert sorted(held) == [first, second]
+    assert count(session, SourceDocument) == 2  # the one of the notices, and the shared answer
 
 
 def test_collect_details_stops_at_the_limit(session, monkeypatch):
