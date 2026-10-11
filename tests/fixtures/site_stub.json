@@ -933,6 +933,14 @@
    ]
   }
  },
+ "/v1/award-notices/9002/contracts?limit=50&offset=300": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "period": null,
+   "items": []
+  }
+ },
  "/v1/award-notices/9003": {
   "status": 200,
   "body": {

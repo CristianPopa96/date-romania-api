@@ -634,6 +634,8 @@ SITE_CALLS = (
     f"/v1/award-notices/{ROAD}/contracts?limit=50&offset=0",
     f"/v1/award-notices/{LAB}",
     f"/v1/award-notices/{LAB}/contracts?limit=50&offset=0",
+    # A page past the end of the list: the site sends the reader back to the last one.
+    f"/v1/award-notices/{LAB}/contracts?limit=50&offset=300",
     f"/v1/award-notices/{CANCELLED}",
     f"/v1/award-notices/{CANCELLED}/contracts?limit=50&offset=0",
     "/v1/award-notices/9999",
