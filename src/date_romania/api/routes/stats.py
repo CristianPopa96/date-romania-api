@@ -45,7 +45,7 @@ def datasets(session: Db) -> Datasets:
     contracts = session.scalar(
         select(func.count())
         .select_from(AwardContract)
-        .where(money.contract_counted, *money.signed_in(period))
+        .where(money.contract_counted, money.contract_in_force, *money.signed_in(period))
     )
     return Datasets(
         items=[

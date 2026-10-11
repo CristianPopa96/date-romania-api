@@ -103,8 +103,10 @@ def ranking_contract_suppliers(
 
     A contract won by an association appears at every member with its whole value.
     """
-    winners = (AwardWinner, AwardWinner.contract_id == AwardContract.id)
-    return _ranking(session, AwardWinner.supplier_cui, won, limit, winners)
+    # SEAP can list one company twice among the winners of a contract: count it once.
+    members = select(AwardWinner.contract_id, AwardWinner.supplier_cui).distinct().subquery()
+    winners = (members, members.c.contract_id == AwardContract.id)
+    return _ranking(session, members.c.supplier_cui, won, limit, winners)
 
 
 @router.get("/rankings/contract-institutions", tags=["rankings"])

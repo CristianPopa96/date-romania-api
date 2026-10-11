@@ -78,14 +78,15 @@ uv run dr collect seap-award-details              # detail and versions of notic
 | `seap-direct` | SEAP direct purchases, by finalization day | `direct_purchase` |
 | `seap-awards` | SEAP award notices, by publication day, with the contracts and winners of each, its detail (financing, the notice that opened the procedure) and its versions | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
 
-Award notices are collected but not served by the API yet. Three things to know before
-adding them up:
+Four things to know before adding award notices up (`money.py` holds the rules):
 
 - A notice is published again whenever a contract is added or changed, so the notices of
   one day carry contracts signed over several years. Count by `contract_date`, not by the
   day the notice was published.
 - A framework agreement (`kind` 2) is a ceiling, not money committed. What is committed
   under it are its subsequent contracts (`kind` 3). Totals count kinds 1 and 3.
+- A changed notice is published under a new id and the one before is withdrawn. When both
+  are held, the contracts of the withdrawn one are left out (`award_notice_version`).
 - An association wins one contract with one value; `award_winner` has a row per member and
   the value is not split between them.
 

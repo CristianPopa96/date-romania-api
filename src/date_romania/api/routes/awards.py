@@ -35,8 +35,8 @@ router = APIRouter(tags=["award notices"])
 Buyer = aliased(Entity)
 Won = Literal["alone", "association"]
 Offset = Annotated[int, Query(ge=0)]
-# A CSV file holds a whole list, not a page of it.
-CSV_ROWS = 5000
+# A CSV file holds a whole list, not a page of it; it is read this many rows at a time.
+CSV_BATCH = 1000
 
 
 def _notice_url(notice: AwardNotice) -> str:
@@ -59,8 +59,13 @@ def period(session: Session) -> Period:
 
 
 def in_period(session: Session) -> list[ColumnElement[bool]]:
-    """Filters for the contracts that totals may count: of a counted kind, signed in the period."""
-    return [money.contract_counted, *money.signed_in(money.contracts_period(session))]
+    """Filters for the contracts that totals may count: of a counted kind, signed in the
+    period, in a notice still in force."""
+    return [
+        money.contract_counted,
+        money.contract_in_force,
+        *money.signed_in(money.contracts_period(session)),
+    ]
 
 
 def won_filters(won: Won | None) -> list[ColumnElement[bool]]:
@@ -248,9 +253,18 @@ def award_contracts(
     )
     query = _contracts().where(*filters).order_by(order, AwardContract.id.desc())
     if format == "csv":
-        return _csv(_rows(session, query.limit(CSV_ROWS)))
+        rows: list[Contract] = []
+        for start in range(0, total, CSV_BATCH):
+            rows += _rows(session, query.limit(CSV_BATCH).offset(start))
+        return _csv(rows)
     page = _rows(session, query.limit(limit).offset(offset))
     return ContractPage(total=total, period=period(session), items=page)
+
+
+def _cell(text: str | None) -> str | None:
+    """A text cell as a spreadsheet may open it: one that starts like a formula gets a
+    quote in front, so the program shows it instead of running it."""
+    return f"'{text}" if text and text[0] in "=+-@" else text
 
 
 def _csv(contracts: list[Contract]) -> Response:
@@ -277,16 +291,18 @@ def _csv(contracts: list[Contract]) -> Response:
     for contract in contracts:
         writer.writerow(
             [
-                contract.notice_no,
-                contract.contract_no,
+                _cell(contract.notice_no),
+                _cell(contract.contract_no),
                 contract.signed_at and contract.signed_at.isoformat(),
                 contract.kind,
-                contract.title or contract.notice_title,
+                _cell(contract.title or contract.notice_title),
                 contract.buyer and contract.buyer.cui,
-                contract.buyer.name if contract.buyer else contract.buyer_text,
+                _cell(contract.buyer.name if contract.buyer else contract.buyer_text),
                 "; ".join(str(w.supplier.cui) for w in contract.winners if w.supplier),
-                "; ".join(
-                    (w.supplier.name if w.supplier else w.text) or "" for w in contract.winners
+                _cell(
+                    "; ".join(
+                        (w.supplier.name if w.supplier else w.text) or "" for w in contract.winners
+                    )
                 ),
                 contract.value,
                 contract.source.publisher,

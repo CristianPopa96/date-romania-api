@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy import select
 
 from date_romania.api import main
 from date_romania.api.main import app
@@ -492,6 +493,83 @@ def test_contract_rankings_keep_alone_and_association_apart(client):
         (TOWN_HALL, 2, 6330000),
         (HOSPITAL, 1, 50000),
     ]
+
+
+def test_a_withdrawn_notice_does_not_count_its_contracts_again(client, session):
+    """SEAP published the road notice before under another id, and we hold that one too."""
+    before = client.get(f"/v1/institutions/{TOWN_HALL}/contracts").json()
+    doc = session.scalar(select(SourceDocument.id).where(SourceDocument.source == "seap-awards"))
+    session.add(
+        AwardNotice(
+            id=8000,
+            notice_no="CAN0000001",
+            notice_type_id=3,
+            title="Modernizare drum comunal",
+            buyer_cui=TOWN_HALL,
+            published_at=datetime.fromisoformat("2026-10-05T10:00:00+03:00"),
+            source_document_id=doc,
+            parser_version=2,
+        )
+    )
+    session.flush()
+    rows = contract(203, 8000, 3, "210000", "2026-10-06T12:00:00+03:00", [BUILDER], doc)
+    session.add(rows[0])
+    session.flush()
+    session.add_all(rows[1:])
+    session.flush()
+
+    assert client.get(f"/v1/institutions/{TOWN_HALL}/contracts").json() == before
+    assert before["contracts"] == 2
+    page = client.get(f"/v1/award-contracts?buyer={TOWN_HALL}").json()
+    assert [row["id"] for row in page["items"]] == [103, 101]
+    builder = client.get(f"/v1/suppliers/{BUILDER}/contracts").json()
+    assert builder["alone"] == {"contracts": 1, "value": 210000}
+    alone = client.get("/v1/rankings/contract-suppliers").json()
+    assert [(row["cui"], row["contracts"]) for row in alone["items"]] == [(BUILDER, 1)]
+    assert client.get("/v1/datasets").json()["items"][1]["records"] == 3
+    # The withdrawn notice keeps its own page, with its own contracts.
+    assert client.get("/v1/award-notices/8000").json()["contracts"] == 1
+
+
+def test_a_day_collected_far_from_the_rest_does_not_stretch_the_period(client, session):
+    start, end = day_bounds(date(2025, 1, 15))
+    session.add(JobRun(job="seap-awards", period_start=start, period_end=end, status="succeeded"))
+    session.flush()
+
+    page = client.get(f"/v1/award-contracts?buyer={TOWN_HALL}").json()
+    assert page["period"] == {"first_day": "2026-10-05", "last_day": "2026-10-07"}
+
+
+def test_a_company_listed_twice_in_a_contract_is_one_winner(client, session):
+    """SEAP can repeat a winner; the contract is not an association and counts once."""
+    doc = session.scalar(select(SourceDocument.id).where(SourceDocument.source == "seap-awards"))
+    rows = contract(106, LAB, 1, "40000", "2026-10-07T12:00:00+03:00", [STATIONER, STATIONER], doc)
+    session.add(rows[0])
+    session.flush()
+    session.add_all(rows[1:])
+    session.flush()
+
+    stationer = client.get(f"/v1/suppliers/{STATIONER}/contracts").json()
+    assert stationer["alone"] == {"contracts": 1, "value": 40000}
+    alone = client.get("/v1/rankings/contract-suppliers").json()
+    assert [(row["cui"], row["contracts"], row["value"]) for row in alone["items"]] == [
+        (BUILDER, 1, 210000),
+        (STATIONER, 1, 40000),
+    ]
+
+
+def test_a_file_cell_that_starts_like_a_formula_is_quoted(client, session):
+    session.get(AwardContract, 103).title = "=1+1"
+    session.flush()
+
+    lines = client.get(f"/v1/award-contracts?buyer={TOWN_HALL}&format=csv").text.splitlines()
+    assert ",3,'=1+1," in lines[1]
+
+
+def test_the_file_holds_the_whole_list_past_one_batch(client, monkeypatch):
+    monkeypatch.setattr("date_romania.api.routes.awards.CSV_BATCH", 1)
+    lines = client.get("/v1/award-contracts?sort=value&format=csv").text.splitlines()
+    assert [line.split(",")[1] for line in lines[1:]] == ["101", "103", "105"]
 
 
 def test_without_a_collected_day_no_contract_is_counted(client, session):
