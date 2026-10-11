@@ -7,8 +7,8 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.orm import aliased
 
 from date_romania import money
-from date_romania.api.routes.common import Day, Db, Limit, in_period, ref
-from date_romania.api.schemas import Purchase, PurchasePage, Source
+from date_romania.api.routes.common import Day, Db, Limit, in_period, ref, summary
+from date_romania.api.schemas import Purchase, PurchasePage, Source, Summary
 from date_romania.models import DirectPurchase, Entity, SourceDocument
 from date_romania.sources import SEAP_DIRECT
 
@@ -95,6 +95,21 @@ def direct_purchases(
         .offset(offset)
     )
     return PurchasePage(total=total, items=[_purchase(row) for row in rows])
+
+
+@router.get("/direct-purchases/summary")
+def direct_purchases_summary(
+    session: Db,
+    buyer: Annotated[int | None, Query(description="CUI of the buying institution.")] = None,
+    supplier: Annotated[int | None, Query(description="CUI of the supplier.")] = None,
+) -> Summary:
+    """The totals of the direct purchases of a buyer, a supplier, or the two together."""
+    filters = []
+    if buyer is not None:
+        filters.append(DirectPurchase.buyer_cui == buyer)
+    if supplier is not None:
+        filters.append(DirectPurchase.supplier_cui == supplier)
+    return summary(session, *filters)
 
 
 @router.get("/direct-purchases/{purchase_id}")

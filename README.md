@@ -103,6 +103,12 @@ without VAT, as SEAP publishes them, and every answer names its source.
 | `/v1/direct-purchases` | Purchases, filtered by `buyer`, `supplier`, `cpv`, `state`, `date_from`, `date_to` |
 | `/v1/direct-purchases/{id}` | One purchase, with a link to its SEAP page |
 | `/v1/rankings/suppliers`, `/v1/rankings/institutions` | The largest by value in a period |
+| `/v1/direct-purchases/summary` | Totals of the direct purchases of a buyer, a supplier, or the pair |
+| `/v1/award-notices/{id}`, `/v1/award-notices/{id}/contracts` | One award notice and every contract in it |
+| `/v1/award-contracts` | Contracts signed in the period held, by buyer or winner; `format=csv` for a file |
+| `/v1/institutions/{cui}/contracts`, `/v1/suppliers/{cui}/contracts` | What an institution awarded; what a company won, alone and in association |
+| `/v1/rankings/contract-suppliers`, `/v1/rankings/contract-institutions` | The largest by contract value |
+| `/v1/datasets` | Each source as held: days, records, whether the period is complete |
 
 Totals count only purchases whose offer was accepted. An accepted purchase published with
 a value above 900,400 lei is left out of the totals and reported next to them as
