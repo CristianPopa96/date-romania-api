@@ -49,14 +49,20 @@ def _parse(data: dict | list, url: str) -> Parsed:
     if url == CONTRACTS_URL:
         return parse_contracts(data)
     if url.startswith(DETAIL_URL):
-        return parse_detail(data)
+        return parse_detail(data, int(url.removeprefix(DETAIL_URL)))
     if url.startswith(VERSIONS_URL):
         return parse_versions(data, int(url.removeprefix(VERSIONS_URL)))
     raise ValueError(f"no parser for {url}")
 
 
-def _parse_and_load(session: Session, data: dict | list, doc: SourceDocument) -> Parsed:
-    parsed = _parse(data, doc.url)
+def _parse_and_load(
+    session: Session, data: dict | list, doc: SourceDocument, url: str | None = None
+) -> Parsed:
+    """`url` is the address just asked. Two addresses that answer with the same bytes
+    share one document, which keeps only the first address, so the document's own is used
+    only when rebuilding from the raw store.
+    """
+    parsed = _parse(data, url or doc.url)
     for item, reason in parsed.rejected:
         log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, item)
     load(session, parsed, doc.id)
@@ -67,7 +73,7 @@ def _store_and_load(session: Session, page: Page) -> Parsed:
     doc = store_document(
         session, SOURCE, page.url, page.content, page.request_body, "application/json"
     )
-    parsed = _parse_and_load(session, page.data, doc)
+    parsed = _parse_and_load(session, page.data, doc, page.url)
     session.commit()
     return parsed
 
@@ -76,7 +82,7 @@ def collect_day(session: Session, client: PoliteClient, day: date) -> int:
     """Fetch, store and load every award notice published on `day`; returns how many."""
     with job_run(session, JOB, day) as run:
         notices: set[int] = set()
-        contracts = invalid_cuis = 0
+        contracts = invalid_cuis = no_detail = 0
         truncated = False
         for page in notice_pages(client, day):
             parsed = _store_and_load(session, page)
@@ -88,17 +94,26 @@ def collect_day(session: Session, client: PoliteClient, day: date) -> int:
                 parsed = _store_and_load(session, page)
                 contracts += len(parsed.contracts)
                 invalid_cuis += parsed.invalid_cuis
-            _collect_detail(session, client, notice_id)
+            # The notice and its contracts are saved by now. A detail that fails is left
+            # to `collect_details`, so that the day is not fetched all over again.
+            try:
+                _collect_detail(session, client, notice_id)
+            except (SeapError, httpx.HTTPError) as exc:
+                session.rollback()
+                no_detail += 1
+                log.warning("notice %d: no detail: %r", notice_id, exc)
         run.records = len(notices)
         if truncated:
             run.status = "partial"
             run.error = f"the list stopped at its cap of {CAP}: the day is incomplete"
         log.info(
-            "%s: %d notices with %d contracts, %d names without a valid CUI",
+            "%s: %d notices with %d contracts, %d names without a valid CUI, "
+            "%d notices left without their detail",
             day,
             len(notices),
             contracts,
             invalid_cuis,
+            no_detail,
         )
     return len(notices)
 

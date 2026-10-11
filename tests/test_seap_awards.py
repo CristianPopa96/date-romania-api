@@ -267,6 +267,15 @@ def test_parse_detail_rejects_an_answer_without_a_notice():
     assert len(parsed.rejected) == 1
 
 
+def test_parse_detail_rejects_an_answer_about_another_notice():
+    data = fixture("seap_award_details")["eu"]
+    assert len(parse_detail(data, 100660503).details) == 1
+
+    parsed = parse_detail(data, 100660504)
+    assert parsed.details == []
+    assert len(parsed.rejected) == 1
+
+
 def test_parse_versions_gives_one_row_per_publication():
     parsed = parse_versions(fixture("seap_award_versions")["many"], 100660503)
 
