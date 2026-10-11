@@ -96,6 +96,15 @@ def collect_seap_awards(date: Date = None, since: Since = None) -> None:
     _collect(seap_awards, "award notices", date, since)
 
 
+@collect_app.command("seap-award-details")
+def collect_seap_award_details(
+    limit: Annotated[int | None, typer.Option(help="Stop after this many notices.")] = None,
+) -> None:
+    """The detail and versions of the award notices that lack them; safe to run again."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{seap_awards.collect_details(session, client, limit)} notices")
+
+
 @reparse_app.command("seap-direct")
 def reparse_seap_direct() -> None:
     """Parse the stored SEAP direct purchase responses again, without calling SEAP."""

@@ -1,4 +1,4 @@
-"""Turning SEAP's notice list and contract list responses into rows."""
+"""Turning SEAP's answers about award notices into rows."""
 
 import re
 from dataclasses import dataclass, field
@@ -8,7 +8,7 @@ from decimal import Decimal, InvalidOperation
 from date_romania.cui import parse_cui
 from date_romania.personal_id import mask_cnp
 
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 # The list names a buyer as 'CUI - NAME', sometimes with RO in front of the number.
 _BUYER = re.compile(r"\s*(?:RO)?\s*(\d{2,10})\s*-\s*(.*)", re.IGNORECASE | re.DOTALL)
@@ -60,6 +60,10 @@ class Parsed:
     winners: list[dict] = field(default_factory=list)
     # cui -> (name, kind)
     entities: dict[int, tuple[str, str]] = field(default_factory=dict)
+    details: list[dict] = field(default_factory=list)
+    versions: list[dict] = field(default_factory=list)
+    # The notice whose versions these are; its stored versions are replaced as a whole.
+    versions_of: int | None = None
     # (item, reason) for rows that could not be read at all
     rejected: list[tuple[object, str]] = field(default_factory=list)
     invalid_cuis: int = 0
@@ -159,4 +163,80 @@ def parse_contracts(data: dict) -> Parsed:
         parsed.contracts.append(row)
         parsed.winners.extend(winners)
         parsed.invalid_cuis += sum(winner["supplier_cui"] is None for winner in winners)
+    return parsed
+
+
+def _part(node: dict | None, name: str) -> dict:
+    """A form section; notices of utilities name every section with `_U` at the end."""
+    node = node or {}
+    return node.get(name) or node.get(f"{name}_U") or {}
+
+
+def _each_once(values: list[str | None]) -> list[str]:
+    """The values that say something, each once, in the order met."""
+    return list(dict.fromkeys(value.strip() for value in values if value and value.strip()))
+
+
+def parse_detail(data: dict, notice_id: int | None = None) -> Parsed:
+    """Turn the detail of one notice into its `award_notice_detail` row.
+
+    `notice_id` is the notice that was asked for: an answer about another one is rejected.
+    """
+    parsed = Parsed()
+    try:
+        if notice_id is not None and int(data["caNoticeID"]) != notice_id:
+            raise ValueError(f"asked for notice {notice_id}, got {data['caNoticeID']}")
+        form = _part(data, "caNoticeEdit_New")
+        earlier = form.get("publicationDetailsModel") or {}
+        lots = _part(_part(form, "section2_New"), "section2_2_New").get("descriptionList") or []
+        funded = [lot.get("isEUFunded") for lot in lots]
+        parsed.details.append(
+            {
+                "notice_id": int(data["caNoticeID"]),
+                "call_notice_no": (earlier.get("noticeNo") or "").strip() or None,
+                "call_published_at": _when(earlier.get("publicationDate")),
+                "ted_notice_no": (earlier.get("jouePublicationNumber") or "").strip() or None,
+                "lots": len(lots),
+                "eu_funded": True if any(funded) else (False if False in funded else None),
+                "financing_types": _each_once(
+                    [(lot.get("sysFinancingType") or {}).get("text") for lot in lots]
+                ),
+                "eu_funds": _each_once(
+                    [(lot.get("sysEuropeanFund") or {}).get("text") for lot in lots]
+                ),
+                "eu_project": next(
+                    (
+                        mask_cnp(text.strip(), checked=True)
+                        for lot in lots
+                        for text in (lot.get("communityProgramReference"), lot.get("euProject"))
+                        if text and text.strip()
+                    ),
+                    None,
+                ),
+            }
+        )
+    except _ERRORS as exc:
+        parsed.rejected.append((data, repr(exc)))
+    return parsed
+
+
+def parse_versions(data: list, notice_id: int) -> Parsed:
+    """Turn the list of a notice's publications into `award_notice_version` rows."""
+    parsed = Parsed(versions_of=notice_id)
+    by_id: dict[int, dict] = {}
+    for item in data:
+        try:
+            state_id, state = _item(item.get("sysNoticeState"))
+            row = {
+                "notice_id": notice_id,
+                "version_id": int(item["caNoticeID"]),
+                "published_at": _when(item.get("publicationDate")),
+                "state_id": state_id,
+                "state": state,
+            }
+        except _ERRORS as exc:
+            parsed.rejected.append((item, repr(exc)))
+            continue
+        by_id[row["version_id"]] = row
+    parsed.versions = list(by_id.values())
     return parsed

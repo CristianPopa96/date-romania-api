@@ -1,0 +1,166 @@
+{
+ "many": [
+  {
+   "caNoticeID": 100660503,
+   "publicationDate": "2026-10-09T19:00:02+03:00",
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": "Common.Clasiff.SysNoticeState.Published",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100654848,
+   "publicationDate": "2026-09-14T11:01:42+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100654499,
+   "publicationDate": "2026-09-11T15:34:48+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100650357,
+   "publicationDate": "2026-08-21T13:06:24+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100640573,
+   "publicationDate": "2026-07-06T17:00:04+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100631952,
+   "publicationDate": "2026-05-29T11:00:03+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100627260,
+   "publicationDate": "2026-05-08T11:00:12+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100622812,
+   "publicationDate": "2026-04-17T11:00:03+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100598560,
+   "publicationDate": "2025-12-24T11:00:05+02:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100595088,
+   "publicationDate": "2025-12-11T13:02:50+02:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100589745,
+   "publicationDate": "2025-11-21T11:00:12+02:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100581120,
+   "publicationDate": "2025-10-09T19:00:01+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100576004,
+   "publicationDate": "2025-09-18T17:43:24+03:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100440889,
+   "publicationDate": "2024-02-12T13:01:31+02:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  },
+  {
+   "caNoticeID": 100434412,
+   "publicationDate": "2024-01-26T11:31:35+02:00",
+   "sysNoticeState": {
+    "id": 10,
+    "text": "Retras",
+    "localeKey": "Common.Clasiff.SysNoticeState.Retired",
+    "apiActionResult": null
+   }
+  }
+ ],
+ "one": [
+  {
+   "caNoticeID": 100660082,
+   "publicationDate": "2026-10-08T10:50:52+03:00",
+   "sysNoticeState": {
+    "id": 2,
+    "text": "Publicat",
+    "localeKey": "Common.Clasiff.SysNoticeState.Published",
+    "apiActionResult": null
+   }
+  }
+ ]
+}

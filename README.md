@@ -70,12 +70,13 @@ uv run dr collect seap-direct --date 2026-10-06   # one day
 uv run dr collect seap-direct --since 2026-10-01  # from a day up to yesterday
 uv run dr reparse seap-direct                     # rebuild the rows from the raw store
 uv run dr collect seap-awards                     # the same options for every collector
+uv run dr collect seap-award-details              # detail and versions of notices that lack them
 ```
 
 | Collector | Source | Table |
 | --- | --- | --- |
 | `seap-direct` | SEAP direct purchases, by finalization day | `direct_purchase` |
-| `seap-awards` | SEAP award notices, by publication day, with the contracts and winners of each | `award_notice`, `award_contract`, `award_winner` |
+| `seap-awards` | SEAP award notices, by publication day, with the contracts and winners of each, its detail (financing, the notice that opened the procedure) and its versions | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
 
 Award notices are collected but not served by the API yet. Three things to know before
 adding them up:

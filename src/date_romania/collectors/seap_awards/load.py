@@ -6,11 +6,19 @@ from sqlalchemy.orm import Session
 from date_romania import entities
 from date_romania.collectors.seap_awards.parse import PARSER_VERSION, Parsed
 from date_romania.db import upsert_rows
-from date_romania.models import AwardContract, AwardNotice, AwardWinner
+from date_romania.models import (
+    AwardContract,
+    AwardNotice,
+    AwardNoticeDetail,
+    AwardNoticeVersion,
+    AwardWinner,
+)
 
 
 def load(session: Session, parsed: Parsed, source_document_id: int) -> None:
-    """Upsert the parsed rows. The winners of a contract are replaced as a whole."""
+    """Upsert the parsed rows. The winners of a contract and the versions of a notice are
+    replaced as a whole.
+    """
     stamp = {"source_document_id": source_document_id, "parser_version": PARSER_VERSION}
     entities.upsert(session, parsed.entities, source_document_id)
     upsert_rows(session, AwardNotice, [{**row, **stamp} for row in parsed.notices])
@@ -25,4 +33,19 @@ def load(session: Session, parsed: Parsed, source_document_id: int) -> None:
         session.execute(
             insert(AwardWinner),
             [{**row, "source_document_id": source_document_id} for row in parsed.winners],
+        )
+    upsert_rows(
+        session,
+        AwardNoticeDetail,
+        [{**row, **stamp} for row in parsed.details],
+        index_elements=("notice_id",),
+    )
+    if parsed.versions_of is not None:
+        session.execute(
+            delete(AwardNoticeVersion).where(AwardNoticeVersion.notice_id == parsed.versions_of)
+        )
+    if parsed.versions:
+        session.execute(
+            insert(AwardNoticeVersion),
+            [{**row, "source_document_id": source_document_id} for row in parsed.versions],
         )

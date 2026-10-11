@@ -1,0 +1,134 @@
+{
+ "eu": {
+  "caNoticeID": 100660503,
+  "noticeNumber": "CAN1119811",
+  "caNoticeEdit_New": {
+   "publicationDetailsModel": {
+    "caPublicationDate": "2026-10-09T16:07:51+03:00",
+    "publicationDate": "2023-06-09T11:00:53+03:00",
+    "jouePublicationNumber": "2023/S 111-348303",
+    "noticeNo": "CN1056026"
+   },
+   "section2_New": {
+    "section2_2_New": {
+     "descriptionList": [
+      {
+       "isEUFunded": true,
+       "euProject": "Proiect de finantare cu titlul \"Unitate de asistenta medicala ambulatorie din cadrul Spitalului George Emil Palade\", Contract de finantare: 104/14.03.2023, finantat in cadrul apelului PNRR/2022/C12/MS/I1.3/ Unitati de asistenta medicala ambulatorie (Ambulatorul din cadrul Parcului Universitar Științific și Tehnologic “Novum Forum” -C1 si C4)",
+       "communityProgramReference": "Proiect de finantare cu titlul \"Unitate de asistenta medicala ambulatorie din cadrul Spitalului George Emil Palade\", Contract de finantare: 104/14.03.2023, finantat in cadrul apelului PNRR/2022/C12/MS/I1.3/ Unitati de asistenta medicala ambulatorie (Ambulatorul din cadrul Parcului Universitar Științific și Tehnologic “Novum Forum” -C1 si C4)",
+       "sysEuropeanFund": {
+        "id": 1011,
+        "text": "Planul National de Redresare si Rezilienta – PNRR",
+        "localeKey": null,
+        "apiActionResult": null
+       },
+       "sysFinancingType": {
+        "id": 4,
+        "text": "Program / Proiect",
+        "localeKey": null,
+        "apiActionResult": null
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "plain": {
+  "caNoticeID": 100660082,
+  "noticeNumber": "PCA1004155",
+  "caNoticeEdit_New": {
+   "publicationDetailsModel": {
+    "caPublicationDate": "2026-10-08T10:50:52+03:00",
+    "publicationDate": null,
+    "jouePublicationNumber": "",
+    "noticeNo": ""
+   },
+   "section2_New": {
+    "section2_2_New": {
+     "descriptionList": [
+      {
+       "isEUFunded": null,
+       "euProject": null,
+       "communityProgramReference": null,
+       "sysEuropeanFund": null,
+       "sysFinancingType": null
+      }
+     ]
+    }
+   }
+  }
+ },
+ "utility": {
+  "caNoticeID": 100660509,
+  "noticeNumber": "SCNA1137949",
+  "caNoticeEdit_New_U": {
+   "publicationDetailsModel": {
+    "caPublicationDate": "2026-10-09T17:48:00+03:00",
+    "publicationDate": "2026-07-08T16:40:15+03:00",
+    "jouePublicationNumber": "",
+    "noticeNo": "SCN1177260"
+   },
+   "section2_New_U": {
+    "section2_2_New_U": {
+     "descriptionList": [
+      {
+       "isEUFunded": false,
+       "euProject": null,
+       "communityProgramReference": null,
+       "sysEuropeanFund": null,
+       "sysFinancingType": {
+        "id": 5,
+        "text": "Alte fonduri",
+        "localeKey": null,
+        "apiActionResult": null
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "two_lots": {
+  "caNoticeID": 100660199,
+  "noticeNumber": "RFQA1000398",
+  "caNoticeEdit_New": {
+   "publicationDetailsModel": {
+    "caPublicationDate": "2026-10-08T14:18:56+03:00",
+    "publicationDate": "2026-06-23T10:31:29+03:00",
+    "jouePublicationNumber": "",
+    "noticeNo": "RFQ1000528"
+   },
+   "section2_New": {
+    "section2_2_New": {
+     "descriptionList": [
+      {
+       "isEUFunded": false,
+       "euProject": null,
+       "communityProgramReference": null,
+       "sysEuropeanFund": null,
+       "sysFinancingType": {
+        "id": 2,
+        "text": "Fonduri bugetare",
+        "localeKey": null,
+        "apiActionResult": null
+       }
+      },
+      {
+       "isEUFunded": false,
+       "euProject": null,
+       "communityProgramReference": null,
+       "sysEuropeanFund": null,
+       "sysFinancingType": {
+        "id": 2,
+        "text": "Fonduri bugetare",
+        "localeKey": null,
+        "apiActionResult": null
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

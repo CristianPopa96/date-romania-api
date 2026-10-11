@@ -17,6 +17,7 @@ from sqlalchemy import (
     Text,
     func,
 )
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -210,4 +211,57 @@ class AwardWinner(Base):
     supplier_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
     supplier_text: Mapped[str | None] = mapped_column(Text)
     country: Mapped[str | None] = mapped_column(String(64))
+    source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
+
+
+class AwardNoticeDetail(Base):
+    """What the page of one award notice adds to the list row: the notice that opened the
+    procedure, and how its lots are financed. One row per notice, from one detail answer.
+    """
+
+    __tablename__ = "award_notice_detail"
+
+    notice_id: Mapped[int] = mapped_column(
+        ForeignKey("award_notice.id", ondelete="CASCADE"), primary_key=True, autoincrement=False
+    )
+    # The contract notice (anunț de participare) the award follows, e.g. CN1056026, and
+    # the day it was published. Empty for an award with no earlier notice.
+    call_notice_no: Mapped[str | None] = mapped_column(String(32))
+    call_published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Its number in the EU's Official Journal, e.g. 2023/S 111-348303.
+    ted_notice_no: Mapped[str | None] = mapped_column(String(64))
+    lots: Mapped[int] = mapped_column(SmallInteger)
+    # True if any lot is marked as paid from EU funds, false if none is, null if SEAP
+    # does not say.
+    eu_funded: Mapped[bool | None] = mapped_column(Boolean)
+    # SEAP's own words, each once, over all lots: 'Fonduri bugetare', 'Program / Proiect'.
+    financing_types: Mapped[list[str]] = mapped_column(ARRAY(Text))
+    # The programmes named, e.g. 'Planul National de Redresare si Rezilienta – PNRR'.
+    eu_funds: Mapped[list[str]] = mapped_column(ARRAY(Text))
+    # The buyer's free text about the project; an SMIS code is often inside it.
+    eu_project: Mapped[str | None] = mapped_column(Text)
+    source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
+    parser_version: Mapped[int] = mapped_column(SmallInteger)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
+class AwardNoticeVersion(Base):
+    """One publication of a notice. SEAP gives a corrected or extended notice a new id and
+    withdraws the one before it, so the versions of a notice tell when it first appeared.
+    """
+
+    __tablename__ = "award_notice_version"
+
+    # The notice we hold, which is the version in force when it was collected.
+    notice_id: Mapped[int] = mapped_column(
+        ForeignKey("award_notice.id", ondelete="CASCADE"), primary_key=True
+    )
+    # SEAP's caNoticeID of this version; equal to `notice_id` for the one in force.
+    version_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # 2 published, 10 withdrawn (replaced by a later version).
+    state_id: Mapped[int | None] = mapped_column(SmallInteger)
+    state: Mapped[str | None] = mapped_column(String(64))
     source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))

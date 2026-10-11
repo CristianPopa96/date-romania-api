@@ -11,5 +11,9 @@ def day_bounds(day: date) -> tuple[datetime, datetime]:
     return start, datetime.combine(day + timedelta(days=1), time.min, tzinfo=BUCHAREST)
 
 
+def today() -> date:
+    return datetime.now(BUCHAREST).date()
+
+
 def yesterday() -> date:
-    return datetime.now(BUCHAREST).date() - timedelta(days=1)
+    return today() - timedelta(days=1)
