@@ -599,6 +599,21 @@ def test_datasets_say_what_the_site_is_built_on(client):
     # The three contracts the totals count, not every contract held.
     assert (awards["key"], awards["records"], awards["complete"]) == ("seap-awards", 3, False)
     assert (awards["first_day"], awards["last_day"]) == ("2026-10-05", "2026-10-07")
+    # What is held is more than what is counted: every notice, with all its contracts.
+    assert awards["counts"] == {"notices": 3, "contracts": 5, "counted_contracts": 3}
+    assert direct["counts"] == {"purchases": 6, "accepted": 5, "above_limit": 1}
+    assert (awards["days_collected"], awards["days_partial"], awards["documents"]) == (3, 0, 1)
+    assert (direct["days_collected"], direct["documents"]) == (0, 1)
+
+
+def test_a_day_read_in_part_is_told_apart_until_it_is_read_in_full(client, session):
+    for day, status in ((8, "partial"), (9, "partial"), (9, "succeeded"), (10, "failed")):
+        start, end = day_bounds(date(2026, 10, day))
+        session.add(JobRun(job="seap-awards", period_start=start, period_end=end, status=status))
+    session.flush()
+
+    awards = client.get("/v1/datasets").json()["items"][1]
+    assert (awards["days_collected"], awards["days_partial"]) == (4, 1)
 
 
 def test_a_buyer_and_a_supplier_have_a_summary_together(client):

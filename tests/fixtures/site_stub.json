@@ -608,7 +608,15 @@
      "last_day": "2026-10-07",
      "records": 6,
      "complete": true,
-     "fetched_at": "2026-10-07T04:30:00Z"
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 1,
+     "counts": {
+      "purchases": 6,
+      "accepted": 5,
+      "above_limit": 1
+     }
     },
     {
      "key": "seap-awards",
@@ -617,7 +625,15 @@
      "last_day": "2026-10-07",
      "records": 3,
      "complete": false,
-     "fetched_at": "2026-10-07T04:30:00Z"
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 3,
+     "days_partial": 0,
+     "documents": 1,
+     "counts": {
+      "notices": 3,
+      "contracts": 5,
+      "counted_contracts": 3
+     }
     }
    ]
   }
