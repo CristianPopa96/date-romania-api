@@ -538,6 +538,10 @@ SITE_CALLS = (
     "/v1/stats",
     "/v1/search?q=tantareni&limit=30",
     "/v1/search?q=zzzz&limit=30",
+    # A CUI typed in the search box: one that buys, one that sells, one we do not hold.
+    f"/v1/search?q={TOWN_HALL}&limit=30",
+    f"/v1/search?q={BUILDER}&limit=30",
+    "/v1/search?q=12345674&limit=30",
     f"/v1/institutions/{TOWN_HALL}?partners=10",
     f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
     f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=value&state=7&limit=20&offset=0",

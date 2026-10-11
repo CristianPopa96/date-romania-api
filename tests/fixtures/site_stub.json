@@ -51,6 +51,40 @@
    "items": []
   }
  },
+ "/v1/search?q=4981310&limit=30": {
+  "status": 200,
+  "body": {
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "county": null,
+     "locality": null
+    }
+   ]
+  }
+ },
+ "/v1/search?q=17886786&limit=30": {
+  "status": 200,
+  "body": {
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "county": null,
+     "locality": null
+    }
+   ]
+  }
+ },
+ "/v1/search?q=12345674&limit=30": {
+  "status": 200,
+  "body": {
+   "items": []
+  }
+ },
  "/v1/institutions/4981310?partners=10": {
   "status": 200,
   "body": {
