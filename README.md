@@ -2,7 +2,8 @@
 
 The back end of Date România, a tracker of where Romanian public money goes. It
 collects public data (SEAP, data.gov.ro, ANAF and others), keeps every raw file,
-links the records, and serves them through a public, read-only API.
+links the records, and serves them through a public API, read-only except for a
+reader's error report.
 
 The site lives in [date-romania-web](https://github.com/CristianPopa96/date-romania-web).
 
@@ -92,8 +93,9 @@ Four things to know before adding award notices up (`money.py` holds the rules):
 
 ## API
 
-Read-only, under `/v1/`, documented at http://localhost:8000/docs. Amounts are in lei
-without VAT, as SEAP publishes them, and every answer names its source.
+Under `/v1/`, documented at http://localhost:8000/docs. Amounts are in lei without VAT,
+as SEAP publishes them, and every answer about the data names its source. Everything is
+read-only except `POST /v1/reports`.
 
 | Endpoint | What it gives |
 | --- | --- |
@@ -110,6 +112,20 @@ without VAT, as SEAP publishes them, and every answer names its source.
 | `/v1/institutions/{cui}/contracts`, `/v1/suppliers/{cui}/contracts` | What an institution awarded; what a company won, alone and in association |
 | `/v1/rankings/contract-suppliers`, `/v1/rankings/contract-institutions` | The largest by contract value |
 | `/v1/datasets` | Each source as held: days, records, whether the period is complete |
+| `POST /v1/reports` | A reader says what is wrong on a page (`page`, `message`, `evidence`) |
+| `/v1/corrections` | What was corrected after a report: the page and what changed |
+
+A report changes nothing by itself. It waits in a queue until a person reads it:
+
+```powershell
+uv run dr reports list                            # the reports waiting, oldest first
+uv run dr reports accept 12 --correction "..."    # the data is corrected; this text is published
+uv run dr reports reject 12                       # not an error; nothing is shown
+```
+
+Only an accepted report is published, and only as the page and the correction written by
+the reviewer, never the reader's own text. Personal numeric codes in a report are hidden
+before it is stored, and the queue takes at most 60 reports an hour.
 
 Totals count only purchases whose offer was accepted. An accepted purchase published with
 a value above 900,400 lei is left out of the totals and reported next to them as

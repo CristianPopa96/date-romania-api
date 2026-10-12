@@ -8,7 +8,10 @@ from date_romania.db import database_ok
 app = FastAPI(
     title="Date România API",
     version=__version__,
-    description="Public, read-only data on Romanian public money. Every record carries its source.",
+    description=(
+        "Public data on Romanian public money. Every record carries its source. Read-only, "
+        "except that a reader can report an error."
+    ),
     license_info={"name": "CC BY 4.0", "url": "https://creativecommons.org/licenses/by/4.0/"},
     docs_url="/docs",
     openapi_url="/openapi.json",

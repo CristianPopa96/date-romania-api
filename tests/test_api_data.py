@@ -24,6 +24,7 @@ from date_romania.models import (
     DirectPurchase,
     Entity,
     JobRun,
+    Report,
     SourceDocument,
 )
 
@@ -237,6 +238,21 @@ def client(session):
     session.add_all(rows)
     session.flush()
     add_award_notices(session)
+    # Reports from readers: one checked and corrected, one still waiting, one turned down.
+    session.add_all(
+        [
+            Report(
+                page=f"/contracte/{ROAD}",
+                message="Valoarea contractului 2 include TVA.",
+                status="accepted",
+                correction="Valoarea contractului 2 era cu TVA; acum e fără TVA, ca în SEAP.",
+                reviewed_at=datetime.fromisoformat("2026-10-08T10:00:00+03:00"),
+            ),
+            Report(page=f"/institutii/{TOWN_HALL}", message="Numele e scris greșit.", status="new"),
+            Report(page="/surse", message="Nu sunt de acord cu cifrele.", status="rejected"),
+        ]
+    )
+    session.flush()
 
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
@@ -645,6 +661,7 @@ SITE_CALLS = (
     "/v1/rankings/suppliers?limit=20",
     "/v1/rankings/institutions?limit=20",
     "/v1/datasets",
+    "/v1/corrections",
     f"/v1/award-notices/{ROAD}",
     f"/v1/award-notices/{ROAD}/contracts?limit=50&offset=0",
     f"/v1/award-notices/{LAB}",

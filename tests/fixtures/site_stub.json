@@ -638,6 +638,18 @@
    ]
   }
  },
+ "/v1/corrections": {
+  "status": 200,
+  "body": {
+   "items": [
+    {
+     "page": "/contracte/9001",
+     "correction": "Valoarea contractului 2 era cu TVA; acum e fără TVA, ca în SEAP.",
+     "corrected_on": "2026-10-08"
+    }
+   ]
+  }
+ },
  "/v1/award-notices/9001": {
   "status": 200,
   "body": {

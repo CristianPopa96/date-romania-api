@@ -11,6 +11,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
+from date_romania import reports
 from date_romania.collectors import seap_awards, seap_direct
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import collect_days, due_days
@@ -24,7 +25,9 @@ collect_app = typer.Typer(no_args_is_help=True, help="Fetch a public source into
 reparse_app = typer.Typer(no_args_is_help=True, help="Rebuild rows from the stored raw files.")
 app.add_typer(db_app, name="db")
 app.add_typer(collect_app, name="collect")
+reports_app = typer.Typer(no_args_is_help=True, help="Error reports from readers.")
 app.add_typer(reparse_app, name="reparse")
+app.add_typer(reports_app, name="reports")
 
 DAY = ["%Y-%m-%d"]
 Date = Annotated[datetime | None, typer.Option(formats=DAY, help="Collect only this day.")]
@@ -115,3 +118,46 @@ def reparse_seap_direct() -> None:
 def reparse_seap_awards() -> None:
     """Parse the stored SEAP award notice responses again, without calling SEAP."""
     _reparse(seap_awards)
+
+
+@reports_app.command("list")
+def reports_list(
+    settled: Annotated[bool, typer.Option(help="Also the reports already reviewed.")] = False,
+) -> None:
+    """The reports waiting for review, oldest first."""
+    with Session(get_engine()) as session:
+        found = reports.queue(session, settled)
+        for each in found:
+            typer.echo(f"#{each.id} · {each.status} · {each.created_at:%Y-%m-%d %H:%M}")
+            typer.echo(f"  page:     {each.page or '(none given)'}")
+            typer.echo(f"  message:  {each.message}")
+            if each.evidence:
+                typer.echo(f"  evidence: {each.evidence}")
+            if each.correction:
+                typer.echo(f"  corrected: {each.correction}")
+        typer.echo(f"{len(found)} reports")
+
+
+def _settle(report_id: int, status: str, correction: str | None = None) -> None:
+    with Session(get_engine()) as session:
+        if reports.settle(session, report_id, status, correction) is None:
+            typer.echo(f"no report #{report_id}", err=True)
+            raise typer.Exit(1)
+    typer.echo(f"#{report_id}: {status}")
+
+
+@reports_app.command("accept")
+def reports_accept(
+    report_id: int,
+    correction: Annotated[
+        str, typer.Option(help="What was corrected, in Romanian. The site shows this text.")
+    ],
+) -> None:
+    """Close a report as right, once the data is corrected. The correction becomes public."""
+    _settle(report_id, reports.ACCEPTED, correction)
+
+
+@reports_app.command("reject")
+def reports_reject(report_id: int) -> None:
+    """Close a report that was not an error. Nothing about it is shown."""
+    _settle(report_id, reports.REJECTED)
