@@ -174,6 +174,7 @@ def test_a_file_that_cannot_be_read_is_fetched_again(session, datagov, monkeypat
     def broken(content, suppliers):
         raise ValueError("a layout nobody has seen")
 
+    working = seap_exports.run.parse_contracts
     monkeypatch.setattr(seap_exports.run, "parse_contracts", broken)
     seap_exports.collect(session, client, last_year=2025)
     # The run says so, and the file is not marked as held.
@@ -181,7 +182,8 @@ def test_a_file_that_cannot_be_read_is_fetched_again(session, datagov, monkeypat
     assert run.status == "partial"
     assert session.scalars(select(SourceDocument.source)).all() == ["pnias-payments"]
 
-    monkeypatch.undo()
+    # Only the parser is put back: the made-up raw store must stay in place.
+    monkeypatch.setattr(seap_exports.run, "parse_contracts", working)
     asked.clear()
     assert seap_exports.collect(session, client, last_year=2025) == 4
     assert CONTRACTS in asked
