@@ -324,7 +324,7 @@ class Programme(BaseModel):
     files: list[ProgrammeFile]
     payments_match: ProgrammeMatch
     projects_match: ProgrammeMatch
-    payments_possible: MatchCount = Field(
+    payments_possible: ProgrammeMatch = Field(
         description="Of the payments tied (`one` or `several`), those whose links are all "
         "only possible: other buyers carry the town hall's name, and nothing says which "
         "county the contract's buyer is in. The rest are probable. No link is sure."

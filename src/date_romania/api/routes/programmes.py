@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 from date_romania import pnias
 from date_romania.api.routes.common import Db, Limit
 from date_romania.api.schemas import (
-    MatchCount,
     Programme,
     ProgrammeFile,
     ProgrammeGroup,
@@ -68,11 +67,6 @@ def _match(rows) -> ProgrammeMatch:
     )
 
 
-def _possible(session: Session) -> MatchCount:
-    count, amount = session.execute(select(func.count(), _PAID).where(pnias.only_possible())).one()
-    return MatchCount(count=count, amount=amount)
-
-
 @router.get("")
 def programme(session: Db) -> Programme:
     """The programme as the payment files show it, and how many payments and projects
@@ -120,7 +114,11 @@ def programme(session: Db) -> Programme:
                 )
             )
         ),
-        payments_possible=_possible(session),
+        payments_possible=_match(
+            session.execute(
+                select(state, func.count(), _PAID).where(pnias.only_possible()).group_by(state)
+            )
+        ),
         contracts_first_day=contracts_first_day,
         contracts_last_day=contracts_last_day,
         source=source(session, PNIAS_PAYMENTS),

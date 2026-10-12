@@ -102,7 +102,14 @@ def test_payments_and_projects_are_counted_by_what_could_be_tied(client):
         "unnamed": {"count": 1, "amount": 500000},
     }
     # The payment of the county of Cluj is tied to a buyer whose name two buyers carry.
-    assert programme["payments_possible"] == {"count": 1, "amount": 950000}
+    # It has two possible contracts, so it is counted under `several`.
+    nothing = {"count": 0, "amount": 0}
+    assert programme["payments_possible"] == {
+        "one": nothing,
+        "several": {"count": 1, "amount": 950000},
+        "none": nothing,
+        "unnamed": nothing,
+    }
 
 
 def test_projects_are_listed_by_what_was_paid_and_can_be_narrowed(client):
@@ -275,3 +282,17 @@ def test_only_works_contracts_are_tied(client, session):
 def test_search_words_are_not_wildcards(client):
     assert client.get(f"{ROOT}/projects?q=%25%25").json()["total"] == 0
     assert client.get(f"{ROOT}/projects?q=__").json()["total"] == 0
+
+
+def test_a_namesake_written_with_its_county_still_makes_the_name_shared(client, session):
+    # No export says where the town hall is. Another buyer is a Țânțăreni too, written
+    # with its own county after the name: the link is possible, not probable.
+    session.get(ExportBuyer, TOWN_HALL).county = None
+    session.add(ExportBuyer(cui=30000055, name="COMUNA TANTARENI DOLJ", source_document_id=1))
+    session.flush()
+    pnias.link(session)
+    methods = set(session.query(PniasLink.method).filter(PniasLink.payment_id == 30001))
+    assert methods == {("builder-cui+town-hall-name",)}
+    programme = client.get(ROOT).json()
+    assert programme["payments_possible"]["one"] == {"count": 2, "amount": 3000000}
+    assert client.get(f"{ROOT}/projects/101").json()["confidence"] == "possible"

@@ -13,6 +13,7 @@ from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.sheets import plain
+from date_romania.counties import COUNTIES
 from date_romania.models import ExportBuyer, ExportContract, PniasLink, PniasPayment
 
 # How a payment was tied to a contract, and how sure the tie is. The builder is the same
@@ -131,9 +132,19 @@ class _Buyers:
         if county not in self._named:
             index: dict[tuple[bool, str], set[int]] = {}
             for cui, name in self._rows:
-                index.setdefault(buyer_place(name, county), set()).add(cui)
+                # A buyer written with another county after its name ('COMUNA VALEA MARE
+                # DAMBOVITA') is still a Valea Mare: it is counted under both readings.
+                for read_as in (county, *_counties_after(name)):
+                    index.setdefault(buyer_place(name, read_as), set()).add(cui)
             self._named[county] = index
         return self._named[county].get(place, set())
+
+
+def _counties_after(buyer: str | None) -> list[str]:
+    """The counties a buyer's name could end with: 'Comuna Slatina Timis' gives Timiș,
+    though that commune is in Caraș-Severin and Timiș is part of its name."""
+    name = plain(_BRACKETS.sub(" ", buyer or ""))
+    return [county for county in COUNTIES if name.endswith(" " + county)]
 
 
 def _evidence(

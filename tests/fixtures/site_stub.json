@@ -1780,8 +1780,22 @@
     }
    },
    "payments_possible": {
-    "count": 1,
-    "amount": 950000.0
+    "one": {
+     "count": 0,
+     "amount": 0.0
+    },
+    "several": {
+     "count": 1,
+     "amount": 950000.0
+    },
+    "none": {
+     "count": 0,
+     "amount": 0.0
+    },
+    "unnamed": {
+     "count": 0,
+     "amount": 0.0
+    }
    },
    "contracts_first_day": "2021-06-03",
    "contracts_last_day": "2024-04-02",
