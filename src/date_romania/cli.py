@@ -1,6 +1,7 @@
 """`dr` command line: what the scheduler and developers run."""
 
 import logging
+import sys
 from datetime import datetime
 from types import ModuleType
 from typing import Annotated
@@ -36,6 +37,10 @@ Since = Annotated[datetime | None, typer.Option(formats=DAY, help="Collect from 
 
 @app.callback()
 def main() -> None:
+    # Reports are in Romanian, and a Windows console would refuse their letters.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
