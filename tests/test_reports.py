@@ -67,7 +67,8 @@ def test_one_reader_cannot_fill_the_queue_for_the_others(client, session, monkey
     # What is kept is a hash, never the address.
     senders = {each.sender for each in reports.queue(session)}
     assert len(senders) == 2
-    assert all(len(sender) == 64 and "203" not in sender for sender in senders)
+    # (The digits of an address can turn up in a hash by chance; its dots cannot.)
+    assert all(len(sender) == 64 and "203.0.113" not in sender for sender in senders)
 
 
 def test_the_queue_takes_only_so_many_reports_an_hour(client, session, monkeypatch):
@@ -122,6 +123,10 @@ def test_a_page_is_published_only_if_it_is_a_page_of_the_site(client, session):
     assert sorted(pages, key=str) == ["/contracte/9001", "/surse", None, None, None]
     assert reports.site_page("/") == "/"
     assert reports.site_page("/institutii/4981310") == "/institutii/4981310"
+    assert reports.site_page("/programe/anghel-saligny") == "/programe/anghel-saligny"
+    project = "/programe/anghel-saligny/proiecte/12519"
+    assert reports.site_page(project) == project
+    assert reports.site_page("/programe/altul") is None
     assert reports.site_page("//example.test") is None
     assert reports.site_page("/contracte/abc") is None
 

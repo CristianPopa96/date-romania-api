@@ -14,10 +14,12 @@ from date_romania.models import (
     AwardContract,
     AwardNotice,
     DirectPurchase,
+    ExportContract,
     JobRun,
+    PniasPayment,
     SourceDocument,
 )
-from date_romania.sources import SEAP_AWARDS, SEAP_DIRECT
+from date_romania.sources import PNIAS_PAYMENTS, SEAP_AWARDS, SEAP_DIRECT, SEAP_EXPORTS
 
 router = APIRouter(tags=["overview"])
 
@@ -60,6 +62,58 @@ def _days(session: Session, job: str, first: date | None, last: date | None) -> 
         if first <= day <= last:
             (full if status == "succeeded" else partial).add(day)
     return len(full), len(partial - full)
+
+
+def _last_run_whole(session: Session, job: str) -> bool:
+    """False when the latest run of a file collector left a file unread."""
+    status = session.scalar(
+        select(JobRun.status).where(JobRun.job == job).order_by(JobRun.id.desc()).limit(1)
+    )
+    return status in (None, "succeeded")
+
+
+def _file_datasets(session: Session, fetched: dict, stored: dict) -> list[Dataset]:
+    """The sources that come as files, not as days: listed once we hold a file of theirs.
+
+    Their period is what the files cover, and no day of it is read or missed.
+    """
+    payments, projects, first_file, last_file = session.execute(
+        select(
+            func.count(),
+            func.count(PniasPayment.project_id.distinct()),
+            func.min(PniasPayment.published_on),
+            func.max(PniasPayment.published_on),
+        )
+    ).one()
+    winners, first_notice, last_notice = session.execute(
+        select(
+            func.count(),
+            func.min(ExportContract.notice_date),
+            func.max(ExportContract.notice_date),
+        )
+    ).one()
+    held = (
+        (PNIAS_PAYMENTS, first_file, last_file, payments, {"projects": projects}),
+        # A contract has a row for each winner and for each export it is in.
+        (SEAP_EXPORTS, first_notice, last_notice, winners, {}),
+    )
+    return [
+        Dataset(
+            key=source.key,
+            publisher=source.publisher,
+            first_day=first,
+            last_day=last,
+            records=records,
+            complete=_last_run_whole(session, source.key),
+            fetched_at=fetched[source.key],
+            days_collected=0,
+            days_partial=0,
+            documents=stored[source.key],
+            counts={"files": stored[source.key], "rows": records, **counts},
+        )
+        for source, first, last, records, counts in held
+        if source.key in stored
+    ]
 
 
 @router.get("/datasets")
@@ -121,5 +175,6 @@ def datasets(session: Db) -> Datasets:
                 # ones signed inside those days are counted.
                 counts={"notices": notices, "contracts": held, "counted_contracts": contracts},
             ),
+            *_file_datasets(session, fetched, stored),
         ]
     )

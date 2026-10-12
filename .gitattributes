@@ -1,0 +1,2 @@
+# Test fixtures cut from published files keep their bytes: no line-ending conversion.
+tests/fixtures/*.csv -text

@@ -12,8 +12,9 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
+from date_romania import pnias as pnias_links
 from date_romania import reports
-from date_romania.collectors import seap_awards, seap_direct
+from date_romania.collectors import pnias, seap_awards, seap_direct, seap_exports
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import collect_days, due_days
 from date_romania.dates import yesterday
@@ -27,6 +28,8 @@ reparse_app = typer.Typer(no_args_is_help=True, help="Rebuild rows from the stor
 app.add_typer(db_app, name="db")
 app.add_typer(collect_app, name="collect")
 reports_app = typer.Typer(no_args_is_help=True, help="Error reports from readers.")
+link_app = typer.Typer(no_args_is_help=True, help="Tie records of different sources.")
+app.add_typer(link_app, name="link")
 app.add_typer(reparse_app, name="reparse")
 app.add_typer(reports_app, name="reports")
 
@@ -113,6 +116,20 @@ def collect_seap_award_details(
         typer.echo(f"{seap_awards.collect_details(session, client, limit)} notices")
 
 
+@collect_app.command("pnias-payments")
+def collect_pnias_payments() -> None:
+    """Anghel Saligny payment files from data.gov.ro; only the files not held yet."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{pnias.collect(session, client)} payments")
+
+
+@collect_app.command("seap-exports")
+def collect_seap_exports() -> None:
+    """SEAP's quarterly contract exports from data.gov.ro; only the files not held yet."""
+    with Session(get_engine()) as session, PoliteClient(timeout=600.0) as client:
+        typer.echo(f"{seap_exports.collect(session, client)} contracts")
+
+
 @reparse_app.command("seap-direct")
 def reparse_seap_direct() -> None:
     """Parse the stored SEAP direct purchase responses again, without calling SEAP."""
@@ -123,6 +140,27 @@ def reparse_seap_direct() -> None:
 def reparse_seap_awards() -> None:
     """Parse the stored SEAP award notice responses again, without calling SEAP."""
     _reparse(seap_awards)
+
+
+@reparse_app.command("pnias-payments")
+def reparse_pnias_payments() -> None:
+    """Parse the stored Anghel Saligny payment files again, without calling data.gov.ro."""
+    _reparse(pnias)
+
+
+@reparse_app.command("seap-exports")
+def reparse_seap_exports() -> None:
+    """Read the stored contract exports again, for the builders now in the payment files."""
+    _reparse(seap_exports)
+
+
+@link_app.command("pnias")
+def link_pnias() -> None:
+    """Tie Anghel Saligny payments to the contracts of their builders, from what is held."""
+    with Session(get_engine()) as session:
+        count = pnias_links.link(session)
+        session.commit()
+        typer.echo(f"{count} links")
 
 
 @reports_app.command("list")

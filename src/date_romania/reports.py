@@ -34,7 +34,8 @@ _KEY = secrets.token_bytes(32)
 # The pages the site has. A page is published with its correction only if it is one of
 # these; anything else typed into the field stays in the queue, for the reviewer alone.
 _PAGE = re.compile(
-    r"/(?:(?:contracte|achizitii-directe|institutii|furnizori)/\d+|clasamente|surse|cautare)?"
+    r"/(?:(?:contracte|achizitii-directe|institutii|furnizori)/\d+|clasamente|surse|cautare"
+    r"|programe/anghel-saligny(?:/proiecte/\d+)?)?"
 )
 # Characters that act on a terminal or hide text; a new line and a tab are kept.
 _CONTROL = re.compile(r"[\x00-\x08\x0b-\x1f\x7f-\x9f\u200b-\u200f\u202a-\u202e\u2066-\u2069]")
