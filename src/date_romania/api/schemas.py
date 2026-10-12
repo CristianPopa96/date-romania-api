@@ -257,6 +257,14 @@ class Dataset(BaseModel):
         description="False when the source publishes late, so the period keeps filling in."
     )
     fetched_at: datetime | None
+    days_collected: int = Field(description="Days of the period read in full from the source.")
+    days_partial: int = Field(
+        description="Days of the period the source would not give in full; they wait to be read."
+    )
+    documents: int = Field(description="Raw answers kept from the source, each under its hash.")
+    counts: dict[str, int] = Field(
+        description="What is held, by kind of row. `records` is the one the totals use."
+    )
 
 
 class Datasets(BaseModel):
