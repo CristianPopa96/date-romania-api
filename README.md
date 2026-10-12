@@ -84,15 +84,19 @@ uv run dr link pnias                              # tie payments to contracts ag
 | `seap-awards` | SEAP award notices, by publication day, with the contracts and winners of each, its detail (financing, the notice that opened the procedure) and its versions | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
 
 | `pnias-payments` | Payment files of the Anghel Saligny programme (MDLPA, on data.gov.ro): one row per settlement request paid | `pnias_payment` |
-| `seap-exports` | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today: only the contracts of the programme's builders | `export_contract` |
+| `seap-exports` | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today: only the contracts of the programme's builders, and every buyer | `export_contract`, `export_buyer` |
 
 The last two come as files, not as days: a run downloads the files not held yet, and
 needs no date. They serve the programme trace only:
 
 - A payment names its builder by tax ID and its town hall by name. It is tied to the
-  contracts that builder won from a buyer whose name is that town hall's (`pnias.py`).
-  The ties are in `pnias_link`, each with its method and confidence, and are built again
-  whenever either side is loaded.
+  works contracts that builder won from a buyer whose name is that town hall's
+  (`pnias.py`). The ties are in `pnias_link`, each with its method and confidence, and
+  are built again whenever either side is loaded.
+- No tie is sure: the payment files do not name the contract. It is `probable` when an
+  export puts the buyer in the payment's county, or when no other buyer in the exports
+  carries that name; `possible` when others do. A buyer an export puts in another
+  county is not tied. `export_buyer` holds every buyer of the exports for this check.
 - `export_contract` never enters a total, a ranking or an entity page. It is a second
   reading of SEAP with fewer fields; a row is one winner of a contract, and a contract is
   in every export published after it.

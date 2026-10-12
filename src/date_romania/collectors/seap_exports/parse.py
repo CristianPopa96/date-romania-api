@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
 from date_romania.collectors.sheets import csv_rows, is_workbook, plain, workbook_sheets
+from date_romania.counties import COUNTIES
 from date_romania.cui import parse_cui
 from date_romania.personal_id import mask_cnp
 
@@ -37,6 +38,8 @@ class Parsed:
     rejected: list[tuple[object, str]] = field(default_factory=list)
     # Every contract row of the file, whoever won it.
     seen: int = 0
+    # Every buyer of the file: cui -> (name, county where the layout gives one).
+    buyers: dict[int, tuple[str, str | None]] = field(default_factory=dict)
 
 
 def _named(header: list[str], test) -> int | None:
@@ -77,6 +80,8 @@ def _columns(row: list) -> dict[str, int] | None:
         "buyer_text": _named(
             header, lambda name: name in ("AUTORITATE CONTRACTANTA", "DENUMIRE AC")
         ),
+        # Only the layout of 2022 T1 says where the buyer is.
+        "buyer_county": _named(header, lambda name: name == "DENUMIRE NUTS"),
         "contract_no": _named(header, lambda name: name == "NUMAR CONTRACT"),
         "contract_date": _named(
             header, lambda name: name.startswith("DATA") and name.endswith("CONTRACT")
@@ -185,20 +190,33 @@ def _contract_key(columns: dict[str, int], row: list) -> tuple:
     return _text(row[columns["notice_no"]]), _text(row[columns.get("contract_no", 0)])
 
 
+def _note_buyer(buyers: dict, columns: dict[str, int], row: list) -> None:
+    """Remember a buyer and, where the layout names a county, which one. The column
+    also holds regions ('Nord-Est'), which are not counties and are left out."""
+    cui = _cui(row[columns["buyer_cui"]]) if "buyer_cui" in columns else None
+    name = _text(row[columns["buyer_text"]])
+    if cui is None or name is None:
+        return
+    county = plain(row[columns["buyer_county"]]) if "buyer_county" in columns else None
+    known = buyers.get(cui, (name, None))[1]
+    buyers[cui] = (mask_cnp(name), county if county in COUNTIES else known)
+
+
 def parse_contracts(content: bytes, suppliers: set[int]) -> Parsed:
     """The contracts in one export won by any of `suppliers`.
 
     An export has hundreds of thousands of rows; only the ones asked for are kept. A
     contract won by an association has one row per member, with the same value on each:
     all of them are kept, so the contract can be shown as won together. The file is read
-    twice, since a partner can come before the supplier asked for.
+    twice, since a partner can come before the supplier asked for. Every buyer of the
+    file is noted on the way (`Parsed.buyers`).
     """
     parsed = Parsed()
-    wanted = {
-        _contract_key(columns, row)
-        for columns, row in _rows(content)
-        if _cui(row[columns["supplier_cui"]]) in suppliers
-    }
+    wanted = set()
+    for columns, row in _rows(content):
+        if _cui(row[columns["supplier_cui"]]) in suppliers:
+            wanted.add(_contract_key(columns, row))
+        _note_buyer(parsed.buyers, columns, row)
     for columns, row in _rows(content):
         parsed.seen += 1
         if _contract_key(columns, row) not in wanted:

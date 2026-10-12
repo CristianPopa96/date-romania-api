@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from date_romania import pnias
+from date_romania.collectors.pnias import parse
 from date_romania.collectors.pnias.parse import file_day, parse_payments
 from date_romania.counties import county_name
 
@@ -71,15 +72,20 @@ def test_a_request_listed_twice_is_one_payment(payments):
     assert payment["progress"] == "100%"
 
 
-def test_a_row_without_a_request_number_is_rejected_not_dropped():
-    parsed = parse_payments(FILE)
-    assert parsed.rejected == []
-    # The same check on a row made wrong: the parser names it instead of skipping it.
-    from date_romania.collectors.pnias import parse
-
-    broken = parse.Parsed()
+def test_a_row_that_is_not_a_finished_payment_is_set_aside():
+    parsed = parse.Parsed()
     with pytest.raises(ValueError, match="no request number"):
-        parse._payment({"annex": "fără număr", "county": "ALBA"}, "infra", None, broken)
+        parse._payment({"annex": "fără număr", "county": "ALBA"}, "infra", None, parsed)
+    request = {"annex": "ASA4-30001 / 21.08.2026 ora 10:00", "county": "ALBA"}
+    with pytest.raises(ValueError, match="not finished"):
+        parse._payment({**request, "state": "Respinsă"}, "infra", None, parsed)
+    with pytest.raises(ValueError, match="cancelled or rejected"):
+        parse._payment(
+            {**request, "state": "Finalizată", "cancelled": "adresa 12.pdf"},
+            "infra",
+            None,
+            parsed,
+        )
 
 
 @pytest.mark.parametrize(

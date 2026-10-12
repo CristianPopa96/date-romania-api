@@ -3,7 +3,7 @@
 from collections import Counter
 
 from fastapi import APIRouter, HTTPException
-from sqlalchemy import func, select, tuple_
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from date_romania import pnias
@@ -21,14 +21,8 @@ from date_romania.sources import PNIAS_PAYMENTS, SEAP_EXPORTS
 
 router = APIRouter(prefix="/programmes/anghel-saligny", tags=["programmes"])
 
+
 # What tells one contract of an export from another.
-_SAME_CONTRACT = (
-    ExportContract.source_document_id,
-    ExportContract.notice_no,
-    ExportContract.contract_no,
-)
-
-
 def _same_contract(contract: ExportContract) -> tuple:
     return contract.source_document_id, contract.notice_no, contract.contract_no
 
@@ -48,10 +42,18 @@ def _held_notices(session: Session, numbers: set[str | None]) -> dict[str, int]:
 def _winners(
     session: Session, contracts: list[ExportContract]
 ) -> dict[tuple, list[ExportContract]]:
-    """Every winner row of the contracts given: an association has one per member."""
+    """Every winner row of the contracts given: an association has one per member.
+
+    The rows of the same exports and notices are read and sorted here: a contract can
+    lack its number, and SQL would not find a missing value equal to itself.
+    """
     rows = session.scalars(
         select(ExportContract)
-        .where(tuple_(*_SAME_CONTRACT).in_({_same_contract(each) for each in contracts}))
+        .where(
+            ExportContract.source_document_id.in_({each.source_document_id for each in contracts}),
+            ExportContract.notice_no.in_({each.notice_no for each in contracts})
+            | ExportContract.id.in_({each.id for each in contracts}),
+        )
         .order_by(ExportContract.id)
     )
     winners: dict[tuple, list[ExportContract]] = {}
@@ -102,13 +104,15 @@ def project(session: Db, project_id: int) -> Project:
         .order_by(PniasPayment.published_on.desc(), PniasPayment.id.desc())
     ).all()
     linked: dict[int, list[ExportContract]] = {}
-    for payment_id, contract in session.execute(
-        select(PniasLink.payment_id, ExportContract)
+    evidence: dict[int, PniasLink] = {}
+    for link, contract in session.execute(
+        select(PniasLink, ExportContract)
         .join(ExportContract, ExportContract.id == PniasLink.contract_id)
         .where(PniasLink.payment_id.in_([payment.id for payment in payments]))
         .order_by(ExportContract.contract_date, ExportContract.id)
     ):
-        linked.setdefault(payment_id, []).append(contract)
+        linked.setdefault(link.payment_id, []).append(contract)
+        evidence[contract.id] = link
     contracts = list({each.id: each for found in linked.values() for each in found}.values())
     winners = _winners(session, contracts)
     parties = {role: _parties(payments, role) for role in ("builder", "designer")}
@@ -140,9 +144,11 @@ def project(session: Db, project_id: int) -> Project:
             is_framework=contract.is_framework,
             buyer=ref(entities.get(contract.buyer_cui)),
             buyer_text=contract.buyer_text,
+            confidence=evidence[contract.id].confidence,
+            method=evidence[contract.id].method,
             partners=[
                 TraceParty(**party(winner.supplier_cui, winner.supplier_text))
-                for winner in winners[_same_contract(contract)]
+                for winner in winners.get(_same_contract(contract), ())
                 if winner.id != contract.id
             ],
             ratio=float(value / row.total_value) if value and row.total_value else None,
@@ -175,8 +181,11 @@ def project(session: Db, project_id: int) -> Project:
         items=[ProjectPayment.model_validate(payment) for payment in payments],
         builders=builders,
         designers=[TraceParty(**party(cui, name)) for cui, name, _ in parties["designer"]],
-        method=pnias.METHOD,
-        confidence=pnias.CONFIDENCE,
+        confidence=None
+        if not evidence
+        else pnias.POSSIBLE
+        if any(link.confidence == pnias.POSSIBLE for link in evidence.values())
+        else pnias.PROBABLE,
         source=source(session, PNIAS_PAYMENTS),
         contracts_source=source(session, SEAP_EXPORTS),
     )

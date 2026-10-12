@@ -13,6 +13,9 @@ PARSER_VERSION = 1
 
 INFRA, GAS = "infra", "gas"
 
+# The state of a request the ministry paid, as `plain()` reads "Finalizată".
+FINISHED = "FINALIZATA"
+
 # 'ASA4-25421 / 02.03.2026 ora 10:12': the ministry's number for a request, and its day.
 _ANNEX = re.compile(r"\s*ASA4-(\d+)\s*/\s*(\d{1,2})\.(\d{1,2})\.(\d{4})")
 
@@ -39,6 +42,7 @@ _COLUMNS = {
     "county": "JUDET",
     "town_hall": "UAT",
     "state": "STARE",
+    "cancelled": "FISIER ADRESA ANULARE",
     "request_no": "NUMAR ANEXA 4 BENEFICIAR",
     "requested_on": "DATA ANEXA 4 BENEFICIAR",
     "annex": "NR DATA ANEXA 4 MDLPA",
@@ -124,6 +128,13 @@ def _payment(cells: dict, network: str, published_on: date | None, parsed: Parse
     annex = _ANNEX.match(str(cells["annex"]))
     if not annex:
         raise ValueError(f"no request number in {cells['annex']!r}")
+    # Every row published so far is a finished request. One that is not, or that has a
+    # letter of cancellation or rejection, is not a payment: it is set aside and logged.
+    state = _text(cells.get("state"))
+    if state and plain(state) != FINISHED:
+        raise ValueError(f"request {annex.group(1)} is not finished: {state!r}")
+    if _text(cells.get("cancelled")):
+        raise ValueError(f"request {annex.group(1)} was cancelled or rejected")
     number, day, month, year = (int(part) for part in annex.groups())
     builder_cui, builder_text = _party(cells, "builder", parsed)
     designer_cui, designer_text = _party(cells, "designer", parsed)

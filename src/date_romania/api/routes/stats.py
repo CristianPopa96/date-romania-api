@@ -64,6 +64,14 @@ def _days(session: Session, job: str, first: date | None, last: date | None) -> 
     return len(full), len(partial - full)
 
 
+def _last_run_whole(session: Session, job: str) -> bool:
+    """False when the latest run of a file collector left a file unread."""
+    status = session.scalar(
+        select(JobRun.status).where(JobRun.job == job).order_by(JobRun.id.desc()).limit(1)
+    )
+    return status in (None, "succeeded")
+
+
 def _file_datasets(session: Session, fetched: dict, stored: dict) -> list[Dataset]:
     """The sources that come as files, not as days: listed once we hold a file of theirs.
 
@@ -96,7 +104,7 @@ def _file_datasets(session: Session, fetched: dict, stored: dict) -> list[Datase
             first_day=first,
             last_day=last,
             records=records,
-            complete=True,
+            complete=_last_run_whole(session, source.key),
             fetched_at=fetched[source.key],
             days_collected=0,
             days_partial=0,

@@ -357,6 +357,22 @@ class ExportContract(Base):
     parser_version: Mapped[int] = mapped_column(SmallInteger)
 
 
+class ExportBuyer(Base):
+    """A buyer named in SEAP's quarterly exports, whoever it bought from.
+
+    Kept to check a town hall matched by name: how many buyers carry that name, and the
+    county of the buyer where an export gives one (only the first quarter of 2022 does).
+    """
+
+    __tablename__ = "export_buyer"
+
+    cui: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    name: Mapped[str] = mapped_column(Text)
+    # As `counties.COUNTIES` keys it: 'BISTRITA NASAUD'.
+    county: Mapped[str | None] = mapped_column(String(64))
+    source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
+
+
 class PniasLink(Base):
     """A payment tied to a contract that may be the one it settles (see `pnias.py`).
 
@@ -371,7 +387,7 @@ class PniasLink(Base):
     contract_id: Mapped[int] = mapped_column(
         ForeignKey("export_contract.id", ondelete="CASCADE"), primary_key=True, index=True
     )
-    method: Mapped[str] = mapped_column(String(32))
+    method: Mapped[str] = mapped_column(String(64))
     confidence: Mapped[str] = mapped_column(String(16))  # sure, probable, possible
 
 

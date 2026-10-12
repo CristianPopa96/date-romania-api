@@ -7,13 +7,17 @@ Four projects, one per match state:
 - 102, the county of Cluj: the builder has two notices from the county council.
 - 103, Turceni: the builder is named by tax ID and has no contract from that town hall.
 - 104, Șandra: the builder is named by name only.
+
+An export puts the town hall of Țânțăreni in Gorj, so its link is probable. Two buyers
+are named "JUDETUL CLUJ" and no export says where either is, so the links of project
+102 are only possible.
 """
 
 from datetime import date
 from decimal import Decimal
 
 from date_romania import pnias
-from date_romania.models import ExportContract, PniasPayment, SourceDocument
+from date_romania.models import ExportBuyer, ExportContract, PniasPayment, SourceDocument
 
 TOWN_HALL, BUILDER, DESIGNER = 4981310, 17886786, 18288250
 # Companies the rest of the test data does not hold, so they have no page.
@@ -213,6 +217,19 @@ def seed(session) -> None:
                 buyer_cui=4666380,
                 buyer_text="ORAS ROVINARI",
             ),
+        ]
+    )
+    session.add_all(
+        [
+            ExportBuyer(
+                cui=TOWN_HALL,
+                name="COMUNA TANTARENI (PRIMARIA TANTARENI)",
+                county="GORJ",
+                source_document_id=export,
+            ),
+            ExportBuyer(cui=4288110, name="JUDETUL CLUJ", source_document_id=export),
+            ExportBuyer(cui=30000044, name="Judetul Cluj", source_document_id=export),
+            ExportBuyer(cui=4666380, name="ORAS ROVINARI", source_document_id=export),
         ]
     )
     session.flush()

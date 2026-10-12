@@ -12,6 +12,7 @@ from date_romania import pnias as links
 from date_romania.collectors import pnias, seap_exports
 from date_romania.collectors.http import PoliteClient
 from date_romania.models import (
+    ExportBuyer,
     ExportContract,
     JobRun,
     PniasLink,
@@ -125,9 +126,12 @@ def test_exports_keep_the_contracts_of_the_builders_and_tie_them_to_payments(ses
     tied = session.scalars(select(PniasLink).order_by(PniasLink.payment_id)).all()
     assert [link.payment_id for link in tied] == [29409, 30695]
     assert {session.get(ExportContract, link.contract_id).supplier_cui for link in tied} == {BAHM}
+    # No export gives the buyer's county, and no other buyer is named Șeica Mare.
     assert {(link.method, link.confidence) for link in tied} == {
-        ("builder-cui+town-hall-name", "probable")
+        ("builder-cui+only-town-hall-of-that-name", "probable")
     }
+    # Every buyer of the export is kept, whoever it bought from.
+    assert count(session, ExportBuyer) == 2
     states = dict(session.execute(select(PniasPayment.id, links.state())).all())
     assert states == {29409: "one", 30695: "one", 30437: "unnamed", 30677: "none", 29779: "none"}
 
@@ -161,3 +165,30 @@ def test_a_project_is_tied_to_one_notice_when_all_its_payments_point_to_it(sessi
     assert rows[12519].id == 30695
     assert rows[5670].match == "unnamed"
     assert rows[2219].match == "none"
+
+
+def test_a_file_that_cannot_be_read_is_fetched_again(session, datagov, monkeypatch):
+    client, asked = datagov
+    pnias.collect(session, client)
+
+    def broken(content, suppliers):
+        raise ValueError("a layout nobody has seen")
+
+    monkeypatch.setattr(seap_exports.run, "parse_contracts", broken)
+    seap_exports.collect(session, client, last_year=2025)
+    # The run says so, and the file is not marked as held.
+    run = session.scalars(select(JobRun).where(JobRun.job == "seap-exports")).one()
+    assert run.status == "partial"
+    assert session.scalars(select(SourceDocument.source)).all() == ["pnias-payments"]
+
+    monkeypatch.undo()
+    asked.clear()
+    assert seap_exports.collect(session, client, last_year=2025) == 4
+    assert CONTRACTS in asked
+
+
+def test_a_year_without_a_dataset_is_passed_over(session, datagov):
+    client, _ = datagov
+    pnias.collect(session, client)
+    # 2027 has no dataset yet: the made-up site answers "not found" for it.
+    assert seap_exports.collect(session, client, last_year=2027) == 4

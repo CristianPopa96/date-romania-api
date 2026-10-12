@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from date_romania import pnias
 from date_romania.api.routes.common import Db, Limit
 from date_romania.api.schemas import (
+    MatchCount,
     Programme,
     ProgrammeFile,
     ProgrammeGroup,
@@ -30,6 +31,8 @@ from date_romania.sources import PNIAS_PAYMENTS, SEAP_EXPORTS, PublicSource
 router = APIRouter(prefix="/programmes/anghel-saligny", tags=["programmes"])
 
 State = Literal["one", "several", "none", "unnamed"]
+
+_LIKE_ESCAPES = str.maketrans({"%": r"\%", "_": r"\_", "\\": r"\\"})
 
 _PAID = func.coalesce(func.sum(PniasPayment.amount), 0)
 
@@ -63,6 +66,11 @@ def _match(rows) -> ProgrammeMatch:
     return ProgrammeMatch.model_validate(
         {state: {"count": count, "amount": amount} for state, count, amount in rows}
     )
+
+
+def _possible(session: Session) -> MatchCount:
+    count, amount = session.execute(select(func.count(), _PAID).where(pnias.only_possible())).one()
+    return MatchCount(count=count, amount=amount)
 
 
 @router.get("")
@@ -112,8 +120,7 @@ def programme(session: Db) -> Programme:
                 )
             )
         ),
-        method=pnias.METHOD,
-        confidence=pnias.CONFIDENCE,
+        payments_possible=_possible(session),
         contracts_first_day=contracts_first_day,
         contracts_last_day=contracts_last_day,
         source=source(session, PNIAS_PAYMENTS),
@@ -140,7 +147,8 @@ def projects(
     if county:
         filters.append(project.c.county == county)
     if q:
-        like = func.concat("%", search_text(q), "%")
+        # The words are searched as typed: `%` and `_` are not wildcards.
+        like = search_text("%" + q.translate(_LIKE_ESCAPES) + "%")
         filters.append(
             search_text(project.c.town_hall).like(like)
             | search_text(project.c.investment).like(like)

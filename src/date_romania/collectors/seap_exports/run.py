@@ -3,6 +3,7 @@
 import logging
 import re
 
+import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -82,20 +83,26 @@ def collect(session: Session, client: PoliteClient, last_year: int | None = None
         suppliers = _suppliers(session)
         kept = failed = 0
         for year in range(FIRST_YEAR, (last_year or today().year) + 1):
-            files = {
-                each.url: each
-                for each in datagov.resources(client, f"achizitii-publice-{year}")
-                if is_contracts(each.name)
-            }
+            try:
+                found = datagov.resources(client, f"achizitii-publice-{year}")
+            except (datagov.DatagovError, httpx.HTTPError) as error:
+                # The dataset of a new year appears with its first quarter, in April.
+                log.warning("achizitii-publice-%d: no dataset: %r", year, error)
+                continue
+            files = {each.url: each for each in found if is_contracts(each.name)}
             for url in chosen(list(files)):
+                doc = None
                 try:
                     doc, new = datagov.fetch(session, client, SOURCE, files[url])
                     if new:
                         kept += _parse_and_load(session, doc, suppliers)
                 except Exception:
-                    session.rollback()
                     failed += 1
                     log.exception("%s: failed", url)
+                    if doc is not None and new:
+                        datagov.forget(session, doc)
+                    else:
+                        session.rollback()
         run.records = kept
         if failed:
             run.status = "partial"

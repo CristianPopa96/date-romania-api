@@ -82,3 +82,11 @@ def fetch(
     session.commit()
     log.info("%s: stored %s (%d bytes)", source, resource.name, doc.size_bytes)
     return doc, True
+
+
+def forget(session: Session, doc: SourceDocument) -> None:
+    """Drop the record of a file that could not be read, so the next run fetches and
+    reads it again. Its bytes stay in the raw store, under their hash."""
+    session.rollback()
+    session.delete(doc)
+    session.commit()

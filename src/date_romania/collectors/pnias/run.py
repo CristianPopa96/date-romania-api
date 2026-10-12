@@ -48,7 +48,11 @@ def collect(session: Session, client: PoliteClient) -> int:
         for resource in datagov.resources(client, DATASET):
             doc, new = datagov.fetch(session, client, SOURCE, resource)
             if new:
-                payments += _parse_and_load(session, doc)
+                try:
+                    payments += _parse_and_load(session, doc)
+                except Exception:
+                    datagov.forget(session, doc)
+                    raise
         run.records = payments
     # A new file can name builders whose contracts are not kept yet: `dr reparse
     # seap-exports` reads them from the stored exports.

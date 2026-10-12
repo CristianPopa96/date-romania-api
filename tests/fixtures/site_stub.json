@@ -1779,8 +1779,10 @@
      "amount": 500000.0
     }
    },
-   "method": "builder-cui+town-hall-name",
-   "confidence": "probable",
+   "payments_possible": {
+    "count": 1,
+    "amount": 950000.0
+   },
    "contracts_first_day": "2021-06-03",
    "contracts_last_day": "2024-04-02",
    "source": {
@@ -2057,6 +2059,8 @@
         "kind": "authority"
        },
        "buyer_text": "COMUNA TANTARENI (PRIMARIA TANTARENI)",
+       "confidence": "probable",
+       "method": "builder-cui+town-hall-name+county",
        "partners": [
         {
          "cui": 30000011,
@@ -2080,7 +2084,6 @@
      }
     }
    ],
-   "method": "builder-cui+town-hall-name",
    "confidence": "probable",
    "source": {
     "publisher": "data.gov.ro",
@@ -2153,6 +2156,8 @@
        "is_framework": false,
        "buyer": null,
        "buyer_text": "JUDETUL CLUJ",
+       "confidence": "possible",
+       "method": "builder-cui+town-hall-name",
        "partners": [],
        "ratio": 0.7875
       },
@@ -2170,6 +2175,8 @@
        "is_framework": true,
        "buyer": null,
        "buyer_text": "JUDETUL CLUJ",
+       "confidence": "possible",
+       "method": "builder-cui+town-hall-name",
        "partners": [],
        "ratio": 0.225
       }
@@ -2183,8 +2190,7 @@
      "entity": null
     }
    ],
-   "method": "builder-cui+town-hall-name",
-   "confidence": "probable",
+   "confidence": "possible",
    "source": {
     "publisher": "data.gov.ro",
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
@@ -2245,8 +2251,7 @@
     }
    ],
    "designers": [],
-   "method": "builder-cui+town-hall-name",
-   "confidence": "probable",
+   "confidence": null,
    "source": {
     "publisher": "data.gov.ro",
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
@@ -2307,8 +2312,7 @@
     }
    ],
    "designers": [],
-   "method": "builder-cui+town-hall-name",
-   "confidence": "probable",
+   "confidence": null,
    "source": {
     "publisher": "data.gov.ro",
     "record": "MDLPA · Plăți PNIAS 2026-prezent",

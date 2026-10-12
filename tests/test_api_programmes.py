@@ -6,9 +6,17 @@ import pytest
 from fastapi.testclient import TestClient
 from programme_seed import BUILDER, DESIGNER, PARTNER, PIPES, TOWN_HALL
 
+from date_romania import pnias
 from date_romania.api.main import app
 from date_romania.db import get_session
-from date_romania.models import AwardNotice, Entity, SourceDocument
+from date_romania.models import (
+    AwardNotice,
+    Entity,
+    ExportBuyer,
+    ExportContract,
+    PniasLink,
+    SourceDocument,
+)
 
 ROOT = "/v1/programmes/anghel-saligny"
 
@@ -93,10 +101,8 @@ def test_payments_and_projects_are_counted_by_what_could_be_tied(client):
         "none": {"count": 1, "amount": 310000},
         "unnamed": {"count": 1, "amount": 500000},
     }
-    assert (programme["method"], programme["confidence"]) == (
-        "builder-cui+town-hall-name",
-        "probable",
-    )
+    # The payment of the county of Cluj is tied to a buyer whose name two buyers carry.
+    assert programme["payments_possible"] == {"count": 1, "amount": 950000}
 
 
 def test_projects_are_listed_by_what_was_paid_and_can_be_narrowed(client):
@@ -150,6 +156,12 @@ def test_a_project_traced_to_one_contract(client):
     assert contract["value_ron"] == 6120000
     assert contract["ratio"] == pytest.approx(0.72)
     assert contract["buyer"]["cui"] == TOWN_HALL
+    # An export puts the buyer in the project's county.
+    assert (contract["confidence"], contract["method"]) == (
+        "probable",
+        "builder-cui+town-hall-name+county",
+    )
+    assert project["confidence"] == "probable"
     # Won by two: the value is not split, and the partner we do not hold has no page.
     assert contract["partners"] == [{"cui": PARTNER, "name": "GAMA ASFALT", "entity": None}]
     # The town hall has no tax ID in the payment files; the contract's buyer gives it.
@@ -172,6 +184,9 @@ def test_a_project_with_several_contracts_lists_them_all(client):
         ("CAN1070002", None, True, []),
     ]
     assert builder["contracts"][0]["notice_id"] is None
+    # Two buyers are named like the county, and nothing says which is which.
+    assert {contract["confidence"] for contract in builder["contracts"]} == {"possible"}
+    assert project["confidence"] == "possible"
     # The county council is a buyer we do not otherwise hold.
     assert project["town_hall_entity"] is None
 
@@ -182,6 +197,7 @@ def test_a_project_whose_chain_stops_at_the_builder(client):
     # The builder has a contract, from another town: it is not this one's.
     assert none["builders"][0]["contracts"] == []
     assert none["designers"] == []
+    assert none["confidence"] is None
 
     unnamed = client.get(f"{ROOT}/projects/104").json()
     assert unnamed["match"] == "unnamed"
@@ -213,3 +229,49 @@ def test_the_programme_files_are_listed_with_the_sources(client):
     exports = datasets["seap-exports"]
     assert exports["counts"] == {"files": 1, "rows": 5}
     assert (exports["first_day"], exports["last_day"]) == ("2021-06-03", "2024-04-02")
+
+
+def test_a_contract_without_its_number_still_shows(client, session):
+    # An export can leave the contract number empty; the page must not fail on it.
+    for contract in session.query(ExportContract).filter_by(notice_no="CAN0000001"):
+        contract.contract_no = None
+    session.flush()
+    pnias.link(session)
+    project = client.get(f"{ROOT}/projects/101").json()
+    (contract,) = project["builders"][0]["contracts"]
+    assert contract["contract_no"] is None
+    assert [partner["name"] for partner in contract["partners"]] == ["GAMA ASFALT"]
+
+
+def test_a_buyer_from_another_county_is_not_the_town_hall(client, session):
+    # The same name, and an export that puts this buyer elsewhere: no link.
+    session.get(ExportBuyer, TOWN_HALL).county = "DOLJ"
+    session.flush()
+    pnias.link(session)
+    project = client.get(f"{ROOT}/projects/101").json()
+    assert project["match"] == "none"
+    assert project["builders"][0]["contracts"] == []
+
+
+def test_a_name_no_other_buyer_carries_is_enough(client, session):
+    # No export says where the buyer is, and it is the only one of that name.
+    session.get(ExportBuyer, TOWN_HALL).county = None
+    session.flush()
+    pnias.link(session)
+    methods = set(session.query(PniasLink.method).filter(PniasLink.payment_id == 30001))
+    assert methods == {("builder-cui+only-town-hall-of-that-name",)}
+    assert client.get(f"{ROOT}/projects/101").json()["confidence"] == "probable"
+
+
+def test_only_works_contracts_are_tied(client, session):
+    # The same builder clears the snow for the same town hall: not what a payment settles.
+    for contract in session.query(ExportContract).filter_by(notice_no="CAN0000001"):
+        contract.contract_type, contract.cpv_code = "Servicii", "90620000-9"
+    session.flush()
+    pnias.link(session)
+    assert client.get(f"{ROOT}/projects/101").json()["match"] == "none"
+
+
+def test_search_words_are_not_wildcards(client):
+    assert client.get(f"{ROOT}/projects?q=%25%25").json()["total"] == 0
+    assert client.get(f"{ROOT}/projects?q=__").json()["total"] == 0

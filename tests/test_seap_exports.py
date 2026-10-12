@@ -59,6 +59,17 @@ def test_an_association_keeps_a_row_for_every_member():
     assert {row["contract_no"] for row in rows} == {"2569/632"}
 
 
+def test_every_buyer_of_an_export_is_noted_with_its_county_when_given():
+    # Only the 2022 layout says where a buyer is.
+    assert parse_contracts(EXPORT_2022, set()).buyers == {
+        4288080: ("SPITALUL CLINIC JUDETEAN DE URGENTA CLUJ", "CLUJ")
+    }
+    assert parse_contracts(EXPORT_2025, set()).buyers == {
+        4634256: ("SANATORIUL DE PNEUMOFTIZIOLOGIE BRAD", None),
+        4241052: ("COMUNA SEICA MARE (CONSILIUL LOCAL SEICA MARE)", None),
+    }
+
+
 def test_a_contract_from_the_2025_layout():
     row = parse_contracts(EXPORT_2025, {BAHM}).contracts[1]
     assert row["buyer_text"] == "COMUNA SEICA MARE (CONSILIUL LOCAL SEICA MARE)"

@@ -324,8 +324,11 @@ class Programme(BaseModel):
     files: list[ProgrammeFile]
     payments_match: ProgrammeMatch
     projects_match: ProgrammeMatch
-    method: str = Field(description="How a payment is tied to a contract.")
-    confidence: str = Field(description="sure, probable or possible")
+    payments_possible: MatchCount = Field(
+        description="Of the payments tied (`one` or `several`), those whose links are all "
+        "only possible: other buyers carry the town hall's name, and nothing says which "
+        "county the contract's buyer is in. The rest are probable. No link is sure."
+    )
     contracts_first_day: date | None = Field(
         description="The contracts searched were published in SEAP between these two days."
     )
@@ -390,6 +393,11 @@ class TraceContract(BaseModel):
     is_framework: bool | None
     buyer: EntityRef | None
     buyer_text: str | None
+    confidence: str = Field(
+        description="probable: an export puts the buyer in the project's county, or no "
+        "other buyer carries that name. possible: other buyers do."
+    )
+    method: str = Field(description="What the link rests on.")
     partners: list[TraceParty] = Field(
         description="The other winners, when the contract was won by an association. "
         "The value is the whole contract's, never split."
@@ -416,8 +424,9 @@ class Project(ProjectRow):
     items: list[ProjectPayment]
     builders: list[TraceBuilder]
     designers: list[TraceParty]
-    method: str
-    confidence: str
+    confidence: str | None = Field(
+        description="The weakest link among the contracts shown; null when there are none."
+    )
     source: Source
     contracts_source: Source
 
