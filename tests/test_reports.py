@@ -67,7 +67,8 @@ def test_one_reader_cannot_fill_the_queue_for_the_others(client, session, monkey
     # What is kept is a hash, never the address.
     senders = {each.sender for each in reports.queue(session)}
     assert len(senders) == 2
-    assert all(len(sender) == 64 and "203" not in sender for sender in senders)
+    # (The digits of an address can turn up in a hash by chance; its dots cannot.)
+    assert all(len(sender) == 64 and "203.0.113" not in sender for sender in senders)
 
 
 def test_the_queue_takes_only_so_many_reports_an_hour(client, session, monkeypatch):
