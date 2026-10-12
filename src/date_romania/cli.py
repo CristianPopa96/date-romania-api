@@ -1,6 +1,7 @@
 """`dr` command line: what the scheduler and developers run."""
 
 import logging
+import sys
 from datetime import datetime
 from types import ModuleType
 from typing import Annotated
@@ -11,6 +12,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
+from date_romania import reports
 from date_romania.collectors import seap_awards, seap_direct
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import collect_days, due_days
@@ -24,7 +26,9 @@ collect_app = typer.Typer(no_args_is_help=True, help="Fetch a public source into
 reparse_app = typer.Typer(no_args_is_help=True, help="Rebuild rows from the stored raw files.")
 app.add_typer(db_app, name="db")
 app.add_typer(collect_app, name="collect")
+reports_app = typer.Typer(no_args_is_help=True, help="Error reports from readers.")
 app.add_typer(reparse_app, name="reparse")
+app.add_typer(reports_app, name="reports")
 
 DAY = ["%Y-%m-%d"]
 Date = Annotated[datetime | None, typer.Option(formats=DAY, help="Collect only this day.")]
@@ -33,6 +37,10 @@ Since = Annotated[datetime | None, typer.Option(formats=DAY, help="Collect from 
 
 @app.callback()
 def main() -> None:
+    # Reports are in Romanian, and a Windows console would refuse their letters.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )
@@ -115,3 +123,55 @@ def reparse_seap_direct() -> None:
 def reparse_seap_awards() -> None:
     """Parse the stored SEAP award notice responses again, without calling SEAP."""
     _reparse(seap_awards)
+
+
+@reports_app.command("list")
+def reports_list(
+    settled: Annotated[bool, typer.Option(help="Also the reports already reviewed.")] = False,
+) -> None:
+    """The reports waiting for review, oldest first."""
+    with Session(get_engine()) as session:
+        found = reports.queue(session, settled)
+        for each in found:
+            typer.echo(f"#{each.id} · {each.status} · {each.created_at:%Y-%m-%d %H:%M}")
+            typer.echo(f"  page:     {each.page or '(none given)'}")
+            typer.echo(f"  message:  {each.message}")
+            if each.evidence:
+                typer.echo(f"  evidence: {each.evidence}")
+            if each.correction:
+                typer.echo(f"  corrected: {each.correction}")
+        typer.echo(f"{len(found)} reports")
+
+
+def _settle(
+    report_id: int, status: str, correction: str | None = None, page: str | None = None
+) -> None:
+    with Session(get_engine()) as session:
+        if reports.settle(session, report_id, status, correction, page) is None:
+            typer.echo(f"no report #{report_id}", err=True)
+            raise typer.Exit(1)
+    typer.echo(f"#{report_id}: {status}")
+
+
+@reports_app.command("accept")
+def reports_accept(
+    report_id: int,
+    correction: Annotated[
+        str, typer.Option(help="What was corrected, in Romanian. The site shows this text.")
+    ],
+    page: Annotated[
+        str | None,
+        typer.Option(help="The page it is about, e.g. /contracte/123, if the reader gave none."),
+    ] = None,
+) -> None:
+    """Close a report as right, once the data is corrected. The correction becomes public."""
+    if page and not reports.site_page(page):
+        typer.echo(f"not a page of the site: {page}", err=True)
+        raise typer.Exit(1)
+    _settle(report_id, reports.ACCEPTED, correction, page)
+
+
+@reports_app.command("reject")
+def reports_reject(report_id: int) -> None:
+    """Close a report that was not an error. Nothing about it is shown."""
+    _settle(report_id, reports.REJECTED)
