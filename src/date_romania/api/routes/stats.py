@@ -1,5 +1,7 @@
 """What the database holds."""
 
+from datetime import date
+
 from fastapi import APIRouter
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -38,11 +40,15 @@ def stats(session: Db) -> Stats:
     )
 
 
-def _days(session: Session, job: str) -> tuple[int, int]:
-    """How many days a collector read in full, and how many only in part.
+def _days(session: Session, job: str, first: date | None, last: date | None) -> tuple[int, int]:
+    """How many days of the period a collector read in full, and how many only in part.
 
-    A day read again counts once, by its best run: in full if any run got all of it.
+    A day read again counts once, by its best run: in full if any run got all of it. A day
+    read outside the period is not counted: the figure is shown next to the period, and
+    must never be larger than it.
     """
+    if not (first and last):
+        return 0, 0
     runs = session.execute(
         select(JobRun.period_start, JobRun.status)
         .where(JobRun.job == job, JobRun.status.in_(("succeeded", "partial")))
@@ -50,7 +56,9 @@ def _days(session: Session, job: str) -> tuple[int, int]:
     )
     full, partial = set(), set()
     for start, status in runs:
-        (full if status == "succeeded" else partial).add(start.astimezone(BUCHAREST).date())
+        day = start.astimezone(BUCHAREST).date()
+        if first <= day <= last:
+            (full if status == "succeeded" else partial).add(day)
     return len(full), len(partial - full)
 
 
@@ -76,7 +84,8 @@ def datasets(session: Db) -> Datasets:
     )
     notices = session.scalar(select(func.count()).select_from(AwardNotice))
     held = session.scalar(select(func.count()).select_from(AwardContract))
-    direct_days, awards_days = _days(session, SEAP_DIRECT.key), _days(session, SEAP_AWARDS.key)
+    direct_days = _days(session, SEAP_DIRECT.key, direct.first_day, direct.last_day)
+    awards_days = _days(session, SEAP_AWARDS.key, *(period or (None, None)))
     return Datasets(
         items=[
             Dataset(
