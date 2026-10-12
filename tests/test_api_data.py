@@ -7,6 +7,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
+import programme_seed
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -253,6 +254,7 @@ def client(session):
         ]
     )
     session.flush()
+    programme_seed.seed(session)
 
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
@@ -609,7 +611,9 @@ def test_contracts_as_a_file_name_their_source_on_every_row(client):
 
 
 def test_datasets_say_what_the_site_is_built_on(client):
-    direct, awards = client.get("/v1/datasets").json()["items"]
+    # The two sources read by day come first; the ones that come as files follow.
+    direct, awards, *files = client.get("/v1/datasets").json()["items"]
+    assert [each["key"] for each in files] == ["pnias-payments", "seap-exports"]
     assert (direct["key"], direct["records"], direct["complete"]) == ("seap-direct", 6, True)
     assert (direct["first_day"], direct["last_day"]) == ("2026-10-05", "2026-10-07")
     # The three contracts the totals count, not every contract held.
@@ -697,6 +701,19 @@ SITE_CALLS = (
     "/v1/rankings/contract-suppliers?won=alone&limit=20",
     "/v1/rankings/contract-suppliers?won=association&limit=20",
     "/v1/rankings/contract-institutions?limit=20",
+    "/v1/programmes/anghel-saligny",
+    "/v1/programmes/anghel-saligny/projects?limit=20&offset=0",
+    "/v1/programmes/anghel-saligny/projects?county=GORJ&limit=20&offset=0",
+    "/v1/programmes/anghel-saligny/projects?match=several&limit=20&offset=0",
+    "/v1/programmes/anghel-saligny/projects?q=turceni&limit=20&offset=0",
+    "/v1/programmes/anghel-saligny/projects?q=zzzz&limit=20&offset=0",
+    f"/v1/programmes/anghel-saligny/projects?builder={BUILDER}&limit=20&offset=0",
+    # One project per match state, and one the programme does not have.
+    "/v1/programmes/anghel-saligny/projects/101",
+    "/v1/programmes/anghel-saligny/projects/102",
+    "/v1/programmes/anghel-saligny/projects/103",
+    "/v1/programmes/anghel-saligny/projects/104",
+    "/v1/programmes/anghel-saligny/projects/999",
 )
 
 

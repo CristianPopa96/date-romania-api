@@ -634,6 +634,39 @@
       "contracts": 5,
       "counted_contracts": 3
      }
+    },
+    {
+     "key": "pnias-payments",
+     "publisher": "data.gov.ro",
+     "first_day": "2026-05-18",
+     "last_day": "2026-08-27",
+     "records": 6,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 2,
+     "counts": {
+      "files": 2,
+      "rows": 6,
+      "projects": 4
+     }
+    },
+    {
+     "key": "seap-exports",
+     "publisher": "data.gov.ro",
+     "first_day": "2021-06-03",
+     "last_day": "2024-04-02",
+     "records": 5,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 1,
+     "counts": {
+      "files": 1,
+      "rows": 5
+     }
     }
    ]
   }
@@ -1645,6 +1678,657 @@
     "fetched_at": "2026-10-07T04:30:00Z",
     "document_id": null
    }
+  }
+ },
+ "/v1/programmes/anghel-saligny": {
+  "status": 200,
+  "body": {
+   "payments": 6,
+   "amount": 7160000.0,
+   "projects": 4,
+   "town_halls": 4,
+   "builders": 3,
+   "first_day": "2026-05-18",
+   "last_day": "2026-08-27",
+   "networks": [
+    {
+     "key": "infra",
+     "name": "infra",
+     "payments": 5,
+     "amount": 6850000.0,
+     "projects": 3
+    },
+    {
+     "key": "gas",
+     "name": "gas",
+     "payments": 1,
+     "amount": 310000.0,
+     "projects": 1
+    }
+   ],
+   "counties": [
+    {
+     "key": "GORJ",
+     "name": "Gorj",
+     "payments": 4,
+     "amount": 5710000.0,
+     "projects": 2
+    },
+    {
+     "key": "CLUJ",
+     "name": "Cluj",
+     "payments": 1,
+     "amount": 950000.0,
+     "projects": 1
+    },
+    {
+     "key": "TIMIS",
+     "name": "Timiș",
+     "payments": 1,
+     "amount": 500000.0,
+     "projects": 1
+    }
+   ],
+   "files": [
+    {
+     "published_on": "2026-05-18",
+     "payments": 2,
+     "amount": 2900000.0,
+     "with_tax_id": 0
+    },
+    {
+     "published_on": "2026-08-27",
+     "payments": 4,
+     "amount": 4260000.0,
+     "with_tax_id": 4
+    }
+   ],
+   "payments_match": {
+    "one": {
+     "count": 2,
+     "amount": 3000000.0
+    },
+    "several": {
+     "count": 1,
+     "amount": 950000.0
+    },
+    "none": {
+     "count": 1,
+     "amount": 310000.0
+    },
+    "unnamed": {
+     "count": 2,
+     "amount": 2900000.0
+    }
+   },
+   "projects_match": {
+    "one": {
+     "count": 1,
+     "amount": 5400000.0
+    },
+    "several": {
+     "count": 1,
+     "amount": 950000.0
+    },
+    "none": {
+     "count": 1,
+     "amount": 310000.0
+    },
+    "unnamed": {
+     "count": 1,
+     "amount": 500000.0
+    }
+   },
+   "method": "builder-cui+town-hall-name",
+   "confidence": "probable",
+   "contracts_first_day": "2021-06-03",
+   "contracts_last_day": "2024-04-02",
+   "source": {
+    "publisher": "data.gov.ro",
+    "record": "MDLPA · Plăți PNIAS 2026-prezent",
+    "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   },
+   "contracts_source": {
+    "publisher": "data.gov.ro",
+    "record": "ADR · Achiziții publice, contracte",
+    "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 4,
+   "items": [
+    {
+     "id": 101,
+     "investment": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "county": "GORJ",
+     "county_name": "Gorj",
+     "town_hall": "ȚÂNȚĂRENI",
+     "network": "infra",
+     "category": "Drumurile publice",
+     "total_value": 8500000.0,
+     "state_budget_value": 8100000.0,
+     "paid": 5400000.0,
+     "payments": 3,
+     "match": "one"
+    },
+    {
+     "id": 102,
+     "investment": "Modernizare drum județean DJ 109, km 0+000 - km 12+400",
+     "county": "CLUJ",
+     "county_name": "Cluj",
+     "town_hall": "Județul CLUJ prin Consiliul Județean",
+     "network": "infra",
+     "category": "Drumurile publice",
+     "total_value": 40000000.0,
+     "state_budget_value": 38500000.0,
+     "paid": 950000.0,
+     "payments": 1,
+     "match": "several"
+    },
+    {
+     "id": 104,
+     "investment": "Extindere rețea de canalizare în comuna Șandra",
+     "county": "TIMIS",
+     "county_name": "Timiș",
+     "town_hall": "ȘANDRA",
+     "network": "infra",
+     "category": "Sisteme de canalizare și stații de epurare a apelor uzate",
+     "total_value": 7000000.0,
+     "state_budget_value": 6500000.0,
+     "paid": 500000.0,
+     "payments": 1,
+     "match": "unnamed"
+    },
+    {
+     "id": 103,
+     "investment": "Înființare rețea de distribuție gaze naturale în orașul Turceni",
+     "county": "GORJ",
+     "county_name": "Gorj",
+     "town_hall": "TURCENI",
+     "network": "gas",
+     "category": "Sisteme de distribuție gaze naturale",
+     "total_value": 12000000.0,
+     "state_budget_value": 9000000.0,
+     "paid": 310000.0,
+     "payments": 1,
+     "match": "none"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?county=GORJ&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "items": [
+    {
+     "id": 101,
+     "investment": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "county": "GORJ",
+     "county_name": "Gorj",
+     "town_hall": "ȚÂNȚĂRENI",
+     "network": "infra",
+     "category": "Drumurile publice",
+     "total_value": 8500000.0,
+     "state_budget_value": 8100000.0,
+     "paid": 5400000.0,
+     "payments": 3,
+     "match": "one"
+    },
+    {
+     "id": 103,
+     "investment": "Înființare rețea de distribuție gaze naturale în orașul Turceni",
+     "county": "GORJ",
+     "county_name": "Gorj",
+     "town_hall": "TURCENI",
+     "network": "gas",
+     "category": "Sisteme de distribuție gaze naturale",
+     "total_value": 12000000.0,
+     "state_budget_value": 9000000.0,
+     "paid": 310000.0,
+     "payments": 1,
+     "match": "none"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?match=several&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 102,
+     "investment": "Modernizare drum județean DJ 109, km 0+000 - km 12+400",
+     "county": "CLUJ",
+     "county_name": "Cluj",
+     "town_hall": "Județul CLUJ prin Consiliul Județean",
+     "network": "infra",
+     "category": "Drumurile publice",
+     "total_value": 40000000.0,
+     "state_budget_value": 38500000.0,
+     "paid": 950000.0,
+     "payments": 1,
+     "match": "several"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?q=turceni&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 103,
+     "investment": "Înființare rețea de distribuție gaze naturale în orașul Turceni",
+     "county": "GORJ",
+     "county_name": "Gorj",
+     "town_hall": "TURCENI",
+     "network": "gas",
+     "category": "Sisteme de distribuție gaze naturale",
+     "total_value": 12000000.0,
+     "state_budget_value": 9000000.0,
+     "paid": 310000.0,
+     "payments": 1,
+     "match": "none"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?q=zzzz&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 0,
+   "items": []
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?builder=17886786&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 101,
+     "investment": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "county": "GORJ",
+     "county_name": "Gorj",
+     "town_hall": "ȚÂNȚĂRENI",
+     "network": "infra",
+     "category": "Drumurile publice",
+     "total_value": 8500000.0,
+     "state_budget_value": 8100000.0,
+     "paid": 5400000.0,
+     "payments": 3,
+     "match": "one"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects/101": {
+  "status": 200,
+  "body": {
+   "id": 101,
+   "investment": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+   "county": "GORJ",
+   "county_name": "Gorj",
+   "town_hall": "ȚÂNȚĂRENI",
+   "network": "infra",
+   "category": "Drumurile publice",
+   "total_value": 8500000.0,
+   "state_budget_value": 8100000.0,
+   "paid": 5400000.0,
+   "payments": 3,
+   "match": "one",
+   "town_hall_entity": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "ministry_contract_no": "1872",
+   "ministry_contract_date": "2023-05-18",
+   "poim": null,
+   "progress": "64%",
+   "estimated_end": "2026-12-31",
+   "items": [
+    {
+     "id": 30001,
+     "published_on": "2026-08-27",
+     "registered_on": "2026-08-21",
+     "requested_on": "2026-08-21",
+     "amount": 1200000.0,
+     "progress": "64%",
+     "builder_text": "ALFA CONSTRUCT S.R.L."
+    },
+    {
+     "id": 29001,
+     "published_on": "2026-08-27",
+     "registered_on": "2026-06-26",
+     "requested_on": "2026-06-26",
+     "amount": 1800000.0,
+     "progress": "48,5",
+     "builder_text": "ALFA CONSTRUCT S.R.L."
+    },
+    {
+     "id": 25001,
+     "published_on": "2026-05-18",
+     "registered_on": "2026-03-02",
+     "requested_on": "2026-03-02",
+     "amount": 2400000.0,
+     "progress": null,
+     "builder_text": "ALFA CONSTRUCT S.R.L."
+    }
+   ],
+   "builders": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "entity": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "payments": 3,
+     "amount": 5400000.0,
+     "match": "one",
+     "contracts": [
+      {
+       "notice_no": "CAN0000001",
+       "notice_id": 9001,
+       "notice_date": "2023-09-14",
+       "contract_no": "4521",
+       "contract_date": "2023-09-14",
+       "title": null,
+       "lot": "1",
+       "value_ron": 6120000.0,
+       "procedure_type": "Procedura simplificata",
+       "contract_type": "Lucrari",
+       "is_framework": false,
+       "buyer": {
+        "cui": 4981310,
+        "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+        "kind": "authority"
+       },
+       "buyer_text": "COMUNA TANTARENI (PRIMARIA TANTARENI)",
+       "partners": [
+        {
+         "cui": 30000011,
+         "name": "GAMA ASFALT",
+         "entity": null
+        }
+       ],
+       "ratio": 0.72
+      }
+     ]
+    }
+   ],
+   "designers": [
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "entity": {
+      "cui": 18288250,
+      "name": "Beta Birotică SRL",
+      "kind": "company"
+     }
+    }
+   ],
+   "method": "builder-cui+town-hall-name",
+   "confidence": "probable",
+   "source": {
+    "publisher": "data.gov.ro",
+    "record": "MDLPA · Plăți PNIAS 2026-prezent",
+    "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   },
+   "contracts_source": {
+    "publisher": "data.gov.ro",
+    "record": "ADR · Achiziții publice, contracte",
+    "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects/102": {
+  "status": 200,
+  "body": {
+   "id": 102,
+   "investment": "Modernizare drum județean DJ 109, km 0+000 - km 12+400",
+   "county": "CLUJ",
+   "county_name": "Cluj",
+   "town_hall": "Județul CLUJ prin Consiliul Județean",
+   "network": "infra",
+   "category": "Drumurile publice",
+   "total_value": 40000000.0,
+   "state_budget_value": 38500000.0,
+   "paid": 950000.0,
+   "payments": 1,
+   "match": "several",
+   "town_hall_entity": null,
+   "ministry_contract_no": null,
+   "ministry_contract_date": null,
+   "poim": null,
+   "progress": "PT RECEPTIONAT SI APROBAT",
+   "estimated_end": null,
+   "items": [
+    {
+     "id": 30002,
+     "published_on": "2026-08-27",
+     "registered_on": "2026-08-11",
+     "requested_on": "2026-08-11",
+     "amount": 950000.0,
+     "progress": "PT RECEPTIONAT SI APROBAT",
+     "builder_text": "Delta Drumuri SRL"
+    }
+   ],
+   "builders": [
+    {
+     "cui": 30000022,
+     "name": "Delta Drumuri SRL",
+     "entity": null,
+     "payments": 1,
+     "amount": 950000.0,
+     "match": "several",
+     "contracts": [
+      {
+       "notice_no": "CAN1050001",
+       "notice_id": null,
+       "notice_date": "2021-06-03",
+       "contract_no": "88",
+       "contract_date": "2021-06-03",
+       "title": "Modernizare DJ 109, lot 1",
+       "lot": null,
+       "value_ron": 31500000.0,
+       "procedure_type": "Licitatie deschisa",
+       "contract_type": "Lucrari",
+       "is_framework": false,
+       "buyer": null,
+       "buyer_text": "JUDETUL CLUJ",
+       "partners": [],
+       "ratio": 0.7875
+      },
+      {
+       "notice_no": "CAN1070002",
+       "notice_id": null,
+       "notice_date": "2022-02-20",
+       "contract_no": "140",
+       "contract_date": "2022-02-20",
+       "title": null,
+       "lot": null,
+       "value_ron": 9000000.0,
+       "procedure_type": "Licitatie deschisa",
+       "contract_type": "Lucrari",
+       "is_framework": true,
+       "buyer": null,
+       "buyer_text": "JUDETUL CLUJ",
+       "partners": [],
+       "ratio": 0.225
+      }
+     ]
+    }
+   ],
+   "designers": [
+    {
+     "cui": 30000022,
+     "name": "Delta Drumuri SRL",
+     "entity": null
+    }
+   ],
+   "method": "builder-cui+town-hall-name",
+   "confidence": "probable",
+   "source": {
+    "publisher": "data.gov.ro",
+    "record": "MDLPA · Plăți PNIAS 2026-prezent",
+    "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   },
+   "contracts_source": {
+    "publisher": "data.gov.ro",
+    "record": "ADR · Achiziții publice, contracte",
+    "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects/103": {
+  "status": 200,
+  "body": {
+   "id": 103,
+   "investment": "Înființare rețea de distribuție gaze naturale în orașul Turceni",
+   "county": "GORJ",
+   "county_name": "Gorj",
+   "town_hall": "TURCENI",
+   "network": "gas",
+   "category": "Sisteme de distribuție gaze naturale",
+   "total_value": 12000000.0,
+   "state_budget_value": 9000000.0,
+   "paid": 310000.0,
+   "payments": 1,
+   "match": "none",
+   "town_hall_entity": null,
+   "ministry_contract_no": null,
+   "ministry_contract_date": null,
+   "poim": true,
+   "progress": "12",
+   "estimated_end": null,
+   "items": [
+    {
+     "id": 30003,
+     "published_on": "2026-08-27",
+     "registered_on": "2026-08-12",
+     "requested_on": "2026-08-12",
+     "amount": 310000.0,
+     "progress": "12",
+     "builder_text": "Omega Gaz SRL"
+    }
+   ],
+   "builders": [
+    {
+     "cui": 30000033,
+     "name": "Omega Gaz SRL",
+     "entity": null,
+     "payments": 1,
+     "amount": 310000.0,
+     "match": "none",
+     "contracts": []
+    }
+   ],
+   "designers": [],
+   "method": "builder-cui+town-hall-name",
+   "confidence": "probable",
+   "source": {
+    "publisher": "data.gov.ro",
+    "record": "MDLPA · Plăți PNIAS 2026-prezent",
+    "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   },
+   "contracts_source": {
+    "publisher": "data.gov.ro",
+    "record": "ADR · Achiziții publice, contracte",
+    "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects/104": {
+  "status": 200,
+  "body": {
+   "id": 104,
+   "investment": "Extindere rețea de canalizare în comuna Șandra",
+   "county": "TIMIS",
+   "county_name": "Timiș",
+   "town_hall": "ȘANDRA",
+   "network": "infra",
+   "category": "Sisteme de canalizare și stații de epurare a apelor uzate",
+   "total_value": 7000000.0,
+   "state_budget_value": 6500000.0,
+   "paid": 500000.0,
+   "payments": 1,
+   "match": "unnamed",
+   "town_hall_entity": null,
+   "ministry_contract_no": null,
+   "ministry_contract_date": null,
+   "poim": null,
+   "progress": null,
+   "estimated_end": null,
+   "items": [
+    {
+     "id": 26004,
+     "published_on": "2026-05-18",
+     "registered_on": "2026-04-09",
+     "requested_on": "2026-04-09",
+     "amount": 500000.0,
+     "progress": null,
+     "builder_text": "Sigma Canal SRL"
+    }
+   ],
+   "builders": [
+    {
+     "cui": null,
+     "name": "Sigma Canal SRL",
+     "entity": null,
+     "payments": 1,
+     "amount": 500000.0,
+     "match": "unnamed",
+     "contracts": []
+    }
+   ],
+   "designers": [],
+   "method": "builder-cui+town-hall-name",
+   "confidence": "probable",
+   "source": {
+    "publisher": "data.gov.ro",
+    "record": "MDLPA · Plăți PNIAS 2026-prezent",
+    "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   },
+   "contracts_source": {
+    "publisher": "data.gov.ro",
+    "record": "ADR · Achiziții publice, contracte",
+    "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects/999": {
+  "status": 404,
+  "body": {
+   "detail": "No project 999 in the Anghel Saligny programme"
   }
  }
 }

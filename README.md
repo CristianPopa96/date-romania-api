@@ -72,12 +72,36 @@ uv run dr collect seap-direct --since 2026-10-01  # from a day up to yesterday
 uv run dr reparse seap-direct                     # rebuild the rows from the raw store
 uv run dr collect seap-awards                     # the same options for every collector
 uv run dr collect seap-award-details              # detail and versions of notices that lack them
+uv run dr collect pnias-payments                  # Anghel Saligny payment files not held yet
+uv run dr collect seap-exports                    # quarterly contract exports not held yet (1.6 GB the first time)
+uv run dr reparse seap-exports                    # read the stored exports again, for the builders now named
+uv run dr link pnias                              # tie payments to contracts again, from what is held
 ```
 
 | Collector | Source | Table |
 | --- | --- | --- |
 | `seap-direct` | SEAP direct purchases, by finalization day | `direct_purchase` |
 | `seap-awards` | SEAP award notices, by publication day, with the contracts and winners of each, its detail (financing, the notice that opened the procedure) and its versions | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
+
+| `pnias-payments` | Payment files of the Anghel Saligny programme (MDLPA, on data.gov.ro): one row per settlement request paid | `pnias_payment` |
+| `seap-exports` | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today: only the contracts of the programme's builders | `export_contract` |
+
+The last two come as files, not as days: a run downloads the files not held yet, and
+needs no date. They serve the programme trace only:
+
+- A payment names its builder by tax ID and its town hall by name. It is tied to the
+  contracts that builder won from a buyer whose name is that town hall's (`pnias.py`).
+  The ties are in `pnias_link`, each with its method and confidence, and are built again
+  whenever either side is loaded.
+- `export_contract` never enters a total, a ranking or an entity page. It is a second
+  reading of SEAP with fewer fields; a row is one winner of a contract, and a contract is
+  in every export published after it.
+- Run `pnias-payments` first: the exports are read for the builders the payments name.
+  After a new payment file, `dr reparse seap-exports` brings in the contracts of its new
+  builders without downloading anything.
+- Only the payment file of 27 August 2026 and later ones name builders by tax ID. A
+  payment from an older file cannot be tied by itself; inside a project it goes with
+  the payments that name the same builder with its tax ID.
 
 Four things to know before adding award notices up (`money.py` holds the rules):
 
@@ -112,6 +136,9 @@ read-only except `POST /v1/reports`.
 | `/v1/institutions/{cui}/contracts`, `/v1/suppliers/{cui}/contracts` | What an institution awarded; what a company won, alone and in association |
 | `/v1/rankings/contract-suppliers`, `/v1/rankings/contract-institutions` | The largest by contract value |
 | `/v1/datasets` | Each source as held: days, records, whether the period is complete |
+| `/v1/programmes/anghel-saligny` | The programme: what was paid, by county and by file, and how many payments and projects could be tied to a SEAP contract |
+| `/v1/programmes/anghel-saligny/projects` | Its projects, filtered by `county`, `q`, `builder`, `match` |
+| `/v1/programmes/anghel-saligny/projects/{id}` | One project: its payments, its builders and the contracts they could be tied to |
 | `POST /v1/reports` | A reader says what is wrong on a page (`page`, `message`, `evidence`) |
 | `/v1/corrections` | What was corrected after a report: the page and what changed |
 
@@ -148,6 +175,7 @@ src/date_romania/
   api/          FastAPI app: `routes/` the endpoints by area, `schemas.py` the answers
   collectors/   one package per public source
   money.py      what counts as money spent
+  pnias.py      how an Anghel Saligny payment is tied to a SEAP contract
   models.py     SQLAlchemy models, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256
   cui.py        Romanian tax ID parsing and checksum

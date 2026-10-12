@@ -7,6 +7,8 @@ from date_romania.api.routes import (
     award_totals,
     awards,
     entities,
+    programme_project,
+    programmes,
     purchases,
     rankings,
     reports,
@@ -14,5 +16,15 @@ from date_romania.api.routes import (
 )
 
 router = APIRouter(prefix="/v1")
-for module in (stats, entities, purchases, rankings, awards, award_totals, reports):
+for module in (
+    stats,
+    entities,
+    purchases,
+    rankings,
+    awards,
+    award_totals,
+    programmes,
+    programme_project,
+    reports,
+):
     router.include_router(module.router)
