@@ -622,6 +622,17 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert (direct["days_collected"], direct["documents"]) == (0, 1)
 
 
+def test_a_day_read_outside_the_period_is_not_counted_with_its_days(client, session):
+    """The days read stand next to the period on the site: never "4 of 3 days"."""
+    start, end = day_bounds(date(2025, 1, 15))
+    session.add(JobRun(job="seap-awards", period_start=start, period_end=end, status="succeeded"))
+    session.flush()
+
+    awards = client.get("/v1/datasets").json()["items"][1]
+    assert (awards["first_day"], awards["last_day"]) == ("2026-10-05", "2026-10-07")
+    assert (awards["days_collected"], awards["days_partial"]) == (3, 0)
+
+
 def test_a_day_read_in_part_is_told_apart_until_it_is_read_in_full(client, session):
     for day, status in ((8, "partial"), (9, "partial"), (9, "succeeded"), (10, "failed")):
         start, end = day_bounds(date(2026, 10, day))
