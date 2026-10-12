@@ -122,6 +122,10 @@ def test_a_page_is_published_only_if_it_is_a_page_of_the_site(client, session):
     assert sorted(pages, key=str) == ["/contracte/9001", "/surse", None, None, None]
     assert reports.site_page("/") == "/"
     assert reports.site_page("/institutii/4981310") == "/institutii/4981310"
+    assert reports.site_page("/programe/anghel-saligny") == "/programe/anghel-saligny"
+    project = "/programe/anghel-saligny/proiecte/12519"
+    assert reports.site_page(project) == project
+    assert reports.site_page("/programe/altul") is None
     assert reports.site_page("//example.test") is None
     assert reports.site_page("/contracte/abc") is None
 
