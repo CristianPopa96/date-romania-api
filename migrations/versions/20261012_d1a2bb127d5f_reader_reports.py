@@ -21,6 +21,7 @@ def upgrade() -> None:
         sa.Column("page", sa.Text(), nullable=True),
         sa.Column("message", sa.Text(), nullable=False),
         sa.Column("evidence", sa.Text(), nullable=True),
+        sa.Column("sender", sa.String(length=64), nullable=True),
         sa.Column("status", sa.String(length=16), nullable=False),
         sa.Column("correction", sa.Text(), nullable=True),
         sa.Column(
@@ -33,10 +34,12 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index(op.f("ix_report_created_at"), "report", ["created_at"], unique=False)
+    op.create_index(op.f("ix_report_sender"), "report", ["sender"], unique=False)
     op.create_index(op.f("ix_report_status"), "report", ["status"], unique=False)
 
 
 def downgrade() -> None:
     op.drop_index(op.f("ix_report_status"), table_name="report")
+    op.drop_index(op.f("ix_report_sender"), table_name="report")
     op.drop_index(op.f("ix_report_created_at"), table_name="report")
     op.drop_table("report")

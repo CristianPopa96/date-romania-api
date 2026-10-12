@@ -50,8 +50,29 @@ def test_a_personal_code_in_a_report_is_hidden_before_it_is_stored(client, sessi
     assert waiting.message == "Persoana cu CNP [CNP] apare aici."
 
 
+def test_characters_that_act_on_a_terminal_are_dropped(client, session):
+    client.post("/v1/reports", json={"message": "Valoarea \x1b[2J\x07e greșită,\n pe rând nou."})
+    (waiting,) = reports.queue(session)
+    assert waiting.message == "Valoarea [2Je greșită,\n pe rând nou."
+
+
+def test_one_reader_cannot_fill_the_queue_for_the_others(client, session, monkeypatch):
+    monkeypatch.setattr(reports, "PER_READER_HOUR", 2)
+    body = {"message": "Valoarea include TVA."}
+    one, other = {"X-Forwarded-For": "203.0.113.7, 10.0.0.1"}, {"X-Forwarded-For": "203.0.113.8"}
+    assert client.post("/v1/reports", json=body, headers=one).status_code == 201
+    assert client.post("/v1/reports", json=body, headers=one).status_code == 201
+    assert client.post("/v1/reports", json=body, headers=one).status_code == 429
+    assert client.post("/v1/reports", json=body, headers=other).status_code == 201
+    # What is kept is a hash, never the address.
+    senders = {each.sender for each in reports.queue(session)}
+    assert len(senders) == 2
+    assert all(len(sender) == 64 and "203" not in sender for sender in senders)
+
+
 def test_the_queue_takes_only_so_many_reports_an_hour(client, session, monkeypatch):
     monkeypatch.setattr(reports, "PER_HOUR", 2)
+    monkeypatch.setattr(reports, "PER_READER_HOUR", 99)
     # A report from two hours ago does not count against this hour.
     session.add(
         Report(
@@ -83,6 +104,28 @@ def test_only_an_accepted_report_is_published_and_only_in_our_words(client, sess
     assert reports.settle(session, 999_999, reports.REJECTED) is None
 
 
+def test_a_page_is_published_only_if_it_is_a_page_of_the_site(client, session):
+    typed = (
+        "Ion Popescu, 0722 000 000",
+        "/Ion.Popescu.0722000000",
+        "https://example.test/contracte/1",
+        "/contracte/9001?x=Ion#y",
+        None,
+    )
+    for page in typed:
+        filed = reports.file(session, page, "Valoarea include TVA.", None)
+        reports.settle(session, filed.id, reports.ACCEPTED, "Am corectat valoarea.")
+    # The reviewer can name the page where the reader gave none.
+    reports.settle(session, filed.id, reports.ACCEPTED, "Am corectat valoarea.", "/surse")
+
+    pages = [item["page"] for item in client.get("/v1/corrections").json()["items"]]
+    assert sorted(pages, key=str) == ["/contracte/9001", "/surse", None, None, None]
+    assert reports.site_page("/") == "/"
+    assert reports.site_page("/institutii/4981310") == "/institutii/4981310"
+    assert reports.site_page("//example.test") is None
+    assert reports.site_page("/contracte/abc") is None
+
+
 def test_the_review_commands_show_and_close_a_report(session, monkeypatch):
     # The commands open their own session; here it is the test's, left open at the end.
     monkeypatch.setattr(session, "close", lambda: None)
@@ -101,3 +144,10 @@ def test_the_review_commands_show_and_close_a_report(session, monkeypatch):
     assert (filed.status, filed.correction) == ("accepted", "Acum e fără TVA.")
     assert "0 reports" in runner.invoke(cli.app, ["reports", "list"]).output
     assert runner.invoke(cli.app, ["reports", "reject", "999999"]).exit_code == 1
+
+    # The reviewer's page must be a page of the site too.
+    named = ["reports", "accept", str(filed.id), "--correction", "Acum e fără TVA.", "--page"]
+    assert runner.invoke(cli.app, [*named, "Ion Popescu"]).exit_code == 1
+    assert filed.page == "/contracte/9001"
+    assert runner.invoke(cli.app, [*named, "/institutii/4981310"]).exit_code == 0
+    assert filed.page == "/institutii/4981310"

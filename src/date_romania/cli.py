@@ -143,9 +143,11 @@ def reports_list(
         typer.echo(f"{len(found)} reports")
 
 
-def _settle(report_id: int, status: str, correction: str | None = None) -> None:
+def _settle(
+    report_id: int, status: str, correction: str | None = None, page: str | None = None
+) -> None:
     with Session(get_engine()) as session:
-        if reports.settle(session, report_id, status, correction) is None:
+        if reports.settle(session, report_id, status, correction, page) is None:
             typer.echo(f"no report #{report_id}", err=True)
             raise typer.Exit(1)
     typer.echo(f"#{report_id}: {status}")
@@ -157,9 +159,16 @@ def reports_accept(
     correction: Annotated[
         str, typer.Option(help="What was corrected, in Romanian. The site shows this text.")
     ],
+    page: Annotated[
+        str | None,
+        typer.Option(help="The page it is about, e.g. /contracte/123, if the reader gave none."),
+    ] = None,
 ) -> None:
     """Close a report as right, once the data is corrected. The correction becomes public."""
-    _settle(report_id, reports.ACCEPTED, correction)
+    if page and not reports.site_page(page):
+        typer.echo(f"not a page of the site: {page}", err=True)
+        raise typer.Exit(1)
+    _settle(report_id, reports.ACCEPTED, correction, page)
 
 
 @reports_app.command("reject")

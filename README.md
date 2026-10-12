@@ -120,12 +120,20 @@ A report changes nothing by itself. It waits in a queue until a person reads it:
 ```powershell
 uv run dr reports list                            # the reports waiting, oldest first
 uv run dr reports accept 12 --correction "..."    # the data is corrected; this text is published
+uv run dr reports accept 12 --correction "..." --page /contracte/123   # and name the page
 uv run dr reports reject 12                       # not an error; nothing is shown
 ```
 
-Only an accepted report is published, and only as the page and the correction written by
-the reviewer, never the reader's own text. Personal numeric codes in a report are hidden
-before it is stored, and the queue takes at most 60 reports an hour.
+Only an accepted report is published, and only as the correction written by the reviewer
+and the page, never the reader's own text. The page is published only when it is the
+address of a page the site has (`/contracte/123`, `/institutii/4981310`, `/surse`);
+anything else typed there stays in the queue.
+
+Personal numeric codes and control characters are taken out of a report before it is
+stored. The queue takes at most 5 reports an hour from one reader and 60 in all. A reader
+is told apart by a keyed hash of their address, which the site passes on in
+`X-Forwarded-For`; the address itself is never stored, and the key lives only in the
+running API, so the hash cannot be turned back.
 
 Totals count only purchases whose offer was accepted. An accepted purchase published with
 a value above 900,400 lei is left out of the totals and reported next to them as

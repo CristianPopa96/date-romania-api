@@ -290,7 +290,9 @@ class ReportReceived(BaseModel):
 class Correction(BaseModel):
     """A report we checked and acted on: where, and what we changed, in our words."""
 
-    page: str | None
+    page: str | None = Field(
+        description="The address of the page on the site; null when the report named no such page."
+    )
     correction: str
     corrected_on: date
 
