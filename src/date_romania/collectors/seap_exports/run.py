@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from date_romania import pnias
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, record_parse
+from date_romania.collectors.jobs import job_run, record_parse, record_skipped
 from date_romania.collectors.seap_exports.load import load
 from date_romania.collectors.seap_exports.parse import PARSER_VERSION, parse_contracts
 from date_romania.dates import today
@@ -128,6 +128,8 @@ def reparse(session: Session) -> int:
     urls = chosen(list(docs))
     for url in urls:
         _parse_and_load(session, docs[url], suppliers)
+    for url in docs.keys() - set(urls):
+        record_skipped(docs[url], PARSER_VERSION, "the same quarter is read from its workbook")
     pnias.link(session)
     session.commit()
     return len(urls)

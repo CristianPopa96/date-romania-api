@@ -47,9 +47,9 @@ class SourceDocument(Base):
     size_bytes: Mapped[int] = mapped_column(BigInteger)
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     # Set by the latest parse of the document, collect or reparse: the parser's version and
-    # how many of its rows that parser could not read. Null for a document no such parse
-    # has read: one kept from before the count, or one never read (an export published
-    # twice is read from its workbook).
+    # how many of its rows that parser could not read. Both null for a document kept from
+    # before the count. A version with no count is a document that parser set aside
+    # unread (an export published twice is read from its workbook).
     parser_version: Mapped[int | None] = mapped_column(SmallInteger)
     rejected_rows: Mapped[int | None] = mapped_column(Integer)
 

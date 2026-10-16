@@ -14,6 +14,7 @@ from sqlalchemy import select
 
 from date_romania.api import main
 from date_romania.api.main import app
+from date_romania.collectors.jobs import record_skipped
 from date_romania.dates import day_bounds
 from date_romania.db import get_session
 from date_romania.models import (
@@ -637,7 +638,7 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert [each["rejected_rows"] for each in files] == [None, None]
 
 
-def test_a_document_kept_and_not_read_adds_no_rejected_rows(client, session):
+def test_rejected_rows_are_known_only_once_every_document_was_seen(client, session):
     session.add(
         SourceDocument(
             source="seap-direct",
@@ -649,7 +650,14 @@ def test_a_document_kept_and_not_read_adds_no_rejected_rows(client, session):
     )
     session.flush()
     direct = client.get("/v1/datasets").json()["items"][0]
-    assert (direct["documents"], direct["rejected_rows"]) == (2, 0)
+    # One document from before the count: the source's count is not known.
+    assert (direct["documents"], direct["rejected_rows"]) == (2, None)
+    # Set aside unread by a parser that counts, it no longer stands in the way.
+    record_skipped(
+        session.scalar(select(SourceDocument).where(SourceDocument.sha256 == "e" * 64)), 3, "test"
+    )
+    session.flush()
+    assert client.get("/v1/datasets").json()["items"][0]["rejected_rows"] == 0
 
 
 def test_a_day_read_outside_the_period_is_not_counted_with_its_days(client, session):

@@ -16,8 +16,8 @@ depends_on = None
 
 def upgrade() -> None:
     # Null for the documents held: only a parse can count what it rejects, so they get
-    # their numbers from a `dr reparse` of every source, to run once after this. A
-    # document that stays null is kept and not read (an export also kept as a workbook).
+    # their numbers from a `dr reparse` of every source, to run once after this. Until
+    # then the sources page shows their count as not collected yet.
     op.add_column("source_document", sa.Column("parser_version", sa.SmallInteger(), nullable=True))
     op.add_column("source_document", sa.Column("rejected_rows", sa.Integer(), nullable=True))
 

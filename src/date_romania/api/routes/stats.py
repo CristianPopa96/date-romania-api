@@ -127,18 +127,19 @@ def datasets(session: Db) -> Datasets:
                 SourceDocument.source,
                 func.max(SourceDocument.fetched_at),
                 func.count(),
-                func.count(SourceDocument.rejected_rows),
+                func.count(SourceDocument.parser_version),
                 func.coalesce(func.sum(SourceDocument.rejected_rows), 0),
             ).group_by(SourceDocument.source)
         )
     }
     fetched = {source: at for source, (at, *_) in documents.items()}
     stored = {source: count for source, (_, count, *_) in documents.items()}
-    # Over the documents read. A document kept and not read adds nothing: an export
-    # published twice is read from its workbook only. None read yet, nothing is known.
+    # Known only once every document of the source was seen by a parser that counts: read,
+    # or set aside unread. Until a reparse after the count began, a few new documents would
+    # otherwise read as the whole source.
     rejected = {
-        source: int(total) if counted else None
-        for source, (_, _, counted, total) in documents.items()
+        source: int(total) if counted == count else None
+        for source, (_, count, counted, total) in documents.items()
     }
     direct = summary(session)
     period = money.contracts_period(session)

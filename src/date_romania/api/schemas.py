@@ -317,8 +317,8 @@ class Dataset(BaseModel):
     )
     documents: int = Field(description="Raw answers kept from the source, each under its hash.")
     rejected_rows: int | None = Field(
-        description="Rows the parser could not read in the answers it read, logged and left "
-        "out. Null while none was read by a parser that counts them."
+        description="Rows of those answers the parser could not read, logged and left out. "
+        "Null until every answer was seen by a parser that counts them."
     )
     counts: dict[str, int] = Field(
         description="What is held, by kind of row. `records` is the one the totals use."

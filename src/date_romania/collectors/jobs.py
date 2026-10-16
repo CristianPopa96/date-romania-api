@@ -116,6 +116,15 @@ def record_parse(
     doc.rejected_rows = len(rejected)
 
 
+def record_skipped(doc: SourceDocument, parser_version: int, reason: str) -> None:
+    """Mark a stored document as seen and set aside by this parser, unread: its source's
+    count of rejected rows is then complete without it.
+    """
+    log.info("source_document %d: not read: %s", doc.id, reason)
+    doc.parser_version = parser_version
+    doc.rejected_rows = None
+
+
 @contextmanager
 def job_run(session: Session, job: str, day: date) -> Iterator[JobRun]:
     """Record one run for one day. The caller sets `records`; a raised error marks it failed.
