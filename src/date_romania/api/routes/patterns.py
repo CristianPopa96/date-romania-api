@@ -1,5 +1,7 @@
 """Patterns: measured facts worth asking documents for, never a finding of wrongdoing."""
 
+from decimal import ROUND_FLOOR, Decimal
+
 from fastapi import APIRouter, Response
 from sqlalchemy import func, select, tuple_
 from sqlalchemy.orm import aliased
@@ -122,6 +124,12 @@ def near_limit(
     )
 
 
+def _share(value: float, limit: Decimal) -> float:
+    """The share of its limit a purchase reaches, rounded down as the site does: a value
+    under the limit never reads 1.0."""
+    return float((Decimal(str(value)) / limit).quantize(Decimal("0.0001"), ROUND_FLOOR))
+
+
 def _csv(found: list, rows: dict, entities: dict, fetched: dict) -> Response:
     """One line per purchase, each naming its pair (by its place in the list), the two
     parties, the limit of its type and where it was read. A pattern, not a finding."""
@@ -163,7 +171,7 @@ def _csv(found: list, rows: dict, entities: dict, fetched: dict) -> Response:
                     cell(purchase.name),
                     purchase.finalized_at and purchase.finalized_at.isoformat(),
                     purchase.value,
-                    round(purchase.value / float(limit), 4),
+                    _share(purchase.value, limit),
                     SEAP_DIRECT.record_url.format(id=purchase.id),
                     at and at.isoformat(),
                 ]

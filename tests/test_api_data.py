@@ -930,6 +930,18 @@ def test_near_limit_as_csv_lists_every_purchase_with_its_pair(client, session):
     assert len(works) == 1 + 2
 
 
+def test_near_limit_csv_rounds_the_share_down_so_under_the_limit_is_never_1(client, session):
+    add_near_limit(session)
+    row = purchase(29, HOSPITAL, STATIONER, 7, "270119.60", "2026-10-07T12:00:00+03:00")
+    row.source_document_id = session.get(DirectPurchase, 20).source_document_id
+    row.contract_type_id = GOODS
+    session.add(row)
+    session.flush()
+    lines = client.get("/v1/patterns/near-limit?format=csv").text.splitlines()
+    line = next(line for line in lines if ",DA00000029," in line)
+    assert ",270119.6,0.9999," in line
+
+
 def test_a_total_says_how_many_stored_responses_it_is_added_up_from(client, session):
     # Purchase 5 (the hospital's, from the builder) read from a second response.
     other = SourceDocument(
