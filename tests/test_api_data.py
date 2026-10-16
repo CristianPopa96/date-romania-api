@@ -808,17 +808,14 @@ SITE_CALLS = (
     "/v1/rankings/contract-suppliers?won=alone&limit=20",
     "/v1/rankings/contract-suppliers?won=association&limit=20",
     "/v1/rankings/contract-institutions?limit=20",
-    # The rankings with their filters, and the patterns.
-    "/v1/cpv-divisions",
+    # The rankings with their filters.
+    "/v1/award-contracts?sort=value&cpv=45&limit=20&offset=0",
     "/v1/award-contracts?sort=value&cpv=45&eu_funded=true&limit=20&offset=0",
     "/v1/award-contracts?sort=value&cpv=30&limit=20&offset=0",
     "/v1/rankings/contract-suppliers?won=alone&cpv=45&limit=20",
     "/v1/rankings/contract-institutions?eu_funded=false&limit=20",
     "/v1/rankings/suppliers?cpv=45&limit=20",
     "/v1/rankings/institutions?cpv=45&limit=20",
-    "/v1/patterns/near-limit?limit=50",
-    "/v1/patterns/near-limit?cpv=45&limit=50",
-    "/v1/patterns/near-limit?cpv=30&limit=50",
     "/v1/programmes/anghel-saligny",
     "/v1/programmes/anghel-saligny/projects?limit=20&offset=0",
     "/v1/programmes/anghel-saligny/projects?county=GORJ&limit=20&offset=0",
@@ -832,6 +829,14 @@ SITE_CALLS = (
     "/v1/programmes/anghel-saligny/projects/103",
     "/v1/programmes/anghel-saligny/projects/104",
     "/v1/programmes/anghel-saligny/projects/999",
+)
+# Read once the purchases near their limit are added, so the answers above stay as the
+# pages that use them expect.
+SITE_CALLS_NEAR_LIMIT = (
+    "/v1/cpv-divisions",
+    "/v1/patterns/near-limit?limit=50",
+    "/v1/patterns/near-limit?cpv=45&limit=50",
+    "/v1/patterns/near-limit?cpv=30&limit=50",
 )
 
 
@@ -855,11 +860,16 @@ def test_the_site_stub_holds_what_the_api_answers(client, session, monkeypatch):
     change does to the pages.
     """
     monkeypatch.setattr(main, "database_ok", lambda: True)
-    add_near_limit(session)
     answers = {}
-    for call in SITE_CALLS:
-        response = client.get(call)
-        answers[call] = {"status": response.status_code, "body": _steady(response.json())}
+
+    def read(calls):
+        for call in calls:
+            response = client.get(call)
+            answers[call] = {"status": response.status_code, "body": _steady(response.json())}
+
+    read(SITE_CALLS)
+    add_near_limit(session)
+    read(SITE_CALLS_NEAR_LIMIT)
     text = json.dumps(answers, ensure_ascii=False, indent=1) + "\n"
     if os.environ.get("WRITE_SITE_STUB"):
         SITE_STUB.write_bytes(text.encode("utf-8"))
