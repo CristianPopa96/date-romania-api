@@ -118,7 +118,7 @@ def near_limit(
         checked=checked,
         accepted_total=accepted_total,
         unknown_type=accepted_total - checked,
-        source=list_source(session),
+        source=list_source(session, *filters),
     )
 
 

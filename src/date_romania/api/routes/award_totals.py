@@ -48,7 +48,9 @@ def institution_contracts(session: Db, cui: int) -> InstitutionContracts:
     _entity(session, cui)
     totals = _totals(session, AwardNotice.buyer_cui == cui)
     return InstitutionContracts(
-        period=period(session), **totals.model_dump(), source=awards_source(session)
+        period=period(session),
+        **totals.model_dump(),
+        source=awards_source(session, AwardNotice.buyer_cui == cui),
     )
 
 
@@ -70,7 +72,7 @@ def supplier_contracts(session: Db, cui: int) -> SupplierContracts:
         period=period(session),
         alone=_totals(session, own, ~money.is_association),
         association=_totals(session, own, money.is_association),
-        source=awards_source(session),
+        source=awards_source(session, own),
     )
 
 
@@ -104,7 +106,7 @@ def _ranking(
             )
             for rank, (entity, contracts, value) in enumerate(rows, 1)
         ],
-        source=awards_source(session),
+        source=awards_source(session, *won_filters(won), *filters),
     )
 
 

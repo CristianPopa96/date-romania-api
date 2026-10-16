@@ -44,11 +44,23 @@ def _notice_url(notice: AwardNotice) -> str:
     return SEAP_AWARDS.list_url
 
 
-def awards_source(session: Session) -> Source:
+def awards_source(session: Session, *filters: ColumnElement[bool]) -> Source:
+    """The source of a figure added up from many contracts signed in the period, and how
+    many stored responses the contracts under `filters` were read from."""
     fetched = session.scalar(
         select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == SEAP_AWARDS.key)
     )
-    return Source(publisher=SEAP_AWARDS.publisher, url=SEAP_AWARDS.list_url, fetched_at=fetched)
+    documents = session.scalar(
+        select(func.count(AwardContract.source_document_id.distinct()))
+        .join(AwardNotice, AwardContract.notice_id == AwardNotice.id)
+        .where(*in_period(session), *filters)
+    )
+    return Source(
+        publisher=SEAP_AWARDS.publisher,
+        url=SEAP_AWARDS.list_url,
+        fetched_at=fetched,
+        documents=documents,
+    )
 
 
 def period(session: Session) -> Period:

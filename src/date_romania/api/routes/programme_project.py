@@ -186,6 +186,8 @@ def project(session: Db, project_id: int) -> Project:
         else pnias.POSSIBLE
         if any(link.confidence == pnias.POSSIBLE for link in evidence.values())
         else pnias.PROBABLE,
-        source=source(session, PNIAS_PAYMENTS),
-        contracts_source=source(session, SEAP_EXPORTS),
+        source=source(session, PNIAS_PAYMENTS, len({p.source_document_id for p in payments})),
+        contracts_source=source(
+            session, SEAP_EXPORTS, len({c.source_document_id for c in contracts})
+        ),
     )

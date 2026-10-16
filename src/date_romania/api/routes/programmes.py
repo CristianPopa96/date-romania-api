@@ -36,7 +36,9 @@ _LIKE_ESCAPES = str.maketrans({"%": r"\%", "_": r"\_", "\\": r"\\"})
 _PAID = func.coalesce(func.sum(PniasPayment.amount), 0)
 
 
-def source(session: Session, source: PublicSource) -> Source:
+def source(session: Session, source: PublicSource, documents: int) -> Source:
+    """The source of the programme's figures, and how many stored files the rows behind
+    them were read from."""
     fetched = session.scalar(
         select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == source.key)
     )
@@ -46,7 +48,12 @@ def source(session: Session, source: PublicSource) -> Source:
         # The exports have one dataset per year; the link goes to the latest.
         url=source.list_url.format(id=fetched.year if fetched else ""),
         fetched_at=fetched,
+        documents=documents,
     )
+
+
+def _files(session: Session, table) -> int:
+    return session.scalar(select(func.count(table.source_document_id.distinct())))
 
 
 def _groups(session: Session, column: ColumnElement, name=lambda key: key) -> list[ProgrammeGroup]:
@@ -121,8 +128,8 @@ def programme(session: Db) -> Programme:
         ),
         contracts_first_day=contracts_first_day,
         contracts_last_day=contracts_last_day,
-        source=source(session, PNIAS_PAYMENTS),
-        contracts_source=source(session, SEAP_EXPORTS),
+        source=source(session, PNIAS_PAYMENTS, _files(session, PniasPayment)),
+        contracts_source=source(session, SEAP_EXPORTS, _files(session, ExportContract)),
     )
 
 

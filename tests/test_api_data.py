@@ -928,3 +928,28 @@ def test_near_limit_as_csv_lists_every_purchase_with_its_pair(client, session):
     # The filters of the page carry over.
     works = client.get("/v1/patterns/near-limit?format=csv&cpv=45").text.splitlines()
     assert len(works) == 1 + 2
+
+
+def test_a_total_says_how_many_stored_responses_it_is_added_up_from(client, session):
+    # Purchase 5 (the hospital's, from the builder) read from a second response.
+    other = SourceDocument(
+        source="seap-direct",
+        url="https://example.test/b",
+        sha256="b" * 64,
+        storage_key="k",
+        size_bytes=1,
+    )
+    session.add(other)
+    session.flush()
+    session.get(DirectPurchase, 5).source_document_id = other.id
+    session.flush()
+
+    assert client.get("/v1/stats").json()["source"]["documents"] == 2
+    # A figure counts only the responses its own rows come from.
+    town_hall = client.get(f"/v1/institutions/{TOWN_HALL}").json()["source"]
+    hospital = client.get(f"/v1/institutions/{HOSPITAL}").json()["source"]
+    assert (town_hall["documents"], hospital["documents"]) == (1, 2)
+    # One record has its file, a total has none.
+    assert town_hall["sha256"] is None
+    contracts = client.get(f"/v1/institutions/{TOWN_HALL}/contracts").json()["source"]
+    assert contracts["documents"] == 1

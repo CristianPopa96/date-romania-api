@@ -67,12 +67,21 @@ def summary(session: Session, *filters: ColumnElement[bool]) -> Summary:
     return Summary.model_validate(row._mapping)
 
 
-def list_source(session: Session) -> Source:
-    """The source of a figure added up from many purchases: the SEAP list as last fetched."""
+def list_source(session: Session, *filters: ColumnElement[bool]) -> Source:
+    """The source of a figure added up from many purchases: the SEAP list as last fetched,
+    and how many stored responses the purchases under `filters` were read from."""
     fetched = session.scalar(
         select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == SEAP_DIRECT.key)
     )
-    return Source(publisher=SEAP_DIRECT.publisher, url=SEAP_DIRECT.list_url, fetched_at=fetched)
+    documents = session.scalar(
+        select(func.count(DirectPurchase.source_document_id.distinct())).where(*filters)
+    )
+    return Source(
+        publisher=SEAP_DIRECT.publisher,
+        url=SEAP_DIRECT.list_url,
+        fetched_at=fetched,
+        documents=documents,
+    )
 
 
 def ref(entity: Entity | None) -> EntityRef | None:
