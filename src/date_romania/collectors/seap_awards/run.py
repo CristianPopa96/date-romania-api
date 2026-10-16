@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, store_document
+from date_romania.collectors.jobs import job_run, record_parse, store_document
 from date_romania.collectors.seap_awards.fetch import (
     CAP,
     CONTRACTS_URL,
@@ -25,6 +25,7 @@ from date_romania.collectors.seap_awards.fetch import (
 )
 from date_romania.collectors.seap_awards.load import load
 from date_romania.collectors.seap_awards.parse import (
+    PARSER_VERSION,
     Parsed,
     parse_contracts,
     parse_detail,
@@ -63,8 +64,7 @@ def _parse_and_load(
     only when rebuilding from the raw store.
     """
     parsed = _parse(data, url or doc.url)
-    for item, reason in parsed.rejected:
-        log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, item)
+    record_parse(doc, parsed.rejected, PARSER_VERSION)
     load(session, parsed, doc.id)
     return parsed
 

@@ -8,9 +8,9 @@ from sqlalchemy.orm import Session
 from date_romania import pnias
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run
+from date_romania.collectors.jobs import job_run, record_parse
 from date_romania.collectors.pnias.load import load
-from date_romania.collectors.pnias.parse import file_day, parse_payments
+from date_romania.collectors.pnias.parse import PARSER_VERSION, file_day, parse_payments
 from date_romania.dates import today
 from date_romania.models import SourceDocument
 from date_romania.sources import PNIAS_PAYMENTS
@@ -25,8 +25,7 @@ DATASET = "plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prez
 def _parse_and_load(session: Session, doc: SourceDocument) -> int:
     """The publisher's title of the file, kept in `request_body`, gives the payments' day."""
     parsed = parse_payments(get_raw(doc.storage_key), file_day(doc.request_body))
-    for row, reason in parsed.rejected:
-        log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, row)
+    record_parse(doc, parsed.rejected, PARSER_VERSION)
     load(session, parsed, doc.id)
     session.commit()
     log.info(

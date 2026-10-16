@@ -27,7 +27,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -125,7 +127,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -164,7 +168,9 @@
       "record": "DA00000004",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/4",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -197,7 +203,9 @@
       "record": "DA00000003",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/3",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -230,7 +238,9 @@
       "record": "DA00000002",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/2",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -263,7 +273,9 @@
       "record": "DA00000001",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/1",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     }
    ]
@@ -304,7 +316,9 @@
       "record": "DA00000002",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/2",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -337,7 +351,9 @@
       "record": "DA00000001",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/1",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -370,7 +386,9 @@
       "record": "DA00000003",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/3",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     }
    ]
@@ -409,7 +427,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -448,7 +468,9 @@
       "record": "DA00000005",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/5",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -481,7 +503,9 @@
       "record": "DA00000002",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/2",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     },
     {
@@ -514,7 +538,9 @@
       "record": "DA00000001",
       "url": "https://e-licitatie.ro/pub/direct-acquisition/view/1",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 1
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1
      }
     }
    ]
@@ -561,7 +587,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -593,7 +621,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -612,6 +642,7 @@
      "days_collected": 0,
      "days_partial": 0,
      "documents": 1,
+     "rejected_rows": 0,
      "counts": {
       "purchases": 6,
       "accepted": 5,
@@ -629,6 +660,7 @@
      "days_collected": 3,
      "days_partial": 0,
      "documents": 1,
+     "rejected_rows": 2,
      "counts": {
       "notices": 3,
       "contracts": 5,
@@ -646,6 +678,7 @@
      "days_collected": 0,
      "days_partial": 0,
      "documents": 2,
+     "rejected_rows": null,
      "counts": {
       "files": 2,
       "rows": 6,
@@ -663,6 +696,7 @@
      "days_collected": 0,
      "days_partial": 0,
      "documents": 1,
+     "rejected_rows": null,
      "counts": {
       "files": 1,
       "rows": 5
@@ -727,7 +761,9 @@
     "record": "CAN0000001",
     "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 2
+    "document_id": 2,
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "parser_version": 2
    }
   }
  },
@@ -775,7 +811,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -825,7 +863,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -866,7 +906,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -907,7 +949,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -944,7 +988,9 @@
     "record": "SCNA0000002",
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 2
+    "document_id": 2,
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "parser_version": 2
    }
   }
  },
@@ -988,7 +1034,9 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -1033,7 +1081,9 @@
     "record": "CAN0000003",
     "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9003",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 2
+    "document_id": 2,
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "parser_version": 2
    }
   }
  },
@@ -1083,7 +1133,9 @@
     "record": "DA00000003",
     "url": "https://e-licitatie.ro/pub/direct-acquisition/view/3",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 1
+    "document_id": 1,
+    "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "parser_version": 1
    }
   }
  },
@@ -1119,7 +1171,9 @@
     "record": "DA00000004",
     "url": "https://e-licitatie.ro/pub/direct-acquisition/view/4",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 1
+    "document_id": 1,
+    "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "parser_version": 1
    }
   }
  },
@@ -1155,7 +1209,9 @@
     "record": "DA00000005",
     "url": "https://e-licitatie.ro/pub/direct-acquisition/view/5",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 1
+    "document_id": 1,
+    "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "parser_version": 1
    }
   }
  },
@@ -1203,7 +1259,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1254,7 +1312,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1304,7 +1364,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -1330,7 +1392,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1381,7 +1445,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1431,7 +1497,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -1499,7 +1567,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1540,7 +1610,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1577,7 +1649,9 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -1606,7 +1680,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1641,7 +1717,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1676,7 +1754,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1736,7 +1816,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1777,7 +1859,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1814,7 +1898,9 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -1876,7 +1962,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     },
     {
@@ -1917,7 +2005,9 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2
      }
     }
    ]
@@ -1957,7 +2047,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1975,7 +2067,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -1999,7 +2093,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2023,7 +2119,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2151,14 +2249,18 @@
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    },
    "contracts_source": {
     "publisher": "data.gov.ro",
     "record": "ADR · Achiziții publice, contracte",
     "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2451,14 +2553,18 @@
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    },
    "contracts_source": {
     "publisher": "data.gov.ro",
     "record": "ADR · Achiziții publice, contracte",
     "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2557,14 +2663,18 @@
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    },
    "contracts_source": {
     "publisher": "data.gov.ro",
     "record": "ADR · Achiziții publice, contracte",
     "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2618,14 +2728,18 @@
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    },
    "contracts_source": {
     "publisher": "data.gov.ro",
     "record": "ADR · Achiziții publice, contracte",
     "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2679,14 +2793,18 @@
     "record": "MDLPA · Plăți PNIAS 2026-prezent",
     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    },
    "contracts_source": {
     "publisher": "data.gov.ro",
     "record": "ADR · Achiziții publice, contracte",
     "url": "https://data.gov.ro/dataset/achizitii-publice-2026",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2798,7 +2916,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2859,7 +2979,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  },
@@ -2920,7 +3042,9 @@
     "record": null,
     "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null
    }
   }
  }

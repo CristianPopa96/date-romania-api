@@ -103,7 +103,7 @@ def notice_filters(cpv: str | None, eu_funded: bool | None) -> list[ColumnElemen
 
 def _contracts() -> Select:
     return (
-        select(AwardContract, AwardNotice, Buyer, SourceDocument.fetched_at)
+        select(AwardContract, AwardNotice, Buyer, SourceDocument.fetched_at, SourceDocument.sha256)
         .join(AwardNotice, AwardContract.notice_id == AwardNotice.id)
         .outerjoin(Buyer, AwardNotice.buyer_cui == Buyer.cui)
         .join(SourceDocument, AwardContract.source_document_id == SourceDocument.id)
@@ -150,9 +150,11 @@ def _rows(session: Session, query: Select) -> list[Contract]:
                 url=_notice_url(notice),
                 fetched_at=fetched_at,
                 document_id=contract.source_document_id,
+                sha256=sha256,
+                parser_version=contract.parser_version,
             ),
         )
-        for contract, notice, buyer, fetched_at in rows
+        for contract, notice, buyer, fetched_at, sha256 in rows
     ]
 
 
@@ -160,14 +162,14 @@ def _rows(session: Session, query: Select) -> list[Contract]:
 def award_notice(session: Db, notice_id: int) -> AwardNoticeOut:
     """One award notice, by SEAP's own id, in the version in force when it was collected."""
     row = session.execute(
-        select(AwardNotice, Buyer, SourceDocument.fetched_at)
+        select(AwardNotice, Buyer, SourceDocument.fetched_at, SourceDocument.sha256)
         .outerjoin(Buyer, AwardNotice.buyer_cui == Buyer.cui)
         .join(SourceDocument, AwardNotice.source_document_id == SourceDocument.id)
         .where(AwardNotice.id == notice_id)
     ).one_or_none()
     if row is None:
         raise HTTPException(404, f"No award notice with id {notice_id}")
-    notice, buyer, fetched_at = row
+    notice, buyer, fetched_at, sha256 = row
     versions, first_published = session.execute(
         select(func.count(), func.min(AwardNoticeVersion.published_at)).where(
             AwardNoticeVersion.notice_id == notice_id
@@ -212,6 +214,8 @@ def award_notice(session: Db, notice_id: int) -> AwardNoticeOut:
             url=_notice_url(notice),
             fetched_at=fetched_at,
             document_id=notice.source_document_id,
+            sha256=sha256,
+            parser_version=notice.parser_version,
         ),
     )
 

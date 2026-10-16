@@ -22,6 +22,13 @@ class Source(BaseModel):
     url: str | None = None
     fetched_at: datetime | None = Field(None, description="When we last fetched it.")
     document_id: int | None = Field(None, description="Our id of the stored raw response.")
+    # Only for one record: a figure added up from many responses has no single file.
+    sha256: str | None = Field(
+        None, description="SHA-256 of the stored raw response, as it was received."
+    )
+    parser_version: int | None = Field(
+        None, description="Version of the parser that read the record from it."
+    )
 
 
 class EntityRef(BaseModel):
@@ -309,6 +316,10 @@ class Dataset(BaseModel):
         description="Days of the period the source would not give in full; they wait to be read."
     )
     documents: int = Field(description="Raw answers kept from the source, each under its hash.")
+    rejected_rows: int | None = Field(
+        description="Rows of those answers the parser could not read, logged and left out. "
+        "Null until every answer was seen by a parser that counts them."
+    )
     counts: dict[str, int] = Field(
         description="What is held, by kind of row. `records` is the one the totals use."
     )

@@ -194,3 +194,26 @@ def test_a_year_without_a_dataset_is_passed_over(session, datagov):
     pnias.collect(session, client)
     # 2027 has no dataset yet: the made-up site answers "not found" for it.
     assert seap_exports.collect(session, client, last_year=2027) == 4
+
+
+def test_an_export_also_kept_as_text_is_set_aside_and_counted_as_seen(session, datagov):
+    client, _ = datagov
+    pnias.collect(session, client)
+    seap_exports.collect(session, client, last_year=2025)
+    workbook = session.scalars(
+        select(SourceDocument).where(SourceDocument.source == "seap-exports")
+    ).one()
+    text = SourceDocument(
+        source="seap-exports",
+        url=workbook.url.rsplit(".", 1)[0] + ".csv",
+        sha256="f" * 64,
+        storage_key="k",
+        size_bytes=1,
+    )
+    session.add(text)
+    session.flush()
+
+    assert seap_exports.reparse(session) == 1
+    # The workbook is read and counted; the text file is seen and left unread.
+    assert (workbook.parser_version, workbook.rejected_rows) == (1, 0)
+    assert (text.parser_version, text.rejected_rows) == (1, None)

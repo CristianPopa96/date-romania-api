@@ -72,7 +72,7 @@ def _last_run_whole(session: Session, job: str) -> bool:
     return status in (None, "succeeded")
 
 
-def _file_datasets(session: Session, fetched: dict, stored: dict) -> list[Dataset]:
+def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict) -> list[Dataset]:
     """The sources that come as files, not as days: listed once we hold a file of theirs.
 
     Their period is what the files cover, and no day of it is read or missed.
@@ -109,6 +109,7 @@ def _file_datasets(session: Session, fetched: dict, stored: dict) -> list[Datase
             days_collected=0,
             days_partial=0,
             documents=stored[source.key],
+            rejected_rows=rejected[source.key],
             counts={"files": stored[source.key], "rows": records, **counts},
         )
         for source, first, last, records, counts in held
@@ -120,15 +121,26 @@ def _file_datasets(session: Session, fetched: dict, stored: dict) -> list[Datase
 def datasets(session: Db) -> Datasets:
     """What the site is built on: each source, the days we hold and how many records."""
     documents = {
-        source: (fetched, count)
-        for source, fetched, count in session.execute(
+        source: (fetched, count, counted, rejected)
+        for source, fetched, count, counted, rejected in session.execute(
             select(
-                SourceDocument.source, func.max(SourceDocument.fetched_at), func.count()
+                SourceDocument.source,
+                func.max(SourceDocument.fetched_at),
+                func.count(),
+                func.count(SourceDocument.parser_version),
+                func.coalesce(func.sum(SourceDocument.rejected_rows), 0),
             ).group_by(SourceDocument.source)
         )
     }
-    fetched = {source: at for source, (at, _) in documents.items()}
-    stored = {source: count for source, (_, count) in documents.items()}
+    fetched = {source: at for source, (at, *_) in documents.items()}
+    stored = {source: count for source, (_, count, *_) in documents.items()}
+    # Known only once every document of the source was seen by a parser that counts: read,
+    # or set aside unread. Until a reparse after the count began, a few new documents would
+    # otherwise read as the whole source.
+    rejected = {
+        source: int(total) if counted == count else None
+        for source, (_, count, counted, total) in documents.items()
+    }
     direct = summary(session)
     period = money.contracts_period(session)
     contracts = session.scalar(
@@ -153,6 +165,7 @@ def datasets(session: Db) -> Datasets:
                 days_collected=direct_days[0],
                 days_partial=direct_days[1],
                 documents=stored.get(SEAP_DIRECT.key, 0),
+                rejected_rows=rejected.get(SEAP_DIRECT.key),
                 counts={
                     "purchases": direct.purchases,
                     "accepted": direct.accepted,
@@ -171,10 +184,11 @@ def datasets(session: Db) -> Datasets:
                 days_collected=awards_days[0],
                 days_partial=awards_days[1],
                 documents=stored.get(SEAP_AWARDS.key, 0),
+                rejected_rows=rejected.get(SEAP_AWARDS.key),
                 # Notices carry contracts signed years before the days read; only the
                 # ones signed inside those days are counted.
                 counts={"notices": notices, "contracts": held, "counted_contracts": contracts},
             ),
-            *_file_datasets(session, fetched, stored),
+            *_file_datasets(session, fetched, stored, rejected),
         ]
     )

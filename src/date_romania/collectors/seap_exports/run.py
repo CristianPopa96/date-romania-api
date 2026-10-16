@@ -10,9 +10,9 @@ from sqlalchemy.orm import Session
 from date_romania import pnias
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run
+from date_romania.collectors.jobs import job_run, record_parse, record_skipped
 from date_romania.collectors.seap_exports.load import load
-from date_romania.collectors.seap_exports.parse import parse_contracts
+from date_romania.collectors.seap_exports.parse import PARSER_VERSION, parse_contracts
 from date_romania.dates import today
 from date_romania.models import PniasPayment, SourceDocument
 from date_romania.sources import SEAP_EXPORTS
@@ -59,8 +59,7 @@ def _suppliers(session: Session) -> set[int]:
 
 def _parse_and_load(session: Session, doc: SourceDocument, suppliers: set[int]) -> int:
     parsed = parse_contracts(get_raw(doc.storage_key), suppliers)
-    for row, reason in parsed.rejected:
-        log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, row)
+    record_parse(doc, parsed.rejected, PARSER_VERSION)
     load(session, parsed, doc.id)
     session.commit()
     log.info(
@@ -129,6 +128,8 @@ def reparse(session: Session) -> int:
     urls = chosen(list(docs))
     for url in urls:
         _parse_and_load(session, docs[url], suppliers)
+    for url in docs.keys() - set(urls):
+        record_skipped(docs[url], PARSER_VERSION, "the same quarter is read from its workbook")
     pnias.link(session)
     session.commit()
     return len(urls)

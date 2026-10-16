@@ -103,6 +103,28 @@ def store_document(
     return doc
 
 
+def record_parse(
+    doc: SourceDocument, rejected: list[tuple[object, str]], parser_version: int
+) -> None:
+    """Log each row the parser could not read, and keep on the document how many there
+    were and which parser read it, so the sources page can show them. Never drop a row
+    silently: every parse of a stored document goes through here.
+    """
+    for row, reason in rejected:
+        log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, row)
+    doc.parser_version = parser_version
+    doc.rejected_rows = len(rejected)
+
+
+def record_skipped(doc: SourceDocument, parser_version: int, reason: str) -> None:
+    """Mark a stored document as seen and set aside by this parser, unread: its source's
+    count of rejected rows is then complete without it.
+    """
+    log.info("source_document %d: not read: %s", doc.id, reason)
+    doc.parser_version = parser_version
+    doc.rejected_rows = None
+
+
 @contextmanager
 def job_run(session: Session, job: str, day: date) -> Iterator[JobRun]:
     """Record one run for one day. The caller sets `records`; a raised error marks it failed.

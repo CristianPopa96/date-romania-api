@@ -14,6 +14,7 @@ from sqlalchemy import select
 
 from date_romania.api import main
 from date_romania.api.main import app
+from date_romania.collectors.jobs import record_skipped
 from date_romania.dates import day_bounds
 from date_romania.db import get_session
 from date_romania.models import (
@@ -93,6 +94,8 @@ def add_award_notices(session):
         sha256="a" * 64,
         storage_key="k",
         size_bytes=1,
+        parser_version=2,
+        rejected_rows=2,
     )
     session.add(doc)
     for day in (5, 6, 7):
@@ -208,6 +211,8 @@ def client(session):
         sha256="d" * 64,
         storage_key="k",
         size_bytes=1,
+        parser_version=3,
+        rejected_rows=0,
     )
     session.add(doc)
     session.add_all(
@@ -334,6 +339,8 @@ def test_direct_purchase_carries_its_parties_and_its_source(client):
     assert row["source"]["record"] == "DA00000005"
     assert row["source"]["url"].endswith("/5")
     assert row["source"]["document_id"] is not None
+    # One record: the hash of the stored response and the parser that read it.
+    assert (row["source"]["sha256"], row["source"]["parser_version"]) == ("d" * 64, 1)
 
     foreign = client.get("/v1/direct-purchases/6").json()
     assert foreign["supplier"] is None
@@ -434,6 +441,7 @@ def test_a_notice_not_yet_read_in_detail_says_so_with_nulls(client):
     )
     # Only notices of type 3 have a public page we have checked.
     assert notice["source"]["url"].endswith("/contract-award-notices/list/0/0")
+    assert notice["source"]["sha256"] == "a" * 64
 
     empty = client.get(f"/v1/award-notices/{CANCELLED}").json()
     assert (empty["contracts"], empty["total"]) == (0, 0)
@@ -624,6 +632,32 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert direct["counts"] == {"purchases": 6, "accepted": 5, "above_limit": 1}
     assert (awards["days_collected"], awards["days_partial"], awards["documents"]) == (3, 0, 1)
     assert (direct["days_collected"], direct["documents"]) == (0, 1)
+    # Rows the parser could not read: none, two, and not known for files parsed before
+    # the count was kept.
+    assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
+    assert [each["rejected_rows"] for each in files] == [None, None]
+
+
+def test_rejected_rows_are_known_only_once_every_document_was_seen(client, session):
+    session.add(
+        SourceDocument(
+            source="seap-direct",
+            url="https://example.test/2",
+            sha256="e" * 64,
+            storage_key="k",
+            size_bytes=1,
+        )
+    )
+    session.flush()
+    direct = client.get("/v1/datasets").json()["items"][0]
+    # One document from before the count: the source's count is not known.
+    assert (direct["documents"], direct["rejected_rows"]) == (2, None)
+    # Set aside unread by a parser that counts, it no longer stands in the way.
+    record_skipped(
+        session.scalar(select(SourceDocument).where(SourceDocument.sha256 == "e" * 64)), 3, "test"
+    )
+    session.flush()
+    assert client.get("/v1/datasets").json()["items"][0]["rejected_rows"] == 0
 
 
 def test_a_day_read_outside_the_period_is_not_counted_with_its_days(client, session):
