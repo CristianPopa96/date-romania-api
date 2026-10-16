@@ -19,7 +19,7 @@ Buyer, Supplier = aliased(Entity), aliased(Entity)
 
 def _purchases() -> Select:
     return (
-        select(DirectPurchase, Buyer, Supplier, SourceDocument.fetched_at)
+        select(DirectPurchase, Buyer, Supplier, SourceDocument.fetched_at, SourceDocument.sha256)
         .outerjoin(Buyer, DirectPurchase.buyer_cui == Buyer.cui)
         .outerjoin(Supplier, DirectPurchase.supplier_cui == Supplier.cui)
         .join(SourceDocument, DirectPurchase.source_document_id == SourceDocument.id)
@@ -27,7 +27,7 @@ def _purchases() -> Select:
 
 
 def _purchase(row) -> Purchase:
-    purchase, buyer, supplier, fetched_at = row
+    purchase, buyer, supplier, fetched_at, sha256 = row
     value = purchase.closing_value
     return Purchase(
         id=purchase.id,
@@ -52,6 +52,8 @@ def _purchase(row) -> Purchase:
             url=SEAP_DIRECT.record_url.format(id=purchase.id),
             fetched_at=fetched_at,
             document_id=purchase.source_document_id,
+            sha256=sha256,
+            parser_version=purchase.parser_version,
         ),
     )
 

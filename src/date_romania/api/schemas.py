@@ -22,6 +22,13 @@ class Source(BaseModel):
     url: str | None = None
     fetched_at: datetime | None = Field(None, description="When we last fetched it.")
     document_id: int | None = Field(None, description="Our id of the stored raw response.")
+    # Only for one record: a figure added up from many responses has no single file.
+    sha256: str | None = Field(
+        None, description="SHA-256 of the stored raw response, as it was received."
+    )
+    parser_version: int | None = Field(
+        None, description="Version of the parser that read the record from it."
+    )
 
 
 class EntityRef(BaseModel):

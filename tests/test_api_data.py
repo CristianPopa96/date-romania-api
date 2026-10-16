@@ -338,6 +338,8 @@ def test_direct_purchase_carries_its_parties_and_its_source(client):
     assert row["source"]["record"] == "DA00000005"
     assert row["source"]["url"].endswith("/5")
     assert row["source"]["document_id"] is not None
+    # One record: the hash of the stored response and the parser that read it.
+    assert (row["source"]["sha256"], row["source"]["parser_version"]) == ("d" * 64, 1)
 
     foreign = client.get("/v1/direct-purchases/6").json()
     assert foreign["supplier"] is None
@@ -438,6 +440,7 @@ def test_a_notice_not_yet_read_in_detail_says_so_with_nulls(client):
     )
     # Only notices of type 3 have a public page we have checked.
     assert notice["source"]["url"].endswith("/contract-award-notices/list/0/0")
+    assert notice["source"]["sha256"] == "a" * 64
 
     empty = client.get(f"/v1/award-notices/{CANCELLED}").json()
     assert (empty["contracts"], empty["total"]) == (0, 0)
