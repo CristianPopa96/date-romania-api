@@ -657,6 +657,113 @@ def test_a_buyer_and_a_supplier_have_a_summary_together(client):
     assert (other["purchases"], other["accepted"], other["value"]) == (2, 1, 500)
 
 
+GOODS, SERVICES, WORKS = 1, 2, 3
+
+
+def add_near_limit(session):
+    """Purchases near their limit: 270,120 lei for goods and services, 900,400 for works."""
+    doc = session.scalar(select(SourceDocument).where(SourceDocument.source == "seap-direct"))
+    rows = [
+        purchase(20, HOSPITAL, STATIONER, 7, "250000", "2026-10-05T10:00:00+03:00"),
+        purchase(21, HOSPITAL, STATIONER, 7, "265000", "2026-10-06T10:00:00+03:00"),
+        # At the limit is not under it; far under it is not near it.
+        purchase(22, HOSPITAL, STATIONER, 7, "270120", "2026-10-06T11:00:00+03:00"),
+        purchase(23, HOSPITAL, STATIONER, 7, "200000", "2026-10-06T12:00:00+03:00"),
+        purchase(
+            24,
+            TOWN_HALL,
+            BUILDER,
+            7,
+            "850000",
+            "2026-10-05T11:00:00+03:00",
+            cpv_code="45000000-7",
+            cpv_name="Lucrari de constructii",
+            contract_type_id=WORKS,
+        ),
+        purchase(
+            25,
+            TOWN_HALL,
+            BUILDER,
+            7,
+            "880000",
+            "2026-10-07T11:00:00+03:00",
+            cpv_code="45233140-2",
+            contract_type_id=WORKS,
+        ),
+        # Once only: no pattern.
+        purchase(26, TOWN_HALL, STATIONER, 7, "260000", "2026-10-06T13:00:00+03:00"),
+        # Its type is not known, so it cannot be checked.
+        purchase(27, HOSPITAL, STATIONER, 7, "260000", "2026-10-07T10:00:00+03:00"),
+        # Refused: never money spent.
+        purchase(28, HOSPITAL, STATIONER, 3, "260000", "2026-10-07T11:00:00+03:00"),
+    ]
+    kinds = {20: GOODS, 21: GOODS, 22: GOODS, 23: GOODS, 26: SERVICES, 28: GOODS}
+    for row in rows:
+        row.source_document_id = doc.id
+        row.contract_type_id = row.contract_type_id or kinds.get(row.id)
+    session.add_all(rows)
+    session.flush()
+
+
+def test_near_limit_lists_repeated_purchases_just_under_their_own_limit(client, session):
+    add_near_limit(session)
+    pattern = client.get("/v1/patterns/near-limit").json()
+    assert pattern["rule"] == {
+        "share": 0.9,
+        "repeats": 2,
+        "limits": {"1": 270120.0, "2": 270120.0, "3": 900400.0},
+    }
+    assert pattern["pairs"] == 2
+    assert [
+        (p["buyer"]["cui"], p["supplier"]["cui"], p["contract_type"], p["purchases"], p["value"])
+        for p in pattern["items"]
+    ] == [
+        (TOWN_HALL, BUILDER, WORKS, 2, 1730000.0),
+        (HOSPITAL, STATIONER, GOODS, 2, 515000.0),
+    ]
+    assert pattern["items"][0]["limit"] == 900400.0
+    assert [row["id"] for row in pattern["items"][1]["items"]] == [20, 21]
+    # Purchases 1, 2, 3, 5 and 6 of the fixture and 27 here have no type.
+    assert pattern["unknown_type"] == 6
+    assert (pattern["first_day"], pattern["last_day"]) == ("2026-10-05", "2026-10-07")
+
+
+def test_near_limit_can_be_narrowed_by_cpv_and_cut_short(client, session):
+    add_near_limit(session)
+    works = client.get("/v1/patterns/near-limit?cpv=45").json()
+    assert [p["supplier"]["cui"] for p in works["items"]] == [BUILDER]
+    assert works["unknown_type"] == 1
+    short = client.get("/v1/patterns/near-limit?limit=1").json()
+    assert (short["pairs"], len(short["items"])) == (2, 1)
+    assert client.get("/v1/patterns/near-limit?cpv=4x").status_code == 422
+
+
+def test_rankings_can_be_filtered_by_cpv_and_eu_funds(client):
+    def cuis(path):
+        return [row["cui"] for row in client.get(path).json()["items"]]
+
+    assert cuis("/v1/rankings/suppliers?cpv=4523") == [STATIONER]
+    assert cuis("/v1/rankings/institutions?cpv=4523") == [TOWN_HALL]
+    assert cuis("/v1/rankings/contract-institutions?eu_funded=true") == [TOWN_HALL]
+    # The notice of the hospital is not read in detail: in neither list.
+    assert cuis("/v1/rankings/contract-institutions?eu_funded=false") == []
+    assert cuis("/v1/rankings/contract-institutions?cpv=30") == []
+    assert cuis("/v1/rankings/contract-suppliers?won=association&cpv=45") == [
+        BUILDER,
+        STATIONER,
+    ]
+    largest = client.get("/v1/award-contracts?sort=value&eu_funded=true").json()
+    assert [item["id"] for item in largest["items"]] == [101, 103]
+
+
+def test_cpv_divisions_are_those_held_with_seap_names(client, session):
+    add_near_limit(session)
+    assert client.get("/v1/cpv-divisions").json() == [
+        {"code": "30", "name": None},
+        {"code": "45", "name": "Lucrari de constructii"},
+    ]
+
+
 SITE_CALLS = (
     "/v1/health",
     "/v1/stats",
@@ -701,6 +808,17 @@ SITE_CALLS = (
     "/v1/rankings/contract-suppliers?won=alone&limit=20",
     "/v1/rankings/contract-suppliers?won=association&limit=20",
     "/v1/rankings/contract-institutions?limit=20",
+    # The rankings with their filters, and the patterns.
+    "/v1/cpv-divisions",
+    "/v1/award-contracts?sort=value&cpv=45&eu_funded=true&limit=20&offset=0",
+    "/v1/award-contracts?sort=value&cpv=30&limit=20&offset=0",
+    "/v1/rankings/contract-suppliers?won=alone&cpv=45&limit=20",
+    "/v1/rankings/contract-institutions?eu_funded=false&limit=20",
+    "/v1/rankings/suppliers?cpv=45&limit=20",
+    "/v1/rankings/institutions?cpv=45&limit=20",
+    "/v1/patterns/near-limit?limit=50",
+    "/v1/patterns/near-limit?cpv=45&limit=50",
+    "/v1/patterns/near-limit?cpv=30&limit=50",
     "/v1/programmes/anghel-saligny",
     "/v1/programmes/anghel-saligny/projects?limit=20&offset=0",
     "/v1/programmes/anghel-saligny/projects?county=GORJ&limit=20&offset=0",
@@ -729,7 +847,7 @@ def _steady(value):
     return value
 
 
-def test_the_site_stub_holds_what_the_api_answers(client, monkeypatch):
+def test_the_site_stub_holds_what_the_api_answers(client, session, monkeypatch):
     """Fails when an answer the site depends on changes.
 
     Then run `WRITE_SITE_STUB=1 uv run pytest tests/test_api_data.py`, and copy the file to
@@ -737,6 +855,7 @@ def test_the_site_stub_holds_what_the_api_answers(client, monkeypatch):
     change does to the pages.
     """
     monkeypatch.setattr(main, "database_ok", lambda: True)
+    add_near_limit(session)
     answers = {}
     for call in SITE_CALLS:
         response = client.get(call)

@@ -5,8 +5,16 @@ from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
 from date_romania import money
-from date_romania.api.routes.awards import Won, awards_source, in_period, period, won_filters
-from date_romania.api.routes.common import Db, Limit, ref
+from date_romania.api.routes.awards import (
+    EuFunded,
+    Won,
+    awards_source,
+    in_period,
+    notice_filters,
+    period,
+    won_filters,
+)
+from date_romania.api.routes.common import Cpv, Db, Limit, ref
 from date_romania.api.schemas import (
     ContractRanking,
     ContractRankingRow,
@@ -67,7 +75,12 @@ def supplier_contracts(session: Db, cui: int) -> SupplierContracts:
 
 
 def _ranking(
-    session: Session, side: ColumnElement, won: Won | None, limit: int, *joins
+    session: Session,
+    side: ColumnElement,
+    won: Won | None,
+    filters: list[ColumnElement[bool]],
+    limit: int,
+    *joins,
 ) -> ContractRanking:
     query = select(Entity, func.count().label("contracts"), money.contract_value.label("value"))
     query = query.select_from(AwardContract).join(
@@ -77,7 +90,7 @@ def _ranking(
         query = query.join(target, on)
     rows = session.execute(
         query.join(Entity, Entity.cui == side)
-        .where(*in_period(session), *won_filters(won))
+        .where(*in_period(session), *won_filters(won), *filters)
         .group_by(Entity.cui)
         .order_by(money.contract_value.desc(), Entity.cui)
         .limit(limit)
@@ -97,7 +110,11 @@ def _ranking(
 
 @router.get("/rankings/contract-suppliers", tags=["rankings"])
 def ranking_contract_suppliers(
-    session: Db, won: Won = "alone", limit: Limit = 20
+    session: Db,
+    won: Won = "alone",
+    cpv: Cpv = None,
+    eu_funded: EuFunded = None,
+    limit: Limit = 20,
 ) -> ContractRanking:
     """Companies by the value of the contracts they won, alone or in associations.
 
@@ -106,10 +123,14 @@ def ranking_contract_suppliers(
     # SEAP can list one company twice among the winners of a contract: count it once.
     members = select(AwardWinner.contract_id, AwardWinner.supplier_cui).distinct().subquery()
     winners = (members, members.c.contract_id == AwardContract.id)
-    return _ranking(session, members.c.supplier_cui, won, limit, winners)
+    filters = notice_filters(cpv, eu_funded)
+    return _ranking(session, members.c.supplier_cui, won, filters, limit, winners)
 
 
 @router.get("/rankings/contract-institutions", tags=["rankings"])
-def ranking_contract_institutions(session: Db, limit: Limit = 20) -> ContractRanking:
+def ranking_contract_institutions(
+    session: Db, cpv: Cpv = None, eu_funded: EuFunded = None, limit: Limit = 20
+) -> ContractRanking:
     """Institutions by the value of the contracts they awarded; each contract counted once."""
-    return _ranking(session, AwardNotice.buyer_cui, None, limit)
+    filters = notice_filters(cpv, eu_funded)
+    return _ranking(session, AwardNotice.buyer_cui, None, filters, limit)

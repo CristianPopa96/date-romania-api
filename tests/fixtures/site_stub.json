@@ -11,9 +11,9 @@
   "status": 200,
   "body": {
    "direct_purchases": {
-    "purchases": 6,
-    "accepted": 5,
-    "value": 4200.0,
+    "purchases": 15,
+    "accepted": 13,
+    "value": 3239320.0,
     "above_limit": 1,
     "above_limit_value": 5000000.0,
     "first_day": "2026-10-05",
@@ -96,28 +96,28 @@
     "locality": null
    },
    "direct_purchases": {
-    "purchases": 4,
-    "accepted": 3,
-    "value": 3500.0,
+    "purchases": 7,
+    "accepted": 6,
+    "value": 1993500.0,
     "above_limit": 0,
     "above_limit_value": 0.0,
     "first_day": "2026-10-05",
-    "last_day": "2026-10-06"
+    "last_day": "2026-10-07"
    },
    "partners": [
     {
      "cui": 17886786,
      "name": "ALFA CONSTRUCT S.R.L.",
      "kind": "company",
-     "accepted": 2,
-     "value": 3000.0
+     "accepted": 4,
+     "value": 1733000.0
     },
     {
      "cui": 18288250,
      "name": "Beta Birotică SRL",
      "kind": "company",
-     "accepted": 1,
-     "value": 500.0
+     "accepted": 2,
+     "value": 260500.0
     }
    ],
    "source": {
@@ -132,8 +132,74 @@
  "/v1/direct-purchases?buyer=4981310&sort=newest&limit=20&offset=0": {
   "status": 200,
   "body": {
-   "total": 4,
+   "total": 7,
    "items": [
+    {
+     "id": 25,
+     "code": "DA00000025",
+     "name": "Purchase 25",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45233140-2",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-07T08:00:00Z",
+     "estimated_value": 880000.0,
+     "value": 880000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000025",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/25",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
+    {
+     "id": 26,
+     "code": "DA00000026",
+     "name": "Purchase 26",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 18288250,
+      "name": "Beta Birotică SRL",
+      "kind": "company"
+     },
+     "supplier_text": "RO 18288250 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-06T10:00:00Z",
+     "estimated_value": 260000.0,
+     "value": 260000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000026",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/26",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
     {
      "id": 4,
      "code": "DA00000004",
@@ -234,6 +300,39 @@
      }
     },
     {
+     "id": 24,
+     "code": "DA00000024",
+     "name": "Purchase 24",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45000000-7",
+     "cpv_name": "Lucrari de constructii",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-05T08:00:00Z",
+     "estimated_value": 850000.0,
+     "value": 850000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000024",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/24",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
+    {
      "id": 1,
      "code": "DA00000001",
      "name": "Purchase 1",
@@ -272,8 +371,107 @@
  "/v1/direct-purchases?buyer=4981310&sort=value&state=7&limit=20&offset=0": {
   "status": 200,
   "body": {
-   "total": 3,
+   "total": 6,
    "items": [
+    {
+     "id": 25,
+     "code": "DA00000025",
+     "name": "Purchase 25",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45233140-2",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-07T08:00:00Z",
+     "estimated_value": 880000.0,
+     "value": 880000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000025",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/25",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
+    {
+     "id": 24,
+     "code": "DA00000024",
+     "name": "Purchase 24",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45000000-7",
+     "cpv_name": "Lucrari de constructii",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-05T08:00:00Z",
+     "estimated_value": 850000.0,
+     "value": 850000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000024",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/24",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
+    {
+     "id": 26,
+     "code": "DA00000026",
+     "name": "Purchase 26",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 18288250,
+      "name": "Beta Birotică SRL",
+      "kind": "company"
+     },
+     "supplier_text": "RO 18288250 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-06T10:00:00Z",
+     "estimated_value": 260000.0,
+     "value": 260000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000026",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/26",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
     {
      "id": 2,
      "code": "DA00000002",
@@ -387,21 +585,21 @@
     "locality": null
    },
    "direct_purchases": {
-    "purchases": 3,
-    "accepted": 3,
-    "value": 3000.0,
+    "purchases": 5,
+    "accepted": 5,
+    "value": 1733000.0,
     "above_limit": 1,
     "above_limit_value": 5000000.0,
     "first_day": "2026-10-05",
-    "last_day": "2026-10-06"
+    "last_day": "2026-10-07"
    },
    "partners": [
     {
      "cui": 4981310,
      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
      "kind": "authority",
-     "accepted": 2,
-     "value": 3000.0
+     "accepted": 4,
+     "value": 1733000.0
     }
    ],
    "source": {
@@ -416,8 +614,41 @@
  "/v1/direct-purchases?supplier=17886786&sort=newest&limit=20&offset=0": {
   "status": 200,
   "body": {
-   "total": 3,
+   "total": 5,
    "items": [
+    {
+     "id": 25,
+     "code": "DA00000025",
+     "name": "Purchase 25",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45233140-2",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-07T08:00:00Z",
+     "estimated_value": 880000.0,
+     "value": 880000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000025",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/25",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
     {
      "id": 5,
      "code": "DA00000005",
@@ -485,6 +716,39 @@
      }
     },
     {
+     "id": 24,
+     "code": "DA00000024",
+     "name": "Purchase 24",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45000000-7",
+     "cpv_name": "Lucrari de constructii",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-05T08:00:00Z",
+     "estimated_value": 850000.0,
+     "value": 850000.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000024",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/24",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1
+     }
+    },
+    {
      "id": 1,
      "code": "DA00000001",
      "name": "Purchase 1",
@@ -543,16 +807,16 @@
      "cui": 17886786,
      "name": "ALFA CONSTRUCT S.R.L.",
      "kind": "company",
-     "accepted": 2,
-     "value": 3000.0,
+     "accepted": 4,
+     "value": 1733000.0,
      "rank": 1
     },
     {
      "cui": 18288250,
      "name": "Beta Birotică SRL",
      "kind": "company",
-     "accepted": 1,
-     "value": 500.0,
+     "accepted": 7,
+     "value": 1505620.0,
      "rank": 2
     }
    ],
@@ -575,16 +839,16 @@
      "cui": 4981310,
      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
      "kind": "authority",
-     "accepted": 3,
-     "value": 3500.0,
+     "accepted": 6,
+     "value": 1993500.0,
      "rank": 1
     },
     {
      "cui": 4491342,
      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
      "kind": "authority",
-     "accepted": 1,
-     "value": 700.0,
+     "accepted": 6,
+     "value": 1245820.0,
      "rank": 2
     }
    ],
@@ -606,15 +870,15 @@
      "publisher": "SEAP",
      "first_day": "2026-10-05",
      "last_day": "2026-10-07",
-     "records": 6,
+     "records": 15,
      "complete": true,
      "fetched_at": "2026-10-07T04:30:00Z",
      "days_collected": 0,
      "days_partial": 0,
      "documents": 1,
      "counts": {
-      "purchases": 6,
-      "accepted": 5,
+      "purchases": 15,
+      "accepted": 13,
       "above_limit": 1
      }
     },
@@ -1168,9 +1432,9 @@
  "/v1/direct-purchases/summary?buyer=4981310&supplier=18288250": {
   "status": 200,
   "body": {
-   "purchases": 2,
-   "accepted": 1,
-   "value": 500.0,
+   "purchases": 3,
+   "accepted": 2,
+   "value": 260500.0,
    "above_limit": 0,
    "above_limit_value": 0.0,
    "first_day": "2026-10-06",
@@ -1675,6 +1939,443 @@
     "publisher": "SEAP",
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/cpv-divisions": {
+  "status": 200,
+  "body": [
+   {
+    "code": "30",
+    "name": null
+   },
+   {
+    "code": "45",
+    "name": "Lucrari de constructii"
+   }
+  ]
+ },
+ "/v1/award-contracts?sort=value&cpv=45&eu_funded=true&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": [
+    {
+     "id": 101,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "101",
+     "title": "Contract 101",
+     "signed_at": "2026-10-05T09:00:00Z",
+     "kind": 1,
+     "counted": true,
+     "lots": null,
+     "value": 6120000.0,
+     "original_value": 6120000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      },
+      {
+       "supplier": {
+        "cui": 18288250,
+        "name": "Beta Birotică SRL",
+        "kind": "company"
+       },
+       "text": "18288250",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 2
+     }
+    },
+    {
+     "id": 103,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "103",
+     "title": "Contract 103",
+     "signed_at": "2026-10-06T09:00:00Z",
+     "kind": 3,
+     "counted": true,
+     "lots": null,
+     "value": 210000.0,
+     "original_value": 210000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 2
+     }
+    }
+   ]
+  }
+ },
+ "/v1/award-contracts?sort=value&cpv=30&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 0,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": []
+  }
+ },
+ "/v1/rankings/contract-suppliers?won=alone&cpv=45&limit=20": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": "alone",
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "rank": 1,
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?eu_funded=false&limit=20": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "items": [],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/rankings/suppliers?cpv=45&limit=20": {
+  "status": 200,
+  "body": {
+   "date_from": null,
+   "date_to": null,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "accepted": 2,
+     "value": 1730000.0,
+     "rank": 1
+    },
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
+     "accepted": 1,
+     "value": 500.0,
+     "rank": 2
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/rankings/institutions?cpv=45&limit=20": {
+  "status": 200,
+  "body": {
+   "date_from": null,
+   "date_to": null,
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "accepted": 3,
+     "value": 1730500.0,
+     "rank": 1
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/patterns/near-limit?limit=50": {
+  "status": 200,
+  "body": {
+   "rule": {
+    "share": 0.9,
+    "repeats": 2,
+    "limits": {
+     "1": 270120.0,
+     "2": 270120.0,
+     "3": 900400.0
+    }
+   },
+   "first_day": "2026-10-05",
+   "last_day": "2026-10-07",
+   "pairs": 2,
+   "items": [
+    {
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "contract_type": 3,
+     "limit": 900400.0,
+     "purchases": 2,
+     "value": 1730000.0,
+     "items": [
+      {
+       "id": 24,
+       "code": "DA00000024",
+       "name": "Purchase 24",
+       "finalized_at": "2026-10-05T08:00:00Z",
+       "value": 850000.0
+      },
+      {
+       "id": 25,
+       "code": "DA00000025",
+       "name": "Purchase 25",
+       "finalized_at": "2026-10-07T08:00:00Z",
+       "value": 880000.0
+      }
+     ]
+    },
+    {
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "supplier": {
+      "cui": 18288250,
+      "name": "Beta Birotică SRL",
+      "kind": "company"
+     },
+     "contract_type": 1,
+     "limit": 270120.0,
+     "purchases": 2,
+     "value": 515000.0,
+     "items": [
+      {
+       "id": 20,
+       "code": "DA00000020",
+       "name": "Purchase 20",
+       "finalized_at": "2026-10-05T07:00:00Z",
+       "value": 250000.0
+      },
+      {
+       "id": 21,
+       "code": "DA00000021",
+       "name": "Purchase 21",
+       "finalized_at": "2026-10-06T07:00:00Z",
+       "value": 265000.0
+      }
+     ]
+    }
+   ],
+   "unknown_type": 6,
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/patterns/near-limit?cpv=45&limit=50": {
+  "status": 200,
+  "body": {
+   "rule": {
+    "share": 0.9,
+    "repeats": 2,
+    "limits": {
+     "1": 270120.0,
+     "2": 270120.0,
+     "3": 900400.0
+    }
+   },
+   "first_day": "2026-10-05",
+   "last_day": "2026-10-07",
+   "pairs": 1,
+   "items": [
+    {
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "contract_type": 3,
+     "limit": 900400.0,
+     "purchases": 2,
+     "value": 1730000.0,
+     "items": [
+      {
+       "id": 24,
+       "code": "DA00000024",
+       "name": "Purchase 24",
+       "finalized_at": "2026-10-05T08:00:00Z",
+       "value": 850000.0
+      },
+      {
+       "id": 25,
+       "code": "DA00000025",
+       "name": "Purchase 25",
+       "finalized_at": "2026-10-07T08:00:00Z",
+       "value": 880000.0
+      }
+     ]
+    }
+   ],
+   "unknown_type": 1,
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null
+   }
+  }
+ },
+ "/v1/patterns/near-limit?cpv=30&limit=50": {
+  "status": 200,
+  "body": {
+   "rule": {
+    "share": 0.9,
+    "repeats": 2,
+    "limits": {
+     "1": 270120.0,
+     "2": 270120.0,
+     "3": 900400.0
+    }
+   },
+   "first_day": "2026-10-05",
+   "last_day": "2026-10-07",
+   "pairs": 1,
+   "items": [
+    {
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "supplier": {
+      "cui": 18288250,
+      "name": "Beta Birotică SRL",
+      "kind": "company"
+     },
+     "contract_type": 1,
+     "limit": 270120.0,
+     "purchases": 2,
+     "value": 515000.0,
+     "items": [
+      {
+       "id": 20,
+       "code": "DA00000020",
+       "name": "Purchase 20",
+       "finalized_at": "2026-10-05T07:00:00Z",
+       "value": 250000.0
+      },
+      {
+       "id": 21,
+       "code": "DA00000021",
+       "name": "Purchase 21",
+       "finalized_at": "2026-10-06T07:00:00Z",
+       "value": 265000.0
+      }
+     ]
+    }
+   ],
+   "unknown_type": 5,
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
     "document_id": null
    }

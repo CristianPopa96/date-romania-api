@@ -33,20 +33,27 @@ def upsert_rows(
     model: type[DeclarativeBase],
     rows: Sequence[dict],
     index_elements: tuple[str, ...] = ("id",),
+    keep: tuple[str, ...] = (),
 ) -> None:
     """Insert rows keyed by the publisher's own id; a row already stored is replaced.
 
     Every column is updated except the key and `updated_at`, which is set to now, so a row
-    must carry every value it means to keep.
+    must carry every value it means to keep. A column in `keep` keeps its stored value
+    when the new row has none for it.
     """
+    table = model.__table__
     for batch in batched(rows, 500):
         statement = insert(model).values(list(batch))
         changed = {
-            column.name: statement.excluded[column.name]
-            for column in model.__table__.columns
+            column.name: (
+                func.coalesce(statement.excluded[column.name], column)
+                if column.name in keep
+                else statement.excluded[column.name]
+            )
+            for column in table.columns
             if column.name not in (*index_elements, "updated_at")
         }
-        if "updated_at" in model.__table__.columns:
+        if "updated_at" in table.columns:
             changed["updated_at"] = func.now()
         session.execute(
             statement.on_conflict_do_update(index_elements=list(index_elements), set_=changed)

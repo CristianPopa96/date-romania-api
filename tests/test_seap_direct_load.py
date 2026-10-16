@@ -41,6 +41,20 @@ def test_load_is_repeatable_and_keeps_the_latest_copy(session):
     assert session.get(DirectPurchase, ids[0]).name == "renamed"
 
 
+def test_a_purchase_keeps_the_type_a_query_asked_for(session):
+    data = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    first = data["items"][0]["directAcquisitionId"]
+    typed, untyped = document(session, "e" * 64), document(session, "f" * 64)
+
+    load(session, parse_page(data, contract_type=3), typed.id)
+    # Read again by a query that did not filter by type: the type stays.
+    load(session, parse_page(data), untyped.id)
+    session.expire_all()
+
+    row = session.get(DirectPurchase, first)
+    assert (row.contract_type_id, row.source_document_id) == (3, untyped.id)
+
+
 def test_load_adds_entities_and_a_buyer_becomes_an_authority(session):
     data = json.loads(FIXTURE.read_text(encoding="utf-8"))
     doc = document(session, "c" * 64)
