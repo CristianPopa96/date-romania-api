@@ -14,6 +14,7 @@ from date_romania.collectors.seap_direct.slices import (
     SeapError,
     Slice,
     _split_range,
+    contract_type_of,
     iter_pages,
 )
 
@@ -132,6 +133,14 @@ def test_slice_request_sends_only_the_filters_that_are_set():
     assert body["isMultipleDa"] is False
     assert body["cpvCodeText"] == "15"
     assert "isEuFunded" not in body
+
+
+def test_the_type_a_stored_query_asked_for_is_read_back():
+    body = json.dumps(Slice(DAY, state=7, contract_type=2, cpv="15").request(CAP))
+    assert contract_type_of(body) == 2
+    assert contract_type_of(json.dumps(Slice(DAY, state=7).request(CAP))) is None
+    assert contract_type_of(None) is None
+    assert contract_type_of("not json") is None
 
 
 def test_slice_children_always_run_out():

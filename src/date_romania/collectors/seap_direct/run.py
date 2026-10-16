@@ -11,7 +11,13 @@ from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, store_document
 from date_romania.collectors.seap_direct.load import load
 from date_romania.collectors.seap_direct.parse import Parsed, parse_page
-from date_romania.collectors.seap_direct.slices import CAP, LIST_URL, fetch, iter_pages
+from date_romania.collectors.seap_direct.slices import (
+    CAP,
+    LIST_URL,
+    contract_type_of,
+    fetch,
+    iter_pages,
+)
 from date_romania.models import SourceDocument
 from date_romania.sources import SEAP_DIRECT
 from date_romania.storage import get_raw
@@ -22,7 +28,7 @@ SOURCE = JOB = SEAP_DIRECT.key
 
 
 def _parse_and_load(session: Session, data: dict, doc: SourceDocument) -> Parsed:
-    parsed = parse_page(data)
+    parsed = parse_page(data, contract_type_of(doc.request_body))
     for item, reason in parsed.rejected:
         log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, item)
     load(session, parsed, doc.id)

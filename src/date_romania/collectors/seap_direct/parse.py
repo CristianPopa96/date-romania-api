@@ -9,7 +9,8 @@ from date_romania.collectors.seap_direct.slices import STATES_WITHOUT_CA_DEADLIN
 from date_romania.cui import parse_cui
 from date_romania.personal_id import mask_cnp
 
-PARSER_VERSION = 2
+# 3: the contract type, from the query that returned the row.
+PARSER_VERSION = 3
 
 _PARTY = re.compile(r"\s*(?:RO?)?\s*(\d{2,10})\s+(.*)", re.IGNORECASE | re.DOTALL)
 
@@ -43,8 +44,12 @@ class Parsed:
     missing_deadlines: int = 0
 
 
-def parse_page(data: dict) -> Parsed:
-    """Turn one list response into rows; a later copy of the same purchase replaces an earlier."""
+def parse_page(data: dict, contract_type: int | None = None) -> Parsed:
+    """Turn one list response into rows; a later copy of the same purchase replaces an earlier.
+
+    `contract_type` is the type the query filtered by, if it did: every row it returned is
+    of that type.
+    """
     parsed = Parsed()
     by_id: dict[int, dict] = {}
     for item in data.get("items", []):
@@ -61,6 +66,7 @@ def parse_page(data: dict) -> Parsed:
                 "state": state.get("text"),
                 "cpv_code": cpv_code.strip() or None,
                 "cpv_name": cpv_name.strip() or None,
+                "contract_type_id": contract_type,
                 "buyer_cui": buyer_cui,
                 "buyer_text": mask_cnp(item.get("contractingAuthority")),
                 "supplier_cui": supplier_cui,

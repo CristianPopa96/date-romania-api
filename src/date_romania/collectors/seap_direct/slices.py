@@ -136,6 +136,15 @@ class Slice:
         return []
 
 
+def contract_type_of(request_body: str | None) -> int | None:
+    """The contract type a stored query asked for, or None if it did not filter by type."""
+    try:
+        kind = json.loads(request_body or "").get("sysAcquisitionContractTypeId")
+    except (ValueError, AttributeError):
+        return None
+    return kind if kind in CONTRACT_TYPES else None
+
+
 @dataclass(frozen=True)
 class Page:
     slice: Slice

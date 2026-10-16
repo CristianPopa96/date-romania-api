@@ -9,7 +9,7 @@ from sqlalchemy import ColumnElement, Select, func, select
 from sqlalchemy.orm import Session, aliased
 
 from date_romania import money
-from date_romania.api.routes.common import Db, Limit, ref
+from date_romania.api.routes.common import Cpv, Db, Limit, ref
 from date_romania.api.schemas import (
     AwardNoticeOut,
     Contract,
@@ -72,6 +72,33 @@ def won_filters(won: Won | None) -> list[ColumnElement[bool]]:
     if won is None:
         return []
     return [money.is_association if won == "association" else ~money.is_association]
+
+
+EuFunded = Annotated[
+    bool | None,
+    Query(
+        description="true: notices with a lot paid from EU funds; false: notices that say no "
+        "lot is. A notice whose form does not ask, or not read in detail, is only in the "
+        "list without this filter."
+    ),
+]
+
+
+def notice_filters(cpv: str | None, eu_funded: bool | None) -> list[ColumnElement[bool]]:
+    """Filters on the notice a contract belongs to: its CPV code and its financing."""
+    filters = []
+    if cpv:
+        filters.append(AwardNotice.cpv_code.startswith(cpv, autoescape=True))
+    if eu_funded is not None:
+        filters.append(
+            select(AwardNoticeDetail.notice_id)
+            .where(
+                AwardNoticeDetail.notice_id == AwardNotice.id,
+                AwardNoticeDetail.eu_funded.is_(eu_funded),
+            )
+            .exists()
+        )
+    return filters
 
 
 def _contracts() -> Select:
@@ -216,6 +243,8 @@ def award_contracts(
     won: Annotated[
         Won | None, Query(description="By one company, or by an association of several.")
     ] = None,
+    cpv: Cpv = None,
+    eu_funded: EuFunded = None,
     sort: Literal["newest", "value"] = "newest",
     limit: Limit = 20,
     offset: Offset = 0,
@@ -229,7 +258,7 @@ def award_contracts(
     under them are their subsequent contracts, which are listed. The list is not complete:
     SEAP publishes many contracts weeks after they are signed.
     """
-    filters = [*in_period(session), *won_filters(won)]
+    filters = [*in_period(session), *won_filters(won), *notice_filters(cpv, eu_funded)]
     if buyer is not None:
         filters.append(AwardNotice.buyer_cui == buyer)
     if supplier is not None:

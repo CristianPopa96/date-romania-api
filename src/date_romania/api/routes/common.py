@@ -17,6 +17,13 @@ from date_romania.sources import SEAP_DIRECT
 Db = Annotated[Session, Depends(get_session)]
 Limit = Annotated[int, Query(ge=1, le=100)]
 Day = Annotated[date | None, Query(description="A day in Romanian time, YYYY-MM-DD.")]
+Cpv = Annotated[
+    str | None,
+    Query(
+        pattern=r"^\d{2,8}$",
+        description="Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+    ),
+]
 
 
 def in_period(date_from: date | None, date_to: date | None) -> list[ColumnElement[bool]]:

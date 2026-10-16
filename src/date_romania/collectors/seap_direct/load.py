@@ -9,7 +9,10 @@ from date_romania.models import DirectPurchase
 
 
 def load(session: Session, parsed: Parsed, source_document_id: int) -> None:
-    """Upsert the parsed rows. New entities are added; known ones keep their name."""
+    """Upsert the parsed rows. New entities are added; known ones keep their name.
+
+    A purchase read again by a query that did not filter by type keeps the type it had.
+    """
     entities.upsert(session, parsed.entities, source_document_id)
     upsert_rows(
         session,
@@ -18,4 +21,5 @@ def load(session: Session, parsed: Parsed, source_document_id: int) -> None:
             {**row, "source_document_id": source_document_id, "parser_version": PARSER_VERSION}
             for row in parsed.purchases
         ],
+        keep=("contract_type_id",),
     )

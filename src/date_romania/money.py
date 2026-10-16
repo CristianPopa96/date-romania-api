@@ -12,7 +12,7 @@ and contracts are never added together.
 from datetime import date, timedelta
 from decimal import Decimal
 
-from sqlalchemy import ColumnElement, Date, Text, and_, cast, false, func, select
+from sqlalchemy import ColumnElement, Date, Text, and_, case, cast, false, func, select
 from sqlalchemy.orm import Session
 
 from date_romania.dates import BUCHAREST, day_bounds
@@ -29,11 +29,26 @@ from date_romania.sources import SEAP_AWARDS
 DIRECT_PURCHASE_ACCEPTED = 7
 # Law 98/2016 art. 7(5): a direct purchase must stay under 900,400 lei without VAT for works
 # and 270,120 lei for goods and services. We use the works limit for every purchase, as the
-# highest value any direct purchase may have: the list does not give the contract type, and
-# the CPV code does not tell works from the rest reliably (street lighting works, for one,
-# are filed under a goods code).
+# highest value any direct purchase may have: the CPV code does not tell works from the rest
+# reliably (street lighting works, for one, are filed under a goods code), the contract
+# type is known only for the purchases a query filtered by type, and services of Annex 2
+# have higher limits we do not tell apart.
 DIRECT_PURCHASE_LIMIT_RON = Decimal("900400")
 DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON = Decimal("270120")
+# The limit of each contract type (SEAP's ids: 1 goods, 2 services, 3 works), for the days
+# held. The limits change by law: when a day under other limits is collected, these become
+# limits per period. Services of Annex 2 of the law (hotels, social services) have higher
+# limits, which these do not tell apart.
+LIMIT_BY_CONTRACT_TYPE = {
+    1: DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON,
+    2: DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON,
+    3: DIRECT_PURCHASE_LIMIT_RON,
+}
+# A pattern, not a breach: an accepted purchase is "just under the limit" when its value is
+# at least this share of the limit of its type and below the limit. The pattern is two or
+# more of them from the same buyer to the same supplier (agreed with Crispy, 16.10.2026).
+NEAR_LIMIT_SHARE = Decimal("0.9")
+NEAR_LIMIT_REPEATS = 2
 
 # SEAP's contractType for a contract in an award notice. A framework agreement carries a
 # ceiling, not money committed: what is committed under it are its subsequent contracts.
@@ -74,6 +89,21 @@ def is_above_limit(state_id: int | None, closing_value: Decimal | None) -> bool:
         and closing_value is not None
         and closing_value > DIRECT_PURCHASE_LIMIT_RON
     )
+
+
+# The limit of each purchase's own type; null when the type is not known.
+type_limit = case(
+    *(
+        (DirectPurchase.contract_type_id == kind, limit)
+        for kind, limit in LIMIT_BY_CONTRACT_TYPE.items()
+    ),
+    else_=None,
+)
+near_limit = and_(
+    accepted,
+    DirectPurchase.closing_value >= type_limit * NEAR_LIMIT_SHARE,
+    DirectPurchase.closing_value < type_limit,
+)
 
 
 # --- Contracts from award notices ---
