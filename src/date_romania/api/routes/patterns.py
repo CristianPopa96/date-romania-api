@@ -1,18 +1,19 @@
 """Patterns: measured facts worth asking documents for, never a finding of wrongdoing."""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from sqlalchemy import func, select, tuple_
 from sqlalchemy.orm import aliased
 
 from date_romania import money
-from date_romania.api.routes.common import Cpv, Db, Limit, list_source, ref
+from date_romania.api.routes.common import Cpv, Db, Format, Limit, cell, csv_file, list_source, ref
 from date_romania.api.schemas import (
     NearLimitPair,
     NearLimitPattern,
     NearLimitPurchase,
     NearLimitRule,
 )
-from date_romania.models import DirectPurchase, Entity
+from date_romania.models import DirectPurchase, Entity, SourceDocument
+from date_romania.sources import SEAP_DIRECT
 
 router = APIRouter(tags=["patterns"])
 
@@ -20,13 +21,15 @@ Buyer, Supplier = aliased(Entity), aliased(Entity)
 
 
 @router.get("/patterns/near-limit")
-def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPattern:
+def near_limit(
+    session: Db, cpv: Cpv = None, limit: Limit = 50, format: Format = "json"
+) -> NearLimitPattern:
     """Pairs of a buyer and a supplier with repeated accepted direct purchases just under the
     legal limit of their contract type, most purchases first.
 
     A purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is
     not known cannot be checked: `checked` of `accepted_total` were, and `first_day` and
-    `last_day` bound those.
+    `last_day` bound those. As csv: every pair, one line per purchase.
     """
     filters = [
         money.near_limit,
@@ -44,18 +47,20 @@ def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPatt
         .having(func.count() >= money.NEAR_LIMIT_REPEATS)
     )
     pairs = session.scalar(select(func.count()).select_from(grouped.subquery()))
-    found = session.execute(
-        grouped.order_by(func.count().desc(), value.desc(), *pair).limit(limit)
-    ).all()
+    ordered = grouped.order_by(func.count().desc(), value.desc(), *pair)
+    found = session.execute(ordered if format == "csv" else ordered.limit(limit)).all()
 
     rows: dict[tuple, list[NearLimitPurchase]] = {}
+    fetched: dict[int, object] = {}
     if found:
-        purchases = session.scalars(
-            select(DirectPurchase)
+        purchases = session.execute(
+            select(DirectPurchase, SourceDocument.fetched_at)
+            .join(SourceDocument, DirectPurchase.source_document_id == SourceDocument.id)
             .where(*filters, tuple_(*pair).in_([tuple(row[:3]) for row in found]))
             .order_by(DirectPurchase.finalized_at, DirectPurchase.id)
         )
-        for purchase in purchases:
+        for purchase, fetched_at in purchases:
+            fetched[purchase.id] = fetched_at
             key = (purchase.buyer_cui, purchase.supplier_cui, purchase.contract_type_id)
             rows.setdefault(key, []).append(
                 NearLimitPurchase(
@@ -72,6 +77,8 @@ def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPatt
             select(Entity).where(Entity.cui.in_({cui for row in found for cui in row[:2]}))
         )
     }
+    if format == "csv":
+        return _csv(found, rows, entities, fetched)
     # What could be checked: accepted purchases of a known type, under the same filters. The
     # type is known only where SEAP's list was asked by type, so quiet days stay unchecked;
     # the period is the one of the purchases checked, not of all the data.
@@ -113,3 +120,52 @@ def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPatt
         unknown_type=accepted_total - checked,
         source=list_source(session),
     )
+
+
+def _csv(found: list, rows: dict, entities: dict, fetched: dict) -> Response:
+    """One line per purchase, each naming its pair (by its place in the list), the two
+    parties, the limit of its type and where it was read. A pattern, not a finding."""
+    header = [
+        "pair",
+        "buyer_cui",
+        "buyer",
+        "supplier_cui",
+        "supplier",
+        "contract_type",
+        "limit_ron",
+        "pair_purchases",
+        "pair_value_ron",
+        "purchase_code",
+        "purchase",
+        "finalized_at",
+        "value_ron_without_vat",
+        "share_of_limit",
+        "source_url",
+        "fetched_at",
+    ]
+    lines = []
+    for place, (buyer, supplier, kind, count, total) in enumerate(found, start=1):
+        limit = money.LIMIT_BY_CONTRACT_TYPE[kind]
+        for purchase in rows[(buyer, supplier, kind)]:
+            at = fetched[purchase.id]
+            lines.append(
+                [
+                    place,
+                    buyer,
+                    cell(entities[buyer].name),
+                    supplier,
+                    cell(entities[supplier].name),
+                    kind,
+                    float(limit),
+                    count,
+                    float(total),
+                    cell(purchase.code),
+                    cell(purchase.name),
+                    purchase.finalized_at and purchase.finalized_at.isoformat(),
+                    purchase.value,
+                    round(purchase.value / float(limit), 4),
+                    SEAP_DIRECT.record_url.format(id=purchase.id),
+                    at and at.isoformat(),
+                ]
+            )
+    return csv_file(header, lines, "tipare-sub-plafon.csv")

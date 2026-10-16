@@ -909,3 +909,22 @@ def test_the_site_stub_holds_what_the_api_answers(client, session, monkeypatch):
     if os.environ.get("WRITE_SITE_STUB"):
         SITE_STUB.write_bytes(text.encode("utf-8"))
     assert SITE_STUB.read_text(encoding="utf-8") == text
+
+
+def test_near_limit_as_csv_lists_every_purchase_with_its_pair(client, session):
+    add_near_limit(session)
+    response = client.get("/v1/patterns/near-limit?format=csv&limit=1")
+    assert response.headers["content-type"] == "text/csv; charset=utf-8"
+    assert "tipare-sub-plafon.csv" in response.headers["content-disposition"]
+    lines = response.text.lstrip("﻿").splitlines()
+    assert lines[0].startswith("pair,buyer_cui,buyer,supplier_cui,supplier,contract_type")
+    # Every pair, whatever the limit of a page: two pairs of two purchases each.
+    assert len(lines) == 1 + 4
+    assert lines[1].startswith(f"1,{TOWN_HALL},")
+    assert ",3,900400.0,2,1730000.0,DA00000024," in lines[1]
+    assert ",0.944," in lines[1]
+    assert "/direct-acquisition/view/24," in lines[1]
+    assert [line.split(",")[0] for line in lines[1:]] == ["1", "1", "2", "2"]
+    # The filters of the page carry over.
+    works = client.get("/v1/patterns/near-limit?format=csv&cpv=45").text.splitlines()
+    assert len(works) == 1 + 2

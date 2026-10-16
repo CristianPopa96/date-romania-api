@@ -1,9 +1,12 @@
 """What the endpoints share: parameters, the source line, and the queries behind several pages."""
 
+import csv
+import io
+from collections.abc import Iterable
 from datetime import date
-from typing import Annotated
+from typing import Annotated, Literal
 
-from fastapi import Depends, Query
+from fastapi import Depends, Query, Response
 from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
@@ -24,6 +27,29 @@ Cpv = Annotated[
         description="Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
     ),
 ]
+
+
+Format = Annotated[Literal["json", "csv"], Query(description="csv gives the whole list as a file.")]
+
+
+def cell(text: str | None) -> str | None:
+    """A text cell as a spreadsheet may open it: one that starts like a formula gets a
+    quote in front, so the program shows it instead of running it."""
+    return f"'{text}" if text and text[0] in "=+-@" else text
+
+
+def csv_file(header: list[str], rows: Iterable[list], filename: str) -> Response:
+    """A whole list as a CSV file, with the mark at the start that makes spreadsheet
+    programs read the diacritics."""
+    out = io.StringIO()
+    writer = csv.writer(out)
+    writer.writerow(header)
+    writer.writerows(rows)
+    return Response(
+        content="﻿" + out.getvalue(),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 def in_period(date_from: date | None, date_to: date | None) -> list[ColumnElement[bool]]:
