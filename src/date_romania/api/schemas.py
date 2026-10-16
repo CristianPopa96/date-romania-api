@@ -146,10 +146,14 @@ class NearLimitRule(BaseModel):
 
 class NearLimitPattern(BaseModel):
     rule: NearLimitRule
-    first_day: date | None
-    last_day: date | None
+    first_day: date | None = Field(description="The first day of a purchase checked.")
+    last_day: date | None = Field(description="The last day of a purchase checked.")
     pairs: int = Field(description="Every pair that matches, beyond the ones listed.")
     items: list[NearLimitPair]
+    checked: int = Field(
+        description="Accepted purchases of known contract type: the ones that were checked."
+    )
+    accepted_total: int = Field(description="Accepted purchases, checked or not.")
     unknown_type: int = Field(
         description="Accepted purchases of unknown contract type, which cannot be checked."
     )

@@ -2790,6 +2790,8 @@
      ]
     }
    ],
+   "checked": 7,
+   "accepted_total": 13,
    "unknown_type": 6,
    "source": {
     "publisher": "SEAP",
@@ -2849,6 +2851,8 @@
      ]
     }
    ],
+   "checked": 2,
+   "accepted_total": 3,
    "unknown_type": 1,
    "source": {
     "publisher": "SEAP",
@@ -2872,7 +2876,7 @@
     }
    },
    "first_day": "2026-10-05",
-   "last_day": "2026-10-07",
+   "last_day": "2026-10-06",
    "pairs": 1,
    "items": [
     {
@@ -2908,6 +2912,8 @@
      ]
     }
    ],
+   "checked": 5,
+   "accepted_total": 10,
    "unknown_type": 5,
    "source": {
     "publisher": "SEAP",

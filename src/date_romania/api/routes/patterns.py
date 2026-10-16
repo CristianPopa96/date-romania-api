@@ -24,8 +24,9 @@ def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPatt
     """Pairs of a buyer and a supplier with repeated accepted direct purchases just under the
     legal limit of their contract type, most purchases first.
 
-    A purchase is near the limit from `rule.share` of it up to it. A purchase whose type is
-    not known cannot be checked; `unknown_type` says how many there are.
+    A purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is
+    not known cannot be checked: `checked` of `accepted_total` were, and `first_day` and
+    `last_day` bound those.
     """
     filters = [
         money.near_limit,
@@ -71,11 +72,20 @@ def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPatt
             select(Entity).where(Entity.cui.in_({cui for row in found for cui in row[:2]}))
         )
     }
-    unknown = [money.accepted, DirectPurchase.contract_type_id.is_(None)]
+    # What could be checked: accepted purchases of a known type, under the same filters. The
+    # type is known only where SEAP's list was asked by type, so quiet days stay unchecked;
+    # the period is the one of the purchases checked, not of all the data.
+    scope = [money.accepted]
     if cpv:
-        unknown.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
-    first_day, last_day = session.execute(
-        select(func.min(money.day), func.max(money.day)).where(money.accepted)
+        scope.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
+    typed = DirectPurchase.contract_type_id.is_not(None)
+    checked, accepted_total, first_day, last_day = session.execute(
+        select(
+            func.count().filter(typed),
+            func.count(),
+            func.min(money.day).filter(typed),
+            func.max(money.day).filter(typed),
+        ).where(*scope)
     ).one()
     return NearLimitPattern(
         rule=NearLimitRule(
@@ -98,8 +108,8 @@ def near_limit(session: Db, cpv: Cpv = None, limit: Limit = 50) -> NearLimitPatt
             )
             for buyer, supplier, kind, count, total in found
         ],
-        unknown_type=session.scalar(
-            select(func.count()).select_from(DirectPurchase).where(*unknown)
-        ),
+        checked=checked,
+        accepted_total=accepted_total,
+        unknown_type=accepted_total - checked,
         source=list_source(session),
     )

@@ -692,8 +692,8 @@ def add_near_limit(session):
         ),
         # Once only: no pattern.
         purchase(26, TOWN_HALL, STATIONER, 7, "260000", "2026-10-06T13:00:00+03:00"),
-        # Its type is not known, so it cannot be checked.
-        purchase(27, HOSPITAL, STATIONER, 7, "260000", "2026-10-07T10:00:00+03:00"),
+        # Its type is not known, so it cannot be checked, and its day is not in the period.
+        purchase(27, HOSPITAL, STATIONER, 7, "260000", "2026-10-08T10:00:00+03:00"),
         # Refused: never money spent.
         purchase(28, HOSPITAL, STATIONER, 3, "260000", "2026-10-07T11:00:00+03:00"),
     ]
@@ -724,7 +724,7 @@ def test_near_limit_lists_repeated_purchases_just_under_their_own_limit(client, 
     assert pattern["items"][0]["limit"] == 900400.0
     assert [row["id"] for row in pattern["items"][1]["items"]] == [20, 21]
     # Purchases 1, 2, 3, 5 and 6 of the fixture and 27 here have no type.
-    assert pattern["unknown_type"] == 6
+    assert (pattern["checked"], pattern["accepted_total"], pattern["unknown_type"]) == (7, 13, 6)
     assert (pattern["first_day"], pattern["last_day"]) == ("2026-10-05", "2026-10-07")
 
 
@@ -732,7 +732,8 @@ def test_near_limit_can_be_narrowed_by_cpv_and_cut_short(client, session):
     add_near_limit(session)
     works = client.get("/v1/patterns/near-limit?cpv=45").json()
     assert [p["supplier"]["cui"] for p in works["items"]] == [BUILDER]
-    assert works["unknown_type"] == 1
+    assert (works["checked"], works["accepted_total"], works["unknown_type"]) == (2, 3, 1)
+    assert (works["first_day"], works["last_day"]) == ("2026-10-05", "2026-10-07")
     short = client.get("/v1/patterns/near-limit?limit=1").json()
     assert (short["pairs"], len(short["items"])) == (2, 1)
     assert client.get("/v1/patterns/near-limit?cpv=4x").status_code == 422
