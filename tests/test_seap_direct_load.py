@@ -9,6 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.jobs import DONE, job_run, run_days
+from date_romania.collectors.seap_direct import run
 from date_romania.collectors.seap_direct.load import load
 from date_romania.collectors.seap_direct.parse import PARSER_VERSION, parse_page
 from date_romania.models import DirectPurchase, Entity, SourceDocument
@@ -88,3 +89,17 @@ def test_job_run_records_how_each_day_ended(session):
     # A partial day counts as done, a failed one does not, and all three were tried.
     assert run_days(session, job, *DONE) == {date(2026, 10, 1), date(2026, 10, 2)}
     assert run_days(session, job) == {date(2026, 10, d) for d in (1, 2, 3)}
+
+
+def test_a_parse_keeps_on_its_document_what_it_rejected_and_which_parser(session):
+    data = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    data["items"][0] = {"directAcquisitionName": "no id"}
+    data["items"][1]["finalizationDate"] = "not a date"
+    doc = document(session, "c" * 64)
+    assert (doc.parser_version, doc.rejected_rows) == (None, None)
+
+    run._parse_and_load(session, data, doc)
+    assert (doc.parser_version, doc.rejected_rows) == (PARSER_VERSION, 2)
+    # A later parse that reads every row sets it back to none.
+    run._parse_and_load(session, json.loads(FIXTURE.read_text(encoding="utf-8")), doc)
+    assert doc.rejected_rows == 0

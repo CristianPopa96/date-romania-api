@@ -8,9 +8,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, store_document
+from date_romania.collectors.jobs import job_run, record_parse, store_document
 from date_romania.collectors.seap_direct.load import load
-from date_romania.collectors.seap_direct.parse import Parsed, parse_page
+from date_romania.collectors.seap_direct.parse import PARSER_VERSION, Parsed, parse_page
 from date_romania.collectors.seap_direct.slices import (
     CAP,
     LIST_URL,
@@ -29,8 +29,7 @@ SOURCE = JOB = SEAP_DIRECT.key
 
 def _parse_and_load(session: Session, data: dict, doc: SourceDocument) -> Parsed:
     parsed = parse_page(data, contract_type_of(doc.request_body))
-    for item, reason in parsed.rejected:
-        log.warning("source_document %d: rejected row %s: %.500r", doc.id, reason, item)
+    record_parse(doc, parsed.rejected, PARSER_VERSION)
     load(session, parsed, doc.id)
     return parsed
 

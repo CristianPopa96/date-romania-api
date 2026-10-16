@@ -309,6 +309,10 @@ class Dataset(BaseModel):
         description="Days of the period the source would not give in full; they wait to be read."
     )
     documents: int = Field(description="Raw answers kept from the source, each under its hash.")
+    rejected_rows: int | None = Field(
+        description="Rows of those answers the parser could not read, logged and left out. "
+        "Null until every answer was parsed by a parser that counts them."
+    )
     counts: dict[str, int] = Field(
         description="What is held, by kind of row. `records` is the one the totals use."
     )

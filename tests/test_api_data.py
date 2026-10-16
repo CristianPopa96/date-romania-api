@@ -93,6 +93,8 @@ def add_award_notices(session):
         sha256="a" * 64,
         storage_key="k",
         size_bytes=1,
+        parser_version=2,
+        rejected_rows=2,
     )
     session.add(doc)
     for day in (5, 6, 7):
@@ -208,6 +210,8 @@ def client(session):
         sha256="d" * 64,
         storage_key="k",
         size_bytes=1,
+        parser_version=3,
+        rejected_rows=0,
     )
     session.add(doc)
     session.add_all(
@@ -624,6 +628,25 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert direct["counts"] == {"purchases": 6, "accepted": 5, "above_limit": 1}
     assert (awards["days_collected"], awards["days_partial"], awards["documents"]) == (3, 0, 1)
     assert (direct["days_collected"], direct["documents"]) == (0, 1)
+    # Rows the parser could not read: none, two, and not known for files parsed before
+    # the count was kept.
+    assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
+    assert [each["rejected_rows"] for each in files] == [None, None]
+
+
+def test_rejected_rows_are_known_only_once_every_document_was_counted(client, session):
+    session.add(
+        SourceDocument(
+            source="seap-direct",
+            url="https://example.test/2",
+            sha256="e" * 64,
+            storage_key="k",
+            size_bytes=1,
+        )
+    )
+    session.flush()
+    direct = client.get("/v1/datasets").json()["items"][0]
+    assert (direct["documents"], direct["rejected_rows"]) == (2, None)
 
 
 def test_a_day_read_outside_the_period_is_not_counted_with_its_days(client, session):

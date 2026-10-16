@@ -612,6 +612,7 @@
      "days_collected": 0,
      "days_partial": 0,
      "documents": 1,
+     "rejected_rows": 0,
      "counts": {
       "purchases": 6,
       "accepted": 5,
@@ -629,6 +630,7 @@
      "days_collected": 3,
      "days_partial": 0,
      "documents": 1,
+     "rejected_rows": 2,
      "counts": {
       "notices": 3,
       "contracts": 5,
@@ -646,6 +648,7 @@
      "days_collected": 0,
      "days_partial": 0,
      "documents": 2,
+     "rejected_rows": null,
      "counts": {
       "files": 2,
       "rows": 6,
@@ -663,6 +666,7 @@
      "days_collected": 0,
      "days_partial": 0,
      "documents": 1,
+     "rejected_rows": null,
      "counts": {
       "files": 1,
       "rows": 5
