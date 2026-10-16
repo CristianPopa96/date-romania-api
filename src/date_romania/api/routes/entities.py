@@ -59,7 +59,7 @@ def _entity_page(
         entity=EntityOut.model_validate(entity),
         direct_purchases=summary(session, own == cui),
         partners=top(session, other, [own == cui], partners),
-        source=list_source(session),
+        source=list_source(session, own == cui),
     )
 
 

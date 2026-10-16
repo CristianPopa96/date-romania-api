@@ -29,6 +29,10 @@ class Source(BaseModel):
     parser_version: int | None = Field(
         None, description="Version of the parser that read the record from it."
     )
+    # Only for a figure added up from many records.
+    documents: int | None = Field(
+        None, description="How many stored responses the records behind the figure were read from."
+    )
 
 
 class EntityRef(BaseModel):

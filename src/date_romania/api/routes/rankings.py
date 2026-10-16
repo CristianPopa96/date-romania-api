@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from sqlalchemy import ColumnElement, func, literal, select, union_all
 from sqlalchemy.orm import Session
 
+from date_romania import money
 from date_romania.api.routes.common import Cpv, Day, Db, Limit, in_period, list_source, top
 from date_romania.api.schemas import CpvDivision, Ranking, RankingRow
 from date_romania.models import AwardNotice, DirectPurchase
@@ -29,7 +30,7 @@ def _ranking(
         date_from=date_from,
         date_to=date_to,
         items=[RankingRow(rank=n, **row.model_dump()) for n, row in enumerate(rows, 1)],
-        source=list_source(session),
+        source=list_source(session, money.counted, *filters),
     )
 
 

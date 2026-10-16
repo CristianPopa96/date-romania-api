@@ -1,7 +1,5 @@
 """Award notices and their contracts: one notice, contracts by buyer or winner, rankings."""
 
-import csv
-import io
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query, Response
@@ -9,7 +7,7 @@ from sqlalchemy import ColumnElement, Select, func, select
 from sqlalchemy.orm import Session, aliased
 
 from date_romania import money
-from date_romania.api.routes.common import Cpv, Db, Limit, ref
+from date_romania.api.routes.common import Cpv, Db, Format, Limit, cell, csv_file, ref
 from date_romania.api.schemas import (
     AwardNoticeOut,
     Contract,
@@ -46,11 +44,23 @@ def _notice_url(notice: AwardNotice) -> str:
     return SEAP_AWARDS.list_url
 
 
-def awards_source(session: Session) -> Source:
+def awards_source(session: Session, *filters: ColumnElement[bool]) -> Source:
+    """The source of a figure added up from many contracts signed in the period, and how
+    many stored responses the contracts under `filters` were read from."""
     fetched = session.scalar(
         select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == SEAP_AWARDS.key)
     )
-    return Source(publisher=SEAP_AWARDS.publisher, url=SEAP_AWARDS.list_url, fetched_at=fetched)
+    documents = session.scalar(
+        select(func.count(AwardContract.source_document_id.distinct()))
+        .join(AwardNotice, AwardContract.notice_id == AwardNotice.id)
+        .where(*in_period(session), *filters)
+    )
+    return Source(
+        publisher=SEAP_AWARDS.publisher,
+        url=SEAP_AWARDS.list_url,
+        fetched_at=fetched,
+        documents=documents,
+    )
 
 
 def period(session: Session) -> Period:
@@ -252,9 +262,7 @@ def award_contracts(
     sort: Literal["newest", "value"] = "newest",
     limit: Limit = 20,
     offset: Offset = 0,
-    format: Annotated[
-        Literal["json", "csv"], Query(description="csv gives the whole list as a file.")
-    ] = "json",
+    format: Format = "json",
 ) -> ContractPage:
     """Contracts signed in the period we hold, newest or largest first.
 
@@ -294,58 +302,43 @@ def award_contracts(
     return ContractPage(total=total, period=period(session), items=page)
 
 
-def _cell(text: str | None) -> str | None:
-    """A text cell as a spreadsheet may open it: one that starts like a formula gets a
-    quote in front, so the program shows it instead of running it."""
-    return f"'{text}" if text and text[0] in "=+-@" else text
-
-
 def _csv(contracts: list[Contract]) -> Response:
     """The list as a file; every row names its notice and where it was read."""
-    out = io.StringIO()
-    writer = csv.writer(out)
-    writer.writerow(
+    header = [
+        "notice_no",
+        "contract_no",
+        "signed_at",
+        "kind",
+        "title",
+        "buyer_cui",
+        "buyer",
+        "winner_cuis",
+        "winners",
+        "value_ron_without_vat",
+        "source",
+        "source_url",
+        "fetched_at",
+    ]
+    rows = (
         [
-            "notice_no",
-            "contract_no",
-            "signed_at",
-            "kind",
-            "title",
-            "buyer_cui",
-            "buyer",
-            "winner_cuis",
-            "winners",
-            "value_ron_without_vat",
-            "source",
-            "source_url",
-            "fetched_at",
+            cell(contract.notice_no),
+            cell(contract.contract_no),
+            contract.signed_at and contract.signed_at.isoformat(),
+            contract.kind,
+            cell(contract.title or contract.notice_title),
+            contract.buyer and contract.buyer.cui,
+            cell(contract.buyer.name if contract.buyer else contract.buyer_text),
+            "; ".join(str(w.supplier.cui) for w in contract.winners if w.supplier),
+            cell(
+                "; ".join(
+                    (w.supplier.name if w.supplier else w.text) or "" for w in contract.winners
+                )
+            ),
+            contract.value,
+            contract.source.publisher,
+            contract.source.url,
+            contract.source.fetched_at and contract.source.fetched_at.isoformat(),
         ]
+        for contract in contracts
     )
-    for contract in contracts:
-        writer.writerow(
-            [
-                _cell(contract.notice_no),
-                _cell(contract.contract_no),
-                contract.signed_at and contract.signed_at.isoformat(),
-                contract.kind,
-                _cell(contract.title or contract.notice_title),
-                contract.buyer and contract.buyer.cui,
-                _cell(contract.buyer.name if contract.buyer else contract.buyer_text),
-                "; ".join(str(w.supplier.cui) for w in contract.winners if w.supplier),
-                _cell(
-                    "; ".join(
-                        (w.supplier.name if w.supplier else w.text) or "" for w in contract.winners
-                    )
-                ),
-                contract.value,
-                contract.source.publisher,
-                contract.source.url,
-                contract.source.fetched_at and contract.source.fetched_at.isoformat(),
-            ]
-        )
-    return Response(
-        # The mark at the start makes spreadsheet programs read the diacritics.
-        content="﻿" + out.getvalue(),
-        media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": 'attachment; filename="contracte.csv"'},
-    )
+    return csv_file(header, rows, "contracte.csv")
