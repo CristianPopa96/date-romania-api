@@ -134,10 +134,11 @@ def datasets(session: Db) -> Datasets:
     }
     fetched = {source: at for source, (at, *_) in documents.items()}
     stored = {source: count for source, (_, count, *_) in documents.items()}
-    # Known only once every document of the source was parsed by a parser that counts.
+    # Over the documents read. A document kept and not read adds nothing: an export
+    # published twice is read from its workbook only. None read yet, nothing is known.
     rejected = {
-        source: int(total) if counted == count else None
-        for source, (_, count, counted, total) in documents.items()
+        source: int(total) if counted else None
+        for source, (_, _, counted, total) in documents.items()
     }
     direct = summary(session)
     period = money.contracts_period(session)

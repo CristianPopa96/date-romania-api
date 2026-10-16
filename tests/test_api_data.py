@@ -637,7 +637,7 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert [each["rejected_rows"] for each in files] == [None, None]
 
 
-def test_rejected_rows_are_known_only_once_every_document_was_counted(client, session):
+def test_a_document_kept_and_not_read_adds_no_rejected_rows(client, session):
     session.add(
         SourceDocument(
             source="seap-direct",
@@ -649,7 +649,7 @@ def test_rejected_rows_are_known_only_once_every_document_was_counted(client, se
     )
     session.flush()
     direct = client.get("/v1/datasets").json()["items"][0]
-    assert (direct["documents"], direct["rejected_rows"]) == (2, None)
+    assert (direct["documents"], direct["rejected_rows"]) == (2, 0)
 
 
 def test_a_day_read_outside_the_period_is_not_counted_with_its_days(client, session):
