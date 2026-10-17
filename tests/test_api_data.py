@@ -829,6 +829,8 @@ def test_a_town_halls_budget_has_lines_that_add_up_to_its_total(client):
     # The three payments of project 101; never added to the subsidies.
     assert (payments["payments"], payments["projects"], payments["amount"]) == (3, 1, 5400000)
     assert (payments["first_published"], payments["last_published"]) == ("2026-05-18", "2026-08-27")
+    # So the site can open the town hall's projects on the programme page.
+    assert (payments["county"], payments["town_hall"]) == ("GORJ", "ȚÂNȚĂRENI")
 
 
 def test_any_other_institution_has_its_funder_and_no_budget(client):
@@ -885,8 +887,13 @@ SITE_CALLS = (
     f"/v1/direct-purchases/summary?buyer={HOSPITAL}&supplier={BUILDER}",
     f"/v1/institutions/{TOWN_HALL}/contracts",
     f"/v1/institutions/{TOWN_HALL}/budget",
-    f"/v1/institutions/{HOSPITAL}/budget",
     "/v1/institutions/12345674/budget",
+    # An institution with no budget held, funded by the town hall.
+    f"/v1/institutions/{HOSPITAL}?partners=10",
+    f"/v1/institutions/{HOSPITAL}/contracts",
+    f"/v1/institutions/{HOSPITAL}/budget",
+    f"/v1/award-contracts?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
+    f"/v1/direct-purchases?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
     f"/v1/award-contracts?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
     f"/v1/suppliers/{BUILDER}/contracts",
     f"/v1/award-contracts?supplier={BUILDER}&sort=newest&limit=20&offset=0",

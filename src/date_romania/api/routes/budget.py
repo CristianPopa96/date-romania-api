@@ -56,7 +56,7 @@ def _budget(session: Session, siruta: int) -> LocalBudgetOut | None:
 
 
 def _payments(session: Session, siruta: int) -> ProgrammePayments | None:
-    payments, amount, projects, first, last, files = session.execute(
+    payments, amount, projects, first, last, files, county, town_hall = session.execute(
         select(
             func.count(),
             func.coalesce(func.sum(PniasPayment.amount), 0),
@@ -64,11 +64,16 @@ def _payments(session: Session, siruta: int) -> ProgrammePayments | None:
             func.min(PniasPayment.published_on),
             func.max(PniasPayment.published_on),
             func.count(PniasPayment.source_document_id.distinct()),
+            # One place, one name in the files; the first, should a file spell it apart.
+            func.min(PniasPayment.county),
+            func.min(PniasPayment.town_hall),
         ).where(PniasPayment.siruta == siruta)
     ).one()
     if not payments:
         return None
     return ProgrammePayments(
+        county=county,
+        town_hall=town_hall,
         amount=amount,
         payments=payments,
         projects=projects,

@@ -3475,6 +3475,16 @@
    },
    "ProgrammePayments": {
     "properties": {
+     "county": {
+      "type": "string",
+      "title": "County",
+      "description": "As the files write it, the key of the programme's counties."
+     },
+     "town_hall": {
+      "type": "string",
+      "title": "Town Hall",
+      "description": "As the files write it, to find its projects."
+     },
      "amount": {
       "type": "number",
       "title": "Amount"
@@ -3518,6 +3528,8 @@
     },
     "type": "object",
     "required": [
+     "county",
+     "town_hall",
      "amount",
      "payments",
      "projects",

@@ -72,6 +72,8 @@ class ProgrammePayments(Answer):
     ministry's files. Never added to the budget's state subsidies: the periods differ,
     and the budget file does not say which programme a subsidy came from."""
 
+    county: str = Field(description="As the files write it, the key of the programme's counties.")
+    town_hall: str = Field(description="As the files write it, to find its projects.")
     amount: float
     payments: int
     projects: int
