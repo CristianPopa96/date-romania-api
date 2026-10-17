@@ -165,6 +165,9 @@ def test_the_list_places_institutions_and_names_their_funder(session, sources, h
     assert (palace.siruta, palace.county, palace.parent_cui) == (114319, "Mureș", None)
     # A commune SIRUTA no longer holds stays unplaced.
     assert session.get(PublicEntity, 4801400).siruta is None
+    # The town that no one funds is the town hall of Zlatna; the school is not.
+    assert session.get(Place, 1936).town_hall_cui == ZLATNA
+    assert session.get(Place, 2130).town_hall_cui is None
 
 
 def test_anaf_places_the_rest_and_is_not_asked_twice(session, sources, held):

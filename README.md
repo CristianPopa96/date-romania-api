@@ -161,6 +161,7 @@ read-only except `POST /v1/reports`.
 | `/v1/programmes/anghel-saligny` | The programme: what was paid, by county and by file, and how many payments and projects could be tied to a SEAP contract |
 | `/v1/programmes/anghel-saligny/projects` | Its projects, filtered by `county`, `q`, `builder`, `match` |
 | `/v1/programmes/anghel-saligny/projects/{id}` | One project: its payments, its builders and the contracts they could be tied to |
+| `/v1/institutions/{cui}/budget` | For a town hall or county council: its executed budget for the latest year held (revenue lines that add up to the total, capital spending, spending by chapter) and the Anghel Saligny payments to it, each with its own period. For any institution: the one that funds it |
 | `POST /v1/reports` | A reader says what is wrong on a page (`page`, `message`, `evidence`) |
 | `/v1/corrections` | What was corrected after a report: the page and what changed |
 

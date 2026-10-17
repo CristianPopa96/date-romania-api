@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from date_romania.api.routes import (
     award_totals,
     awards,
+    budget,
     entities,
     patterns,
     programme_project,
@@ -20,6 +21,7 @@ router = APIRouter(prefix="/v1")
 for module in (
     stats,
     entities,
+    budget,
     purchases,
     rankings,
     patterns,

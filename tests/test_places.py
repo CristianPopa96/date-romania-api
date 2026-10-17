@@ -21,7 +21,7 @@ from date_romania.collectors.local_budgets.parse import (
 from date_romania.collectors.public_entities.parse import parse_entities
 from date_romania.collectors.siruta.parse import edition, parse_places
 from date_romania.models import Place
-from date_romania.places import PlaceIndex, county_key, uat_key
+from date_romania.places import PlaceIndex, county_key, governed, paid_place, uat_key
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -100,6 +100,22 @@ def test_a_uat_is_found_however_a_source_writes_it(index):
     assert index.uat("Brasov", "Comuna Ticus") is None
     assert index.uat("Atlantis", "Orasul Zlatna") is None
     assert index.uat("Alba", "") is None
+
+
+def test_an_administration_governs_the_place_its_name_says(index):
+    assert governed(index, "Alba", "ORAS ZLATNA") == 1936
+    assert governed(index, "Bucuresti", "MUNICIPIUL BUCURESTI") == 179132
+    assert governed(index, "Bucuresti", "SECTORUL 2 AL MUNICIPIULUI BUCURESTI") == 179150
+    assert governed(index, "Alba", "JUDETUL ALBA") == 10
+    # A school named after its town governs nothing.
+    assert governed(index, "Alba", "LICEUL CORNELIU MEDREA ZLATNA") is None
+    assert governed(index, "Alba", "SCOALA GIMNAZIALA COMUNA ALBAC") is None
+
+
+def test_a_payment_goes_to_a_town_hall_or_a_county_council(index):
+    assert paid_place(index, "ALBA", "ALBAC") == 2130
+    assert paid_place(index, "ALBA", "Județul ALBA prin Consiliul Județean ALBA") == 10
+    assert paid_place(index, "ALBA", "ATLANTIS") is None
 
 
 def test_an_edition_is_told_by_its_file_name():

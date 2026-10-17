@@ -4,7 +4,7 @@ import logging
 
 from sqlalchemy.orm import Session
 
-from date_romania import pnias_links
+from date_romania import places, pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, record_parse, stored_documents
@@ -55,6 +55,7 @@ def collect(session: Session, client: PoliteClient) -> int:
     # A new file can name builders whose contracts are not kept yet: `dr reparse
     # seap-exports` reads them from the stored exports.
     pnias_links.link(session)
+    places.locate(session)
     session.commit()
     return payments
 
@@ -65,5 +66,6 @@ def reparse(session: Session) -> int:
     for doc in docs:
         _parse_and_load(session, doc)
     pnias_links.link(session)
+    places.locate(session)
     session.commit()
     return len(docs)

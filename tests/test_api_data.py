@@ -7,6 +7,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
+import places_seed
 import programme_seed
 import pytest
 from fastapi.testclient import TestClient
@@ -260,6 +261,7 @@ def client(session):
     )
     session.flush()
     programme_seed.seed(session)
+    places_seed.seed(session)
 
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
@@ -792,6 +794,52 @@ def test_rankings_can_be_filtered_by_cpv_and_eu_funds(client):
     assert [item["id"] for item in largest["items"]] == [101, 103]
 
 
+def test_a_town_halls_budget_has_lines_that_add_up_to_its_total(client):
+    answer = client.get(f"/v1/institutions/{TOWN_HALL}/budget").json()
+    assert answer["place"] == {
+        "siruta": places_seed.TANTARENI,
+        "name": "ŢÂNŢĂRENI",
+        "kind": "commune",
+    }
+    budget = answer["budget"]
+    assert (budget["year"], budget["executed_on"]) == (2024, "2024-12-31")
+    lines = {line["line"]: line["amount"] for line in budget["revenue_lines"]}
+    # In the order the site shows them; own revenue is less the income tax shares in it.
+    assert list(lines) == [
+        "state_subsidies",
+        "income_tax",
+        "vat",
+        "own_revenue",
+        "eu_funds",
+        "other_administrations",
+        "other",
+    ]
+    assert (lines["income_tax"], lines["own_revenue"]) == (1500000, 1000000)
+    assert sum(lines.values()) == budget["revenue"] == 10000000
+    assert (budget["spending"], budget["capital"]) == (9800000, 6000000)
+    # Chapters largest first; one with nothing spent is left out.
+    assert [c["chapter"] for c in budget["chapters"]] == [
+        "transport",
+        "education",
+        "general_services",
+    ]
+    assert budget["source"]["record"] == "MDLPA · Situația veniturilor și cheltuielilor 2024"
+    assert budget["source"]["sha256"] == "5eed" * 16
+    payments = answer["programme_payments"]
+    # The three payments of project 101; never added to the subsidies.
+    assert (payments["payments"], payments["projects"], payments["amount"]) == (3, 1, 5400000)
+    assert (payments["first_published"], payments["last_published"]) == ("2026-05-18", "2026-08-27")
+
+
+def test_any_other_institution_has_its_funder_and_no_budget(client):
+    answer = client.get(f"/v1/institutions/{HOSPITAL}/budget").json()
+    assert answer["place"] is None
+    assert answer["budget"] is None
+    assert answer["programme_payments"] is None
+    assert answer["funder"]["cui"] == TOWN_HALL
+    assert client.get("/v1/institutions/12345674/budget").status_code == 404
+
+
 def test_cpv_divisions_are_those_held_with_seap_names(client, session):
     add_near_limit(session)
     assert client.get("/v1/cpv-divisions").json() == [
@@ -836,6 +884,9 @@ SITE_CALLS = (
     f"/v1/direct-purchases/summary?buyer={TOWN_HALL}&supplier={STATIONER}",
     f"/v1/direct-purchases/summary?buyer={HOSPITAL}&supplier={BUILDER}",
     f"/v1/institutions/{TOWN_HALL}/contracts",
+    f"/v1/institutions/{TOWN_HALL}/budget",
+    f"/v1/institutions/{HOSPITAL}/budget",
+    "/v1/institutions/12345674/budget",
     f"/v1/award-contracts?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
     f"/v1/suppliers/{BUILDER}/contracts",
     f"/v1/award-contracts?supplier={BUILDER}&sort=newest&limit=20&offset=0",

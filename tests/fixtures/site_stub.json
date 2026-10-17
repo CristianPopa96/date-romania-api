@@ -1292,6 +1292,114 @@
    }
   }
  },
+ "/v1/institutions/4981310/budget": {
+  "status": 200,
+  "body": {
+   "place": {
+    "siruta": 84914,
+    "name": "ŢÂNŢĂRENI",
+    "kind": "commune"
+   },
+   "funder": null,
+   "budget": {
+    "year": 2024,
+    "executed_on": "2024-12-31",
+    "revenue": 10000000.0,
+    "revenue_lines": [
+     {
+      "line": "state_subsidies",
+      "amount": 5000000.0
+     },
+     {
+      "line": "income_tax",
+      "amount": 1500000.0
+     },
+     {
+      "line": "vat",
+      "amount": 1500000.0
+     },
+     {
+      "line": "own_revenue",
+      "amount": 1000000.0
+     },
+     {
+      "line": "eu_funds",
+      "amount": 1000000.0
+     },
+     {
+      "line": "other_administrations",
+      "amount": 0.0
+     },
+     {
+      "line": "other",
+      "amount": 0.0
+     }
+    ],
+    "spending": 9800000.0,
+    "capital": 6000000.0,
+    "chapters": [
+     {
+      "chapter": "transport",
+      "amount": 6500000.0
+     },
+     {
+      "chapter": "education",
+      "amount": 2000000.0
+     },
+     {
+      "chapter": "general_services",
+      "amount": 1300000.0
+     }
+    ],
+    "source": {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
+     "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": 6,
+     "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
+     "parser_version": 1,
+     "documents": null
+    }
+   },
+   "programme_payments": {
+    "amount": 5400000.0,
+    "payments": 3,
+    "projects": 1,
+    "first_published": "2026-05-18",
+    "last_published": "2026-08-27",
+    "source": {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    }
+   }
+  }
+ },
+ "/v1/institutions/4491342/budget": {
+  "status": 200,
+  "body": {
+   "place": null,
+   "funder": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "budget": null,
+   "programme_payments": null
+  }
+ },
+ "/v1/institutions/12345674/budget": {
+  "status": 404,
+  "body": {
+   "detail": "No institution or company with CUI 12345674"
+  }
+ },
  "/v1/award-contracts?buyer=4981310&sort=newest&limit=20&offset=0": {
   "status": 200,
   "body": {
