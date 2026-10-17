@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.collectors.pnias import parse
 from date_romania.collectors.pnias.parse import file_day, parse_payments
 from date_romania.counties import county_name
@@ -103,7 +103,7 @@ def test_a_row_that_is_not_a_finished_payment_is_set_aside():
     ],
 )
 def test_a_town_hall_is_found_under_the_names_seap_gives_it(town_hall, county, buyer):
-    assert pnias.buyer_place(buyer, county) == pnias.payment_place(town_hall, county)
+    assert pnias_links.buyer_place(buyer, county) == pnias_links.payment_place(town_hall, county)
 
 
 @pytest.mark.parametrize(
@@ -118,7 +118,7 @@ def test_a_town_hall_is_found_under_the_names_seap_gives_it(town_hall, county, b
     ],
 )
 def test_another_buyer_is_not_taken_for_the_town_hall(town_hall, county, buyer):
-    assert pnias.buyer_place(buyer, county) != pnias.payment_place(town_hall, county)
+    assert pnias_links.buyer_place(buyer, county) != pnias_links.payment_place(town_hall, county)
 
 
 def test_counties_get_their_real_names():

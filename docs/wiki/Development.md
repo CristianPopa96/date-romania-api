@@ -32,7 +32,7 @@ src/date_romania/
   collectors/   one package per public source; http.py (polite client), jobs.py (runs,
                 due days, record_parse), datagov.py and sheets.py (file sources)
   money.py      what counts as money spent: every rule, written once
-  pnias.py      how an Anghel Saligny payment is tied to a SEAP contract
+  pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
   models.py     SQLAlchemy models, shared by the API and the collectors
   sources.py    one PublicSource per source
   storage.py    raw store: files kept untouched, addressed by SHA-256

@@ -12,8 +12,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
-from date_romania import pnias as pnias_links
-from date_romania import reports
+from date_romania import pnias_links, reports
 from date_romania.collectors import pnias, seap_awards, seap_direct, seap_exports
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import collect_days, due_days

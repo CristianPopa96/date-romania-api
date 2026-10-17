@@ -7,7 +7,7 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, record_parse, record_skipped
@@ -106,7 +106,7 @@ def collect(session: Session, client: PoliteClient, last_year: int | None = None
         if failed:
             run.status = "partial"
             run.error = f"{failed} files failed; run again to retry them"
-    pnias.link(session)
+    pnias_links.link(session)
     session.commit()
     return kept
 
@@ -130,6 +130,6 @@ def reparse(session: Session) -> int:
         _parse_and_load(session, docs[url], suppliers)
     for url in docs.keys() - set(urls):
         record_skipped(docs[url], PARSER_VERSION, "the same quarter is read from its workbook")
-    pnias.link(session)
+    pnias_links.link(session)
     session.commit()
     return len(urls)

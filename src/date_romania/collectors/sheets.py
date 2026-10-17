@@ -3,8 +3,6 @@
 import codecs
 import csv
 import io
-import re
-import unicodedata
 from collections.abc import Iterable, Iterator
 
 from python_calamine import CalamineWorkbook
@@ -12,13 +10,6 @@ from python_calamine import CalamineWorkbook
 _ZIP = b"PK"  # xlsx and ods
 _OLE = b"\xd0\xcf\x11\xe0"  # xls
 _PIECE = 1 << 20
-
-
-def plain(value: object) -> str:
-    """A header or a name as it is compared: upper case, no diacritics, single spaces."""
-    text = unicodedata.normalize("NFKD", str(value if value is not None else ""))
-    text = text.encode("ascii", "ignore").decode().upper()
-    return re.sub(r"[^A-Z0-9]+", " ", text).strip()
 
 
 def is_workbook(content: bytes) -> bool:

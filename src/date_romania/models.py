@@ -383,7 +383,7 @@ class ExportBuyer(Base):
 
 
 class PniasLink(Base):
-    """A payment tied to a contract that may be the one it settles (see `pnias.py`).
+    """A payment tied to a contract that may be the one it settles (see `pnias_links.py`).
 
     Built from the two tables, never edited: `dr link pnias` builds every row again.
     """

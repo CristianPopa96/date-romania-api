@@ -7,7 +7,7 @@ from fastapi import APIRouter, Query
 from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.api.routes.common import Db, Limit
 from date_romania.api.schemas import (
     Programme,
@@ -89,8 +89,8 @@ def programme(session: Db) -> Programme:
             func.max(PniasPayment.published_on),
         )
     ).one()
-    state = pnias.state().label("state")
-    project = pnias.projects()
+    state = pnias_links.state().label("state")
+    project = pnias_links.projects()
     files = session.execute(
         select(PniasPayment.published_on, func.count(), _PAID, func.count(PniasPayment.builder_cui))
         .group_by(PniasPayment.published_on)
@@ -123,7 +123,9 @@ def programme(session: Db) -> Programme:
         ),
         payments_possible=_match(
             session.execute(
-                select(state, func.count(), _PAID).where(pnias.only_possible()).group_by(state)
+                select(state, func.count(), _PAID)
+                .where(pnias_links.only_possible())
+                .group_by(state)
             )
         ),
         contracts_first_day=contracts_first_day,
@@ -147,7 +149,7 @@ def projects(
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> ProjectPage:
     """The projects of the programme, the most paid first."""
-    project = pnias.projects()
+    project = pnias_links.projects()
     filters = []
     if county:
         filters.append(project.c.county == county)

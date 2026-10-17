@@ -6,7 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from programme_seed import BUILDER, DESIGNER, PARTNER, PIPES, TOWN_HALL
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.api.main import app
 from date_romania.db import get_session
 from date_romania.models import (
@@ -243,7 +243,7 @@ def test_a_contract_without_its_number_still_shows(client, session):
     for contract in session.query(ExportContract).filter_by(notice_no="CAN0000001"):
         contract.contract_no = None
     session.flush()
-    pnias.link(session)
+    pnias_links.link(session)
     project = client.get(f"{ROOT}/projects/101").json()
     (contract,) = project["builders"][0]["contracts"]
     assert contract["contract_no"] is None
@@ -254,7 +254,7 @@ def test_a_buyer_from_another_county_is_not_the_town_hall(client, session):
     # The same name, and an export that puts this buyer elsewhere: no link.
     session.get(ExportBuyer, TOWN_HALL).county = "DOLJ"
     session.flush()
-    pnias.link(session)
+    pnias_links.link(session)
     project = client.get(f"{ROOT}/projects/101").json()
     assert project["match"] == "none"
     assert project["builders"][0]["contracts"] == []
@@ -264,7 +264,7 @@ def test_a_name_no_other_buyer_carries_is_enough(client, session):
     # No export says where the buyer is, and it is the only one of that name.
     session.get(ExportBuyer, TOWN_HALL).county = None
     session.flush()
-    pnias.link(session)
+    pnias_links.link(session)
     methods = set(session.query(PniasLink.method).filter(PniasLink.payment_id == 30001))
     assert methods == {("builder-cui+only-town-hall-of-that-name",)}
     assert client.get(f"{ROOT}/projects/101").json()["confidence"] == "probable"
@@ -275,7 +275,7 @@ def test_only_works_contracts_are_tied(client, session):
     for contract in session.query(ExportContract).filter_by(notice_no="CAN0000001"):
         contract.contract_type, contract.cpv_code = "Servicii", "90620000-9"
     session.flush()
-    pnias.link(session)
+    pnias_links.link(session)
     assert client.get(f"{ROOT}/projects/101").json()["match"] == "none"
 
 
@@ -290,7 +290,7 @@ def test_a_namesake_written_with_its_county_still_makes_the_name_shared(client, 
     session.get(ExportBuyer, TOWN_HALL).county = None
     session.add(ExportBuyer(cui=30000055, name="COMUNA TANTARENI DOLJ", source_document_id=1))
     session.flush()
-    pnias.link(session)
+    pnias_links.link(session)
     methods = set(session.query(PniasLink.method).filter(PniasLink.payment_id == 30001))
     assert methods == {("builder-cui+town-hall-name",)}
     programme = client.get(ROOT).json()

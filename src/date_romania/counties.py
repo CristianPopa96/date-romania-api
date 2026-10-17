@@ -1,10 +1,10 @@
 """Romania's counties: the name as written, by the name as sources type it.
 
 Sources write a county in capitals, with or without diacritics and hyphens. Rows keep
-the plain form (`collectors.sheets.plain`) so they compare; the site shows the real name.
+the plain form (`text.plain`) so they compare; the site shows the real name.
 """
 
-from date_romania.collectors.sheets import plain
+from date_romania.text import plain
 
 _NAMES = (
     "Alba, Arad, Argeș, Bacău, Bihor, Bistrița-Năsăud, Botoșani, Brăila, Brașov, București, "

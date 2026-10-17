@@ -9,7 +9,8 @@ import pytest
 from date_romania.collectors.seap_exports import parse
 from date_romania.collectors.seap_exports.parse import parse_contracts
 from date_romania.collectors.seap_exports.run import chosen, is_contracts
-from date_romania.collectors.sheets import csv_rows, is_workbook, plain
+from date_romania.collectors.sheets import csv_rows, is_workbook
+from date_romania.text import plain
 
 FIXTURES = Path(__file__).parent / "fixtures"
 EXPORT_2021 = (FIXTURES / "seap_export_2021.csv").read_bytes()
