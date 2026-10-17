@@ -12,9 +12,9 @@ from sqlalchemy import ColumnElement, Subquery, case, delete, func, insert, sele
 from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.orm import Session
 
-from date_romania.collectors.sheets import plain
 from date_romania.counties import COUNTIES
 from date_romania.models import ExportBuyer, ExportContract, PniasLink, PniasPayment
+from date_romania.text import plain
 
 # How a payment was tied to a contract, and how sure the tie is. The builder is the same
 # company on both sides, by tax ID. The buyer is matched by name, so no link is sure:

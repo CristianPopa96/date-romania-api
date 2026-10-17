@@ -1,0 +1,4710 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Date România API",
+  "description": "Public data on Romanian public money. Every record carries its source. Read-only, except that a reader can report an error.",
+  "license": {
+   "name": "CC BY 4.0",
+   "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/v1/health": {
+   "get": {
+    "tags": [
+     "system"
+    ],
+    "summary": "Health",
+    "operationId": "health_v1_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Health"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/stats": {
+   "get": {
+    "tags": [
+     "overview"
+    ],
+    "summary": "Stats",
+    "description": "What the database holds: how many direct purchases, for how much, over which days.",
+    "operationId": "stats_v1_stats_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Stats"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/datasets": {
+   "get": {
+    "tags": [
+     "overview"
+    ],
+    "summary": "Datasets",
+    "description": "What the site is built on: each source, the days we hold and how many records.",
+    "operationId": "datasets_v1_datasets_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Datasets"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/search": {
+   "get": {
+    "tags": [
+     "overview"
+    ],
+    "summary": "Search",
+    "description": "Find institutions and companies by name (diacritics and small typos forgiven) or CUI.",
+    "operationId": "search_v1_search_get",
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 100,
+       "description": "A name or a CUI.",
+       "title": "Q"
+      },
+      "description": "A name or a CUI."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "authority",
+          "company"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Kind"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SearchResults"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/institutions/{cui}": {
+   "get": {
+    "tags": [
+     "entities"
+    ],
+    "summary": "Institution",
+    "description": "An institution as a buyer: what it bought directly and from whom.",
+    "operationId": "institution_v1_institutions__cui__get",
+    "parameters": [
+     {
+      "name": "cui",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Cui"
+      }
+     },
+     {
+      "name": "partners",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 10,
+       "title": "Partners"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EntityPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/suppliers/{cui}": {
+   "get": {
+    "tags": [
+     "entities"
+    ],
+    "summary": "Supplier",
+    "description": "A company as a supplier: what it sold directly and to whom.",
+    "operationId": "supplier_v1_suppliers__cui__get",
+    "parameters": [
+     {
+      "name": "cui",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Cui"
+      }
+     },
+     {
+      "name": "partners",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 10,
+       "title": "Partners"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EntityPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/direct-purchases": {
+   "get": {
+    "tags": [
+     "direct purchases"
+    ],
+    "summary": "Direct Purchases",
+    "description": "Direct purchases by finalization day, newest or largest first.",
+    "operationId": "direct_purchases_v1_direct_purchases_get",
+    "parameters": [
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the supplier.",
+       "title": "Supplier"
+      },
+      "description": "CUI of the supplier."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 10
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code, e.g. 4523.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code, e.g. 4523."
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "SEAP state id; 7 is accepted.",
+       "title": "State"
+      },
+      "description": "SEAP state id; 7 is accepted."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "newest",
+        "value"
+       ],
+       "type": "string",
+       "default": "newest",
+       "title": "Sort"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PurchasePage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/direct-purchases/summary": {
+   "get": {
+    "tags": [
+     "direct purchases"
+    ],
+    "summary": "Direct Purchases Summary",
+    "description": "The totals of the direct purchases of a buyer, a supplier, or the two together.",
+    "operationId": "direct_purchases_summary_v1_direct_purchases_summary_get",
+    "parameters": [
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the supplier.",
+       "title": "Supplier"
+      },
+      "description": "CUI of the supplier."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Summary"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/direct-purchases/{purchase_id}": {
+   "get": {
+    "tags": [
+     "direct purchases"
+    ],
+    "summary": "Direct Purchase",
+    "description": "One direct purchase, by SEAP's own id.",
+    "operationId": "direct_purchase_v1_direct_purchases__purchase_id__get",
+    "parameters": [
+     {
+      "name": "purchase_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Purchase Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Purchase"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/rankings/suppliers": {
+   "get": {
+    "tags": [
+     "rankings"
+    ],
+    "summary": "Ranking Suppliers",
+    "description": "Suppliers by the value of their accepted direct purchases.",
+    "operationId": "ranking_suppliers_v1_rankings_suppliers_get",
+    "parameters": [
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Ranking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/rankings/institutions": {
+   "get": {
+    "tags": [
+     "rankings"
+    ],
+    "summary": "Ranking Institutions",
+    "description": "Institutions by the value of the direct purchases they accepted.",
+    "operationId": "ranking_institutions_v1_rankings_institutions_get",
+    "parameters": [
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Ranking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/cpv-divisions": {
+   "get": {
+    "tags": [
+     "rankings"
+    ],
+    "summary": "Cpv Divisions",
+    "description": "The CPV divisions (first two digits of a code) found in the purchases and notices held.\n\nThe name is SEAP's own for the division's code (45000000 for 45), where a row carries\nit; it is never translated.",
+    "operationId": "cpv_divisions_v1_cpv_divisions_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/CpvDivision"
+         },
+         "type": "array",
+         "title": "Response Cpv Divisions V1 Cpv Divisions Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/patterns/near-limit": {
+   "get": {
+    "tags": [
+     "patterns"
+    ],
+    "summary": "Near Limit",
+    "description": "Pairs of a buyer and a supplier with repeated accepted direct purchases just under the\nlegal limit of their contract type, most purchases first.\n\nA purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is\nnot known cannot be checked: `checked` of `accepted_total` were, and `first_day` and\n`last_day` bound those. As csv: every pair, one line per purchase.",
+    "operationId": "near_limit_v1_patterns_near_limit_get",
+    "parameters": [
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 50,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "json",
+        "csv"
+       ],
+       "type": "string",
+       "description": "csv gives the whole list as a file.",
+       "default": "json",
+       "title": "Format"
+      },
+      "description": "csv gives the whole list as a file."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NearLimitPattern"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/award-notices/{notice_id}": {
+   "get": {
+    "tags": [
+     "award notices"
+    ],
+    "summary": "Award Notice",
+    "description": "One award notice, by SEAP's own id, in the version in force when it was collected.",
+    "operationId": "award_notice_v1_award_notices__notice_id__get",
+    "parameters": [
+     {
+      "name": "notice_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Notice Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AwardNoticeOut"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/award-notices/{notice_id}/contracts": {
+   "get": {
+    "tags": [
+     "award notices"
+    ],
+    "summary": "Award Notice Contracts",
+    "description": "Every contract of one notice, whatever its date, in SEAP's order of signing.",
+    "operationId": "award_notice_contracts_v1_award_notices__notice_id__contracts_get",
+    "parameters": [
+     {
+      "name": "notice_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Notice Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 50,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ContractPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/award-contracts": {
+   "get": {
+    "tags": [
+     "award notices"
+    ],
+    "summary": "Award Contracts",
+    "description": "Contracts signed in the period we hold, newest or largest first.\n\nFramework agreements are left out: their value is a ceiling, and what is committed\nunder them are their subsequent contracts, which are listed. The list is not complete:\nSEAP publishes many contracts weeks after they are signed.",
+    "operationId": "award_contracts_v1_award_contracts_get",
+    "parameters": [
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of a winner.",
+       "title": "Supplier"
+      },
+      "description": "CUI of a winner."
+     },
+     {
+      "name": "won",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "alone",
+          "association"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "By one company, or by an association of several.",
+       "title": "Won"
+      },
+      "description": "By one company, or by an association of several."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "newest",
+        "value"
+       ],
+       "type": "string",
+       "default": "newest",
+       "title": "Sort"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "json",
+        "csv"
+       ],
+       "type": "string",
+       "description": "csv gives the whole list as a file.",
+       "default": "json",
+       "title": "Format"
+      },
+      "description": "csv gives the whole list as a file."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ContractPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/institutions/{cui}/contracts": {
+   "get": {
+    "tags": [
+     "entities"
+    ],
+    "summary": "Institution Contracts",
+    "description": "What an institution awarded in the period we hold. Each contract is counted once.",
+    "operationId": "institution_contracts_v1_institutions__cui__contracts_get",
+    "parameters": [
+     {
+      "name": "cui",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Cui"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InstitutionContracts"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/suppliers/{cui}/contracts": {
+   "get": {
+    "tags": [
+     "entities"
+    ],
+    "summary": "Supplier Contracts",
+    "description": "What a company won in the period we hold, alone and in associations.\n\nSEAP gives one value for a contract won by an association and does not split it between\nthe members, so `association` carries the whole value of those contracts. The two\nfigures must never be added.",
+    "operationId": "supplier_contracts_v1_suppliers__cui__contracts_get",
+    "parameters": [
+     {
+      "name": "cui",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Cui"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SupplierContracts"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/rankings/contract-suppliers": {
+   "get": {
+    "tags": [
+     "rankings"
+    ],
+    "summary": "Ranking Contract Suppliers",
+    "description": "Companies by the value of the contracts they won, alone or in associations.\n\nA contract won by an association appears at every member with its whole value.",
+    "operationId": "ranking_contract_suppliers_v1_rankings_contract_suppliers_get",
+    "parameters": [
+     {
+      "name": "won",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "alone",
+        "association"
+       ],
+       "type": "string",
+       "default": "alone",
+       "title": "Won"
+      }
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ContractRanking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/rankings/contract-institutions": {
+   "get": {
+    "tags": [
+     "rankings"
+    ],
+    "summary": "Ranking Contract Institutions",
+    "description": "Institutions by the value of the contracts they awarded; each contract counted once.",
+    "operationId": "ranking_contract_institutions_v1_rankings_contract_institutions_get",
+    "parameters": [
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ContractRanking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/anghel-saligny": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Programme",
+    "description": "The programme as the payment files show it, and how many payments and projects\ncould be tied to a SEAP contract. A payment is a settlement request the ministry paid.",
+    "operationId": "programme_v1_programmes_anghel_saligny_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Programme"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/anghel-saligny/projects": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Projects",
+    "description": "The projects of the programme, the most paid first.",
+    "operationId": "projects_v1_programmes_anghel_saligny_projects_get",
+    "parameters": [
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "As in `counties[].key`.",
+       "title": "County"
+      },
+      "description": "As in `counties[].key`."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Part of the town hall or the investment.",
+       "title": "Q"
+      },
+      "description": "Part of the town hall or the investment."
+     },
+     {
+      "name": "builder",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The builder's CUI.",
+       "title": "Builder"
+      },
+      "description": "The builder's CUI."
+     },
+     {
+      "name": "match",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "one",
+          "several",
+          "none",
+          "unnamed"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The match state of the project.",
+       "title": "Match"
+      },
+      "description": "The match state of the project."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/anghel-saligny/projects/{project_id}": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Project",
+    "description": "One project: what it is, every payment for it, who builds it, and the contracts\nits payments could be tied to.",
+    "operationId": "project_v1_programmes_anghel_saligny_projects__project_id__get",
+    "parameters": [
+     {
+      "name": "project_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Project Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Project"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/reports": {
+   "post": {
+    "tags": [
+     "reports"
+    ],
+    "summary": "Report",
+    "description": "Tell us that something on a page is wrong. A person reads it before anything changes.\n\nA reader may send a few reports an hour. The site passes the reader's address on in\n`X-Forwarded-For`; a call made straight to the API counts under the caller's own.",
+    "operationId": "report_v1_reports_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReportIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReportReceived"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/corrections": {
+   "get": {
+    "tags": [
+     "reports"
+    ],
+    "summary": "Corrections",
+    "description": "What was corrected after a reader's report: the page and what changed, newest first.",
+    "operationId": "corrections_v1_corrections_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Corrections"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AwardNoticeOut": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "notice_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice No"
+     },
+     "notice_type_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice Type Id"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "buyer": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "buyer_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Text"
+     },
+     "cpv_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Code"
+     },
+     "cpv_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Name"
+     },
+     "contract_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contract Type"
+     },
+     "procedure_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Procedure Type"
+     },
+     "published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published At",
+      "description": "Of the version we hold, the latest."
+     },
+     "first_published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Published At",
+      "description": "The earliest publication SEAP lists. Null until the versions are collected."
+     },
+     "versions": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Versions",
+      "description": "Null until the versions are collected."
+     },
+     "detail": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/NoticeDetail"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null until the detail is collected."
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "ordinary": {
+      "type": "integer",
+      "title": "Ordinary"
+     },
+     "frameworks": {
+      "type": "integer",
+      "title": "Frameworks"
+     },
+     "subsequent": {
+      "type": "integer",
+      "title": "Subsequent"
+     },
+     "total": {
+      "type": "number",
+      "title": "Total",
+      "description": "Ordinary and subsequent contracts of this notice, whatever their date."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "notice_no",
+     "notice_type_id",
+     "title",
+     "buyer",
+     "buyer_text",
+     "cpv_code",
+     "cpv_name",
+     "contract_type",
+     "procedure_type",
+     "published_at",
+     "first_published_at",
+     "versions",
+     "detail",
+     "contracts",
+     "ordinary",
+     "frameworks",
+     "subsequent",
+     "total",
+     "source"
+    ],
+    "title": "AwardNoticeOut"
+   },
+   "Contract": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "notice_id": {
+      "type": "integer",
+      "title": "Notice Id"
+     },
+     "notice_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice No"
+     },
+     "notice_title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice Title"
+     },
+     "contract_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contract No"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "signed_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Signed At"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Kind",
+      "description": "1 ordinary, 2 framework agreement, 3 subsequent."
+     },
+     "counted": {
+      "type": "boolean",
+      "title": "Counted",
+      "description": "False for a framework agreement: its value is a ceiling, not money committed, and is never added to a total."
+     },
+     "lots": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lots"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     },
+     "original_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Original Value",
+      "description": "In `currency`, when not in lei."
+     },
+     "currency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Currency"
+     },
+     "buyer": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "buyer_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Text"
+     },
+     "procedure_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Procedure Type"
+     },
+     "cpv_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Code"
+     },
+     "winners": {
+      "items": {
+       "$ref": "#/components/schemas/Winner"
+      },
+      "type": "array",
+      "title": "Winners",
+      "description": "In SEAP's order. More than one is an association: one value for all of them, never split, and SEAP does not say who leads."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "notice_id",
+     "notice_no",
+     "notice_title",
+     "contract_no",
+     "title",
+     "signed_at",
+     "kind",
+     "counted",
+     "lots",
+     "value",
+     "original_value",
+     "currency",
+     "buyer",
+     "buyer_text",
+     "procedure_type",
+     "cpv_code",
+     "winners",
+     "source"
+    ],
+    "title": "Contract",
+    "description": "One contract of an award notice. `value` is in lei without VAT."
+   },
+   "ContractPage": {
+    "properties": {
+     "total": {
+      "type": "integer",
+      "title": "Total"
+     },
+     "period": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Period"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null for the contracts of one notice."
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/Contract"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "total",
+     "period",
+     "items"
+    ],
+    "title": "ContractPage"
+   },
+   "ContractRanking": {
+    "properties": {
+     "period": {
+      "$ref": "#/components/schemas/Period"
+     },
+     "won": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "alone",
+         "association"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Won",
+      "description": "alone or association, for a ranking of winners."
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ContractRankingRow"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "period",
+     "won",
+     "items",
+     "source"
+    ],
+    "title": "ContractRanking"
+   },
+   "ContractRankingRow": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     },
+     "rank": {
+      "type": "integer",
+      "title": "Rank"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind",
+     "rank",
+     "contracts",
+     "value"
+    ],
+    "title": "ContractRankingRow"
+   },
+   "ContractTotals": {
+    "properties": {
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "contracts",
+     "value"
+    ],
+    "title": "ContractTotals"
+   },
+   "Correction": {
+    "properties": {
+     "page": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Page",
+      "description": "The address of the page on the site; null when the report named no such page."
+     },
+     "correction": {
+      "type": "string",
+      "title": "Correction"
+     },
+     "corrected_on": {
+      "type": "string",
+      "format": "date",
+      "title": "Corrected On"
+     }
+    },
+    "type": "object",
+    "required": [
+     "page",
+     "correction",
+     "corrected_on"
+    ],
+    "title": "Correction",
+    "description": "A report we checked and acted on: where, and what we changed, in our words."
+   },
+   "Corrections": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/Correction"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "items"
+    ],
+    "title": "Corrections"
+   },
+   "CpvDivision": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "The first two digits of a CPV code, e.g. 45."
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name",
+      "description": "SEAP's name for the division, where a row gives it."
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name"
+    ],
+    "title": "CpvDivision"
+   },
+   "Dataset": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "publisher": {
+      "type": "string",
+      "title": "Publisher"
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day"
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     },
+     "records": {
+      "type": "integer",
+      "title": "Records"
+     },
+     "complete": {
+      "type": "boolean",
+      "title": "Complete",
+      "description": "False when the source publishes late, so the period keeps filling in."
+     },
+     "fetched_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fetched At"
+     },
+     "days_collected": {
+      "type": "integer",
+      "title": "Days Collected",
+      "description": "Days of the period read in full from the source."
+     },
+     "days_partial": {
+      "type": "integer",
+      "title": "Days Partial",
+      "description": "Days of the period the source would not give in full; they wait to be read."
+     },
+     "documents": {
+      "type": "integer",
+      "title": "Documents",
+      "description": "Raw answers kept from the source, each under its hash."
+     },
+     "rejected_rows": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rejected Rows",
+      "description": "Rows of those answers the parser could not read, logged and left out. Null until every answer was seen by a parser that counts them."
+     },
+     "counts": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Counts",
+      "description": "What is held, by kind of row. `records` is the one the totals use."
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "publisher",
+     "first_day",
+     "last_day",
+     "records",
+     "complete",
+     "fetched_at",
+     "days_collected",
+     "days_partial",
+     "documents",
+     "rejected_rows",
+     "counts"
+    ],
+    "title": "Dataset",
+    "description": "One source as we hold it, for the table that says what the site is built on."
+   },
+   "Datasets": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/Dataset"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "items"
+    ],
+    "title": "Datasets"
+   },
+   "EntityOut": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     },
+     "county": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "County"
+     },
+     "locality": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Locality"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind",
+     "county",
+     "locality"
+    ],
+    "title": "EntityOut"
+   },
+   "EntityPage": {
+    "properties": {
+     "entity": {
+      "$ref": "#/components/schemas/EntityOut"
+     },
+     "direct_purchases": {
+      "$ref": "#/components/schemas/Summary"
+     },
+     "partners": {
+      "items": {
+       "$ref": "#/components/schemas/Partner"
+      },
+      "type": "array",
+      "title": "Partners",
+      "description": "The suppliers of an institution, or the institutions a supplier sold to, by value of accepted purchases."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "entity",
+     "direct_purchases",
+     "partners",
+     "source"
+    ],
+    "title": "EntityPage"
+   },
+   "EntityRef": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind"
+    ],
+    "title": "EntityRef"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "Health": {
+    "properties": {
+     "status": {
+      "type": "string",
+      "title": "Status"
+     },
+     "database": {
+      "type": "string",
+      "title": "Database"
+     },
+     "version": {
+      "type": "string",
+      "title": "Version"
+     }
+    },
+    "type": "object",
+    "required": [
+     "status",
+     "database",
+     "version"
+    ],
+    "title": "Health"
+   },
+   "InstitutionContracts": {
+    "properties": {
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "period": {
+      "$ref": "#/components/schemas/Period"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "contracts",
+     "value",
+     "period",
+     "source"
+    ],
+    "title": "InstitutionContracts"
+   },
+   "MatchCount": {
+    "properties": {
+     "count": {
+      "type": "integer",
+      "title": "Count",
+      "default": 0
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount",
+      "default": 0
+     }
+    },
+    "type": "object",
+    "required": [
+     "count",
+     "amount"
+    ],
+    "title": "MatchCount"
+   },
+   "NearLimitPair": {
+    "properties": {
+     "buyer": {
+      "$ref": "#/components/schemas/EntityRef"
+     },
+     "supplier": {
+      "$ref": "#/components/schemas/EntityRef"
+     },
+     "contract_type": {
+      "type": "integer",
+      "enum": [
+       1,
+       2,
+       3
+      ],
+      "title": "Contract Type",
+      "description": "1 goods, 2 services, 3 works."
+     },
+     "limit": {
+      "type": "number",
+      "title": "Limit",
+      "description": "The legal limit for that type, in lei without VAT."
+     },
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/NearLimitPurchase"
+      },
+      "type": "array",
+      "title": "Items",
+      "description": "The purchases, oldest first."
+     }
+    },
+    "type": "object",
+    "required": [
+     "buyer",
+     "supplier",
+     "contract_type",
+     "limit",
+     "purchases",
+     "value",
+     "items"
+    ],
+    "title": "NearLimitPair",
+    "description": "One buyer and one supplier with repeated accepted purchases just under a limit."
+   },
+   "NearLimitPattern": {
+    "properties": {
+     "rule": {
+      "$ref": "#/components/schemas/NearLimitRule"
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day",
+      "description": "The first day of a purchase checked."
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day",
+      "description": "The last day of a purchase checked."
+     },
+     "pairs": {
+      "type": "integer",
+      "title": "Pairs",
+      "description": "Every pair that matches, beyond the ones listed."
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/NearLimitPair"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "checked": {
+      "type": "integer",
+      "title": "Checked",
+      "description": "Accepted purchases of known contract type: the ones that were checked."
+     },
+     "accepted_total": {
+      "type": "integer",
+      "title": "Accepted Total",
+      "description": "Accepted purchases, checked or not."
+     },
+     "unknown_type": {
+      "type": "integer",
+      "title": "Unknown Type",
+      "description": "Accepted purchases of unknown contract type, which cannot be checked."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "rule",
+     "first_day",
+     "last_day",
+     "pairs",
+     "items",
+     "checked",
+     "accepted_total",
+     "unknown_type",
+     "source"
+    ],
+    "title": "NearLimitPattern"
+   },
+   "NearLimitPurchase": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "finalized_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Finalized At"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value",
+      "description": "Closing value in lei without VAT."
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "code",
+     "name",
+     "finalized_at",
+     "value"
+    ],
+    "title": "NearLimitPurchase"
+   },
+   "NearLimitRule": {
+    "properties": {
+     "share": {
+      "type": "number",
+      "title": "Share",
+      "description": "A value from this share of the limit up to it is near it."
+     },
+     "repeats": {
+      "type": "integer",
+      "title": "Repeats",
+      "description": "Purchases a pair needs to be listed."
+     },
+     "limits": {
+      "additionalProperties": {
+       "type": "number"
+      },
+      "type": "object",
+      "title": "Limits",
+      "description": "The limit of each contract type."
+     }
+    },
+    "type": "object",
+    "required": [
+     "share",
+     "repeats",
+     "limits"
+    ],
+    "title": "NearLimitRule"
+   },
+   "NoticeDetail": {
+    "properties": {
+     "call_notice_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Call Notice No",
+      "description": "The notice that opened the procedure."
+     },
+     "call_published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Call Published At"
+     },
+     "ted_notice_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ted Notice No"
+     },
+     "lots": {
+      "type": "integer",
+      "title": "Lots"
+     },
+     "eu_funded": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Eu Funded",
+      "description": "Null when SEAP does not say."
+     },
+     "financing_types": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Financing Types"
+     },
+     "eu_funds": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Eu Funds"
+     },
+     "eu_project": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Eu Project"
+     }
+    },
+    "type": "object",
+    "required": [
+     "call_notice_no",
+     "call_published_at",
+     "ted_notice_no",
+     "lots",
+     "eu_funded",
+     "financing_types",
+     "eu_funds",
+     "eu_project"
+    ],
+    "title": "NoticeDetail"
+   },
+   "Partner": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     },
+     "accepted": {
+      "type": "integer",
+      "title": "Accepted"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind",
+     "accepted",
+     "value"
+    ],
+    "title": "Partner"
+   },
+   "Period": {
+    "properties": {
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day"
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     }
+    },
+    "type": "object",
+    "required": [
+     "first_day",
+     "last_day"
+    ],
+    "title": "Period",
+    "description": "The days we hold. Contract totals count the contracts signed inside them."
+   },
+   "Programme": {
+    "properties": {
+     "payments": {
+      "type": "integer",
+      "title": "Payments",
+      "description": "Settlement requests the ministry paid."
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "town_halls": {
+      "type": "integer",
+      "title": "Town Halls",
+      "description": "Town halls and county councils that were paid."
+     },
+     "builders": {
+      "type": "integer",
+      "title": "Builders",
+      "description": "Builders named by tax ID."
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day",
+      "description": "The day of the first payment file held."
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     },
+     "networks": {
+      "items": {
+       "$ref": "#/components/schemas/ProgrammeGroup"
+      },
+      "type": "array",
+      "title": "Networks",
+      "description": "`infra` (roads, water, sewage), `gas`."
+     },
+     "counties": {
+      "items": {
+       "$ref": "#/components/schemas/ProgrammeGroup"
+      },
+      "type": "array",
+      "title": "Counties"
+     },
+     "files": {
+      "items": {
+       "$ref": "#/components/schemas/ProgrammeFile"
+      },
+      "type": "array",
+      "title": "Files"
+     },
+     "payments_match": {
+      "$ref": "#/components/schemas/ProgrammeMatch"
+     },
+     "projects_match": {
+      "$ref": "#/components/schemas/ProgrammeMatch"
+     },
+     "payments_possible": {
+      "$ref": "#/components/schemas/ProgrammeMatch",
+      "description": "Of the payments tied (`one` or `several`), those whose links are all only possible: other buyers carry the town hall's name, and nothing says which county the contract's buyer is in. The rest are probable. No link is sure."
+     },
+     "contracts_first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contracts First Day",
+      "description": "The contracts searched were published in SEAP between these two days."
+     },
+     "contracts_last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contracts Last Day"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     },
+     "contracts_source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "payments",
+     "amount",
+     "projects",
+     "town_halls",
+     "builders",
+     "first_day",
+     "last_day",
+     "networks",
+     "counties",
+     "files",
+     "payments_match",
+     "projects_match",
+     "payments_possible",
+     "contracts_first_day",
+     "contracts_last_day",
+     "source",
+     "contracts_source"
+    ],
+    "title": "Programme",
+    "description": "The Anghel Saligny programme, from the ministry's payment files."
+   },
+   "ProgrammeFile": {
+    "properties": {
+     "published_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published On"
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "with_tax_id": {
+      "type": "integer",
+      "title": "With Tax Id",
+      "description": "Payments that name the builder by tax ID."
+     }
+    },
+    "type": "object",
+    "required": [
+     "published_on",
+     "payments",
+     "amount",
+     "with_tax_id"
+    ],
+    "title": "ProgrammeFile",
+    "description": "One payment file. The files give no payment day; the day in their name stands for it."
+   },
+   "ProgrammeGroup": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "name",
+     "payments",
+     "amount",
+     "projects"
+    ],
+    "title": "ProgrammeGroup"
+   },
+   "ProgrammeMatch": {
+    "properties": {
+     "one": {
+      "$ref": "#/components/schemas/MatchCount",
+      "description": "Tied to the contracts of one notice.",
+      "default": {
+       "count": 0,
+       "amount": 0.0
+      }
+     },
+     "several": {
+      "$ref": "#/components/schemas/MatchCount",
+      "description": "Tied to more than one notice; the files do not say which.",
+      "default": {
+       "count": 0,
+       "amount": 0.0
+      }
+     },
+     "none": {
+      "$ref": "#/components/schemas/MatchCount",
+      "description": "The builder is named by tax ID and no contract was found.",
+      "default": {
+       "count": 0,
+       "amount": 0.0
+      }
+     },
+     "unnamed": {
+      "$ref": "#/components/schemas/MatchCount",
+      "description": "The file names the builder by name only, so nothing can be tied.",
+      "default": {
+       "count": 0,
+       "amount": 0.0
+      }
+     }
+    },
+    "type": "object",
+    "required": [
+     "one",
+     "several",
+     "none",
+     "unnamed"
+    ],
+    "title": "ProgrammeMatch",
+    "description": "Payments or projects by whether a SEAP contract was found for them."
+   },
+   "Project": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id",
+      "description": "The ministry's id of the project."
+     },
+     "investment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Investment"
+     },
+     "county": {
+      "type": "string",
+      "title": "County"
+     },
+     "county_name": {
+      "type": "string",
+      "title": "County Name"
+     },
+     "town_hall": {
+      "type": "string",
+      "title": "Town Hall",
+      "description": "The beneficiary as the ministry names it."
+     },
+     "network": {
+      "type": "string",
+      "title": "Network"
+     },
+     "category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Category"
+     },
+     "total_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Value"
+     },
+     "state_budget_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State Budget Value"
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid",
+      "description": "The payments held for this project, added up."
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "match": {
+      "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
+      "title": "Match",
+      "description": "one, several, none or unnamed"
+     },
+     "town_hall_entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The buyer of the tied contracts: the town hall as SEAP holds it."
+     },
+     "ministry_contract_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry Contract No"
+     },
+     "ministry_contract_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry Contract Date"
+     },
+     "poim": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Poim"
+     },
+     "progress": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Progress",
+      "description": "From the latest payment that gives one."
+     },
+     "estimated_end": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estimated End"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectPayment"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "builders": {
+      "items": {
+       "$ref": "#/components/schemas/TraceBuilder"
+      },
+      "type": "array",
+      "title": "Builders"
+     },
+     "designers": {
+      "items": {
+       "$ref": "#/components/schemas/TraceParty"
+      },
+      "type": "array",
+      "title": "Designers"
+     },
+     "confidence": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "probable",
+         "possible"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confidence",
+      "description": "The weakest link among the contracts shown; null when there are none."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     },
+     "contracts_source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "investment",
+     "county",
+     "county_name",
+     "town_hall",
+     "network",
+     "category",
+     "total_value",
+     "state_budget_value",
+     "paid",
+     "payments",
+     "match",
+     "town_hall_entity",
+     "ministry_contract_no",
+     "ministry_contract_date",
+     "poim",
+     "progress",
+     "estimated_end",
+     "items",
+     "builders",
+     "designers",
+     "confidence",
+     "source",
+     "contracts_source"
+    ],
+    "title": "Project"
+   },
+   "ProjectPage": {
+    "properties": {
+     "total": {
+      "type": "integer",
+      "title": "Total"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectRow"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "total",
+     "items"
+    ],
+    "title": "ProjectPage"
+   },
+   "ProjectPayment": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id",
+      "description": "The ministry's number for the request: ASA4-<id>."
+     },
+     "published_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published On",
+      "description": "The day of the file that lists it."
+     },
+     "registered_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Registered On"
+     },
+     "requested_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Requested On"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "progress": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Progress",
+      "description": "As written in the file."
+     },
+     "builder_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Builder Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "published_on",
+     "registered_on",
+     "requested_on",
+     "amount",
+     "progress",
+     "builder_text"
+    ],
+    "title": "ProjectPayment"
+   },
+   "ProjectRow": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id",
+      "description": "The ministry's id of the project."
+     },
+     "investment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Investment"
+     },
+     "county": {
+      "type": "string",
+      "title": "County"
+     },
+     "county_name": {
+      "type": "string",
+      "title": "County Name"
+     },
+     "town_hall": {
+      "type": "string",
+      "title": "Town Hall",
+      "description": "The beneficiary as the ministry names it."
+     },
+     "network": {
+      "type": "string",
+      "title": "Network"
+     },
+     "category": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Category"
+     },
+     "total_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total Value"
+     },
+     "state_budget_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State Budget Value"
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid",
+      "description": "The payments held for this project, added up."
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "match": {
+      "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
+      "title": "Match",
+      "description": "one, several, none or unnamed"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "investment",
+     "county",
+     "county_name",
+     "town_hall",
+     "network",
+     "category",
+     "total_value",
+     "state_budget_value",
+     "paid",
+     "payments",
+     "match"
+    ],
+    "title": "ProjectRow"
+   },
+   "Purchase": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "state_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State Id"
+     },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State"
+     },
+     "cpv_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Code"
+     },
+     "cpv_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Name"
+     },
+     "buyer": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null when SEAP gives no valid CUI."
+     },
+     "buyer_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Text",
+      "description": "The buyer as SEAP writes it."
+     },
+     "supplier": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "supplier_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Supplier Text"
+     },
+     "published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published At"
+     },
+     "finalized_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Finalized At"
+     },
+     "estimated_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estimated Value"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "The closing value."
+     },
+     "above_limit": {
+      "type": "boolean",
+      "title": "Above Limit",
+      "description": "The purchase was accepted with a value above 900,400 lei, the highest legal limit for a direct purchase. Always false for a purchase that was not accepted."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "code",
+     "name",
+     "state_id",
+     "state",
+     "cpv_code",
+     "cpv_name",
+     "buyer",
+     "buyer_text",
+     "supplier",
+     "supplier_text",
+     "published_at",
+     "finalized_at",
+     "estimated_value",
+     "value",
+     "above_limit",
+     "source"
+    ],
+    "title": "Purchase"
+   },
+   "PurchasePage": {
+    "properties": {
+     "total": {
+      "type": "integer",
+      "title": "Total"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/Purchase"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "total",
+     "items"
+    ],
+    "title": "PurchasePage"
+   },
+   "Ranking": {
+    "properties": {
+     "date_from": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Date From"
+     },
+     "date_to": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Date To"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/RankingRow"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "date_from",
+     "date_to",
+     "items",
+     "source"
+    ],
+    "title": "Ranking"
+   },
+   "RankingRow": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     },
+     "accepted": {
+      "type": "integer",
+      "title": "Accepted"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "rank": {
+      "type": "integer",
+      "title": "Rank"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind",
+     "accepted",
+     "value",
+     "rank"
+    ],
+    "title": "RankingRow"
+   },
+   "ReportIn": {
+    "properties": {
+     "page": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 300
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Page",
+      "description": "The page the report is about."
+     },
+     "message": {
+      "type": "string",
+      "maxLength": 4000,
+      "minLength": 10,
+      "title": "Message",
+      "description": "What is wrong."
+     },
+     "evidence": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 500
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Evidence",
+      "description": "A link or a document that shows the right value."
+     }
+    },
+    "type": "object",
+    "required": [
+     "message"
+    ],
+    "title": "ReportIn",
+    "description": "What a reader says is wrong on a page of the site."
+   },
+   "ReportReceived": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id"
+    ],
+    "title": "ReportReceived"
+   },
+   "SearchResults": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/EntityOut"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "items"
+    ],
+    "title": "SearchResults"
+   },
+   "Source": {
+    "properties": {
+     "publisher": {
+      "type": "string",
+      "title": "Publisher"
+     },
+     "record": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Record",
+      "description": "The publisher's own number for the record."
+     },
+     "url": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Url"
+     },
+     "fetched_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fetched At",
+      "description": "When we last fetched it."
+     },
+     "document_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Document Id",
+      "description": "Our id of the stored raw response."
+     },
+     "sha256": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sha256",
+      "description": "SHA-256 of the stored raw response, as it was received."
+     },
+     "parser_version": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parser Version",
+      "description": "Version of the parser that read the record from it."
+     },
+     "documents": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Documents",
+      "description": "How many stored responses the records behind the figure were read from."
+     }
+    },
+    "type": "object",
+    "required": [
+     "publisher",
+     "record",
+     "url",
+     "fetched_at",
+     "document_id",
+     "sha256",
+     "parser_version",
+     "documents"
+    ],
+    "title": "Source",
+    "description": "Where a figure comes from, so the site can show it next to the figure."
+   },
+   "Stats": {
+    "properties": {
+     "direct_purchases": {
+      "$ref": "#/components/schemas/Summary"
+     },
+     "institutions": {
+      "type": "integer",
+      "title": "Institutions",
+      "description": "Institutions with at least one purchase."
+     },
+     "suppliers": {
+      "type": "integer",
+      "title": "Suppliers"
+     },
+     "limit": {
+      "type": "number",
+      "title": "Limit",
+      "description": "The limit used for `above_limit`: the legal one for works, the highest a direct purchase may have, in lei without VAT."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "direct_purchases",
+     "institutions",
+     "suppliers",
+     "limit",
+     "source"
+    ],
+    "title": "Stats"
+   },
+   "Summary": {
+    "properties": {
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases",
+      "description": "All finished purchases, whatever their outcome."
+     },
+     "accepted": {
+      "type": "integer",
+      "title": "Accepted",
+      "description": "Purchases where the offer was accepted."
+     },
+     "value": {
+      "type": "number",
+      "title": "Value",
+      "description": "Sum of the accepted purchases at or under `limit`."
+     },
+     "above_limit": {
+      "type": "integer",
+      "title": "Above Limit",
+      "description": "Accepted purchases published with a value above 900,400 lei, the highest legal limit for a direct purchase (the one for works). They are not counted in `value` and are listed separately. A goods or services purchase between its own limit of 270,120 lei and this one is not marked."
+     },
+     "above_limit_value": {
+      "type": "number",
+      "title": "Above Limit Value"
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day",
+      "description": "First day we have data for."
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     }
+    },
+    "type": "object",
+    "required": [
+     "purchases",
+     "accepted",
+     "value",
+     "above_limit",
+     "above_limit_value",
+     "first_day",
+     "last_day"
+    ],
+    "title": "Summary",
+    "description": "Direct purchases in a period. `value` counts accepted purchases only."
+   },
+   "SupplierContracts": {
+    "properties": {
+     "period": {
+      "$ref": "#/components/schemas/Period"
+     },
+     "alone": {
+      "$ref": "#/components/schemas/ContractTotals"
+     },
+     "association": {
+      "$ref": "#/components/schemas/ContractTotals",
+      "description": "The whole value of the contracts won with others; never add it to `alone`."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "period",
+     "alone",
+     "association",
+     "source"
+    ],
+    "title": "SupplierContracts"
+   },
+   "TraceBuilder": {
+    "properties": {
+     "cui": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cui",
+      "description": "Null when the files give only the name."
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Set when the company has a page."
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments",
+      "description": "The payments of the project that name this builder."
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "match": {
+      "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
+      "title": "Match",
+      "description": "one, several, none or unnamed"
+     },
+     "contracts": {
+      "items": {
+       "$ref": "#/components/schemas/TraceContract"
+      },
+      "type": "array",
+      "title": "Contracts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "entity",
+     "payments",
+     "amount",
+     "match",
+     "contracts"
+    ],
+    "title": "TraceBuilder"
+   },
+   "TraceContract": {
+    "properties": {
+     "notice_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice No"
+     },
+     "notice_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice Id",
+      "description": "Our id of the award notice, when we also collected it from SEAP."
+     },
+     "notice_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Notice Date"
+     },
+     "contract_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contract No"
+     },
+     "contract_date": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contract Date"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title",
+      "description": "Only the 2021 and 2022 exports carry one."
+     },
+     "lot": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Lot"
+     },
+     "value_ron": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value Ron"
+     },
+     "procedure_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Procedure Type"
+     },
+     "contract_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contract Type"
+     },
+     "is_framework": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Framework"
+     },
+     "buyer": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "buyer_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Text"
+     },
+     "confidence": {
+      "type": "string",
+      "enum": [
+       "probable",
+       "possible"
+      ],
+      "title": "Confidence",
+      "description": "probable: an export puts the buyer in the project's county, or no other buyer carries that name. possible: other buyers do."
+     },
+     "method": {
+      "type": "string",
+      "title": "Method",
+      "description": "What the link rests on."
+     },
+     "partners": {
+      "items": {
+       "$ref": "#/components/schemas/TraceParty"
+      },
+      "type": "array",
+      "title": "Partners",
+      "description": "The other winners, when the contract was won by an association. The value is the whole contract's, never split."
+     },
+     "ratio": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ratio",
+      "description": "Contract value over the project's total value."
+     }
+    },
+    "type": "object",
+    "required": [
+     "notice_no",
+     "notice_id",
+     "notice_date",
+     "contract_no",
+     "contract_date",
+     "title",
+     "lot",
+     "value_ron",
+     "procedure_type",
+     "contract_type",
+     "is_framework",
+     "buyer",
+     "buyer_text",
+     "confidence",
+     "method",
+     "partners",
+     "ratio"
+    ],
+    "title": "TraceContract",
+    "description": "A contract from SEAP's exports that a payment could be tied to."
+   },
+   "TraceParty": {
+    "properties": {
+     "cui": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cui",
+      "description": "Null when the files give only the name."
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Set when the company has a page."
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "entity"
+    ],
+    "title": "TraceParty"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "Winner": {
+    "properties": {
+     "supplier": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null for a foreign company or an invalid CUI."
+     },
+     "text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Text",
+      "description": "The winner as SEAP writes it."
+     },
+     "country": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Country"
+     }
+    },
+    "type": "object",
+    "required": [
+     "supplier",
+     "text",
+     "country"
+    ],
+    "title": "Winner"
+   }
+  }
+ }
+}

@@ -103,7 +103,7 @@ def test_collect_day_stores_every_answer_and_can_rebuild_from_them(session, monk
         return StoredObject(key=f"{source}/{sha}", sha256=sha, size_bytes=len(content))
 
     monkeypatch.setattr("date_romania.collectors.jobs.put_raw", put_raw)
-    monkeypatch.setattr(run, "get_raw", lambda key: stored[key])
+    monkeypatch.setattr("date_romania.collectors.jobs.get_raw", lambda key: stored[key])
 
     transport = seap(notices, contracts)
     with PoliteClient(transport=transport, sleep=lambda seconds: None) as client:

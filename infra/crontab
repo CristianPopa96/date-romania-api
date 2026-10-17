@@ -15,3 +15,8 @@
 # Every day at 07:30 UTC: the detail and versions of the notices that a failed request
 # left without them. Nothing to ask for on most days.
 30 7 * * * dr collect seap-award-details
+
+# Not scheduled, on purpose: `pnias-payments` and `seap-exports` read files that appear
+# about monthly and quarterly, and a new payment file also needs `dr reparse seap-exports`
+# for its new builders. They are run by hand until collection resumes; whether they join
+# this file then is an open todo in the workspace notes.

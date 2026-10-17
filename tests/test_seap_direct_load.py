@@ -8,11 +8,11 @@ import pytest
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from date_romania.collectors.jobs import DONE, job_run, run_days
+from date_romania.collectors.jobs import job_run, tried_days
 from date_romania.collectors.seap_direct import run
 from date_romania.collectors.seap_direct.load import load
 from date_romania.collectors.seap_direct.parse import PARSER_VERSION, parse_page
-from date_romania.models import DirectPurchase, Entity, SourceDocument
+from date_romania.models import DirectPurchase, Entity, SourceDocument, done_days
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"
 
@@ -85,10 +85,10 @@ def test_job_run_records_how_each_day_ended(session):
     with pytest.raises(RuntimeError), job_run(session, job, date(2026, 10, 3)):
         raise RuntimeError("source is down")
 
-    assert run_days(session, job, "succeeded") == {date(2026, 10, 1)}
-    # A partial day counts as done, a failed one does not, and all three were tried.
-    assert run_days(session, job, *DONE) == {date(2026, 10, 1), date(2026, 10, 2)}
-    assert run_days(session, job) == {date(2026, 10, d) for d in (1, 2, 3)}
+    # A partial day counts as done but not read in full, a failed one is not done, and
+    # all three were tried.
+    assert done_days(session, job) == {date(2026, 10, 1): True, date(2026, 10, 2): False}
+    assert tried_days(session, job) == {date(2026, 10, d) for d in (1, 2, 3)}
 
 
 def test_a_parse_keeps_on_its_document_what_it_rejected_and_which_parser(session):

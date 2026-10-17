@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.api.routes.common import Db, ref
 from date_romania.api.routes.programmes import project_row, source
 from date_romania.api.schemas import (
@@ -85,16 +85,22 @@ def _parties(
 
 def _match(cui: int | None, contracts: list[ExportContract]) -> str:
     if not cui:
-        return pnias.UNNAMED
+        return pnias_links.UNNAMED
     notices = {contract.notice_no for contract in contracts}
-    return pnias.NONE if not notices else pnias.ONE if len(notices) == 1 else pnias.SEVERAL
+    return (
+        pnias_links.NONE
+        if not notices
+        else pnias_links.ONE
+        if len(notices) == 1
+        else pnias_links.SEVERAL
+    )
 
 
 @router.get("/projects/{project_id}")
 def project(session: Db, project_id: int) -> Project:
     """One project: what it is, every payment for it, who builds it, and the contracts
     its payments could be tied to."""
-    view = pnias.projects()
+    view = pnias_links.projects()
     row = session.execute(select(view).where(view.c.project_id == project_id)).one_or_none()
     if row is None:
         raise HTTPException(404, f"No project {project_id} in the Anghel Saligny programme")
@@ -183,9 +189,9 @@ def project(session: Db, project_id: int) -> Project:
         designers=[TraceParty(**party(cui, name)) for cui, name, _ in parties["designer"]],
         confidence=None
         if not evidence
-        else pnias.POSSIBLE
-        if any(link.confidence == pnias.POSSIBLE for link in evidence.values())
-        else pnias.PROBABLE,
+        else pnias_links.POSSIBLE
+        if any(link.confidence == pnias_links.POSSIBLE for link in evidence.values())
+        else pnias_links.PROBABLE,
         source=source(session, PNIAS_PAYMENTS, len({p.source_document_id for p in payments})),
         contracts_source=source(
             session, SEAP_EXPORTS, len({c.source_document_id for c in contracts})

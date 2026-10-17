@@ -7,14 +7,14 @@ import httpx
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, record_parse, record_skipped
+from date_romania.collectors.jobs import job_run, record_parse, record_skipped, stored_documents
 from date_romania.collectors.seap_exports.load import load
 from date_romania.collectors.seap_exports.parse import PARSER_VERSION, parse_contracts
 from date_romania.dates import today
-from date_romania.models import PniasPayment, SourceDocument
+from date_romania.models import PARTIAL, PniasPayment, SourceDocument
 from date_romania.sources import SEAP_EXPORTS
 from date_romania.storage import get_raw
 
@@ -104,9 +104,9 @@ def collect(session: Session, client: PoliteClient, last_year: int | None = None
                         session.rollback()
         run.records = kept
         if failed:
-            run.status = "partial"
+            run.status = PARTIAL
             run.error = f"{failed} files failed; run again to retry them"
-    pnias.link(session)
+    pnias_links.link(session)
     session.commit()
     return kept
 
@@ -116,20 +116,13 @@ def reparse(session: Session) -> int:
 
     Also the way to bring in the contracts of builders named by a new payment file.
     """
-    docs = {
-        doc.url: doc
-        for doc in session.scalars(
-            select(SourceDocument)
-            .where(SourceDocument.source == SOURCE)
-            .order_by(SourceDocument.id)
-        )
-    }
+    docs = {doc.url: doc for doc in stored_documents(session, SOURCE)}
     suppliers = _suppliers(session)
     urls = chosen(list(docs))
     for url in urls:
         _parse_and_load(session, docs[url], suppliers)
     for url in docs.keys() - set(urls):
         record_skipped(docs[url], PARSER_VERSION, "the same quarter is read from its workbook")
-    pnias.link(session)
+    pnias_links.link(session)
     session.commit()
     return len(urls)

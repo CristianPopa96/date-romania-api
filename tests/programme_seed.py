@@ -16,7 +16,7 @@ are named "JUDETUL CLUJ" and no export says where either is, so the links of pro
 from datetime import date
 from decimal import Decimal
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.models import ExportBuyer, ExportContract, PniasPayment, SourceDocument
 
 TOWN_HALL, BUILDER, DESIGNER = 4981310, 17886786, 18288250
@@ -233,4 +233,4 @@ def seed(session) -> None:
         ]
     )
     session.flush()
-    pnias.link(session)
+    pnias_links.link(session)

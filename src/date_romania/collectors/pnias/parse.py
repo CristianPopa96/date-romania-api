@@ -5,9 +5,10 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 
-from date_romania.collectors.sheets import plain, workbook_sheets
+from date_romania.collectors.sheets import workbook_sheets
 from date_romania.cui import parse_cui
 from date_romania.personal_id import mask_cnp
+from date_romania.text import plain
 
 PARSER_VERSION = 1
 

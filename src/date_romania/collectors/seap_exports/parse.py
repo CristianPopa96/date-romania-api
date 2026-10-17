@@ -6,10 +6,11 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
-from date_romania.collectors.sheets import csv_rows, is_workbook, plain, workbook_sheets
+from date_romania.collectors.sheets import csv_rows, is_workbook, workbook_sheets
 from date_romania.counties import COUNTIES
 from date_romania.cui import parse_cui
 from date_romania.personal_id import mask_cnp
+from date_romania.text import plain
 
 PARSER_VERSION = 1
 

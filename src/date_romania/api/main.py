@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 
 from date_romania import __version__
 from date_romania.api.routes import router
+from date_romania.api.schemas.common import Answer
 from date_romania.db import database_ok
 
 app = FastAPI(
@@ -18,7 +18,7 @@ app = FastAPI(
 )
 
 
-class Health(BaseModel):
+class Health(Answer):
     status: str
     database: str
     version: str

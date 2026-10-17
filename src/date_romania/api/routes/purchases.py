@@ -7,8 +7,17 @@ from sqlalchemy import Select, func, select
 from sqlalchemy.orm import aliased
 
 from date_romania import money
-from date_romania.api.routes.common import Day, Db, Limit, in_period, ref, summary
-from date_romania.api.schemas import Purchase, PurchasePage, Source, Summary
+from date_romania.api.routes.common import (
+    Day,
+    Db,
+    Limit,
+    Offset,
+    in_period,
+    record_source,
+    ref,
+    summary,
+)
+from date_romania.api.schemas import Purchase, PurchasePage, Summary
 from date_romania.models import DirectPurchase, Entity, SourceDocument
 from date_romania.sources import SEAP_DIRECT
 
@@ -46,14 +55,13 @@ def _purchase(row) -> Purchase:
         estimated_value=purchase.estimated_value_ron,
         value=value,
         above_limit=money.is_above_limit(purchase.state_id, value),
-        source=Source(
-            publisher=SEAP_DIRECT.publisher,
+        source=record_source(
+            SEAP_DIRECT,
+            purchase,
             record=purchase.code,
             url=SEAP_DIRECT.record_url.format(id=purchase.id),
             fetched_at=fetched_at,
-            document_id=purchase.source_document_id,
             sha256=sha256,
-            parser_version=purchase.parser_version,
         ),
     )
 
@@ -71,7 +79,7 @@ def direct_purchases(
     date_to: Day = None,
     sort: Literal["newest", "value"] = "newest",
     limit: Limit = 20,
-    offset: Annotated[int, Query(ge=0)] = 0,
+    offset: Offset = 0,
 ) -> PurchasePage:
     """Direct purchases by finalization day, newest or largest first."""
     filters = in_period(date_from, date_to)

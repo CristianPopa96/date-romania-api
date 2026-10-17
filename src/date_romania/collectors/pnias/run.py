@@ -2,13 +2,12 @@
 
 import logging
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from date_romania import pnias
+from date_romania import pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, record_parse
+from date_romania.collectors.jobs import job_run, record_parse, stored_documents
 from date_romania.collectors.pnias.load import load
 from date_romania.collectors.pnias.parse import PARSER_VERSION, file_day, parse_payments
 from date_romania.dates import today
@@ -55,18 +54,16 @@ def collect(session: Session, client: PoliteClient) -> int:
         run.records = payments
     # A new file can name builders whose contracts are not kept yet: `dr reparse
     # seap-exports` reads them from the stored exports.
-    pnias.link(session)
+    pnias_links.link(session)
     session.commit()
     return payments
 
 
 def reparse(session: Session) -> int:
     """Rebuild the rows from the raw store, oldest file first, without calling data.gov.ro."""
-    docs = session.scalars(
-        select(SourceDocument).where(SourceDocument.source == SOURCE).order_by(SourceDocument.id)
-    ).all()
+    docs = stored_documents(session, SOURCE)
     for doc in docs:
         _parse_and_load(session, doc)
-    pnias.link(session)
+    pnias_links.link(session)
     session.commit()
     return len(docs)

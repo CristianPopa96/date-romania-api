@@ -51,7 +51,7 @@ uv run pytest
 uv run ruff check . && uv run ruff format --check .
 ```
 
-New migration after changing `src/date_romania/models.py`:
+New migration after changing a model in `src/date_romania/models/`:
 
 ```bash
 uv run alembic revision --autogenerate -m "what changed"
@@ -91,7 +91,7 @@ needs no date. They serve the programme trace only:
 
 - A payment names its builder by tax ID and its town hall by name. It is tied to the
   works contracts that builder won from a buyer whose name is that town hall's
-  (`pnias.py`). The ties are in `pnias_link`, each with its method and confidence, and
+  (`pnias_links.py`). The ties are in `pnias_link`, each with its method and confidence, and
   are built again whenever either side is loaded.
 - No tie is sure: the payment files do not name the contract. It is `probable` when an
   export puts the buyer in the payment's county, or when no other buyer in the exports
@@ -176,11 +176,11 @@ limit, 270,120 lei, which is not applied: the list does not give the contract ty
 
 ```
 src/date_romania/
-  api/          FastAPI app: `routes/` the endpoints by area, `schemas.py` the answers
+  api/          FastAPI app: `routes/` the endpoints by area, `schemas/` the answers
   collectors/   one package per public source
   money.py      what counts as money spent
-  pnias.py      how an Anghel Saligny payment is tied to a SEAP contract
-  models.py     SQLAlchemy models, shared by the API and the collectors
+  pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
+  models/       SQLAlchemy models by source, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256
   cui.py        Romanian tax ID parsing and checksum
   cli.py        the `dr` command

@@ -8,7 +8,7 @@ import httpx
 import pytest
 from sqlalchemy import func, select
 
-from date_romania import pnias as links
+from date_romania import pnias_links
 from date_romania.collectors import pnias, seap_exports
 from date_romania.collectors.http import PoliteClient
 from date_romania.models import (
@@ -132,7 +132,7 @@ def test_exports_keep_the_contracts_of_the_builders_and_tie_them_to_payments(ses
     }
     # Every buyer of the export is kept, whoever it bought from.
     assert count(session, ExportBuyer) == 2
-    states = dict(session.execute(select(PniasPayment.id, links.state())).all())
+    states = dict(session.execute(select(PniasPayment.id, pnias_links.state())).all())
     assert states == {29409: "one", 30695: "one", 30437: "unnamed", 30677: "none", 29779: "none"}
 
 
@@ -154,7 +154,7 @@ def test_a_project_is_tied_to_one_notice_when_all_its_payments_point_to_it(sessi
     client, _ = datagov
     pnias.collect(session, client)
     seap_exports.collect(session, client, last_year=2025)
-    project = links.projects()
+    project = pnias_links.projects()
     rows = {row.project_id: row for row in session.execute(select(project))}
     assert (rows[12519].payments, str(rows[12519].paid), rows[12519].match) == (
         2,

@@ -6,13 +6,11 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import ColumnElement, String, and_, cast, func, or_, select
 from sqlalchemy.orm import Session
 
-from date_romania.api.routes.common import Db, Limit, list_source, summary, top
+from date_romania.api.routes.common import Db, Limit, containing, list_source, summary, top
 from date_romania.api.schemas import EntityOut, EntityPage, SearchResults
 from date_romania.models import DirectPurchase, Entity, search_text
 
 router = APIRouter()
-
-_LIKE_ESCAPES = str.maketrans({"\\": r"\\", "%": r"\%", "_": r"\_"})
 
 
 @router.get("/search", tags=["overview"])
@@ -32,12 +30,7 @@ def search(
     else:
         name, term = search_text(Entity.name), search_text(q.strip())
         # Best: every word of the query is in the name. Otherwise a close spelling will do.
-        every_word = and_(
-            *(
-                name.like(search_text("%" + word.translate(_LIKE_ESCAPES) + "%"))
-                for word in q.split()
-            )
-        )
+        every_word = and_(*(name.like(containing(word)) for word in q.split()))
         query = query.where(or_(every_word, term.op("<%")(name))).order_by(
             every_word.desc(),
             func.word_similarity(term, name).desc(),

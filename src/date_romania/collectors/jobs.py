@@ -1,5 +1,6 @@
 """Run bookkeeping shared by collectors: which days are missing, and one `job_run` row per run."""
 
+import json
 import logging
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
@@ -9,8 +10,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania.dates import BUCHAREST, day_bounds
-from date_romania.models import JobRun, SourceDocument
-from date_romania.storage import put_raw
+from date_romania.models import FAILED, RUNNING, SUCCEEDED, JobRun, SourceDocument, done_days
+from date_romania.storage import get_raw, put_raw
 
 log = logging.getLogger(__name__)
 
@@ -32,15 +33,9 @@ def missing_days(done: set[date], last: date, first: date | None = None) -> list
     ]
 
 
-# A partial day is not fetched again by itself: the source would cut it at the same place.
-DONE = ("succeeded", "partial")
-
-
-def run_days(session: Session, job: str, *statuses: str) -> set[date]:
-    """The days `job` has a run for, in any of `statuses` (all of them if none is given)."""
+def tried_days(session: Session, job: str) -> set[date]:
+    """The days `job` has a run for, whatever its status."""
     query = select(JobRun.period_start).where(JobRun.job == job)
-    if statuses:
-        query = query.where(JobRun.status.in_(statuses))
     return {
         start.astimezone(BUCHAREST).date() for start in session.scalars(query) if start is not None
     }
@@ -54,8 +49,8 @@ def due_days(
         return [day]
     if since:
         return missing_days(set(), last, first=since)
-    tried = run_days(session, job)
-    return missing_days(run_days(session, job, *DONE), last, first=min(tried, default=None))
+    tried = tried_days(session, job)
+    return missing_days(set(done_days(session, job)), last, first=min(tried, default=None))
 
 
 def collect_days(
@@ -103,6 +98,22 @@ def store_document(
     return doc
 
 
+def stored_documents(session: Session, source: str) -> list[SourceDocument]:
+    """Every stored document of `source`, oldest first: what a reparse reads again."""
+    return list(
+        session.scalars(
+            select(SourceDocument)
+            .where(SourceDocument.source == source)
+            .order_by(SourceDocument.id)
+        )
+    )
+
+
+def stored_json(doc: SourceDocument) -> object:
+    """A stored JSON answer, read back from the raw store."""
+    return json.loads(get_raw(doc.storage_key))
+
+
 def record_parse(
     doc: SourceDocument, rejected: list[tuple[object, str]], parser_version: int
 ) -> None:
@@ -132,18 +143,18 @@ def job_run(session: Session, job: str, day: date) -> Iterator[JobRun]:
     The caller sets the status to `partial` when it knows the day is incomplete.
     """
     start, end = day_bounds(day)
-    run = JobRun(job=job, period_start=start, period_end=end, status="running", records=0)
+    run = JobRun(job=job, period_start=start, period_end=end, status=RUNNING, records=0)
     session.add(run)
     session.commit()
     try:
         yield run
     except Exception as exc:
         session.rollback()
-        run.status, run.error = "failed", repr(exc)[:2000]
+        run.status, run.error = FAILED, repr(exc)[:2000]
         run.finished_at = datetime.now(UTC)
         session.commit()
         raise
-    if run.status == "running":
-        run.status = "succeeded"
+    if run.status == RUNNING:
+        run.status = SUCCEEDED
     run.finished_at = datetime.now(UTC)
     session.commit()

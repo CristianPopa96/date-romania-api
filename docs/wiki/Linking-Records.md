@@ -22,7 +22,7 @@ page are sure joins.
 
 The payment files of the Anghel Saligny programme are the best payment-level data
 published: they name the town hall, the project and, in recent files, the builder's
-CUI. The rule, in `src/date_romania/pnias.py`:
+CUI. The rule, in `src/date_romania/pnias_links.py`:
 
 1. A payment names its **builder by CUI** and its **town hall by name**.
 2. It is tied to the **works contracts** that builder won from a buyer whose **name is
