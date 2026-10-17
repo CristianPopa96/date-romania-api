@@ -14,6 +14,7 @@ from date_romania.models import SourceDocument
 log = logging.getLogger(__name__)
 
 PACKAGE_URL = "https://data.gov.ro/api/3/action/package_show?id={dataset}"
+SEARCH_URL = "https://data.gov.ro/api/3/action/package_search"
 
 
 class DatagovError(Exception):
@@ -46,6 +47,16 @@ def resources(client: PoliteClient, dataset: str) -> list[Resource]:
         if item.get("url")
     ]
     return sorted(found, key=lambda each: (each.created, each.url))
+
+
+def datasets(client: PoliteClient, query: str, prefix: str) -> list[str]:
+    """The names of the datasets found by `query` that start with `prefix`: for a
+    publisher that opens a new dataset for every edition."""
+    answer = client.request("GET", SEARCH_URL, params={"q": query, "rows": 50}).json()
+    if not answer.get("success"):
+        raise DatagovError(f"{query}: {str(answer.get('error'))[:500]}")
+    names = [found["name"] for found in answer["result"]["results"]]
+    return [name for name in names if name.startswith(prefix)]
 
 
 def stored(session: Session, source: str, url: str) -> SourceDocument | None:

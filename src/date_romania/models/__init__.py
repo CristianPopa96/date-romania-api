@@ -13,6 +13,13 @@ from date_romania.models.core import (
     done_days,
     search_text,
 )
+from date_romania.models.places import (
+    AnafRecord,
+    LocalBudget,
+    Place,
+    Population,
+    PublicEntity,
+)
 from date_romania.models.programme import ExportBuyer, ExportContract, PniasLink, PniasPayment
 from date_romania.models.reports import Report
 from date_romania.models.seap_awards import (
@@ -47,4 +54,9 @@ __all__ = [
     "ExportBuyer",
     "PniasLink",
     "Report",
+    "Place",
+    "PublicEntity",
+    "LocalBudget",
+    "Population",
+    "AnafRecord",
 ]

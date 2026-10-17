@@ -9,8 +9,13 @@
 | `pnias-payments` | [MDLPA payment files](https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent) of the Anghel Saligny programme, on data.gov.ro | One row per settlement request paid: town hall, project, builder and designer, amount | `pnias_payment` |
 | `seap-exports` | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today | Only the contracts of the programme's builders, and every buyer | `export_contract`, `export_buyer` |
 
-The first two are collected by day. The last two come as files: a run downloads the
-files not held yet and needs no date.
+| `siruta` | [SIRUTA](https://data.gov.ro/organization/ins), the national list of places (INS), twice a year | Every county, UAT and village with its code and the place it belongs to | `place` |
+| `public-entities` | The Finance Ministry's [list of public entities](https://extranet.anaf.mfinante.gov.ro/anaf/extranet/EXECUTIEBUGETARA) ("Alte Rapoarte"), monthly | Every public entity's county, UAT and the institutions that fund it | `public_entity` |
+| `local-budgets` | The Ministry of Development's [local budgets and population](https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale), on data.gov.ro | The executed budget of every UAT and county council (2024: revenue by source, spending by title and chapter), UAT population 2021 to 2024 | `local_budget`, `population` |
+| `anaf` | [ANAF's web services](https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf), by tax ID | County and locality of the registered office (never the street), CAEN, VAT and inactive status | `anaf_record` |
+
+The first two are collected by day. The others come as files or lookups: a run fetches
+what is not held yet and needs no date.
 
 Every source has one entry in `src/date_romania/sources.py` (key, publisher, the public
 list page and the page of one record). A new source is added there first.
@@ -42,8 +47,8 @@ The programme trace is the one exception: it reads contracts from 2021 on, becau
 
 | Source | What it would bring | Needed for |
 | --- | --- | --- |
-| Budget execution (Forexebug XML) | What each institution spent, by budget chapter | Institution "money in", the gap panel |
-| ANAF | County and locality of institutions and companies, VAT and inactive status, financial statements | Locality and county pages, filters, patterns |
+| Budget execution per institution (Forexebug) | What each institution spent, monthly, by budget chapter. The Finance Ministry's portal asks for a captcha on every search, so it cannot be collected; a bulk request to the ministry is planned | "Money in" for institutions other than town halls and county councils |
+| ANAF financial statements | Turnover, staff, debts of a company, by year | Supplier pages, patterns |
 | MIPE | EU funded projects and absorption | EU projects, available versus unused funds |
 | TED | Notices published in the EU's Official Journal | Above-threshold procedures |
 | SEAP direct purchase detail | Items bought, payment and delivery conditions | Direct purchase page |

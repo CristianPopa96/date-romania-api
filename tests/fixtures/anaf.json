@@ -1,0 +1,298 @@
+{
+ "found": [
+  {
+   "date_generale": {
+    "data": "2026-10-17",
+    "cui": 4331007,
+    "denumire": "LICEUL \"CORNELIU MEDREA\" ZLATNA",
+    "adresa": "JUD. ALBA, ORŞ. ZLATNA, STR. TUDOR VLADIMIRESCU, NR.14",
+    "telefon": "0258856521",
+    "fax": "0258856521",
+    "codPostal": "516100",
+    "act": "",
+    "stare_inregistrare": "MODIFICARE PUBLICI din data 20.03.2000",
+    "data_inreg_Reg_RO_e_Factura": "",
+    "organFiscalCompetent": "Unitatea Fiscală Orăşenească Zlatna",
+    "forma_de_proprietate": "",
+    "forma_organizare": "",
+    "forma_juridica": "",
+    "nrRegCom": "",
+    "cod_CAEN": null,
+    "iban": "",
+    "statusRO_e_Factura": false,
+    "data_inregistrare": "1993-07-19"
+   },
+   "inregistrare_scop_Tva": {
+    "scpTVA": false,
+    "perioade_TVA": []
+   },
+   "inregistrare_RTVAI": {
+    "dataInceputTvaInc": "",
+    "dataActualizareTvaInc": "",
+    "dataPublicareTvaInc": "",
+    "dataSfarsitTvaInc": "",
+    "tipActTvaInc": "",
+    "statusTvaIncasare": false
+   },
+   "stare_inactiv": {
+    "dataInactivare": "",
+    "dataReactivare": "",
+    "dataPublicare": "",
+    "dataRadiere": "",
+    "statusInactivi": false
+   },
+   "inregistrare_SplitTVA": {
+    "dataInceputSplitTVA": "",
+    "dataAnulareSplitTVA": "",
+    "statusSplitTVA": false
+   },
+   "adresa_sediu_social": {
+    "scod_Localitate": "753",
+    "sdenumire_Strada": "Str. Tudor Vladimirescu",
+    "snumar_Strada": "14",
+    "sdenumire_Localitate": "Orş. Zlatna",
+    "sdenumire_Judet": "ALBA",
+    "scod_Judet": "1",
+    "scod_JudetAuto": "AB",
+    "sdetalii_Adresa": "",
+    "scod_Postal": "516100",
+    "stara": ""
+   },
+   "adresa_domiciliu_fiscal": {
+    "ddenumire_Localitate": "Orş. Zlatna",
+    "ddenumire_Strada": "Str. Tudor Vladimirescu",
+    "dnumar_Strada": "14",
+    "dcod_Localitate": "753",
+    "ddenumire_Judet": "ALBA",
+    "dcod_Judet": "1",
+    "dcod_JudetAuto": "AB",
+    "ddetalii_Adresa": "",
+    "dcod_Postal": "516100",
+    "dtara": ""
+   }
+  },
+  {
+   "date_generale": {
+    "data": "2026-10-17",
+    "cui": 4331031,
+    "denumire": "ORAS ZLATNA",
+    "adresa": "JUD. ALBA, ORŞ. ZLATNA, PŢA. UNIRII, NR.1A",
+    "telefon": "0258856337",
+    "fax": "0258856337",
+    "codPostal": "516100",
+    "act": "",
+    "stare_inregistrare": "MODIFICARE PUBLICI din data 01.07.1993",
+    "data_inreg_Reg_RO_e_Factura": "",
+    "organFiscalCompetent": "Unitatea Fiscală Orăşenească Zlatna",
+    "forma_de_proprietate": "",
+    "forma_organizare": "",
+    "forma_juridica": "",
+    "nrRegCom": "",
+    "cod_CAEN": null,
+    "iban": "",
+    "statusRO_e_Factura": false,
+    "data_inregistrare": "1993-07-19"
+   },
+   "inregistrare_scop_Tva": {
+    "scpTVA": false,
+    "perioade_TVA": [
+     {
+      "data_inceput_ScpTVA": "2007-10-01",
+      "data_sfarsit_ScpTVA": "2008-06-30",
+      "data_anul_imp_ScpTVA": "",
+      "mesaj_ScpTVA": "Anularea înregistrarii în scopuri de TVA a fost efectuata la cererea persoanei impozabile, potrivit dispozitiilor  din Legea nr.571/2003 privind Codul fiscal, cu modificarile si completarile ulterioare"
+     }
+    ]
+   },
+   "inregistrare_RTVAI": {
+    "dataInceputTvaInc": "",
+    "dataActualizareTvaInc": "",
+    "dataPublicareTvaInc": "",
+    "dataSfarsitTvaInc": "",
+    "tipActTvaInc": "",
+    "statusTvaIncasare": false
+   },
+   "stare_inactiv": {
+    "dataInactivare": "",
+    "dataReactivare": "",
+    "dataPublicare": "",
+    "dataRadiere": "",
+    "statusInactivi": false
+   },
+   "inregistrare_SplitTVA": {
+    "dataInceputSplitTVA": "",
+    "dataAnulareSplitTVA": "",
+    "statusSplitTVA": false
+   },
+   "adresa_sediu_social": {
+    "scod_Localitate": "753",
+    "sdenumire_Strada": "Pţa. Unirii",
+    "snumar_Strada": "1A",
+    "sdenumire_Localitate": "Orş. Zlatna",
+    "sdenumire_Judet": "ALBA",
+    "scod_Judet": "1",
+    "scod_JudetAuto": "AB",
+    "sdetalii_Adresa": "",
+    "scod_Postal": "516100",
+    "stara": ""
+   },
+   "adresa_domiciliu_fiscal": {
+    "ddenumire_Localitate": "Orş. Zlatna",
+    "ddenumire_Strada": "Pţa. Unirii",
+    "dnumar_Strada": "1A",
+    "dcod_Localitate": "753",
+    "ddenumire_Judet": "ALBA",
+    "dcod_Judet": "1",
+    "dcod_JudetAuto": "AB",
+    "ddetalii_Adresa": "",
+    "dcod_Postal": "516100",
+    "dtara": ""
+   }
+  },
+  {
+   "date_generale": {
+    "data": "2026-10-17",
+    "cui": 4204038,
+    "denumire": "SECTORUL 2 AL MUNICIPIULUI BUCURESTI",
+    "adresa": "MUNICIPIUL BUCUREŞTI, SECTOR 2, STR. CHIRISTIGIILOR, NR.11-13",
+    "telefon": "2528094",
+    "fax": "         0",
+    "codPostal": "21561",
+    "act": "",
+    "stare_inregistrare": "INREGISTRAT din data 02.07.1993",
+    "data_inreg_Reg_RO_e_Factura": "",
+    "organFiscalCompetent": "Administraţia Sector 2 a Finanţelor Publice",
+    "forma_de_proprietate": "",
+    "forma_organizare": "",
+    "forma_juridica": "",
+    "nrRegCom": "",
+    "cod_CAEN": null,
+    "iban": "",
+    "statusRO_e_Factura": false,
+    "data_inregistrare": "1993-07-02"
+   },
+   "inregistrare_scop_Tva": {
+    "scpTVA": false,
+    "perioade_TVA": []
+   },
+   "inregistrare_RTVAI": {
+    "dataInceputTvaInc": "",
+    "dataSfarsitTvaInc": "",
+    "tipActTvaInc": "",
+    "statusTvaIncasare": false,
+    "dataActualizareTvaInc": "",
+    "dataPublicareTvaInc": ""
+   },
+   "stare_inactiv": {
+    "dataInactivare": "",
+    "dataReactivare": "",
+    "dataPublicare": "",
+    "dataRadiere": "",
+    "statusInactivi": false
+   },
+   "inregistrare_SplitTVA": {
+    "statusSplitTVA": false,
+    "dataInceputSplitTVA": "",
+    "dataAnulareSplitTVA": ""
+   },
+   "adresa_sediu_social": {
+    "sdenumire_Localitate": "Sector 2 Mun. Bucureşti",
+    "sdenumire_Strada": "Str. Chiristigiilor",
+    "snumar_Strada": "11-13",
+    "scod_Localitate": "2",
+    "sdenumire_Judet": "MUNICIPIUL BUCUREŞTI",
+    "scod_Judet": "40",
+    "scod_JudetAuto": "B",
+    "sdetalii_Adresa": "",
+    "scod_Postal": "21561",
+    "stara": ""
+   },
+   "adresa_domiciliu_fiscal": {
+    "dnumar_Strada": "11-13",
+    "dcod_Localitate": "2",
+    "ddenumire_Judet": "MUNICIPIUL BUCUREŞTI",
+    "dcod_Judet": "40",
+    "dcod_JudetAuto": "B",
+    "ddetalii_Adresa": "",
+    "dcod_Postal": "21561",
+    "ddenumire_Localitate": "Sector 2 Mun. Bucureşti",
+    "dtara": "",
+    "ddenumire_Strada": "Str. Chiristigiilor"
+   }
+  },
+  {
+   "date_generale": {
+    "data": "2026-10-17",
+    "cui": 4562362,
+    "denumire": "COMUNA ALBAC",
+    "adresa": "JUD. ALBA, SAT ALBAC COM. ALBAC, STR. CLOŞCA, NR.9",
+    "telefon": "0258777504",
+    "fax": "0258777549",
+    "codPostal": "517005",
+    "act": "",
+    "stare_inregistrare": "MODIFICARE PUBLICI din data 30.11.1993",
+    "data_inreg_Reg_RO_e_Factura": "",
+    "organFiscalCompetent": "Unitatea Fiscală Orăşenească Câmpeni",
+    "forma_de_proprietate": "",
+    "forma_organizare": "",
+    "forma_juridica": "",
+    "nrRegCom": "",
+    "cod_CAEN": null,
+    "iban": "",
+    "statusRO_e_Factura": false,
+    "data_inregistrare": "1993-08-26"
+   },
+   "inregistrare_scop_Tva": {
+    "scpTVA": false,
+    "perioade_TVA": []
+   },
+   "inregistrare_RTVAI": {
+    "dataInceputTvaInc": "",
+    "dataActualizareTvaInc": "",
+    "dataPublicareTvaInc": "",
+    "dataSfarsitTvaInc": "",
+    "tipActTvaInc": "",
+    "statusTvaIncasare": false
+   },
+   "stare_inactiv": {
+    "dataInactivare": "",
+    "dataReactivare": "",
+    "dataPublicare": "",
+    "dataRadiere": "",
+    "statusInactivi": false
+   },
+   "inregistrare_SplitTVA": {
+    "dataInceputSplitTVA": "",
+    "dataAnulareSplitTVA": "",
+    "statusSplitTVA": false
+   },
+   "adresa_sediu_social": {
+    "scod_Localitate": "9",
+    "sdenumire_Strada": "Str. Cloşca",
+    "snumar_Strada": "9",
+    "sdenumire_Localitate": "Sat Albac Com. Albac",
+    "sdenumire_Judet": "ALBA",
+    "scod_Judet": "1",
+    "scod_JudetAuto": "AB",
+    "sdetalii_Adresa": "",
+    "scod_Postal": "517005",
+    "stara": ""
+   },
+   "adresa_domiciliu_fiscal": {
+    "ddenumire_Localitate": "Sat Albac Com. Albac",
+    "ddenumire_Strada": "Str. Cloşca",
+    "dnumar_Strada": "9",
+    "dcod_Localitate": "9",
+    "ddenumire_Judet": "ALBA",
+    "dcod_Judet": "1",
+    "dcod_JudetAuto": "AB",
+    "ddetalii_Adresa": "",
+    "dcod_Postal": "517005",
+    "dtara": ""
+   }
+  }
+ ],
+ "notFound": [
+  99999999
+ ]
+}

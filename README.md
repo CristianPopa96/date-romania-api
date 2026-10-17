@@ -76,6 +76,11 @@ uv run dr collect pnias-payments                  # Anghel Saligny payment files
 uv run dr collect seap-exports                    # quarterly contract exports not held yet (1.6 GB the first time)
 uv run dr reparse seap-exports                    # read the stored exports again, for the builders now named
 uv run dr link pnias                              # tie payments to contracts again, from what is held
+uv run dr collect siruta                          # the national list of places (INS), newest edition
+uv run dr collect public-entities                 # the Finance Ministry's list of public entities
+uv run dr collect local-budgets                   # town hall and county council budgets, population
+uv run dr collect anaf                            # ANAF's record of every entity not asked yet
+uv run dr link places                             # give every entity its county and UAT again
 ```
 
 | Collector | Source | Table |
@@ -85,6 +90,10 @@ uv run dr link pnias                              # tie payments to contracts ag
 
 | `pnias-payments` | Payment files of the Anghel Saligny programme (MDLPA, on data.gov.ro): one row per settlement request paid | `pnias_payment` |
 | `seap-exports` | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today: only the contracts of the programme's builders, and every buyer | `export_contract`, `export_buyer` |
+| `siruta` | SIRUTA (INS, on data.gov.ro): every county, UAT and village, with the place it belongs to | `place` |
+| `public-entities` | The Finance Ministry's monthly list of public entities: the UAT each works in and the institutions that fund it | `public_entity` |
+| `local-budgets` | The Ministry of Development's yearly executed budget of every UAT and county council (2024), and UAT population (2021 to 2024) | `local_budget`, `population` |
+| `anaf` | ANAF's register, asked by tax ID: the county and locality of the registered office (never the street), CAEN code, VAT and inactive status | `anaf_record` |
 
 The last two come as files, not as days: a run downloads the files not held yet, and
 needs no date. They serve the programme trace only:
@@ -106,6 +115,15 @@ needs no date. They serve the programme trace only:
 - Only the payment file of 27 August 2026 and later ones name builders by tax ID. A
   payment from an older file cannot be tied by itself; inside a project it goes with
   the payments that name the same builder with its tax ID.
+
+The four place sources give every entity its county and UAT (`entity.siruta`, the unit
+with a town hall: municipality, town, commune or Bucharest sector) and, for an
+institution, the institution that funds it (`entity.parent_cui`). The Finance
+Ministry's list is used first, ANAF next (`places.py`). The budgets are yearly and cover
+only town halls and county councils: the ministry's per-institution reports cannot be
+collected, since its portal asks for a captcha on every search. A budget row is one
+column of the ministry's file, kept with the file's own column number, code and title;
+the column number is what the county sheets agree on.
 
 Four things to know before adding award notices up (`money.py` holds the rules):
 
@@ -180,6 +198,7 @@ src/date_romania/
   collectors/   one package per public source
   money.py      what counts as money spent
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
+  places.py     where things are: the kinds of place, UAT names, `locate()`
   models/       SQLAlchemy models by source, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256
   cui.py        Romanian tax ID parsing and checksum
