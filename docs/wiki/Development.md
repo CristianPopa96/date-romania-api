@@ -28,16 +28,17 @@ uv run pytest
 
 ```
 src/date_romania/
-  api/          FastAPI app: main.py, routes/ (endpoints by area), schemas.py (answers)
+  api/          FastAPI app: main.py, routes/ (endpoints by area), schemas/ (answers)
   collectors/   one package per public source; http.py (polite client), jobs.py (runs,
                 due days, record_parse), datagov.py and sheets.py (file sources)
   money.py      what counts as money spent: every rule, written once
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
-  models.py     SQLAlchemy models, shared by the API and the collectors
+  models/       SQLAlchemy models by source, shared by the API and the collectors
   sources.py    one PublicSource per source
   storage.py    raw store: files kept untouched, addressed by SHA-256
   reports.py    readers' error reports: queue, review, public corrections
   cui.py        Romanian tax ID parsing and checksum
+  text.py       plain(): names and headers in the one form they are compared in
   personal_id.py  CNP detection and masking
   entities.py   upsert of the entity table
   dates.py      Bucharest days

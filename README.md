@@ -51,7 +51,7 @@ uv run pytest
 uv run ruff check . && uv run ruff format --check .
 ```
 
-New migration after changing `src/date_romania/models.py`:
+New migration after changing a model in `src/date_romania/models/`:
 
 ```bash
 uv run alembic revision --autogenerate -m "what changed"
@@ -176,11 +176,11 @@ limit, 270,120 lei, which is not applied: the list does not give the contract ty
 
 ```
 src/date_romania/
-  api/          FastAPI app: `routes/` the endpoints by area, `schemas.py` the answers
+  api/          FastAPI app: `routes/` the endpoints by area, `schemas/` the answers
   collectors/   one package per public source
   money.py      what counts as money spent
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
-  models.py     SQLAlchemy models, shared by the API and the collectors
+  models/       SQLAlchemy models by source, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256
   cui.py        Romanian tax ID parsing and checksum
   cli.py        the `dr` command

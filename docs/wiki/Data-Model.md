@@ -1,8 +1,8 @@
 # Data model
 
 One PostgreSQL 17 database is the single source of truth. The models are SQLAlchemy 2
-classes in `src/date_romania/models.py`, shared by the API and the collectors; migrations
-are Alembic, in `migrations/`.
+classes in `src/date_romania/models/`, one module per source, shared by the API and the
+collectors; migrations are Alembic, in `migrations/`.
 
 ```
                     source_document ◄──── every row points to the document it was read from
@@ -49,7 +49,7 @@ under `<source>/<sha[:2]>/<sha>` and read back with `get_raw()`. The store is pr
 
 ## Changing the model
 
-Edit `models.py`, then:
+Edit the model in `models/`, then:
 
 ```bash
 uv run alembic revision --autogenerate -m "what changed"

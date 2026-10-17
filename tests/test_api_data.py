@@ -404,6 +404,7 @@ def test_search_by_cui_and_by_kind(client):
 # The calls the site makes for the pages its browser tests open. Their answers are kept in
 # a file that the site's stub API serves, so those tests run on what this API really says.
 SITE_STUB = Path(__file__).parent / "fixtures" / "site_stub.json"
+OPENAPI = Path(__file__).parent / "fixtures" / "openapi.json"
 
 
 def test_a_notice_totals_its_own_contracts_whatever_their_date(client):
@@ -909,6 +910,19 @@ def test_the_site_stub_holds_what_the_api_answers(client, session, monkeypatch):
     if os.environ.get("WRITE_SITE_STUB"):
         SITE_STUB.write_bytes(text.encode("utf-8"))
     assert SITE_STUB.read_text(encoding="utf-8") == text
+
+
+def test_the_saved_openapi_schema_is_what_the_api_describes():
+    """Fails when the shape of an answer or a parameter changes. The site generates its
+    types from this file, so a change reaches it as a type error.
+
+    Then run `WRITE_SITE_STUB=1 uv run pytest tests/test_api_data.py`, and copy the file to
+    `openapi.json` in date-romania-web, where `pnpm generate-api-types` updates the types.
+    """
+    text = json.dumps(app.openapi(), ensure_ascii=False, indent=1) + "\n"
+    if os.environ.get("WRITE_SITE_STUB"):
+        OPENAPI.write_bytes(text.encode("utf-8"))
+    assert OPENAPI.read_text(encoding="utf-8") == text
 
 
 def test_near_limit_as_csv_lists_every_purchase_with_its_pair(client, session):
