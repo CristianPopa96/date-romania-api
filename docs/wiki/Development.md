@@ -33,6 +33,7 @@ src/date_romania/
                 due days, record_parse), datagov.py and sheets.py (file sources)
   money.py      what counts as money spent: every rule, written once
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
+  places.py     where things are: kinds of place, UAT names, and locate() for entities
   models/       SQLAlchemy models by source, shared by the API and the collectors
   sources.py    one PublicSource per source
   storage.py    raw store: files kept untouched, addressed by SHA-256

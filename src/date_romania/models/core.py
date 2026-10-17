@@ -97,8 +97,12 @@ class Entity(Base):
     cui: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
     name: Mapped[str] = mapped_column(Text)
     kind: Mapped[str] = mapped_column(String(16))  # authority, company, other
+    # The county and the UAT it is in, by name, and that UAT's SIRUTA code: from the
+    # Finance Ministry's list of public entities, else ANAF (`places.locate`).
     county: Mapped[str | None] = mapped_column(String(64))
     locality: Mapped[str | None] = mapped_column(String(128))
+    siruta: Mapped[int | None] = mapped_column(ForeignKey("place.siruta"), index=True)
+    # The institution that funds it (its main credit holder), when we hold that one too.
     parent_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"))
     source_document_id: Mapped[int | None] = mapped_column(ForeignKey("source_document.id"))
     updated_at: Mapped[datetime] = mapped_column(
