@@ -1,5 +1,6 @@
 """Run bookkeeping shared by collectors: which days are missing, and one `job_run` row per run."""
 
+import json
 import logging
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
@@ -10,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from date_romania.dates import BUCHAREST, day_bounds
 from date_romania.models import FAILED, RUNNING, SUCCEEDED, JobRun, SourceDocument, done_days
-from date_romania.storage import put_raw
+from date_romania.storage import get_raw, put_raw
 
 log = logging.getLogger(__name__)
 
@@ -95,6 +96,22 @@ def store_document(
         session.add(doc)
         session.flush()
     return doc
+
+
+def stored_documents(session: Session, source: str) -> list[SourceDocument]:
+    """Every stored document of `source`, oldest first: what a reparse reads again."""
+    return list(
+        session.scalars(
+            select(SourceDocument)
+            .where(SourceDocument.source == source)
+            .order_by(SourceDocument.id)
+        )
+    )
+
+
+def stored_json(doc: SourceDocument) -> object:
+    """A stored JSON answer, read back from the raw store."""
+    return json.loads(get_raw(doc.storage_key))
 
 
 def record_parse(

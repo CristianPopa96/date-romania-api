@@ -2,13 +2,12 @@
 
 import logging
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania import pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, record_parse
+from date_romania.collectors.jobs import job_run, record_parse, stored_documents
 from date_romania.collectors.pnias.load import load
 from date_romania.collectors.pnias.parse import PARSER_VERSION, file_day, parse_payments
 from date_romania.dates import today
@@ -62,9 +61,7 @@ def collect(session: Session, client: PoliteClient) -> int:
 
 def reparse(session: Session) -> int:
     """Rebuild the rows from the raw store, oldest file first, without calling data.gov.ro."""
-    docs = session.scalars(
-        select(SourceDocument).where(SourceDocument.source == SOURCE).order_by(SourceDocument.id)
-    ).all()
+    docs = stored_documents(session, SOURCE)
     for doc in docs:
         _parse_and_load(session, doc)
     pnias_links.link(session)

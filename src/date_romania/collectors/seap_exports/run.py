@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from date_romania import pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, record_parse, record_skipped
+from date_romania.collectors.jobs import job_run, record_parse, record_skipped, stored_documents
 from date_romania.collectors.seap_exports.load import load
 from date_romania.collectors.seap_exports.parse import PARSER_VERSION, parse_contracts
 from date_romania.dates import today
@@ -116,14 +116,7 @@ def reparse(session: Session) -> int:
 
     Also the way to bring in the contracts of builders named by a new payment file.
     """
-    docs = {
-        doc.url: doc
-        for doc in session.scalars(
-            select(SourceDocument)
-            .where(SourceDocument.source == SOURCE)
-            .order_by(SourceDocument.id)
-        )
-    }
+    docs = {doc.url: doc for doc in stored_documents(session, SOURCE)}
     suppliers = _suppliers(session)
     urls = chosen(list(docs))
     for url in urls:

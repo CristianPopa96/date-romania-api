@@ -1,6 +1,5 @@
 """Collecting one day, and rebuilding rows from the raw store."""
 
-import json
 import logging
 from datetime import date
 
@@ -9,7 +8,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.http import PoliteClient
-from date_romania.collectors.jobs import job_run, record_parse, store_document
+from date_romania.collectors.jobs import (
+    job_run,
+    record_parse,
+    store_document,
+    stored_documents,
+    stored_json,
+)
 from date_romania.collectors.seap_awards.fetch import (
     CAP,
     CONTRACTS_URL,
@@ -41,7 +46,6 @@ from date_romania.models import (
     SourceDocument,
 )
 from date_romania.sources import SEAP_AWARDS
-from date_romania.storage import get_raw
 
 log = logging.getLogger(__name__)
 
@@ -168,10 +172,8 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
 
 def reparse(session: Session) -> int:
     """Rebuild the rows from the raw store, oldest file first, without calling SEAP."""
-    docs = session.scalars(
-        select(SourceDocument).where(SourceDocument.source == SOURCE).order_by(SourceDocument.id)
-    ).all()
+    docs = stored_documents(session, SOURCE)
     for doc in docs:
-        _parse_and_load(session, json.loads(get_raw(doc.storage_key)), doc)
+        _parse_and_load(session, stored_json(doc), doc)
         session.commit()
     return len(docs)
