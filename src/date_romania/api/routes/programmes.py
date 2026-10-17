@@ -1,7 +1,7 @@
 """The Anghel Saligny programme: what the ministry paid, for which project, to which
 builder, and the SEAP contracts a payment could be tied to."""
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import APIRouter, Query
 from sqlalchemy import ColumnElement, func, select
@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from date_romania import pnias_links
 from date_romania.api.routes.common import Db, Limit, Offset, containing, last_fetched
 from date_romania.api.schemas import (
+    Match,
     Programme,
     ProgrammeFile,
     ProgrammeGroup,
@@ -27,8 +28,6 @@ from date_romania.models import (
 from date_romania.sources import PNIAS_PAYMENTS, SEAP_EXPORTS, PublicSource
 
 router = APIRouter(prefix="/programmes/anghel-saligny", tags=["programmes"])
-
-State = Literal["one", "several", "none", "unnamed"]
 
 _PAID = func.coalesce(func.sum(PniasPayment.amount), 0)
 
@@ -139,7 +138,7 @@ def projects(
         Query(min_length=2, max_length=100, description="Part of the town hall or the investment."),
     ] = None,
     builder: Annotated[int | None, Query(description="The builder's CUI.")] = None,
-    match: Annotated[State | None, Query(description="The match state of the project.")] = None,
+    match: Annotated[Match | None, Query(description="The match state of the project.")] = None,
     limit: Limit = 20,
     offset: Offset = 0,
 ) -> ProjectPage:

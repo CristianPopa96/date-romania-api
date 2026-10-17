@@ -1,10 +1,14 @@
 """Award notices and their contracts, the contract totals and rankings."""
 
 from datetime import datetime
+from typing import Literal
 
 from pydantic import ConfigDict, Field
 
 from date_romania.api.schemas.common import Answer, EntityRef, Period, Source
+
+# A contract won by one company, or by an association of several.
+Won = Literal["alone", "association"]
 
 
 class Winner(Answer):
@@ -116,6 +120,6 @@ class ContractRankingRow(EntityRef):
 
 class ContractRanking(Answer):
     period: Period
-    won: str | None = Field(description="alone or association, for a ranking of winners.")
+    won: Won | None = Field(description="alone or association, for a ranking of winners.")
     items: list[ContractRankingRow]
     source: Source

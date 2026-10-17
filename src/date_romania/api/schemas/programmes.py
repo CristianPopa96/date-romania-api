@@ -1,10 +1,15 @@
 """The Anghel Saligny programme: its figures, its projects and the trace of one."""
 
 from datetime import date
+from typing import Literal
 
 from pydantic import ConfigDict, Field
 
 from date_romania.api.schemas.common import Answer, EntityRef, Source
+
+# Whether a contract was found for a payment or a project, and how sure a tie is.
+Match = Literal["one", "several", "none", "unnamed"]
+Confidence = Literal["probable", "possible"]
 
 
 class MatchCount(Answer):
@@ -85,7 +90,7 @@ class ProjectRow(Answer):
     state_budget_value: float | None
     paid: float = Field(description="The payments held for this project, added up.")
     payments: int
-    match: str = Field(description="one, several, none or unnamed")
+    match: Match = Field(description="one, several, none or unnamed")
 
 
 class ProjectPage(Answer):
@@ -129,7 +134,7 @@ class TraceContract(Answer):
     is_framework: bool | None
     buyer: EntityRef | None
     buyer_text: str | None
-    confidence: str = Field(
+    confidence: Confidence = Field(
         description="probable: an export puts the buyer in the project's county, or no "
         "other buyer carries that name. possible: other buyers do."
     )
@@ -144,7 +149,7 @@ class TraceContract(Answer):
 class TraceBuilder(TraceParty):
     payments: int = Field(description="The payments of the project that name this builder.")
     amount: float
-    match: str = Field(description="one, several, none or unnamed")
+    match: Match = Field(description="one, several, none or unnamed")
     contracts: list[TraceContract]
 
 
@@ -160,7 +165,7 @@ class Project(ProjectRow):
     items: list[ProjectPayment]
     builders: list[TraceBuilder]
     designers: list[TraceParty]
-    confidence: str | None = Field(
+    confidence: Confidence | None = Field(
         description="The weakest link among the contracts shown; null when there are none."
     )
     source: Source

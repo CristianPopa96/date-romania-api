@@ -1,7 +1,7 @@
 """What the award notice endpoints share: the filters on contracts, the source lines, and
 the rows of a contract list."""
 
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import Query
 from sqlalchemy import ColumnElement, Select, func, select
@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session, aliased
 
 from date_romania import money
 from date_romania.api.routes.common import last_fetched, record_source, ref
-from date_romania.api.schemas import Contract, Period, Source, Winner
+from date_romania.api.schemas import Contract, Period, Source, Winner, Won
 from date_romania.models import (
     AwardContract,
     AwardNotice,
@@ -21,7 +21,6 @@ from date_romania.models import (
 from date_romania.sources import SEAP_AWARDS
 
 Buyer = aliased(Entity)
-Won = Literal["alone", "association"]
 
 
 def notice_url(notice: AwardNotice) -> str:

@@ -2150,7 +2150,11 @@
      "won": {
       "anyOf": [
        {
-        "type": "string"
+        "type": "string",
+        "enum": [
+         "alone",
+         "association"
+        ]
        },
        {
         "type": "null"
@@ -2630,6 +2634,11 @@
      },
      "contract_type": {
       "type": "integer",
+      "enum": [
+       1,
+       2,
+       3
+      ],
       "title": "Contract Type",
       "description": "1 goods, 2 services, 3 works."
      },
@@ -3322,6 +3331,12 @@
      },
      "match": {
       "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
       "title": "Match",
       "description": "one, several, none or unnamed"
      },
@@ -3418,7 +3433,11 @@
      "confidence": {
       "anyOf": [
        {
-        "type": "string"
+        "type": "string",
+        "enum": [
+         "probable",
+         "possible"
+        ]
        },
        {
         "type": "null"
@@ -3647,6 +3666,12 @@
      },
      "match": {
       "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
       "title": "Match",
       "description": "one, several, none or unnamed"
      }
@@ -4315,6 +4340,12 @@
      },
      "match": {
       "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
       "title": "Match",
       "description": "one, several, none or unnamed"
      },
@@ -4488,6 +4519,10 @@
      },
      "confidence": {
       "type": "string",
+      "enum": [
+       "probable",
+       "possible"
+      ],
       "title": "Confidence",
       "description": "probable: an export puts the buyer in the project's county, or no other buyer carries that name. possible: other buyers do."
      },

@@ -12,15 +12,19 @@ from date_romania.api.schemas.awards import (
     NoticeDetail,
     SupplierContracts,
     Winner,
+    Won,
 )
 from date_romania.api.schemas.common import EntityOut, EntityRef, Period, SearchResults, Source
 from date_romania.api.schemas.patterns import (
+    ContractType,
     NearLimitPair,
     NearLimitPattern,
     NearLimitPurchase,
     NearLimitRule,
 )
 from date_romania.api.schemas.programmes import (
+    Confidence,
+    Match,
     MatchCount,
     Programme,
     ProgrammeFile,
@@ -48,6 +52,10 @@ from date_romania.api.schemas.reports import Correction, Corrections, ReportIn, 
 from date_romania.api.schemas.stats import Dataset, Datasets, Stats
 
 __all__ = [
+    "Confidence",
+    "ContractType",
+    "Match",
+    "Won",
     "AwardNoticeOut",
     "Contract",
     "ContractPage",

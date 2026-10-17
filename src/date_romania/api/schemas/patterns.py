@@ -1,10 +1,14 @@
 """The patterns of the rankings: purchases just under the limit."""
 
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import Field
 
 from date_romania.api.schemas.common import Answer, EntityRef, Source
+
+# SEAP's contract types: 1 goods, 2 services, 3 works.
+ContractType = Literal[1, 2, 3]
 
 
 class NearLimitPurchase(Answer):
@@ -20,7 +24,7 @@ class NearLimitPair(Answer):
 
     buyer: EntityRef
     supplier: EntityRef
-    contract_type: int = Field(description="1 goods, 2 services, 3 works.")
+    contract_type: ContractType = Field(description="1 goods, 2 services, 3 works.")
     limit: float = Field(description="The legal limit for that type, in lei without VAT.")
     purchases: int
     value: float
