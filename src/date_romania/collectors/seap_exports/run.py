@@ -14,7 +14,7 @@ from date_romania.collectors.jobs import job_run, record_parse, record_skipped
 from date_romania.collectors.seap_exports.load import load
 from date_romania.collectors.seap_exports.parse import PARSER_VERSION, parse_contracts
 from date_romania.dates import today
-from date_romania.models import PniasPayment, SourceDocument
+from date_romania.models import PARTIAL, PniasPayment, SourceDocument
 from date_romania.sources import SEAP_EXPORTS
 from date_romania.storage import get_raw
 
@@ -104,7 +104,7 @@ def collect(session: Session, client: PoliteClient, last_year: int | None = None
                         session.rollback()
         run.records = kept
         if failed:
-            run.status = "partial"
+            run.status = PARTIAL
             run.error = f"{failed} files failed; run again to retry them"
     pnias_links.link(session)
     session.commit()

@@ -1,0 +1,50 @@
+"""Data model, one module per source. Every table is imported here, so Alembic sees all of them."""
+
+from date_romania.models.core import (
+    DONE,
+    FAILED,
+    PARTIAL,
+    RUNNING,
+    SUCCEEDED,
+    Base,
+    Entity,
+    JobRun,
+    SourceDocument,
+    done_days,
+    search_text,
+)
+from date_romania.models.programme import ExportBuyer, ExportContract, PniasLink, PniasPayment
+from date_romania.models.reports import Report
+from date_romania.models.seap_awards import (
+    AwardContract,
+    AwardNotice,
+    AwardNoticeDetail,
+    AwardNoticeVersion,
+    AwardWinner,
+)
+from date_romania.models.seap_direct import DirectPurchase
+
+__all__ = [
+    "DONE",
+    "FAILED",
+    "PARTIAL",
+    "RUNNING",
+    "SUCCEEDED",
+    "done_days",
+    "search_text",
+    "Base",
+    "SourceDocument",
+    "JobRun",
+    "Entity",
+    "DirectPurchase",
+    "AwardNotice",
+    "AwardContract",
+    "AwardWinner",
+    "AwardNoticeDetail",
+    "AwardNoticeVersion",
+    "PniasPayment",
+    "ExportContract",
+    "ExportBuyer",
+    "PniasLink",
+    "Report",
+]

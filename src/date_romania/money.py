@@ -21,7 +21,7 @@ from date_romania.models import (
     AwardNoticeVersion,
     AwardWinner,
     DirectPurchase,
-    JobRun,
+    done_days,
 )
 from date_romania.sources import SEAP_AWARDS
 
@@ -156,12 +156,7 @@ def contracts_period(session: Session) -> tuple[date, date] | None:
     to be republished. Totals therefore count the contracts signed inside these days. Even
     that list is incomplete: SEAP publishes many contracts weeks after they are signed.
     """
-    starts = session.scalars(
-        select(JobRun.period_start)
-        .where(JobRun.job == SEAP_AWARDS.key, JobRun.status.in_(("succeeded", "partial")))
-        .distinct()
-    )
-    days = sorted({start.astimezone(BUCHAREST).date() for start in starts}, reverse=True)
+    days = sorted(done_days(session, SEAP_AWARDS.key), reverse=True)
     if not days:
         return None
     first = last = days[0]

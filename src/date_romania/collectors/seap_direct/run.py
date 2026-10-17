@@ -18,7 +18,7 @@ from date_romania.collectors.seap_direct.slices import (
     fetch,
     iter_pages,
 )
-from date_romania.models import SourceDocument
+from date_romania.models import PARTIAL, SourceDocument
 from date_romania.sources import SEAP_DIRECT
 from date_romania.storage import get_raw
 
@@ -52,7 +52,7 @@ def collect_day(session: Session, client: PoliteClient, day: date) -> int:
             missing_deadlines += parsed.missing_deadlines
         run.records = len(ids)
         if truncated:
-            run.status = "partial"
+            run.status = PARTIAL
             run.error = f"{truncated} slices stayed over the cap of {CAP}: the day is incomplete"
         if missing_deadlines:
             log.warning(

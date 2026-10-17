@@ -9,8 +9,8 @@ from sqlalchemy.orm import Session
 from date_romania import money
 from date_romania.api.routes.common import Db, list_source, summary
 from date_romania.api.schemas import Dataset, Datasets, Stats
-from date_romania.dates import BUCHAREST
 from date_romania.models import (
+    SUCCEEDED,
     AwardContract,
     AwardNotice,
     DirectPurchase,
@@ -18,6 +18,7 @@ from date_romania.models import (
     JobRun,
     PniasPayment,
     SourceDocument,
+    done_days,
 )
 from date_romania.sources import PNIAS_PAYMENTS, SEAP_AWARDS, SEAP_DIRECT, SEAP_EXPORTS
 
@@ -51,17 +52,8 @@ def _days(session: Session, job: str, first: date | None, last: date | None) -> 
     """
     if not (first and last):
         return 0, 0
-    runs = session.execute(
-        select(JobRun.period_start, JobRun.status)
-        .where(JobRun.job == job, JobRun.status.in_(("succeeded", "partial")))
-        .distinct()
-    )
-    full, partial = set(), set()
-    for start, status in runs:
-        day = start.astimezone(BUCHAREST).date()
-        if first <= day <= last:
-            (full if status == "succeeded" else partial).add(day)
-    return len(full), len(partial - full)
+    days = [whole for day, whole in done_days(session, job).items() if first <= day <= last]
+    return days.count(True), days.count(False)
 
 
 def _last_run_whole(session: Session, job: str) -> bool:
@@ -69,7 +61,7 @@ def _last_run_whole(session: Session, job: str) -> bool:
     status = session.scalar(
         select(JobRun.status).where(JobRun.job == job).order_by(JobRun.id.desc()).limit(1)
     )
-    return status in (None, "succeeded")
+    return status in (None, SUCCEEDED)
 
 
 def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict) -> list[Dataset]:

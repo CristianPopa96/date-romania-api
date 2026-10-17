@@ -33,7 +33,13 @@ from date_romania.collectors.seap_awards.parse import (
     parse_versions,
 )
 from date_romania.dates import today
-from date_romania.models import AwardNotice, AwardNoticeDetail, AwardNoticeVersion, SourceDocument
+from date_romania.models import (
+    PARTIAL,
+    AwardNotice,
+    AwardNoticeDetail,
+    AwardNoticeVersion,
+    SourceDocument,
+)
 from date_romania.sources import SEAP_AWARDS
 from date_romania.storage import get_raw
 
@@ -104,7 +110,7 @@ def collect_day(session: Session, client: PoliteClient, day: date) -> int:
                 log.warning("notice %d: no detail: %r", notice_id, exc)
         run.records = len(notices)
         if truncated:
-            run.status = "partial"
+            run.status = PARTIAL
             run.error = f"the list stopped at its cap of {CAP}: the day is incomplete"
         log.info(
             "%s: %d notices with %d contracts, %d names without a valid CUI, "
@@ -155,7 +161,7 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
                 log.info("%d of %d notices", done, len(todo))
         run.records = done
         if failed:
-            run.status = "partial"
+            run.status = PARTIAL
             run.error = f"{failed} of {len(todo)} notices failed; run again to retry them"
     return done
 
