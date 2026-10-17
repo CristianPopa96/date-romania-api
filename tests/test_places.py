@@ -11,12 +11,15 @@ import pytest
 from date_romania import places
 from date_romania.collectors.anaf.parse import parse_answer
 from date_romania.collectors.local_budgets.parse import (
+    Parsed,
+    _heading_problem,
+    _read_row,
     file_kind,
     parse_budget,
     parse_population,
 )
 from date_romania.collectors.public_entities.parse import parse_entities
-from date_romania.collectors.siruta.parse import parse_places
+from date_romania.collectors.siruta.parse import edition, parse_places
 from date_romania.models import Place
 from date_romania.places import PlaceIndex, county_key, uat_key
 
@@ -89,17 +92,45 @@ def test_a_uat_is_found_however_a_source_writes_it(index):
     assert index.uat("Bucuresti", "Sectorul 2 al Municipiului Bucuresti") == 179150
     assert index.uat("MUNICIPIUL BUCUREŞTI", "Sector 2 Mun. Bucureşti") == 179150
     assert index.uat("Bucuresti", "Municipiul Bucuresti") == 179132
+    # Near misses are not forgiven: only î for â inside a word, and an article.
+    assert index.uat("Alba", "Orasul Zlatno") is None
+    assert index.uat("Alba", "Orasul Zlatina") is None
+    assert index.uat("Mures", "Comuna Tirgu Mures") is None
     # A commune SIRUTA does not hold, a county it does not know, nothing at all.
     assert index.uat("Brasov", "Comuna Ticus") is None
     assert index.uat("Atlantis", "Orasul Zlatna") is None
     assert index.uat("Alba", "") is None
 
 
+def test_an_edition_is_told_by_its_file_name():
+    assert edition("siruta_s1_2026.csv") == (2026, 1)
+    assert edition("siruta_an_2025.csv") == (2025, 2)
+    assert (
+        edition("siruta_s1_2026.csv")
+        > edition("siruta_an_2025.csv")
+        > edition("siruta_s1_2025.csv")
+    )
+    assert edition("legenda-siruta.xml") is None
+
+
+def test_a_bad_level_rejects_its_row_not_the_file():
+    village = b"2149;ALBAC;517005;1;2130;22;3;3;"
+    content = (
+        (FIXTURES / "siruta.csv").read_bytes().replace(village, village.replace(b";3;3;", b";x;3;"))
+    )
+    parsed = parse_places(content)
+    assert [reason for _, reason in parsed.rejected] == ["no SIRUTA code, parent or level"]
+    assert len(parsed.places) == 14
+
+
 def test_the_list_of_public_entities_names_each_ones_uat_and_funders():
     parsed = parse_entities((FIXTURES / "public_entities.xlsx").read_bytes())
-    assert parsed.rejected == []
+    # A made-up row whose funder's tax ID fails its checksum: the row is kept, the
+    # funder is not, and it is counted.
+    assert [reason for _, reason in parsed.rejected] == ["funder tax ID not valid: 4331032"]
     entities = {row["cui"]: row for row in parsed.entities}
-    assert len(entities) == 6
+    assert len(entities) == 7
+    assert entities[4331040]["funder_cui"] is None
     school = entities[4331007]
     assert (school["county"], school["uat"]) == ("Alba", "Orasul Zlatna")
     # A school is funded by its town and by the Ministry of Education.
@@ -160,6 +191,41 @@ def test_a_county_council_is_filed_under_its_county_and_an_empty_one_is_left_out
     # The city hall of Bucharest has its own budget, next to its sectors'.
     assert figure(budget, 179132, 1)["amount"] == Decimal("6478669635")
     assert figure(budget, 179141, 1)["amount"] == Decimal("1434018986")
+
+
+def test_a_code_comes_from_the_country_sheet(budget):
+    # Sheet 42 prints '49.90' over total revenue; the country's sheet has '00.01.02'.
+    assert figure(budget, 179141, 1)["code"] == "00.01.02"
+    assert figure(budget, 179141, 2)["code"] == "49.90"
+
+
+def test_a_sheet_that_is_not_the_whole_year_in_lei_is_rejected():
+    heading = [["Judeţul: ALBA"], ["Perioada: 31.12.2024"], ["", "- lei -"]]
+    assert _heading_problem(heading, 2024) is None
+    # Suceava's sheet names no unit; the file's others do.
+    assert _heading_problem(heading[:2], 2024) is None
+    assert "unit" in _heading_problem([*heading[:2], ["- mii lei -"]], 2024)
+    assert "period" in _heading_problem([heading[0], ["Perioada: 30.09.2024"]], 2024)
+    assert "period" in _heading_problem(heading[:1], 2024)
+    # The file of one year read as another: every sheet is rejected, nothing is kept.
+    wrong = parse_budget((FIXTURES / "local_budget.xlsx").read_bytes(), 2023)
+    assert wrong.rows == []
+    assert {reason for _, reason in wrong.rejected} == {
+        "period ['PERIOADA 31 12 2024'], not 31.12.2023"
+    }
+
+
+def test_a_cell_that_is_not_a_number_is_counted_not_dropped():
+    columns = [(3, 1, "revenue", "00.01.02", "VENITURI TOTALE"), (4, 2, "revenue", None, "X")]
+    parsed = Parsed()
+    _read_row(parsed, ["1", 1017, "ALBA IULIA", "100", "o sută"], columns, "ALBA", 2024)
+    assert [row["column_no"] for row in parsed.rows] == [1]
+    assert parsed.rejected == [((1017, 2, "o sută"), "figure that is not a number")]
+    # A named UAT with no SIRUTA code is counted; an empty padding row is not.
+    _read_row(parsed, ["2", "", "AIUD", "5"], columns, "ALBA", 2024)
+    _read_row(parsed, ["3", "", "", "0"], columns, "ALBA", 2024)
+    assert parsed.rejected[-1] == (["2", "", "AIUD"], "UAT without its SIRUTA code")
+    assert len(parsed.rejected) == 2
 
 
 def test_population_comes_in_two_layouts():

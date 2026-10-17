@@ -9,6 +9,7 @@ from pathlib import Path
 
 import httpx
 import pytest
+from python_calamine import CalamineError
 from sqlalchemy import func, select
 
 from date_romania import places
@@ -18,6 +19,7 @@ from date_romania.dates import today
 from date_romania.models import (
     AnafRecord,
     Entity,
+    JobRun,
     LocalBudget,
     Place,
     Population,
@@ -30,6 +32,7 @@ from date_romania.storage import StoredObject
 FIXTURES = Path(__file__).parent / "fixtures"
 FILES = "https://data.gov.ro/dataset/x/resource"
 SIRUTA_CSV = f"{FILES}/1/download/siruta_s1_2026.csv"
+OLDER_SIRUTA = f"{FILES}/5/download/siruta_an_2025.csv"
 BUDGET = f"{FILES}/2/download/situaia-veniturilor-i-cheltuielilor-2024.xlsx"
 PEOPLE_2021 = f"{FILES}/3/download/populaia-2021.xlsx"
 PEOPLE_2024 = f"{FILES}/4/download/populaia-2024.xlsx"
@@ -46,7 +49,8 @@ def count(session, model) -> int:
 @pytest.fixture
 def sources(monkeypatch):
     """The four sources as they answered on 17.10.2026, cut to a few rows. Returns a
-    client and the requests sent."""
+    client, the requests sent, and a set of addresses to break: one put there answers
+    HTTP 200 with an HTML "Request Rejected" page instead."""
     stored: dict[str, bytes] = {}
 
     def put_raw(source, content, content_type=None):
@@ -60,6 +64,8 @@ def sources(monkeypatch):
 
     datasets = {
         "siruta_s1-2026": [("SIRUTA_s1 2026", SIRUTA_CSV)],
+        # Edited after the newer edition: its date must not make it the one taken.
+        "siruta_an-2025": [("SIRUTA_an 2025", OLDER_SIRUTA)],
         local_budgets.run.DATASET: [
             ("Populația definitivă a României la 1 ianuarie 2021.xlsx", PEOPLE_2021),
             ("Populația definitivă a României la 1 ianuarie 2024.xlsx", PEOPLE_2024),
@@ -74,12 +80,15 @@ def sources(monkeypatch):
         LIST: "public_entities.xlsx",
     }
     sent: list[httpx.Request] = []
+    broken: set[str] = set()
 
     def answer(request: httpx.Request) -> httpx.Response:
         sent.append(request)
         url = str(request.url)
+        if any(url.startswith(address) for address in broken):
+            return httpx.Response(200, text="<html>Request Rejected</html>")
         if "package_search" in url:
-            found = [{"name": "siruta_an-2025"}, {"name": "siruta_s1-2026"}][::-1]
+            found = [{"name": "siruta_an-2025"}, {"name": "siruta_s1-2026"}, {"name": "x"}]
             return httpx.Response(200, json={"success": True, "result": {"results": found}})
         if "package_show" in url:
             found = datasets.get(request.url.params["id"], [])
@@ -107,7 +116,7 @@ def sources(monkeypatch):
         return httpx.Response(404)
 
     with PoliteClient(transport=httpx.MockTransport(answer), sleep=lambda seconds: None) as client:
-        yield client, sent
+        yield client, sent, broken
 
 
 @pytest.fixture
@@ -127,21 +136,23 @@ def held(session):
 
 
 def test_siruta_is_stored_once_and_gives_every_place(session, sources):
-    client, sent = sources
+    client, sent, broken = sources
     assert siruta.collect(session, client) == 15
     assert count(session, Place) == 15
     assert session.get(Place, 179150).parent == 179132
     # The newest edition was asked for, and a second run downloads nothing.
-    assert any(request.url.params.get("id") == "siruta_s1-2026" for request in sent)
+    # The newest edition by its file name, though both datasets were listed.
+    downloads = [str(r.url) for r in sent if "download" in str(r.url)]
+    assert downloads == [SIRUTA_CSV]
     sent.clear()
     assert siruta.collect(session, client) == 0
     assert [r for r in sent if "download" in str(r.url)] == []
 
 
 def test_the_list_places_institutions_and_names_their_funder(session, sources, held):
-    client, _ = sources
+    client, _, broken = sources
     siruta.collect(session, client)
-    assert public_entities.collect(session, client) == 6
+    assert public_entities.collect(session, client) == 7
     doc = session.scalars(select(SourceDocument).where(SourceDocument.source == "public-entities"))
     assert doc.one().request_body == "Lista entitatilor publice - actualizata 01.10.2026"
 
@@ -157,7 +168,7 @@ def test_the_list_places_institutions_and_names_their_funder(session, sources, h
 
 
 def test_anaf_places_the_rest_and_is_not_asked_twice(session, sources, held):
-    client, sent = sources
+    client, sent, broken = sources
     siruta.collect(session, client)
     public_entities.collect(session, client)
     sent.clear()
@@ -183,7 +194,7 @@ def test_anaf_places_the_rest_and_is_not_asked_twice(session, sources, held):
 
 
 def test_budgets_and_population_are_filed_by_siruta(session, sources):
-    client, _ = sources
+    client, _, broken = sources
     siruta.collect(session, client)
     assert local_budgets.collect(session, client) > 0
     filed = set(session.scalars(select(LocalBudget.siruta).where(LocalBudget.column_no == 1)))
@@ -208,10 +219,75 @@ def test_budgets_and_population_are_filed_by_siruta(session, sources):
 
 
 def test_placing_again_follows_the_sources_held(session, sources, held):
-    client, _ = sources
+    client, _, broken = sources
     siruta.collect(session, client)
     public_entities.collect(session, client)
     session.get(Entity, SCHOOL).county = None
     assert places.locate(session) == 3
     session.expire_all()
     assert session.get(Entity, SCHOOL).county == "Alba"
+
+
+def test_an_edition_that_cannot_be_read_is_fetched_again(session, sources, held):
+    client, sent, broken = sources
+    siruta.collect(session, client)
+    broken.add(LIST)
+    # An HTML page where the workbook should be.
+    with pytest.raises(CalamineError):
+        public_entities.collect(session, client)
+    held_docs = select(SourceDocument).where(SourceDocument.source == "public-entities")
+    assert session.scalars(held_docs).all() == []
+    run = session.scalars(select(JobRun).where(JobRun.job == "public-entities")).one()
+    assert run.status == "failed"
+
+    broken.clear()
+    assert public_entities.collect(session, client) == 7
+    # A second run asks the portal and downloads nothing.
+    sent.clear()
+    assert public_entities.collect(session, client) == 0
+    assert not [r for r in sent if str(r.url).startswith(LIST)]
+
+
+def test_an_html_answer_from_anaf_is_not_kept(session, sources, held):
+    client, _, broken = sources
+    siruta.collect(session, client)
+    public_entities.collect(session, client)
+    broken.add(anaf.run.URL)
+    assert anaf.collect(session, client) == 0
+    assert count(session, AnafRecord) == 0
+    assert (
+        session.scalars(select(SourceDocument).where(SourceDocument.source == "anaf")).all() == []
+    )
+    run = session.scalars(select(JobRun).where(JobRun.job == "anaf")).one()
+    assert run.status == "partial"
+    assert "6 tax IDs left" in run.error
+    # The entities are still placed from what is held.
+    assert session.get(Entity, SCHOOL).siruta == 1936
+    # The next run asks again.
+    broken.clear()
+    assert anaf.collect(session, client) == 5
+
+
+def test_budgets_need_places_first(session, sources):
+    client, _, _ = sources
+    with pytest.raises(local_budgets.run.NoPlaces):
+        local_budgets.collect(session, client)
+    assert count(session, LocalBudget) == 0
+
+
+def test_a_file_that_cannot_be_read_does_not_stop_the_others(session, sources):
+    client, sent, broken = sources
+    siruta.collect(session, client)
+    broken.add(PEOPLE_2021)
+    assert local_budgets.collect(session, client) > 0
+    run = session.scalars(select(JobRun).where(JobRun.job == "local-budgets")).one()
+    assert (run.status, run.error) == ("partial", "1 files failed; run again to retry them")
+    # The files after it were read.
+    assert session.get(Population, (179150, date(2024, 1, 1))) is not None
+    assert count(session, LocalBudget) > 0
+    # The next run fetches only the one that failed.
+    broken.clear()
+    sent.clear()
+    local_budgets.collect(session, client)
+    assert [str(r.url) for r in sent if "download" in str(r.url)] == [PEOPLE_2021]
+    assert session.get(Population, (179150, date(2021, 1, 1))) is not None

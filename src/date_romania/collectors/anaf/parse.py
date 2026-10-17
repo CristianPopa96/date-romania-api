@@ -23,6 +23,20 @@ def _caen(value: object) -> int | None:
     return int(text) if text.isdigit() else None
 
 
+def is_answer(content: bytes) -> bool:
+    """True for ANAF's JSON answer: an object with the lists `found` and `notFound`.
+    ANAF can answer HTTP 200 with an HTML page instead."""
+    try:
+        answer = json.loads(content)
+    except ValueError:
+        return False
+    return (
+        isinstance(answer, dict)
+        and isinstance(answer.get("found"), list)
+        and isinstance(answer.get("notFound"), list)
+    )
+
+
 def parse_answer(content: bytes, asked_on: date) -> Parsed:
     """A record for every tax ID of the answer, found or not. Only the county and the
     locality of the registered office are read: never the street."""

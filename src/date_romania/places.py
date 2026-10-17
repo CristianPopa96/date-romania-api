@@ -70,11 +70,18 @@ def uat_key(name: str | None) -> tuple[str | None, str]:
     return None, text
 
 
-def _loose(bare: str) -> str:
-    """A bare name with the letters old spelling changes taken out: lists still write
+# A consonant, in `plain` form.
+_CONSONANT = "[B-DF-HJ-NP-TV-Z]"
+
+
+def _old_spelling(bare: str) -> str:
+    """A bare name with the one change old spelling makes undone: lists still write
     'Tirgu Mures', 'Rimnicu Sarat', 'Sfantul Gheorghe' for SIRUTA's 'TÂRGU MUREŞ',
-    'RÂMNICU SĂRAT', 'SFÂNTU GHEORGHE' (î for â; and a dropped article)."""
-    return re.sub(r"[AI]", "", re.sub(r"UL\b", "U", bare)).replace(" ", "")
+    'RÂMNICU SĂRAT', 'SFÂNTU GHEORGHE'. Î inside a word, between consonants, was
+    replaced by â; an article may be dropped ('Sfantul', 'Rosiorii'). Nothing else is
+    forgiven."""
+    text = re.sub(r"(?<=U)L(?= |$)|(?<=I)I(?= |$)", "", bare)
+    return re.sub(f"(?<={_CONSONANT})I(?={_CONSONANT})", "A", text)
 
 
 def _without_county(name: object, bare: str, county: str | None) -> str:
@@ -94,7 +101,7 @@ class PlaceIndex:
         self.counties = {county_key(place.name): place.siruta for place in counties.values()}
         self._exact: dict[tuple[int, str, str], int] = {}
         self._bare: dict[tuple[int, str], list[int]] = {}
-        self._loose: dict[tuple[int, str], list[int]] = {}
+        self._old: dict[tuple[int, str | None, str], list[int]] = {}
         for place in places:
             if place.kind not in UATS or place.county is None:
                 continue
@@ -102,7 +109,9 @@ class PlaceIndex:
             kind = place.kind if kind is None or place.kind == SECTOR else kind
             self._exact[(place.county, kind, bare)] = place.siruta
             self._bare.setdefault((place.county, bare), []).append(place.siruta)
-            self._loose.setdefault((place.county, _loose(bare)), []).append(place.siruta)
+            old = _old_spelling(bare)
+            self._old.setdefault((place.county, kind, old), []).append(place.siruta)
+            self._old.setdefault((place.county, None, old), []).append(place.siruta)
 
     @classmethod
     def load(cls, session: Session) -> "PlaceIndex":
@@ -115,7 +124,7 @@ class PlaceIndex:
         """The SIRUTA code of the UAT `name` in `county`, or None.
 
         Failing the exact kind and name, a single UAT of that name in the county is
-        taken, then a single one in old spelling; two are never told apart.
+        taken, then a single one of that kind in old spelling; two are never told apart.
         """
         in_county = self.county(county)
         if in_county is None or not plain(name):
@@ -132,7 +141,7 @@ class PlaceIndex:
             # Old spelling, or no kind named: a single UAT of that name in the county.
             for found in (
                 self._bare.get((in_county, bare), []),
-                self._loose.get((in_county, _loose(bare)), []),
+                self._old.get((in_county, kind, _old_spelling(bare)), []),
             ):
                 if len(found) == 1:
                     return found[0]

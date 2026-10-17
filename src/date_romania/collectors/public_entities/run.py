@@ -10,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania import places
+from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, record_parse, store_document, stored_documents
 from date_romania.collectors.public_entities.parse import PARSER_VERSION, parse_entities
@@ -64,7 +65,8 @@ def _parse_and_load(session: Session, doc: SourceDocument) -> int:
 
 def collect(session: Session, client: PoliteClient) -> int:
     """Fetch the current list if this edition is not held, load it and place every
-    entity; returns the entities it brought."""
+    entity; returns the entities it brought. An edition that cannot be read is
+    forgotten, and the run fails."""
     with job_run(session, JOB, today()) as run:
         url, title = find_list(client)
         held = session.scalar(
@@ -81,9 +83,13 @@ def collect(session: Session, client: PoliteClient) -> int:
                 content_type=response.headers.get("content-type"),
             )
             session.commit()
-            run.records = _parse_and_load(session, doc)
-    places.locate(session)
-    session.commit()
+            try:
+                run.records = _parse_and_load(session, doc)
+            except Exception:
+                # Forgotten, so the next run fetches and reads this edition again.
+                datagov.forget(session, doc)
+                raise
+        places.locate(session)
     return run.records
 
 

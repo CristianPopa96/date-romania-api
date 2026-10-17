@@ -49,18 +49,14 @@ def resources(client: PoliteClient, dataset: str) -> list[Resource]:
     return sorted(found, key=lambda each: (each.created, each.url))
 
 
-def newest_dataset(client: PoliteClient, query: str, prefix: str) -> str:
-    """The name of the most recently changed dataset found by `query` whose name starts
-    with `prefix`: for a publisher that opens a new dataset for every edition."""
-    answer = client.request(
-        "GET", SEARCH_URL, params={"q": query, "rows": 50, "sort": "metadata_modified desc"}
-    ).json()
+def datasets(client: PoliteClient, query: str, prefix: str) -> list[str]:
+    """The names of the datasets found by `query` that start with `prefix`: for a
+    publisher that opens a new dataset for every edition."""
+    answer = client.request("GET", SEARCH_URL, params={"q": query, "rows": 50}).json()
     if not answer.get("success"):
         raise DatagovError(f"{query}: {str(answer.get('error'))[:500]}")
-    for found in answer["result"]["results"]:
-        if found["name"].startswith(prefix):
-            return found["name"]
-    raise DatagovError(f"{query}: no dataset named {prefix}*")
+    names = [found["name"] for found in answer["result"]["results"]]
+    return [name for name in names if name.startswith(prefix)]
 
 
 def stored(session: Session, source: str, url: str) -> SourceDocument | None:

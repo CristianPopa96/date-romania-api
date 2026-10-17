@@ -1,5 +1,6 @@
 """Reading a SIRUTA CSV: one row per place."""
 
+import re
 from dataclasses import dataclass, field
 
 from date_romania import places
@@ -28,6 +29,17 @@ class Parsed:
     rejected: list[tuple[object, str]] = field(default_factory=list)
 
 
+def edition(name: str | None) -> tuple[int, int] | None:
+    """When an edition is, from its file name: (2026, 1) for 'siruta_s1_2026.csv', the
+    first half; (2025, 2) for 'siruta_an_2025.csv', the whole year. None for a file
+    that names no year."""
+    words = plain(name).split()
+    years = [int(word) for word in words if re.fullmatch(r"20[0-9][0-9]", word)]
+    if not years:
+        return None
+    return years[-1], 1 if "S1" in words else 2
+
+
 def _kind(tip: str, level: str) -> str:
     # Bucharest is level 2 with the type of a component locality (9).
     if level == "2" and tip == "9":
@@ -51,9 +63,10 @@ def parse_places(content: bytes) -> Parsed:
             continue
         try:
             value = {name: row[at[name]].strip() for name in _COLUMNS}
-            read.append({**value, "code": int(value["SIRUTA"]), "up": int(value["SIRSUP"])})
+            codes = {"code": int(value["SIRUTA"]), "up": int(value["SIRSUP"])}
+            read.append({**value, **codes, "level": int(value["NIV"])})
         except (IndexError, ValueError):
-            parsed.rejected.append((row, "no SIRUTA code"))
+            parsed.rejected.append((row, "no SIRUTA code, parent or level"))
     counties = {row["JUD"]: row["code"] for row in read if row["TIP"] == "40"}
     for row in read:
         county = counties.get(row["JUD"])
@@ -68,7 +81,7 @@ def parse_places(content: bytes) -> Parsed:
                 "parent": None if row["up"] == _COUNTRY else row["up"],
                 "county": county,
                 "urban": row["MED"] == "1",
-                "level": int(row["NIV"] or 9),
+                "level": row["level"],
             }
         )
     parsed.places.sort(key=lambda place: (place["level"], place["siruta"]))

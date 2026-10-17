@@ -24,7 +24,7 @@ from date_romania.collectors.local_budgets.parse import (
 )
 from date_romania.dates import today
 from date_romania.db import upsert_rows
-from date_romania.models import LocalBudget, Place, Population, SourceDocument
+from date_romania.models import PARTIAL, LocalBudget, Place, Population, SourceDocument
 from date_romania.places import SECTOR, PlaceIndex
 from date_romania.sources import LOCAL_BUDGETS
 from date_romania.storage import get_raw
@@ -93,26 +93,53 @@ def _parse_and_load(session: Session, doc: SourceDocument) -> int:
     return len(rows)
 
 
+class NoPlaces(Exception):
+    """SIRUTA is not held yet: every row would be rejected."""
+
+
+def _need_places(session: Session) -> None:
+    if session.scalar(select(Place.siruta).limit(1)) is None:
+        raise NoPlaces("no places held: run `dr collect siruta` first")
+
+
 def collect(session: Session, client: PoliteClient) -> int:
     """Fetch and load the files of the dataset not held yet; returns the rows they
-    brought. Run `dr collect siruta` first: a place SIRUTA does not hold is rejected."""
+    brought. Needs SIRUTA (`dr collect siruta`): a place it does not hold is rejected.
+
+    A file that cannot be read is forgotten and does not stop the others: the run ends
+    `partial`, and the next run takes it up again.
+    """
+    _need_places(session)
     with job_run(session, JOB, today()) as run:
-        rows = 0
+        failed = 0
         for resource in datagov.resources(client, DATASET):
-            doc, new = datagov.fetch(session, client, SOURCE, resource)
-            if new:
-                try:
-                    rows += _parse_and_load(session, doc)
-                except Exception:
+            doc = None
+            try:
+                doc, new = datagov.fetch(session, client, SOURCE, resource)
+                if new:
+                    run.records += _parse_and_load(session, doc)
+            except Exception:
+                failed += 1
+                log.exception("%s: failed", resource.name)
+                if doc is not None and new:
                     datagov.forget(session, doc)
-                    raise
-        run.records = rows
-    return rows
+                else:
+                    session.rollback()
+        if failed:
+            run.status = PARTIAL
+            run.error = f"{failed} files failed; run again to retry them"
+    return run.records
 
 
 def reparse(session: Session) -> int:
-    """Load every stored file again, oldest first, without calling data.gov.ro."""
+    """Load every stored file again, oldest first, without calling data.gov.ro. A file
+    that cannot be read is logged and does not stop the ones after it."""
+    _need_places(session)
     docs = stored_documents(session, SOURCE)
     for doc in docs:
-        _parse_and_load(session, doc)
+        try:
+            _parse_and_load(session, doc)
+        except Exception:
+            log.exception("%s: not read", doc.request_body)
+            session.rollback()
     return len(docs)

@@ -8,7 +8,7 @@ from date_romania import places
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, record_parse, stored_documents
-from date_romania.collectors.siruta.parse import PARSER_VERSION, parse_places
+from date_romania.collectors.siruta.parse import PARSER_VERSION, edition, parse_places
 from date_romania.dates import today
 from date_romania.db import upsert_rows
 from date_romania.models import Place, SourceDocument
@@ -18,6 +18,10 @@ from date_romania.storage import get_raw
 log = logging.getLogger(__name__)
 
 SOURCE = JOB = SIRUTA.key
+
+
+def _file(url: str) -> str:
+    return url.rsplit("/", 1)[-1]
 
 
 def _parse_and_load(session: Session, doc: SourceDocument) -> int:
@@ -32,29 +36,36 @@ def _parse_and_load(session: Session, doc: SourceDocument) -> int:
 
 def collect(session: Session, client: PoliteClient) -> int:
     """Fetch the CSV of the newest edition if it is not held, and load it; returns the
-    places it brought. A place renamed or merged keeps its old row."""
+    places it brought. The edition is told by its file name ('siruta_s1_2026.csv'),
+    never by when a dataset was last edited. A place renamed or merged keeps its row."""
     with job_run(session, JOB, today()) as run:
-        dataset = datagov.newest_dataset(client, "siruta", "siruta")
         csvs = [
-            each for each in datagov.resources(client, dataset) if each.url.lower().endswith(".csv")
+            each
+            for dataset in datagov.datasets(client, "siruta", "siruta")
+            for each in datagov.resources(client, dataset)
+            if each.url.lower().endswith(".csv") and edition(_file(each.url))
         ]
         if not csvs:
-            raise datagov.DatagovError(f"{dataset}: no CSV file")
-        doc, new = datagov.fetch(session, client, SOURCE, csvs[-1])
+            raise datagov.DatagovError("no SIRUTA edition found")
+        newest = max(csvs, key=lambda each: edition(_file(each.url)))
+        doc, new = datagov.fetch(session, client, SOURCE, newest)
         if new:
             try:
                 run.records = _parse_and_load(session, doc)
             except Exception:
                 datagov.forget(session, doc)
                 raise
-    places.locate(session)
-    session.commit()
+        places.locate(session)
     return run.records
 
 
 def reparse(session: Session) -> int:
-    """Load every stored edition again, oldest first, without calling data.gov.ro."""
-    docs = stored_documents(session, SOURCE)
+    """Load every stored edition again, oldest edition first so the newest has the last
+    word, without calling data.gov.ro."""
+    docs = sorted(
+        stored_documents(session, SOURCE),
+        key=lambda doc: (edition(_file(doc.url)) or (0, 0), doc.id),
+    )
     for doc in docs:
         _parse_and_load(session, doc)
     places.locate(session)

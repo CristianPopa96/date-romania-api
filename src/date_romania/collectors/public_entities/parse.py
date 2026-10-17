@@ -36,7 +36,7 @@ def _cui(value: object) -> int | None:
 
 def parse_entities(content: bytes) -> Parsed:
     """The entities of the first sheet. A row with no valid tax ID is rejected; a funder
-    whose tax ID is not valid is left out of its row."""
+    whose tax ID is not valid is left out of its row, and counted as rejected."""
     parsed = Parsed()
     _, rows = next(workbook_sheets(content))
     rows = iter(rows)
@@ -63,6 +63,10 @@ def parse_entities(content: bytes) -> Parsed:
             continue
         seen.add(cui)
         funders = [(_cui(cell(code)), _text(cell(name)) or None) for code, name in _FUNDERS]
+        for (funder, _), (code, _) in zip(funders, _FUNDERS, strict=True):
+            if funder is None and _text(cell(code)):
+                # The entity is kept; only this funder is not read.
+                parsed.rejected.append((row, f"funder tax ID not valid: {_text(cell(code))}"))
         parsed.entities.append(
             {
                 "cui": cui,
