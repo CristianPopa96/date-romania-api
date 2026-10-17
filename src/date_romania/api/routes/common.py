@@ -3,7 +3,7 @@
 import csv
 import io
 from collections.abc import Iterable
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated, Literal
 
 from fastapi import Depends, Query, Response
@@ -14,11 +14,12 @@ from date_romania import money
 from date_romania.api.schemas import EntityRef, Partner, Source, Summary
 from date_romania.dates import day_bounds
 from date_romania.db import get_session
-from date_romania.models import DirectPurchase, Entity, SourceDocument
-from date_romania.sources import SEAP_DIRECT
+from date_romania.models import DirectPurchase, Entity, SourceDocument, search_text
+from date_romania.sources import SEAP_DIRECT, PublicSource
 
 Db = Annotated[Session, Depends(get_session)]
 Limit = Annotated[int, Query(ge=1, le=100)]
+Offset = Annotated[int, Query(ge=0)]
 Day = Annotated[date | None, Query(description="A day in Romanian time, YYYY-MM-DD.")]
 Cpv = Annotated[
     str | None,
@@ -30,6 +31,15 @@ Cpv = Annotated[
 
 
 Format = Annotated[Literal["json", "csv"], Query(description="csv gives the whole list as a file.")]
+
+
+_LIKE_ESCAPES = str.maketrans({"\\": r"\\", "%": r"\%", "_": r"\_"})
+
+
+def containing(text: str) -> ColumnElement[str]:
+    """A LIKE pattern for text that contains `text` as typed (`%` and `_` are not
+    wildcards), in the form search compares."""
+    return search_text("%" + text.translate(_LIKE_ESCAPES) + "%")
 
 
 def cell(text: str | None) -> str | None:
@@ -67,19 +77,39 @@ def summary(session: Session, *filters: ColumnElement[bool]) -> Summary:
     return Summary.model_validate(row._mapping)
 
 
+def last_fetched(session: Session, source: PublicSource) -> datetime | None:
+    """When anything of `source` was last fetched."""
+    return session.scalar(
+        select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == source.key)
+    )
+
+
+def record_source(
+    source: PublicSource, row, *, record: str | None, url: str, fetched_at, sha256: str
+) -> Source:
+    """The source of one record: where it was read, and the stored answer and parser that
+    read it. `row` is the stored record, with its `source_document_id` and `parser_version`."""
+    return Source(
+        publisher=source.publisher,
+        record=record,
+        url=url,
+        fetched_at=fetched_at,
+        document_id=row.source_document_id,
+        sha256=sha256,
+        parser_version=row.parser_version,
+    )
+
+
 def list_source(session: Session, *filters: ColumnElement[bool]) -> Source:
     """The source of a figure added up from many purchases: the SEAP list as last fetched,
     and how many stored responses the purchases under `filters` were read from."""
-    fetched = session.scalar(
-        select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == SEAP_DIRECT.key)
-    )
     documents = session.scalar(
         select(func.count(DirectPurchase.source_document_id.distinct())).where(*filters)
     )
     return Source(
         publisher=SEAP_DIRECT.publisher,
         url=SEAP_DIRECT.list_url,
-        fetched_at=fetched,
+        fetched_at=last_fetched(session, SEAP_DIRECT),
         documents=documents,
     )
 

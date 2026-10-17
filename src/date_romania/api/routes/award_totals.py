@@ -5,7 +5,7 @@ from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
 from date_romania import money
-from date_romania.api.routes.awards import (
+from date_romania.api.routes.award_common import (
     EuFunded,
     Won,
     awards_source,

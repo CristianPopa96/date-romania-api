@@ -8,7 +8,7 @@ from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
 from date_romania import pnias_links
-from date_romania.api.routes.common import Db, Limit
+from date_romania.api.routes.common import Db, Limit, Offset, containing, last_fetched
 from date_romania.api.schemas import (
     Programme,
     ProgrammeFile,
@@ -22,7 +22,6 @@ from date_romania.counties import county_name
 from date_romania.models import (
     ExportContract,
     PniasPayment,
-    SourceDocument,
     search_text,
 )
 from date_romania.sources import PNIAS_PAYMENTS, SEAP_EXPORTS, PublicSource
@@ -31,17 +30,13 @@ router = APIRouter(prefix="/programmes/anghel-saligny", tags=["programmes"])
 
 State = Literal["one", "several", "none", "unnamed"]
 
-_LIKE_ESCAPES = str.maketrans({"%": r"\%", "_": r"\_", "\\": r"\\"})
-
 _PAID = func.coalesce(func.sum(PniasPayment.amount), 0)
 
 
 def source(session: Session, source: PublicSource, documents: int) -> Source:
     """The source of the programme's figures, and how many stored files the rows behind
     them were read from."""
-    fetched = session.scalar(
-        select(func.max(SourceDocument.fetched_at)).where(SourceDocument.source == source.key)
-    )
+    fetched = last_fetched(session, source)
     return Source(
         publisher=source.publisher,
         record=source.dataset,
@@ -146,7 +141,7 @@ def projects(
     builder: Annotated[int | None, Query(description="The builder's CUI.")] = None,
     match: Annotated[State | None, Query(description="The match state of the project.")] = None,
     limit: Limit = 20,
-    offset: Annotated[int, Query(ge=0)] = 0,
+    offset: Offset = 0,
 ) -> ProjectPage:
     """The projects of the programme, the most paid first."""
     project = pnias_links.projects()
@@ -155,7 +150,7 @@ def projects(
         filters.append(project.c.county == county)
     if q:
         # The words are searched as typed: `%` and `_` are not wildcards.
-        like = search_text("%" + q.translate(_LIKE_ESCAPES) + "%")
+        like = containing(q)
         filters.append(
             search_text(project.c.town_hall).like(like)
             | search_text(project.c.investment).like(like)
