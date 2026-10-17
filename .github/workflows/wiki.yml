@@ -1,0 +1,43 @@
+# Publishes docs/wiki/ to the repository's GitHub wiki, so the wiki is written and
+# reviewed in pull requests like the code. The wiki needs one page created by hand
+# before the first run (GitHub creates its git repository with that page).
+
+name: Wiki
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/wiki/**', '.github/workflows/wiki.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy docs/wiki to the wiki
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki; then
+            echo "::error::The wiki has no pages yet. Open the Wiki tab, create the first page, then run this workflow again."
+            exit 1
+          fi
+          rsync -a --delete --exclude .git docs/wiki/ wiki/
+          cd wiki
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The wiki is already up to date."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Publish docs/wiki from ${GITHUB_SHA::7}"
+          git push
