@@ -49,6 +49,54 @@ SEAP_EXPORTS = PublicSource(
     record_url="https://data.gov.ro/dataset/achizitii-publice-{id}",
 )
 
+# The national list of places (INS), published twice a year, one dataset each time.
+SIRUTA = PublicSource(
+    key="siruta",
+    publisher="data.gov.ro",
+    dataset="INS · SIRUTA",
+    list_url="https://data.gov.ro/organization/ins",
+    record_url="https://data.gov.ro/dataset/{id}",
+)
+
+# The Finance Ministry's monthly list of public entities, on its budget reports portal
+# ("Alte Rapoarte"; the reports themselves need a captcha, this list does not).
+PUBLIC_ENTITIES = PublicSource(
+    key="public-entities",
+    publisher="Ministerul Finanțelor",
+    dataset="Lista entităților publice",
+    list_url="https://extranet.anaf.mfinante.gov.ro/anaf/extranet/EXECUTIEBUGETARA",
+    record_url="https://extranet.anaf.mfinante.gov.ro/anaf/extranet/EXECUTIEBUGETARA",
+)
+
+# The Ministry of Development's yearly budgets of town halls and county councils, and the
+# population of every UAT.
+LOCAL_BUDGETS = PublicSource(
+    key="local-budgets",
+    publisher="data.gov.ro",
+    dataset="MDLPA · Politici fiscale și bugetare locale",
+    list_url="https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+    record_url="https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+)
+
+# ANAF's public web services, asked by tax ID: a taxpayer has no page of its own.
+ANAF = PublicSource(
+    key="anaf",
+    publisher="ANAF",
+    dataset="Servicii web · registrul plătitorilor de TVA",
+    list_url="https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf",
+    record_url="https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf",
+)
+
 SOURCES = {
-    source.key: source for source in (SEAP_DIRECT, SEAP_AWARDS, PNIAS_PAYMENTS, SEAP_EXPORTS)
+    source.key: source
+    for source in (
+        SEAP_DIRECT,
+        SEAP_AWARDS,
+        PNIAS_PAYMENTS,
+        SEAP_EXPORTS,
+        SIRUTA,
+        PUBLIC_ENTITIES,
+        LOCAL_BUDGETS,
+        ANAF,
+    )
 }

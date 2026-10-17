@@ -18,6 +18,10 @@ running: `uv run dr collect seap-direct`.
 | `dr collect seap-award-details` | The detail and versions of notices that a failed request left without them |
 | `dr collect pnias-payments` | Anghel Saligny payment files not held yet |
 | `dr collect seap-exports` | SEAP's quarterly contract exports not held yet (1.6 GB the first time, about ten minutes) |
+| `dr collect siruta` | The newest SIRUTA edition (INS), if not held: every county, UAT and village |
+| `dr collect public-entities` | The Finance Ministry's monthly list of public entities, if this edition is not held |
+| `dr collect local-budgets` | Town hall and county council budgets and UAT population files not held yet |
+| `dr collect anaf` | ANAF's record of every entity not asked yet, 100 tax IDs a call (about ten minutes the first time) |
 
 The daily collectors take a period:
 
@@ -40,6 +44,8 @@ dr reparse seap-awards
 dr reparse pnias-payments
 dr reparse seap-exports        # after a new payment file: its new builders' contracts
 dr link pnias                  # tie payments to contracts again, from what is held
+dr reparse siruta              # also public-entities, local-budgets, anaf
+dr link places                 # give every entity its county and UAT again
 ```
 
 Reparse after deploying a parser change. After deploying api #17 on a new host, run
@@ -50,6 +56,13 @@ Reparse after deploying a parser change. After deploying api #17 on a new host, 
 Run `pnias-payments` first, then `seap-exports`: the exports are read only for the
 builders the payments name. After a new payment file, `dr reparse seap-exports` brings in
 the contracts of its new builders without downloading anything.
+
+## Order for places
+
+Run `siruta` first: the other three sources are joined through it, and a budget or
+population row whose place SIRUTA does not hold is rejected. Then `public-entities`,
+`local-budgets` and `anaf`, in any order: every run places the entities again from what
+is held (`dr link places`), the Finance Ministry's list first, then ANAF.
 
 ## The schedule
 

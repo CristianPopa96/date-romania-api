@@ -12,8 +12,17 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
-from date_romania import pnias_links, reports
-from date_romania.collectors import pnias, seap_awards, seap_direct, seap_exports
+from date_romania import places, pnias_links, reports
+from date_romania.collectors import (
+    anaf,
+    local_budgets,
+    pnias,
+    public_entities,
+    seap_awards,
+    seap_direct,
+    seap_exports,
+    siruta,
+)
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import collect_days, due_days
 from date_romania.dates import yesterday
@@ -129,6 +138,36 @@ def collect_seap_exports() -> None:
         typer.echo(f"{seap_exports.collect(session, client)} contracts")
 
 
+@collect_app.command("siruta")
+def collect_siruta() -> None:
+    """The newest edition of SIRUTA, the national list of places, if not held yet."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{siruta.collect(session, client)} places")
+
+
+@collect_app.command("public-entities")
+def collect_public_entities() -> None:
+    """The Finance Ministry's monthly list of public entities, if this edition is not held."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{public_entities.collect(session, client)} public entities")
+
+
+@collect_app.command("local-budgets")
+def collect_local_budgets() -> None:
+    """Town hall and county council budgets and UAT population; files not held yet."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{local_budgets.collect(session, client)} rows")
+
+
+@collect_app.command("anaf")
+def collect_anaf(
+    limit: Annotated[int | None, typer.Option(help="Ask about at most this many.")] = None,
+) -> None:
+    """ANAF's record of every entity not asked about yet, 100 tax IDs a second."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{anaf.collect(session, client, limit)} records")
+
+
 @reparse_app.command("seap-direct")
 def reparse_seap_direct() -> None:
     """Parse the stored SEAP direct purchase responses again, without calling SEAP."""
@@ -151,6 +190,39 @@ def reparse_pnias_payments() -> None:
 def reparse_seap_exports() -> None:
     """Read the stored contract exports again, for the builders now in the payment files."""
     _reparse(seap_exports)
+
+
+@reparse_app.command("siruta")
+def reparse_siruta() -> None:
+    """Load the stored SIRUTA editions again, without calling data.gov.ro."""
+    _reparse(siruta)
+
+
+@reparse_app.command("public-entities")
+def reparse_public_entities() -> None:
+    """Load the stored lists of public entities again, without calling the portal."""
+    _reparse(public_entities)
+
+
+@reparse_app.command("local-budgets")
+def reparse_local_budgets() -> None:
+    """Load the stored budget and population files again, without calling data.gov.ro."""
+    _reparse(local_budgets)
+
+
+@reparse_app.command("anaf")
+def reparse_anaf() -> None:
+    """Load the stored ANAF answers again, without calling ANAF."""
+    _reparse(anaf)
+
+
+@link_app.command("places")
+def link_places() -> None:
+    """Give every entity its county, UAT and funder, from the place sources held."""
+    with Session(get_engine()) as session:
+        count = places.locate(session)
+        session.commit()
+        typer.echo(f"{count} entities placed")
 
 
 @link_app.command("pnias")

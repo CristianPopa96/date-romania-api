@@ -26,7 +26,7 @@ collectors; migrations are Alembic, in `migrations/`.
 | --- | --- | --- |
 | `source_document` | One stored answer or file | Source key, address, request, storage key (SHA-256), size, fetch time, parser version, rejected rows |
 | `job_run` | One collector run over a period | Status `running`, `succeeded`, `partial` or `failed`; records read; error |
-| `entity` | An institution or a company, by CUI | Name, kind (`authority`, `company`, `other`), county and locality (empty until ANAF), parent CUI. A search text column with `unaccent` and `pg_trgm` for typo-tolerant search. |
+| `entity` | An institution or a company, by CUI | Name, kind (`authority`, `company`, `other`), county, locality and `siruta` (its UAT, from the place sources), parent CUI (the institution that funds it). A search text column with `unaccent` and `pg_trgm` for typo-tolerant search. |
 | `direct_purchase` | One SEAP direct purchase | Code (`DA…`), state, CPV, contract type, buyer and supplier CUI, dates, values |
 | `award_notice` | One SEAP award notice, latest version held | Notice number (`CAN…`), procedure, buyer, CPV, contract type, value, publication day |
 | `award_contract` | One contract in a notice | Number, signing date, kind (1 ordinary, 2 framework agreement, 3 subsequent), lots, value in lei, offers range |
@@ -37,6 +37,11 @@ collectors; migrations are Alembic, in `migrations/`.
 | `export_contract` | One winner of one contract in one quarterly export | Programme trace only, never in totals |
 | `export_buyer` | A buyer seen in the exports | Its county, to check town hall names |
 | `pnias_link` | A tie between a payment and an export contract | `method`, `confidence` |
+| `place` | A county, UAT or village, by SIRUTA code | Name as INS writes it, kind (`county`, `municipality`, `town`, `commune`, `sector`, `village`), the place it belongs to, its county, urban or not |
+| `public_entity` | One row of the Finance Ministry's list of public entities | County and UAT as written, the UAT found in SIRUTA, up to two funders |
+| `local_budget` | One figure of a UAT's or county council's executed budget for a year | The file's column number, section (`revenue`, `spending`, `chapter`), code and title as printed, amount. A county council is filed under its county |
+| `population` | People in a UAT at 1 January | Bucharest by its six sectors |
+| `anaf_record` | ANAF's answer for one tax ID | Found or not, name, county and locality of the office (never the street), the UAT found in SIRUTA, CAEN, registration, VAT and inactive status |
 | `report` | A reader's error report | Page, message, evidence, a keyed hash of the sender, status (`new`, `accepted`, `rejected`), the published correction |
 
 Every data row keeps `source_document_id`, and most keep `parser_version`, so the site

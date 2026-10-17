@@ -25,7 +25,8 @@ is Romanian and some records name natural persons (GDPR).
 5. `docker compose up -d` (pulls the published images).
 
 On a host starting empty instead: run `dr collect pnias-payments`, then `dr collect
-seap-exports` once, then the daily collectors for the period wanted.
+seap-exports` once; `dr collect siruta`, then `public-entities`, `local-budgets` and
+`anaf`; then the daily collectors for the period wanted.
 
 ## Before going public
 
