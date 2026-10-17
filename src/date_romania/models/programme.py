@@ -138,4 +138,4 @@ class PniasLink(Base):
         ForeignKey("export_contract.id", ondelete="CASCADE"), primary_key=True, index=True
     )
     method: Mapped[str] = mapped_column(String(64))
-    confidence: Mapped[str] = mapped_column(String(16))  # sure, probable, possible
+    confidence: Mapped[str] = mapped_column(String(16))  # probable, possible: never sure
