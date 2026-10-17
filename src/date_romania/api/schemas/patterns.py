@@ -2,12 +2,12 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from date_romania.api.schemas.common import EntityRef, Source
+from date_romania.api.schemas.common import Answer, EntityRef, Source
 
 
-class NearLimitPurchase(BaseModel):
+class NearLimitPurchase(Answer):
     id: int
     code: str | None
     name: str | None
@@ -15,7 +15,7 @@ class NearLimitPurchase(BaseModel):
     value: float = Field(description="Closing value in lei without VAT.")
 
 
-class NearLimitPair(BaseModel):
+class NearLimitPair(Answer):
     """One buyer and one supplier with repeated accepted purchases just under a limit."""
 
     buyer: EntityRef
@@ -27,13 +27,13 @@ class NearLimitPair(BaseModel):
     items: list[NearLimitPurchase] = Field(description="The purchases, oldest first.")
 
 
-class NearLimitRule(BaseModel):
+class NearLimitRule(Answer):
     share: float = Field(description="A value from this share of the limit up to it is near it.")
     repeats: int = Field(description="Purchases a pair needs to be listed.")
     limits: dict[int, float] = Field(description="The limit of each contract type.")
 
 
-class NearLimitPattern(BaseModel):
+class NearLimitPattern(Answer):
     rule: NearLimitRule
     first_day: date | None = Field(description="The first day of a purchase checked.")
     last_day: date | None = Field(description="The last day of a purchase checked.")

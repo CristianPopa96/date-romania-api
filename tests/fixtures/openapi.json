@@ -2614,6 +2614,10 @@
      }
     },
     "type": "object",
+    "required": [
+     "count",
+     "amount"
+    ],
     "title": "MatchCount"
    },
    "NearLimitPair": {
@@ -3230,6 +3234,12 @@
      }
     },
     "type": "object",
+    "required": [
+     "one",
+     "several",
+     "none",
+     "unnamed"
+    ],
     "title": "ProgrammeMatch",
     "description": "Payments or projects by whether a SEAP contract was found for them."
    },
@@ -4123,7 +4133,14 @@
     },
     "type": "object",
     "required": [
-     "publisher"
+     "publisher",
+     "record",
+     "url",
+     "fetched_at",
+     "document_id",
+     "sha256",
+     "parser_version",
+     "documents"
     ],
     "title": "Source",
     "description": "Where a figure comes from, so the site can show it next to the figure."

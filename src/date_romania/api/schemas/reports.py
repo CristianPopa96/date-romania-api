@@ -4,6 +4,8 @@ from datetime import date
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from date_romania.api.schemas.common import Answer
+
 
 class ReportIn(BaseModel):
     """What a reader says is wrong on a page of the site."""
@@ -17,11 +19,11 @@ class ReportIn(BaseModel):
     )
 
 
-class ReportReceived(BaseModel):
+class ReportReceived(Answer):
     id: int
 
 
-class Correction(BaseModel):
+class Correction(Answer):
     """A report we checked and acted on: where, and what we changed, in our words."""
 
     page: str | None = Field(
@@ -31,5 +33,5 @@ class Correction(BaseModel):
     corrected_on: date
 
 
-class Corrections(BaseModel):
+class Corrections(Answer):
     items: list[Correction]

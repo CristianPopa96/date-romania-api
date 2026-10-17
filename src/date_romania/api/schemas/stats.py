@@ -2,15 +2,15 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from date_romania.api.schemas.common import Source
+from date_romania.api.schemas.common import Answer, Source
 from date_romania.api.schemas.purchases import (
     Summary,
 )
 
 
-class Stats(BaseModel):
+class Stats(Answer):
     direct_purchases: Summary
     institutions: int = Field(description="Institutions with at least one purchase.")
     suppliers: int
@@ -21,7 +21,7 @@ class Stats(BaseModel):
     source: Source
 
 
-class Dataset(BaseModel):
+class Dataset(Answer):
     """One source as we hold it, for the table that says what the site is built on."""
 
     key: str
@@ -47,5 +47,5 @@ class Dataset(BaseModel):
     )
 
 
-class Datasets(BaseModel):
+class Datasets(Answer):
     items: list[Dataset]

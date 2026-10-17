@@ -2,17 +2,17 @@
 
 from datetime import date
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
 
-from date_romania.api.schemas.common import EntityRef, Source
+from date_romania.api.schemas.common import Answer, EntityRef, Source
 
 
-class MatchCount(BaseModel):
+class MatchCount(Answer):
     count: int = 0
     amount: float = 0
 
 
-class ProgrammeMatch(BaseModel):
+class ProgrammeMatch(Answer):
     """Payments or projects by whether a SEAP contract was found for them."""
 
     one: MatchCount = Field(MatchCount(), description="Tied to the contracts of one notice.")
@@ -28,7 +28,7 @@ class ProgrammeMatch(BaseModel):
     )
 
 
-class ProgrammeGroup(BaseModel):
+class ProgrammeGroup(Answer):
     key: str
     name: str
     payments: int
@@ -36,7 +36,7 @@ class ProgrammeGroup(BaseModel):
     projects: int
 
 
-class ProgrammeFile(BaseModel):
+class ProgrammeFile(Answer):
     """One payment file. The files give no payment day; the day in their name stands for it."""
 
     published_on: date | None
@@ -45,7 +45,7 @@ class ProgrammeFile(BaseModel):
     with_tax_id: int = Field(description="Payments that name the builder by tax ID.")
 
 
-class Programme(BaseModel):
+class Programme(Answer):
     """The Anghel Saligny programme, from the ministry's payment files."""
 
     payments: int = Field(description="Settlement requests the ministry paid.")
@@ -73,7 +73,7 @@ class Programme(BaseModel):
     contracts_source: Source
 
 
-class ProjectRow(BaseModel):
+class ProjectRow(Answer):
     id: int = Field(description="The ministry's id of the project.")
     investment: str | None
     county: str
@@ -88,12 +88,12 @@ class ProjectRow(BaseModel):
     match: str = Field(description="one, several, none or unnamed")
 
 
-class ProjectPage(BaseModel):
+class ProjectPage(Answer):
     total: int
     items: list[ProjectRow]
 
 
-class ProjectPayment(BaseModel):
+class ProjectPayment(Answer):
     model_config = ConfigDict(from_attributes=True)
 
     id: int = Field(description="The ministry's number for the request: ASA4-<id>.")
@@ -105,13 +105,13 @@ class ProjectPayment(BaseModel):
     builder_text: str | None
 
 
-class TraceParty(BaseModel):
+class TraceParty(Answer):
     cui: int | None = Field(description="Null when the files give only the name.")
     name: str | None
     entity: EntityRef | None = Field(description="Set when the company has a page.")
 
 
-class TraceContract(BaseModel):
+class TraceContract(Answer):
     """A contract from SEAP's exports that a payment could be tied to."""
 
     notice_no: str | None

@@ -2,18 +2,18 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field
 
-from date_romania.api.schemas.common import EntityRef, Period, Source
+from date_romania.api.schemas.common import Answer, EntityRef, Period, Source
 
 
-class Winner(BaseModel):
+class Winner(Answer):
     supplier: EntityRef | None = Field(description="Null for a foreign company or an invalid CUI.")
     text: str | None = Field(description="The winner as SEAP writes it.")
     country: str | None
 
 
-class Contract(BaseModel):
+class Contract(Answer):
     """One contract of an award notice. `value` is in lei without VAT."""
 
     id: int
@@ -43,13 +43,13 @@ class Contract(BaseModel):
     source: Source
 
 
-class ContractPage(BaseModel):
+class ContractPage(Answer):
     total: int
     period: Period | None = Field(description="Null for the contracts of one notice.")
     items: list[Contract]
 
 
-class NoticeDetail(BaseModel):
+class NoticeDetail(Answer):
     model_config = ConfigDict(from_attributes=True)
 
     call_notice_no: str | None = Field(description="The notice that opened the procedure.")
@@ -62,7 +62,7 @@ class NoticeDetail(BaseModel):
     eu_project: str | None
 
 
-class AwardNoticeOut(BaseModel):
+class AwardNoticeOut(Answer):
     id: int
     notice_no: str | None
     notice_type_id: int | None
@@ -89,7 +89,7 @@ class AwardNoticeOut(BaseModel):
     source: Source
 
 
-class ContractTotals(BaseModel):
+class ContractTotals(Answer):
     contracts: int
     value: float
 
@@ -99,7 +99,7 @@ class InstitutionContracts(ContractTotals):
     source: Source
 
 
-class SupplierContracts(BaseModel):
+class SupplierContracts(Answer):
     period: Period
     alone: ContractTotals
     association: ContractTotals = Field(
@@ -114,7 +114,7 @@ class ContractRankingRow(EntityRef):
     value: float
 
 
-class ContractRanking(BaseModel):
+class ContractRanking(Answer):
     period: Period
     won: str | None = Field(description="alone or association, for a ranking of winners.")
     items: list[ContractRankingRow]

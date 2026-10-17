@@ -2,9 +2,9 @@
 
 from datetime import date, datetime
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
-from date_romania.api.schemas.common import EntityOut, EntityRef, Source
+from date_romania.api.schemas.common import Answer, EntityOut, EntityRef, Source
 from date_romania.money import (
     DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON,
     DIRECT_PURCHASE_LIMIT_RON,
@@ -15,7 +15,7 @@ _LIMIT = f"{DIRECT_PURCHASE_LIMIT_RON:,.0f} lei"
 _LIMIT_GOODS_SERVICES = f"{DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON:,.0f} lei"
 
 
-class Summary(BaseModel):
+class Summary(Answer):
     """Direct purchases in a period. `value` counts accepted purchases only."""
 
     purchases: int = Field(description="All finished purchases, whatever their outcome.")
@@ -32,7 +32,7 @@ class Summary(BaseModel):
     last_day: date | None
 
 
-class Purchase(BaseModel):
+class Purchase(Answer):
     id: int
     code: str | None
     name: str | None
@@ -55,7 +55,7 @@ class Purchase(BaseModel):
     source: Source
 
 
-class PurchasePage(BaseModel):
+class PurchasePage(Answer):
     total: int
     items: list[Purchase]
 
@@ -65,7 +65,7 @@ class Partner(EntityRef):
     value: float
 
 
-class EntityPage(BaseModel):
+class EntityPage(Answer):
     entity: EntityOut
     direct_purchases: Summary
     partners: list[Partner] = Field(
@@ -79,13 +79,13 @@ class RankingRow(Partner):
     rank: int
 
 
-class Ranking(BaseModel):
+class Ranking(Answer):
     date_from: date | None
     date_to: date | None
     items: list[RankingRow]
     source: Source
 
 
-class CpvDivision(BaseModel):
+class CpvDivision(Answer):
     code: str = Field(description="The first two digits of a CPV code, e.g. 45.")
     name: str | None = Field(description="SEAP's name for the division, where a row gives it.")

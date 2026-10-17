@@ -5,7 +5,14 @@ from datetime import date, datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class Source(BaseModel):
+class Answer(BaseModel):
+    """Every answer the API sends. A field with a default is always sent, so the schema
+    marks it required: the site's types are generated from it."""
+
+    model_config = ConfigDict(json_schema_serialization_defaults_required=True)
+
+
+class Source(Answer):
     """Where a figure comes from, so the site can show it next to the figure."""
 
     publisher: str
@@ -26,7 +33,7 @@ class Source(BaseModel):
     )
 
 
-class EntityRef(BaseModel):
+class EntityRef(Answer):
     # Filled straight from an `Entity` row.
     model_config = ConfigDict(from_attributes=True)
 
@@ -40,11 +47,11 @@ class EntityOut(EntityRef):
     locality: str | None
 
 
-class SearchResults(BaseModel):
+class SearchResults(Answer):
     items: list[EntityOut]
 
 
-class Period(BaseModel):
+class Period(Answer):
     """The days we hold. Contract totals count the contracts signed inside them."""
 
     first_day: date | None
