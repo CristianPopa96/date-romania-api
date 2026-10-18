@@ -1292,6 +1292,297 @@
    }
   }
  },
+ "/v1/institutions/4981310/budget": {
+  "status": 200,
+  "body": {
+   "place": {
+    "siruta": 84914,
+    "name": "ŢÂNŢĂRENI",
+    "kind": "commune"
+   },
+   "funder": null,
+   "budget": {
+    "year": 2024,
+    "executed_on": "2024-12-31",
+    "revenue": 10000000.0,
+    "revenue_lines": [
+     {
+      "line": "state_subsidies",
+      "amount": 5000000.0
+     },
+     {
+      "line": "income_tax",
+      "amount": 1500000.0
+     },
+     {
+      "line": "vat",
+      "amount": 1500000.0
+     },
+     {
+      "line": "own_revenue",
+      "amount": 1000000.0
+     },
+     {
+      "line": "eu_funds",
+      "amount": 1000000.0
+     },
+     {
+      "line": "other_administrations",
+      "amount": 0.0
+     },
+     {
+      "line": "other",
+      "amount": 0.0
+     }
+    ],
+    "spending": 9800000.0,
+    "capital": 6000000.0,
+    "chapters": [
+     {
+      "chapter": "transport",
+      "amount": 6500000.0
+     },
+     {
+      "chapter": "education",
+      "amount": 2000000.0
+     },
+     {
+      "chapter": "general_services",
+      "amount": 1300000.0
+     }
+    ],
+    "source": {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
+     "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": 6,
+     "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
+     "parser_version": 1,
+     "documents": null
+    }
+   },
+   "programme_payments": {
+    "county": "GORJ",
+    "town_hall": "ȚÂNȚĂRENI",
+    "amount": 5400000.0,
+    "payments": 3,
+    "projects": 1,
+    "first_published": "2026-05-18",
+    "last_published": "2026-08-27",
+    "source": {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    }
+   }
+  }
+ },
+ "/v1/institutions/12345674/budget": {
+  "status": 404,
+  "body": {
+   "detail": "No institution or company with CUI 12345674"
+  }
+ },
+ "/v1/institutions/4491342?partners=10": {
+  "status": 200,
+  "body": {
+   "entity": {
+    "cui": 4491342,
+    "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+    "kind": "authority",
+    "county": null,
+    "locality": null
+   },
+   "direct_purchases": {
+    "purchases": 2,
+    "accepted": 2,
+    "value": 700.0,
+    "above_limit": 1,
+    "above_limit_value": 5000000.0,
+    "first_day": "2026-10-06",
+    "last_day": "2026-10-07"
+   },
+   "partners": [],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/institutions/4491342/contracts": {
+  "status": 200,
+  "body": {
+   "contracts": 1,
+   "value": 50000.0,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/institutions/4491342/budget": {
+  "status": 200,
+  "body": {
+   "place": null,
+   "funder": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "budget": null,
+   "programme_payments": null
+  }
+ },
+ "/v1/award-contracts?buyer=4491342&sort=newest&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": [
+    {
+     "id": 105,
+     "notice_id": 9002,
+     "notice_no": "SCNA0000002",
+     "notice_title": "Analize de laborator",
+     "contract_no": "105",
+     "title": "Contract 105",
+     "signed_at": "2026-10-07T09:00:00Z",
+     "kind": 1,
+     "counted": true,
+     "lots": null,
+     "value": 50000.0,
+     "original_value": 50000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "buyer_text": "4491342 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": null,
+       "text": "ATU1 Lab GmbH",
+       "country": "Austria"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "SCNA0000002",
+      "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 2,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2,
+      "documents": null
+     }
+    }
+   ]
+  }
+ },
+ "/v1/direct-purchases?buyer=4491342&sort=newest&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "items": [
+    {
+     "id": 6,
+     "code": "DA00000006",
+     "name": "Purchase 6",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "buyer_text": "4491342 buyer",
+     "supplier": null,
+     "supplier_text": "ATU1 Lab GmbH",
+     "published_at": null,
+     "finalized_at": "2026-10-06T21:30:00Z",
+     "estimated_value": 700.0,
+     "value": 700.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000006",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/6",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    {
+     "id": 5,
+     "code": "DA00000005",
+     "name": "Purchase 5",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "buyer_text": "4491342 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-06T13:00:00+03:00",
+     "estimated_value": 5000000.0,
+     "value": 5000000.0,
+     "above_limit": true,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000005",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/5",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    }
+   ]
+  }
+ },
  "/v1/award-contracts?buyer=4981310&sort=newest&limit=20&offset=0": {
   "status": 200,
   "body": {

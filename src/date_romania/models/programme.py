@@ -41,6 +41,9 @@ class PniasPayment(Base):
     network: Mapped[str] = mapped_column(String(8))
     county: Mapped[str] = mapped_column(String(64), index=True)
     town_hall: Mapped[str] = mapped_column(Text)
+    # The UAT of that town hall, or the county for a county council, found in SIRUTA
+    # (`places.locate`); null while SIRUTA is not held or the name matches none.
+    siruta: Mapped[int | None] = mapped_column(ForeignKey("place.siruta"), index=True)
     project_id: Mapped[int] = mapped_column(BigInteger, index=True)
     investment: Mapped[str | None] = mapped_column(Text)
     category: Mapped[str | None] = mapped_column(Text)

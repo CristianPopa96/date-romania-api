@@ -264,6 +264,49 @@
     }
    }
   },
+  "/v1/institutions/{cui}/budget": {
+   "get": {
+    "tags": [
+     "entities"
+    ],
+    "summary": "Institution Budget",
+    "description": "For a town hall or a county council: the latest executed budget held and the\nAnghel Saligny payments to it. Every institution: the one that funds it.",
+    "operationId": "institution_budget_v1_institutions__cui__budget_get",
+    "parameters": [
+     {
+      "name": "cui",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Cui"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/InstitutionBudget"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/direct-purchases": {
    "get": {
     "tags": [
@@ -1901,6 +1944,39 @@
     ],
     "title": "AwardNoticeOut"
    },
+   "ChapterAmount": {
+    "properties": {
+     "chapter": {
+      "type": "string",
+      "enum": [
+       "general_services",
+       "defence_order",
+       "education",
+       "health",
+       "culture",
+       "social",
+       "housing",
+       "environment",
+       "economic_affairs",
+       "energy",
+       "agriculture",
+       "transport",
+       "other_economic"
+      ],
+      "title": "Chapter"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     }
+    },
+    "type": "object",
+    "required": [
+     "chapter",
+     "amount"
+    ],
+    "title": "ChapterAmount"
+   },
    "Contract": {
     "properties": {
      "id": {
@@ -2578,6 +2654,60 @@
     ],
     "title": "Health"
    },
+   "InstitutionBudget": {
+    "properties": {
+     "place": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/PlaceRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "funder": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The institution that funds it (its main credit holder), when held."
+     },
+     "budget": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/LocalBudgetOut"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "programme_payments": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ProgrammePayments"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "place",
+     "funder",
+     "budget",
+     "programme_payments"
+    ],
+    "title": "InstitutionBudget",
+    "description": "`place` is the UAT or county the institution governs, when it is a town hall or\na county council; every other institution has none, and no budget held."
+   },
    "InstitutionContracts": {
     "properties": {
      "contracts": {
@@ -2603,6 +2733,66 @@
      "source"
     ],
     "title": "InstitutionContracts"
+   },
+   "LocalBudgetOut": {
+    "properties": {
+     "year": {
+      "type": "integer",
+      "title": "Year"
+     },
+     "executed_on": {
+      "type": "string",
+      "format": "date",
+      "title": "Executed On",
+      "description": "The day the figures run to: 31 December."
+     },
+     "revenue": {
+      "type": "number",
+      "title": "Revenue",
+      "description": "Total revenue; the lines add up to it exactly."
+     },
+     "revenue_lines": {
+      "items": {
+       "$ref": "#/components/schemas/RevenueAmount"
+      },
+      "type": "array",
+      "title": "Revenue Lines",
+      "description": "In the order the site shows them."
+     },
+     "spending": {
+      "type": "number",
+      "title": "Spending"
+     },
+     "capital": {
+      "type": "number",
+      "title": "Capital",
+      "description": "Capital spending (investments), part of `spending`."
+     },
+     "chapters": {
+      "items": {
+       "$ref": "#/components/schemas/ChapterAmount"
+      },
+      "type": "array",
+      "title": "Chapters",
+      "description": "Spending by what it was for, largest first; they add up to `spending`."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "year",
+     "executed_on",
+     "revenue",
+     "revenue_lines",
+     "spending",
+     "capital",
+     "chapters",
+     "source"
+    ],
+    "title": "LocalBudgetOut",
+    "description": "A year of a town hall's or county council's budget, executed to 31 December."
    },
    "MatchCount": {
     "properties": {
@@ -2999,6 +3189,37 @@
     "title": "Period",
     "description": "The days we hold. Contract totals count the contracts signed inside them."
    },
+   "PlaceRef": {
+    "properties": {
+     "siruta": {
+      "type": "integer",
+      "title": "Siruta"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "As the national list of places writes it."
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "county",
+       "municipality",
+       "town",
+       "commune",
+       "sector"
+      ],
+      "title": "Kind"
+     }
+    },
+    "type": "object",
+    "required": [
+     "siruta",
+     "name",
+     "kind"
+    ],
+    "title": "PlaceRef"
+   },
    "Programme": {
     "properties": {
      "payments": {
@@ -3251,6 +3472,73 @@
     ],
     "title": "ProgrammeMatch",
     "description": "Payments or projects by whether a SEAP contract was found for them."
+   },
+   "ProgrammePayments": {
+    "properties": {
+     "county": {
+      "type": "string",
+      "title": "County",
+      "description": "As the files write it, the key of the programme's counties."
+     },
+     "town_hall": {
+      "type": "string",
+      "title": "Town Hall",
+      "description": "As the files write it, to find its projects."
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "first_published": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Published",
+      "description": "Day of the first file that lists one."
+     },
+     "last_published": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Published"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "county",
+     "town_hall",
+     "amount",
+     "payments",
+     "projects",
+     "first_published",
+     "last_published",
+     "source"
+    ],
+    "title": "ProgrammePayments",
+    "description": "The Anghel Saligny payments to this town hall or county council, from the\nministry's files. Never added to the budget's state subsidies: the periods differ,\nand the budget file does not say which programme a subsidy came from."
    },
    "Project": {
     "properties": {
@@ -4048,6 +4336,33 @@
      "id"
     ],
     "title": "ReportReceived"
+   },
+   "RevenueAmount": {
+    "properties": {
+     "line": {
+      "type": "string",
+      "enum": [
+       "state_subsidies",
+       "income_tax",
+       "vat",
+       "own_revenue",
+       "eu_funds",
+       "other_administrations",
+       "other"
+      ],
+      "title": "Line"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     }
+    },
+    "type": "object",
+    "required": [
+     "line",
+     "amount"
+    ],
+    "title": "RevenueAmount"
    },
    "SearchResults": {
     "properties": {

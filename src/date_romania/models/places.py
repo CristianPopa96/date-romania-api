@@ -38,6 +38,9 @@ class Place(Base):
     # The county (or Bucharest) the place is in; a county is its own.
     county: Mapped[int | None] = mapped_column(ForeignKey("place.siruta"), index=True)
     urban: Mapped[bool] = mapped_column(Boolean)
+    # The tax ID of its town hall (a UAT) or county council (a county), from the Finance
+    # Ministry's list (`places.locate`). No foreign key: not every one is in `entity`.
+    town_hall_cui: Mapped[int | None] = mapped_column(BigInteger, index=True)
     source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
     parser_version: Mapped[int] = mapped_column(SmallInteger)
     updated_at: Mapped[datetime] = mapped_column(

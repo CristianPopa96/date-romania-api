@@ -33,11 +33,11 @@ collectors; migrations are Alembic, in `migrations/`.
 | `award_winner` | One winner of a contract, in SEAP's order | More than one row means an association |
 | `award_notice_detail` | The detail of a notice | Notice that opened the procedure, TED number, lots, EU funded, financing types |
 | `award_notice_version` | One published version of a notice | Used to leave out the contracts of a withdrawn version |
-| `pnias_payment` | One Anghel Saligny settlement request paid | County, town hall, project, ministry contract, values, amount, progress, builder and designer |
+| `pnias_payment` | One Anghel Saligny settlement request paid | County, town hall (and its `siruta`), project, ministry contract, values, amount, progress, builder and designer |
 | `export_contract` | One winner of one contract in one quarterly export | Programme trace only, never in totals |
 | `export_buyer` | A buyer seen in the exports | Its county, to check town hall names |
 | `pnias_link` | A tie between a payment and an export contract | `method`, `confidence` |
-| `place` | A county, UAT or village, by SIRUTA code | Name as INS writes it, kind (`county`, `municipality`, `town`, `commune`, `sector`, `village`), the place it belongs to, its county, urban or not |
+| `place` | A county, UAT or village, by SIRUTA code | Name as INS writes it, kind (`county`, `municipality`, `town`, `commune`, `sector`, `village`), the place it belongs to, its county, urban or not, and `town_hall_cui`: its town hall or county council |
 | `public_entity` | One row of the Finance Ministry's list of public entities | County and UAT as written, the UAT found in SIRUTA, up to two funders |
 | `local_budget` | One figure of a UAT's or county council's executed budget for a year | The file's column number, section (`revenue`, `spending`, `chapter`), code and title as printed, amount. A county council is filed under its county |
 | `population` | People in a UAT at 1 January | Bucharest by its six sectors |

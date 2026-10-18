@@ -14,6 +14,17 @@ from date_romania.api.schemas.awards import (
     Winner,
     Won,
 )
+from date_romania.api.schemas.budget import (
+    Chapter,
+    ChapterAmount,
+    InstitutionBudget,
+    LocalBudgetOut,
+    PlaceKind,
+    PlaceRef,
+    ProgrammePayments,
+    RevenueAmount,
+    RevenueLine,
+)
 from date_romania.api.schemas.common import EntityOut, EntityRef, Period, SearchResults, Source
 from date_romania.api.schemas.patterns import (
     ContractType,
@@ -52,6 +63,15 @@ from date_romania.api.schemas.reports import Correction, Corrections, ReportIn, 
 from date_romania.api.schemas.stats import Dataset, Datasets, Stats
 
 __all__ = [
+    "Chapter",
+    "ChapterAmount",
+    "InstitutionBudget",
+    "LocalBudgetOut",
+    "PlaceKind",
+    "PlaceRef",
+    "ProgrammePayments",
+    "RevenueAmount",
+    "RevenueLine",
     "Confidence",
     "ContractType",
     "Match",

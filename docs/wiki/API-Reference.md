@@ -70,6 +70,7 @@ Every ranking takes `cpv`.
 | `GET /v1/programmes/anghel-saligny` | What was paid, by county and by file, and how many payments and projects could be tied to a SEAP contract |
 | `GET /v1/programmes/anghel-saligny/projects` | Its projects, filtered by `county`, `q`, `builder`, `match` (`one`, `several`, `none`, `unnamed`) |
 | `GET /v1/programmes/anghel-saligny/projects/{id}` | One project: its payments, its builders and the contracts they could be tied to, each with method and confidence |
+| `GET /v1/institutions/{cui}/budget` | `place` the UAT or county a town hall or county council governs (else null); `budget` its latest executed year: `revenue_lines` (state subsidies, income tax shares, VAT shares, own revenue, EU funds, other administrations, other; they add up to `revenue`), `capital`, `chapters` largest first; `programme_payments` the Anghel Saligny payments to it, with their own dates; `funder` the institution that funds it |
 
 ## Reports and corrections
 

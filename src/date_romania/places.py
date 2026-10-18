@@ -13,7 +13,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from date_romania.counties import county_name
-from date_romania.models import AnafRecord, Entity, Place, PublicEntity
+from date_romania.models import AnafRecord, Entity, Place, PniasPayment, PublicEntity
 from date_romania.text import plain
 
 COUNTY, MUNICIPALITY, TOWN, COMMUNE, SECTOR, VILLAGE = (
@@ -148,6 +148,68 @@ class PlaceIndex:
         return None
 
 
+_ADMINISTRATIONS = ("COMUNA ", "ORAS ", "ORASUL ", "MUNICIPIUL ", "SECTORUL ", "JUDETUL ")
+
+
+def _county_named(text: str) -> str:
+    """The county in 'JUDETUL ALBA' or 'JUDETUL ALBA PRIN CONSILIUL JUDETEAN ALBA'."""
+    return text.removeprefix("JUDETUL ").split(" PRIN ")[0]
+
+
+def governed(index: PlaceIndex, county: str | None, name: str | None) -> int | None:
+    """The place an administration governs, from its own name: 'COMUNA ALBAC' governs the
+    commune, 'SECTORUL 1 AL MUNICIPIULUI BUCURESTI' the sector, 'JUDETUL ALBA' the county.
+    Only a name that starts so: 'SCOALA GIMNAZIALA COMUNA ALBAC' governs nothing."""
+    text = plain(name)
+    if text.startswith("JUDETUL "):
+        return index.county(_county_named(text))
+    if text.startswith(_ADMINISTRATIONS):
+        return index.uat(county, name)
+    return None
+
+
+def paid_place(index: PlaceIndex, county: str | None, town_hall: str | None) -> int | None:
+    """Where an Anghel Saligny payment went: the files name a town hall bare ('ȘEICA
+    MARE') and a county council 'Județul ALBA prin Consiliul Județean ALBA'."""
+    text = plain(town_hall)
+    if text.startswith("JUDETUL "):
+        return index.county(_county_named(text))
+    return index.uat(county, town_hall)
+
+
+def _town_halls(session: Session, index: PlaceIndex) -> None:
+    """Each UAT's town hall and each county's council, by tax ID: the entity of the
+    Finance Ministry's list that no one funds and whose name is the place's. A place
+    with two such entities keeps none."""
+    found: dict[int, set[int]] = {}
+    unfunded = select(PublicEntity).where(
+        PublicEntity.funder_cui.is_(None), PublicEntity.second_funder_cui.is_(None)
+    )
+    for row in session.scalars(unfunded):
+        place = governed(index, row.county, row.name)
+        if place is not None:
+            found.setdefault(place, set()).add(row.cui)
+    session.execute(update(Place).values(town_hall_cui=None))
+    rows = [{"siruta": place, "town_hall_cui": cui} for place, (cui,) in _single(found)]
+    if rows:
+        session.execute(update(Place), rows)
+
+
+def _single(found: dict[int, set[int]]):
+    return ((place, cuis) for place, cuis in found.items() if len(cuis) == 1)
+
+
+def _payments(session: Session, index: PlaceIndex) -> None:
+    rows = [
+        {"id": id, "siruta": paid_place(index, county, town_hall)}
+        for id, county, town_hall in session.execute(
+            select(PniasPayment.id, PniasPayment.county, PniasPayment.town_hall)
+        )
+    ]
+    if rows:
+        session.execute(update(PniasPayment), rows)
+
+
 def _resolve(session: Session, index: PlaceIndex) -> None:
     """Find in SIRUTA the UAT each list row and each ANAF record names. Done again on every
     run from the names as stored, so the sources can be collected in any order."""
@@ -161,7 +223,8 @@ def _resolve(session: Session, index: PlaceIndex) -> None:
 
 
 def locate(session: Session) -> int:
-    """Give every entity its county, UAT and funder from what is held; returns how many
+    """Give every entity its county, UAT and funder from what is held, every place its
+    town hall, and every Anghel Saligny payment its place; returns how many entities
     have a UAT.
 
     The Finance Ministry's list comes first: it names the UAT an institution works in.
@@ -169,7 +232,10 @@ def locate(session: Session) -> int:
     the first main credit holder that is another entity we hold.
     """
     places = {place.siruta: place for place in session.scalars(select(Place))}
-    _resolve(session, PlaceIndex(list(places.values())))
+    index = PlaceIndex(list(places.values()))
+    _resolve(session, index)
+    _town_halls(session, index)
+    _payments(session, index)
     held = set(session.scalars(select(Entity.cui)))
     found: dict[int, int] = {}
     funders: dict[int, int] = {}
