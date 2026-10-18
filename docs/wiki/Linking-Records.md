@@ -63,10 +63,30 @@ Possible causes, not checked row by row: the contract was signed by an associati
 communes or the county council; it was published before 2021; the works were bought by
 direct purchase; or the town hall's name is written differently in SEAP.
 
+## Places
+
+`places.py` ties records to places, all through SIRUTA, the national code of every
+county, UAT (the unit with a town hall) and village. `dr link places` runs it again from
+what is held; every place collector and the payments collector run it after loading.
+
+| Link | Rule | Held (18.10.2026) |
+| --- | --- | --- |
+| Entity -> its UAT and county (`entity.siruta`) | The UAT the Finance Ministry's list names for it; else the locality of its office at ANAF | 49,523 of 49,525 entities |
+| Entity -> the institution that funds it (`entity.parent_cui`) | The first main credit holder in the Finance Ministry's list that we also hold | 8,135 institutions |
+| Place -> its town hall or county council (`place.town_hall_cui`) | The entity of the list that no one funds and whose own name is the place's ("COMUNA ALBAC", "JUDETUL ALBA"); a place with two such entities gets none | 3,174 UATs, 41 counties |
+| Anghel Saligny payment -> the place paid (`pnias_payment.siruta`) | The town hall's name in its county, or "Județul X prin Consiliul Județean X" | all 3,821 |
+
+A name is matched to SIRUTA by its county, its kind (municipality, town, commune,
+sector) and its name in one plain form. Old spelling is forgiven only for î written for
+â between consonants and a dropped article ("Tirgu Mures", "Sfantul Gheorghe"), never a
+near miss; two candidates are never told apart.
+
+The budget of a town hall or county council is filed under the place it governs, so it
+reaches the institution through `place.town_hall_cui`. No budget line is ever named on a
+contract.
+
 ## Planned links
 
 - **SMIS codes** in contract titles, to tie contracts to EU projects (probable).
 - **Named payments** from voluntary publishers, to contracts (possible, by name, amount
   and period).
-- **Budget execution** to contracts, through the buyer's CUI (sure at the institution
-  level; no budget line is ever named on a contract).
