@@ -9,6 +9,7 @@ from date_romania.api.routes import (
     budget,
     entities,
     patterns,
+    places,
     programme_project,
     programmes,
     purchases,
@@ -29,6 +30,7 @@ for module in (
     award_totals,
     programmes,
     programme_project,
+    places,
     reports,
 ):
     router.include_router(module.router)

@@ -166,6 +166,10 @@ read-only except `POST /v1/reports`.
 | `/v1/programmes/anghel-saligny` | The programme: what was paid, by county and by file, and how many payments and projects could be tied to a SEAP contract |
 | `/v1/programmes/anghel-saligny/projects` | Its projects, filtered by `county`, `q`, `builder`, `match` |
 | `/v1/programmes/anghel-saligny/projects/{id}` | One project: its payments, its builders and the contracts they could be tied to |
+| `/v1/places` | The 42 counties, with how many UATs and people each has |
+| `/v1/places/{county}` | A county (`/v1/places/alba`): its figures over its UATs and council, and every UAT |
+| `/v1/places/{county}/{uat}` | One UAT (`/v1/places/alba/comuna-albac`): population, the Anghel Saligny payments to its town hall, capital spending, the contracts of every buyer located there and how much went to suppliers of the county (an association counts as local only when all its members are), who won them, its projects and institutions |
+| `/v1/places/search?q=` | UATs by name, and villages, each found as the UAT it belongs to |
 | `/v1/institutions/{cui}/budget` | For a town hall or county council: its executed budget for the latest year held (revenue lines that add up to the total, capital spending, spending by chapter) and the Anghel Saligny payments to it, each with its own period. For any institution: the one that funds it |
 | `POST /v1/reports` | A reader says what is wrong on a page (`page`, `message`, `evidence`) |
 | `/v1/corrections` | What was corrected after a report: the page and what changed |
@@ -208,6 +212,7 @@ src/date_romania/
   local_money.py  the local budget file read once: revenue lines, capital, chapters
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
   places.py     where things are: the kinds of place, UAT names, `locate()`
+  place_names.py  how a place is named and addressed on the site
   models/       SQLAlchemy models by source, shared by the API and the collectors
   storage.py    raw store: files kept untouched, addressed by SHA-256
   cui.py        Romanian tax ID parsing and checksum

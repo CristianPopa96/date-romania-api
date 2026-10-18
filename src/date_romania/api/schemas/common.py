@@ -1,6 +1,7 @@
 """What every answer shares: the source line, entities and the period held."""
 
 from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -45,6 +46,20 @@ class EntityRef(Answer):
 class EntityOut(EntityRef):
     county: str | None
     locality: str | None
+
+
+PlaceKind = Literal["county", "municipality", "town", "commune", "sector"]
+
+
+class PlaceRef(Answer):
+    """A county or a UAT, named as the site shows it and addressed by its slugs."""
+
+    siruta: int
+    name: str = Field(description="As the site shows it: 'Comuna Albac', 'Sectorul 3', 'Alba'.")
+    kind: PlaceKind
+    slug: str = Field(description="'comuna-albac'; for a county, its own slug.")
+    county_slug: str = Field(description="'alba', 'bistrita-nasaud', 'bucuresti'.")
+    county: str = Field(description="The county's name: 'Alba', 'București'.")
 
 
 class SearchResults(Answer):

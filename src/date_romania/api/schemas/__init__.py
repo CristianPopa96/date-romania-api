@@ -19,19 +19,42 @@ from date_romania.api.schemas.budget import (
     ChapterAmount,
     InstitutionBudget,
     LocalBudgetOut,
-    PlaceKind,
-    PlaceRef,
     ProgrammePayments,
     RevenueAmount,
     RevenueLine,
 )
-from date_romania.api.schemas.common import EntityOut, EntityRef, Period, SearchResults, Source
+from date_romania.api.schemas.common import (
+    EntityOut,
+    EntityRef,
+    Period,
+    PlaceKind,
+    PlaceRef,
+    SearchResults,
+    Source,
+)
 from date_romania.api.schemas.patterns import (
     ContractType,
     NearLimitPair,
     NearLimitPattern,
     NearLimitPurchase,
     NearLimitRule,
+)
+from date_romania.api.schemas.places import (
+    Capital,
+    Counties,
+    County,
+    CountyRow,
+    CountyUat,
+    LocalInstitution,
+    Locality,
+    LocalProject,
+    PlaceContracts,
+    PlaceFigures,
+    PlaceHit,
+    PlaceResults,
+    Population,
+    SupplierCounties,
+    TopWinner,
 )
 from date_romania.api.schemas.programmes import (
     Confidence,
@@ -63,6 +86,21 @@ from date_romania.api.schemas.reports import Correction, Corrections, ReportIn, 
 from date_romania.api.schemas.stats import Dataset, Datasets, Stats
 
 __all__ = [
+    "Capital",
+    "Counties",
+    "County",
+    "CountyRow",
+    "CountyUat",
+    "LocalInstitution",
+    "Locality",
+    "LocalProject",
+    "PlaceContracts",
+    "PlaceFigures",
+    "PlaceHit",
+    "PlaceResults",
+    "Population",
+    "SupplierCounties",
+    "TopWinner",
     "Chapter",
     "ChapterAmount",
     "InstitutionBudget",

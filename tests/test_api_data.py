@@ -624,7 +624,16 @@ def test_contracts_as_a_file_name_their_source_on_every_row(client):
 def test_datasets_say_what_the_site_is_built_on(client):
     # The two sources read by day come first; the ones that come as files follow.
     direct, awards, *files = client.get("/v1/datasets").json()["items"]
-    assert [each["key"] for each in files] == ["pnias-payments", "seap-exports"]
+    # The places seed holds a budget file, so its source is listed; the others are not
+    # held here, and a source is listed only once a file of it is.
+    assert [each["key"] for each in files] == ["pnias-payments", "seap-exports", "local-budgets"]
+    budgets = files[2]
+    assert (budgets["first_day"], budgets["last_day"], budgets["records"]) == (
+        "2024-01-01",
+        "2024-12-31",
+        1,
+    )
+    assert budgets["counts"] == {"files": 1, "rows": 1, "figures": 12, "population": 1}
     assert (direct["key"], direct["records"], direct["complete"]) == ("seap-direct", 6, True)
     assert (direct["first_day"], direct["last_day"]) == ("2026-10-05", "2026-10-07")
     # The three contracts the totals count, not every contract held.
@@ -638,7 +647,7 @@ def test_datasets_say_what_the_site_is_built_on(client):
     # Rows the parser could not read: none, two, and not known for files parsed before
     # the count was kept.
     assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
-    assert [each["rejected_rows"] for each in files] == [None, None]
+    assert [each["rejected_rows"] for each in files] == [None, None, 0]
 
 
 def test_rejected_rows_are_known_only_once_every_document_was_seen(client, session):
@@ -796,11 +805,12 @@ def test_rankings_can_be_filtered_by_cpv_and_eu_funds(client):
 
 def test_a_town_halls_budget_has_lines_that_add_up_to_its_total(client):
     answer = client.get(f"/v1/institutions/{TOWN_HALL}/budget").json()
-    assert answer["place"] == {
-        "siruta": places_seed.TANTARENI,
-        "name": "ŢÂNŢĂRENI",
-        "kind": "commune",
-    }
+    assert (answer["place"]["siruta"], answer["place"]["name"], answer["place"]["slug"]) == (
+        places_seed.TANTARENI,
+        "Comuna Țânțăreni",
+        "comuna-tantareni",
+    )
+    assert answer["located"]["slug"] == "comuna-tantareni"
     budget = answer["budget"]
     assert (budget["year"], budget["executed_on"]) == (2024, "2024-12-31")
     lines = {line["line"]: line["amount"] for line in budget["revenue_lines"]}
@@ -836,10 +846,86 @@ def test_a_town_halls_budget_has_lines_that_add_up_to_its_total(client):
 def test_any_other_institution_has_its_funder_and_no_budget(client):
     answer = client.get(f"/v1/institutions/{HOSPITAL}/budget").json()
     assert answer["place"] is None
+    # Not placed: neither the Finance Ministry's list nor ANAF were read for it.
+    assert answer["located"] is None
     assert answer["budget"] is None
     assert answer["programme_payments"] is None
     assert answer["funder"]["cui"] == TOWN_HALL
     assert client.get("/v1/institutions/12345674/budget").status_code == 404
+
+
+def test_a_commune_page_names_each_figure_with_its_own_period(client):
+    page = client.get("/v1/places/gorj/comuna-tantareni").json()
+    assert page["place"] == {
+        "siruta": places_seed.TANTARENI,
+        "name": "Comuna Țânțăreni",
+        "kind": "commune",
+        "slug": "comuna-tantareni",
+        "county_slug": "gorj",
+        "county": "Gorj",
+    }
+    assert page["town_hall"]["cui"] == TOWN_HALL
+    # Its villages, so the site can check the one a reader searched for.
+    assert page["localities"] == ["Țânțăreni", "Florești"]
+    figures = page["figures"]
+    assert figures["population"] == {"people": 5533, "on": "2024-01-01"}
+    assert figures["programme_payments"]["payments"] == 3
+    assert (figures["capital"]["amount"], figures["capital"]["year"]) == (6000000, 2024)
+    # Contracts signed in the period by every buyer here: the town hall's two counted.
+    contracts = figures["contracts"]
+    assert (contracts["contracts"], contracts["value"], contracts["buyers"]) == (2, 6330000, 1)
+    assert contracts["period"] == {"first_day": "2026-10-05", "last_day": "2026-10-07"}
+    # The builder is in Gorj, the stationer in Dolj: their association is counted apart.
+    shares = figures["supplier_counties"]
+    assert (shares["county"], shares["local"], shares["mixed"], shares["elsewhere"]) == (
+        "Gorj",
+        210000,
+        6120000,
+        0,
+    )
+    top = figures["top_winners"]
+    assert [[m["cui"] for m in row["members"]] for row in top] == [
+        [BUILDER, STATIONER],
+        [BUILDER],
+    ]
+    assert top[0]["counties"] == ["Gorj", "Dolj"]
+    assert page["budget"]["capital"] == 6000000
+    assert [(p["id"], p["match"]) for p in page["projects"]] == [(101, "one")]
+    assert page["projects"][0]["progress"] == "64%"
+    institutions = page["institutions"]
+    assert [(i["entity"]["cui"], i["town_hall"], i["contracts"]) for i in institutions] == [
+        (TOWN_HALL, True, 2)
+    ]
+
+
+def test_a_county_adds_up_its_uats_and_lists_them(client):
+    county = client.get("/v1/places/gorj").json()
+    assert county["place"]["name"] == "Gorj"
+    # Its council is not among the entities held.
+    assert county["council"] is None
+    assert county["figures"]["contracts"]["value"] == 6330000
+    # The year of the UATs' capital spending, the council's left out.
+    assert county["capital_year"] == 2024
+    assert [
+        (u["place"]["slug"], u["population"], u["capital"], u["contracts"]) for u in county["uats"]
+    ] == [("comuna-tantareni", 5533, 6000000, 2)]
+    counties = client.get("/v1/places").json()["items"]
+    assert [(c["place"]["slug"], c["uats"], c["population"]) for c in counties] == [
+        ("gorj", 1, 5533)
+    ]
+    assert client.get("/v1/places/nimic").status_code == 404
+    assert client.get("/v1/places/gorj/comuna-nimic").status_code == 404
+
+
+def test_a_village_is_found_as_the_commune_it_belongs_to(client):
+    def found(q):
+        items = client.get(f"/v1/places/search?q={q}").json()["items"]
+        return [(item["place"]["slug"], item["village"]) for item in items]
+
+    # The village named like its commune is the commune itself.
+    assert found("tantareni") == [("comuna-tantareni", None)]
+    assert found("floresti") == [("comuna-tantareni", "Florești")]
+    assert found("zzzz") == []
 
 
 def test_cpv_divisions_are_those_held_with_seap_names(client, session):
@@ -894,6 +980,16 @@ SITE_CALLS = (
     f"/v1/institutions/{HOSPITAL}/budget",
     f"/v1/award-contracts?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
     f"/v1/direct-purchases?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
+    # Places: the counties, one county, one commune, a search by name and by village.
+    "/v1/places",
+    "/v1/places/gorj",
+    "/v1/places/gorj/comuna-tantareni",
+    "/v1/places/gorj/comuna-nimic",
+    "/v1/places/nimic",
+    "/v1/places/search?q=tantareni&limit=20",
+    "/v1/places/search?q=floresti&limit=20",
+    "/v1/search?q=floresti&limit=30",
+    "/v1/places/search?q=zzzz&limit=20",
     f"/v1/award-contracts?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
     f"/v1/suppliers/{BUILDER}/contracts",
     f"/v1/award-contracts?supplier={BUILDER}&sort=newest&limit=20&offset=0",

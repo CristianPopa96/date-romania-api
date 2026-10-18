@@ -7,7 +7,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from date_romania.api.schemas.common import Answer, EntityRef, Source
+from date_romania.api.schemas.common import Answer, EntityRef, PlaceRef, Source
 
 RevenueLine = Literal[
     "state_subsidies",
@@ -33,13 +33,6 @@ Chapter = Literal[
     "transport",
     "other_economic",
 ]
-PlaceKind = Literal["county", "municipality", "town", "commune", "sector"]
-
-
-class PlaceRef(Answer):
-    siruta: int
-    name: str = Field(description="As the national list of places writes it.")
-    kind: PlaceKind
 
 
 class RevenueAmount(Answer):
@@ -73,7 +66,9 @@ class ProgrammePayments(Answer):
     and the budget file does not say which programme a subsidy came from."""
 
     county: str = Field(description="As the files write it, the key of the programme's counties.")
-    town_hall: str = Field(description="As the files write it, to find its projects.")
+    town_hall: str | None = Field(
+        description="As the files write it, to find its projects; null for a county's town halls."
+    )
     amount: float
     payments: int
     projects: int
@@ -87,6 +82,9 @@ class InstitutionBudget(Answer):
     a county council; every other institution has none, and no budget held."""
 
     place: PlaceRef | None
+    located: PlaceRef | None = Field(
+        description="The UAT any institution is located in (Finance Ministry's list, else ANAF)."
+    )
     funder: EntityRef | None = Field(
         description="The institution that funds it (its main credit holder), when held."
     )

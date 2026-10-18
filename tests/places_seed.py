@@ -1,18 +1,30 @@
 """Places and a town hall's budget, for the API tests (see test_api_data.py).
 
-- Gorj, its commune Țânțăreni (whose town hall is TOWN_HALL) and the village Țânțăreni.
-- The commune's 2024 budget, a few columns of the Ministry of Development's file, and
-  the Anghel Saligny payments of the programme seed placed there.
+- Gorj, its commune Țânțăreni (whose town hall is TOWN_HALL) and its villages Țânțăreni
+  and Florești; the county council of Gorj, not held.
+- The commune's 2024 budget, a few columns of the Ministry of Development's file, its
+  population, and the Anghel Saligny payments of the programme seed placed there.
+- The town hall in the commune; the builder in Gorj and the stationer in Dolj, so the
+  association of the two is "mixed".
 """
 
+from datetime import date
 from decimal import Decimal
 
 from sqlalchemy import update
 
-from date_romania.models import Entity, LocalBudget, Place, PniasPayment, SourceDocument
+from date_romania.models import (
+    Entity,
+    LocalBudget,
+    Place,
+    PniasPayment,
+    Population,
+    SourceDocument,
+)
 
-GORJ, TANTARENI, VILLAGE = 79, 84914, 84923
+GORJ, TANTARENI, VILLAGE, FLORESTI = 79, 84914, 84923, 84932
 TOWN_HALL, HOSPITAL = 4981310, 4491342
+BUILDER, STATIONER = 17886786, 18288250
 
 # Column number -> amount in lei. Revenue: 1 total, 2 own (with the income tax shares 3
 # and 4 inside it), 9 VAT, 16 state subsidies, 18 EU money. Spending: 22 total, 35
@@ -47,7 +59,16 @@ def seed(session) -> None:
     session.add(doc)
     session.flush()
     stamp = {"source_document_id": doc.id, "parser_version": 1, "urban": False}
-    session.add(Place(siruta=GORJ, name="JUDEŢUL GORJ", kind="county", county=GORJ, **stamp))
+    session.add(
+        Place(
+            siruta=GORJ,
+            name="JUDEŢUL GORJ",
+            kind="county",
+            county=GORJ,
+            town_hall_cui=4956404,
+            **stamp,
+        )
+    )
     session.flush()
     session.add(
         Place(
@@ -61,9 +82,17 @@ def seed(session) -> None:
         )
     )
     session.flush()
+    for siruta, name in ((VILLAGE, "ŢÂNŢĂRENI"), (FLORESTI, "FLOREŞTI")):
+        session.add(
+            Place(siruta=siruta, name=name, kind="village", parent=TANTARENI, county=GORJ, **stamp)
+        )
     session.add(
-        Place(
-            siruta=VILLAGE, name="ŢÂNŢĂRENI", kind="village", parent=TANTARENI, county=GORJ, **stamp
+        Population(
+            siruta=TANTARENI,
+            on=date(2024, 1, 1),
+            people=5533,
+            source_document_id=doc.id,
+            parser_version=1,
         )
     )
     session.add_all(
@@ -85,4 +114,11 @@ def seed(session) -> None:
     )
     # The hospital is funded by the town hall.
     session.get(Entity, HOSPITAL).parent_cui = TOWN_HALL
+    for cui, county, siruta, locality in (
+        (TOWN_HALL, "Gorj", TANTARENI, "ŢÂNŢĂRENI"),
+        (BUILDER, "Gorj", TANTARENI, "ŢÂNŢĂRENI"),
+        (STATIONER, "Dolj", None, None),
+    ):
+        entity = session.get(Entity, cui)
+        entity.county, entity.siruta, entity.locality = county, siruta, locality
     session.flush()
