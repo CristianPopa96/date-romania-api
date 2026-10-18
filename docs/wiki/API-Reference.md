@@ -71,8 +71,8 @@ Every ranking takes `cpv`.
 | `GET /v1/programmes/anghel-saligny/projects` | Its projects, filtered by `county`, `q`, `builder`, `match` (`one`, `several`, `none`, `unnamed`) |
 | `GET /v1/programmes/anghel-saligny/projects/{id}` | One project: its payments, its builders and the contracts they could be tied to, each with method and confidence |
 | `GET /v1/places` | The counties: `place` (name, slugs), `uats`, `population` |
-| `GET /v1/places/{county}` | A county by its slug: `figures` over its UATs and council, `council`, `uats` (population, capital spending, contracts in the period held) |
-| `GET /v1/places/{county}/{uat}` | One UAT by its slugs: `figures` (`population`, `programme_payments`, `capital`, `contracts`, `supplier_counties`: local, mixed and elsewhere, `top_winners`), the town hall's `budget`, its `projects`, its `institutions`; Bucharest lists its sectors in `parts` and adds them up |
+| `GET /v1/places/{county}` | A county by its slug: `figures` over its UATs and council, `council`, `uats` (population, capital spending, contracts in the period held), `capital_year` (the budget year of the UATs' capital spending) |
+| `GET /v1/places/{county}/{uat}` | One UAT by its slugs: `figures` (`population`, `programme_payments`, `capital`, `contracts`, `supplier_counties`: local, mixed and elsewhere, `top_winners`), the town hall's `budget`, its `projects`, its `institutions`, its `localities` (villages and component localities, by name); Bucharest lists its sectors in `parts` and adds them up |
 | `GET /v1/places/search?q=` | UATs by name, and villages as the UAT they belong to (`village`) |
 | `GET /v1/institutions/{cui}/budget` | `place` the UAT or county a town hall or county council governs (else null); `budget` its latest executed year: `revenue_lines` (state subsidies, income tax shares, VAT shares, own revenue, EU funds, other administrations, other; they add up to `revenue`), `capital`, `chapters` largest first; `programme_payments` the Anghel Saligny payments to it, with their own dates; `funder` the institution that funds it; `located` the UAT any institution is in |
 
