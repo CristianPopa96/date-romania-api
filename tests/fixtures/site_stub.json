@@ -42,8 +42,8 @@
      "cui": 4981310,
      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
      "kind": "authority",
-     "county": null,
-     "locality": null
+     "county": "Gorj",
+     "locality": "ŢÂNŢĂRENI"
     }
    ]
   }
@@ -62,8 +62,8 @@
      "cui": 4981310,
      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
      "kind": "authority",
-     "county": null,
-     "locality": null
+     "county": "Gorj",
+     "locality": "ŢÂNŢĂRENI"
     }
    ]
   }
@@ -76,8 +76,8 @@
      "cui": 17886786,
      "name": "ALFA CONSTRUCT S.R.L.",
      "kind": "company",
-     "county": null,
-     "locality": null
+     "county": "Gorj",
+     "locality": "ŢÂNŢĂRENI"
     }
    ]
   }
@@ -95,8 +95,8 @@
     "cui": 4981310,
     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
     "kind": "authority",
-    "county": null,
-    "locality": null
+    "county": "Gorj",
+    "locality": "ŢÂNŢĂRENI"
    },
    "direct_purchases": {
     "purchases": 4,
@@ -410,8 +410,8 @@
     "cui": 17886786,
     "name": "ALFA CONSTRUCT S.R.L.",
     "kind": "company",
-    "county": null,
-    "locality": null
+    "county": "Gorj",
+    "locality": "ŢÂNŢĂRENI"
    },
    "direct_purchases": {
     "purchases": 3,
@@ -715,6 +715,25 @@
      "counts": {
       "files": 1,
       "rows": 5
+     }
+    },
+    {
+     "key": "local-budgets",
+     "publisher": "data.gov.ro",
+     "first_day": "2024-01-01",
+     "last_day": "2024-12-31",
+     "records": 1,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 1,
+     "rejected_rows": 0,
+     "counts": {
+      "files": 1,
+      "rows": 1,
+      "figures": 12,
+      "population": 1
      }
     }
    ]
@@ -1297,8 +1316,19 @@
   "body": {
    "place": {
     "siruta": 84914,
-    "name": "ŢÂNŢĂRENI",
-    "kind": "commune"
+    "name": "Comuna Țânțăreni",
+    "kind": "commune",
+    "slug": "comuna-tantareni",
+    "county_slug": "gorj",
+    "county": "Gorj"
+   },
+   "located": {
+    "siruta": 84914,
+    "name": "Comuna Țânțăreni",
+    "kind": "commune",
+    "slug": "comuna-tantareni",
+    "county_slug": "gorj",
+    "county": "Gorj"
    },
    "funder": null,
    "budget": {
@@ -1446,6 +1476,7 @@
   "status": 200,
   "body": {
    "place": null,
+   "located": null,
    "funder": {
     "cui": 4981310,
     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
@@ -1581,6 +1612,425 @@
      }
     }
    ]
+  }
+ },
+ "/v1/places": {
+  "status": 200,
+  "body": {
+   "items": [
+    {
+     "place": {
+      "siruta": 79,
+      "name": "Gorj",
+      "kind": "county",
+      "slug": "gorj",
+      "county_slug": "gorj",
+      "county": "Gorj"
+     },
+     "uats": 1,
+     "population": 5533
+    }
+   ]
+  }
+ },
+ "/v1/places/gorj": {
+  "status": 200,
+  "body": {
+   "place": {
+    "siruta": 79,
+    "name": "Gorj",
+    "kind": "county",
+    "slug": "gorj",
+    "county_slug": "gorj",
+    "county": "Gorj"
+   },
+   "council": null,
+   "figures": {
+    "population": {
+     "people": 5533,
+     "on": "2024-01-01"
+    },
+    "programme_payments": {
+     "county": "GORJ",
+     "town_hall": "ȚÂNȚĂRENI",
+     "amount": 5400000.0,
+     "payments": 3,
+     "projects": 1,
+     "first_published": "2026-05-18",
+     "last_published": "2026-08-27",
+     "source": {
+      "publisher": "data.gov.ro",
+      "record": "MDLPA · Plăți PNIAS 2026-prezent",
+      "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": null,
+      "sha256": null,
+      "parser_version": null,
+      "documents": 2
+     }
+    },
+    "capital": {
+     "amount": 6000000.0,
+     "year": 2024,
+     "places": 1,
+     "source": {
+      "publisher": "data.gov.ro",
+      "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
+      "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 6,
+      "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    "contracts": {
+     "value": 6330000.0,
+     "contracts": 2,
+     "buyers": 1,
+     "period": {
+      "first_day": "2026-10-05",
+      "last_day": "2026-10-07"
+     },
+     "source": {
+      "publisher": "SEAP",
+      "record": null,
+      "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": null,
+      "sha256": null,
+      "parser_version": null,
+      "documents": 1
+     }
+    },
+    "supplier_counties": {
+     "county": "Gorj",
+     "local": 210000.0,
+     "mixed": 6120000.0,
+     "elsewhere": 0.0
+    },
+    "top_winners": [
+     {
+      "members": [
+       {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       {
+        "cui": 18288250,
+        "name": "Beta Birotică SRL",
+        "kind": "company"
+       }
+      ],
+      "counties": [
+       "Gorj",
+       "Dolj"
+      ],
+      "value": 6120000.0,
+      "contracts": 1
+     },
+     {
+      "members": [
+       {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       }
+      ],
+      "counties": [
+       "Gorj"
+      ],
+      "value": 210000.0,
+      "contracts": 1
+     }
+    ]
+   },
+   "uats": [
+    {
+     "place": {
+      "siruta": 84914,
+      "name": "Comuna Țânțăreni",
+      "kind": "commune",
+      "slug": "comuna-tantareni",
+      "county_slug": "gorj",
+      "county": "Gorj"
+     },
+     "population": 5533,
+     "capital": 6000000.0,
+     "contract_value": 6330000.0,
+     "contracts": 2
+    }
+   ]
+  }
+ },
+ "/v1/places/gorj/comuna-tantareni": {
+  "status": 200,
+  "body": {
+   "place": {
+    "siruta": 84914,
+    "name": "Comuna Țânțăreni",
+    "kind": "commune",
+    "slug": "comuna-tantareni",
+    "county_slug": "gorj",
+    "county": "Gorj"
+   },
+   "town_hall": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "parts": [],
+   "figures": {
+    "population": {
+     "people": 5533,
+     "on": "2024-01-01"
+    },
+    "programme_payments": {
+     "county": "GORJ",
+     "town_hall": "ȚÂNȚĂRENI",
+     "amount": 5400000.0,
+     "payments": 3,
+     "projects": 1,
+     "first_published": "2026-05-18",
+     "last_published": "2026-08-27",
+     "source": {
+      "publisher": "data.gov.ro",
+      "record": "MDLPA · Plăți PNIAS 2026-prezent",
+      "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": null,
+      "sha256": null,
+      "parser_version": null,
+      "documents": 2
+     }
+    },
+    "capital": {
+     "amount": 6000000.0,
+     "year": 2024,
+     "places": 1,
+     "source": {
+      "publisher": "data.gov.ro",
+      "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
+      "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 6,
+      "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    "contracts": {
+     "value": 6330000.0,
+     "contracts": 2,
+     "buyers": 1,
+     "period": {
+      "first_day": "2026-10-05",
+      "last_day": "2026-10-07"
+     },
+     "source": {
+      "publisher": "SEAP",
+      "record": null,
+      "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": null,
+      "sha256": null,
+      "parser_version": null,
+      "documents": 1
+     }
+    },
+    "supplier_counties": {
+     "county": "Gorj",
+     "local": 210000.0,
+     "mixed": 6120000.0,
+     "elsewhere": 0.0
+    },
+    "top_winners": [
+     {
+      "members": [
+       {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       {
+        "cui": 18288250,
+        "name": "Beta Birotică SRL",
+        "kind": "company"
+       }
+      ],
+      "counties": [
+       "Gorj",
+       "Dolj"
+      ],
+      "value": 6120000.0,
+      "contracts": 1
+     },
+     {
+      "members": [
+       {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       }
+      ],
+      "counties": [
+       "Gorj"
+      ],
+      "value": 210000.0,
+      "contracts": 1
+     }
+    ]
+   },
+   "budget": {
+    "year": 2024,
+    "executed_on": "2024-12-31",
+    "revenue": 10000000.0,
+    "revenue_lines": [
+     {
+      "line": "state_subsidies",
+      "amount": 5000000.0
+     },
+     {
+      "line": "income_tax",
+      "amount": 1500000.0
+     },
+     {
+      "line": "vat",
+      "amount": 1500000.0
+     },
+     {
+      "line": "own_revenue",
+      "amount": 1000000.0
+     },
+     {
+      "line": "eu_funds",
+      "amount": 1000000.0
+     },
+     {
+      "line": "other_administrations",
+      "amount": 0.0
+     },
+     {
+      "line": "other",
+      "amount": 0.0
+     }
+    ],
+    "spending": 9800000.0,
+    "capital": 6000000.0,
+    "chapters": [
+     {
+      "chapter": "transport",
+      "amount": 6500000.0
+     },
+     {
+      "chapter": "education",
+      "amount": 2000000.0
+     },
+     {
+      "chapter": "general_services",
+      "amount": 1300000.0
+     }
+    ],
+    "source": {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
+     "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": 6,
+     "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
+     "parser_version": 1,
+     "documents": null
+    }
+   },
+   "projects": [
+    {
+     "id": 101,
+     "investment": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "builder": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "builder_text": "ALFA CONSTRUCT S.R.L.",
+     "progress": "64%",
+     "paid": 5400000.0,
+     "payments": 3,
+     "match": "one"
+    }
+   ],
+   "institutions": [
+    {
+     "entity": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "town_hall": true,
+     "contract_value": 6330000.0,
+     "contracts": 2
+    }
+   ]
+  }
+ },
+ "/v1/places/gorj/comuna-nimic": {
+  "status": 404,
+  "body": {
+   "detail": "No UAT comuna-nimic in gorj"
+  }
+ },
+ "/v1/places/nimic": {
+  "status": 404,
+  "body": {
+   "detail": "No county nimic"
+  }
+ },
+ "/v1/places/search?q=tantareni&limit=20": {
+  "status": 200,
+  "body": {
+   "items": [
+    {
+     "place": {
+      "siruta": 84914,
+      "name": "Comuna Țânțăreni",
+      "kind": "commune",
+      "slug": "comuna-tantareni",
+      "county_slug": "gorj",
+      "county": "Gorj"
+     },
+     "village": null
+    }
+   ]
+  }
+ },
+ "/v1/places/search?q=floresti&limit=20": {
+  "status": 200,
+  "body": {
+   "items": [
+    {
+     "place": {
+      "siruta": 84914,
+      "name": "Comuna Țânțăreni",
+      "kind": "commune",
+      "slug": "comuna-tantareni",
+      "county_slug": "gorj",
+      "county": "Gorj"
+     },
+     "village": "Florești"
+    }
+   ]
+  }
+ },
+ "/v1/search?q=floresti&limit=30": {
+  "status": 200,
+  "body": {
+   "items": []
+  }
+ },
+ "/v1/places/search?q=zzzz&limit=20": {
+  "status": 200,
+  "body": {
+   "items": []
   }
  },
  "/v1/award-contracts?buyer=4981310&sort=newest&limit=20&offset=0": {

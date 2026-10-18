@@ -1674,6 +1674,182 @@
     }
    }
   },
+  "/v1/places": {
+   "get": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Counties",
+    "description": "The 42 counties (Bucharest is one), with how many UATs and people each has.",
+    "operationId": "counties_v1_places_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Counties"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/places/search": {
+   "get": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Search Places",
+    "description": "UATs by name, and villages, each found as the UAT it belongs to.",
+    "operationId": "search_places_v1_places_search_get",
+    "parameters": [
+     {
+      "name": "q",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 100,
+       "description": "A place's name.",
+       "title": "Q"
+      },
+      "description": "A place's name."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PlaceResults"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/places/{county}": {
+   "get": {
+    "tags": [
+     "places"
+    ],
+    "summary": "County",
+    "description": "A county: its figures added up over its UATs and its council, and every UAT.",
+    "operationId": "county_v1_places__county__get",
+    "parameters": [
+     {
+      "name": "county",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "County"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/County"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/places/{county}/{uat}": {
+   "get": {
+    "tags": [
+     "places"
+    ],
+    "summary": "Locality",
+    "description": "One UAT: its town hall's budget, the payments to it, the contracts of every buyer\nlocated there, its Anghel Saligny projects and its institutions. Bucharest adds up\nits sectors' people, buyers and payments, and lists them.",
+    "operationId": "locality_v1_places__county___uat__get",
+    "parameters": [
+     {
+      "name": "county",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "County"
+      }
+     },
+     {
+      "name": "uat",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Uat"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Locality"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/reports": {
    "post": {
     "tags": [
@@ -1943,6 +2119,35 @@
      "source"
     ],
     "title": "AwardNoticeOut"
+   },
+   "Capital": {
+    "properties": {
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "year": {
+      "type": "integer",
+      "title": "Year"
+     },
+     "places": {
+      "type": "integer",
+      "title": "Places",
+      "description": "How many budgets it is added up from."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "amount",
+     "year",
+     "places",
+     "source"
+    ],
+    "title": "Capital",
+    "description": "Capital spending executed in a year, by town halls (and a county's council)."
    },
    "ChapterAmount": {
     "properties": {
@@ -2365,6 +2570,134 @@
     ],
     "title": "Corrections"
    },
+   "Counties": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/CountyRow"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "items"
+    ],
+    "title": "Counties"
+   },
+   "County": {
+    "properties": {
+     "place": {
+      "$ref": "#/components/schemas/PlaceRef"
+     },
+     "council": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "figures": {
+      "$ref": "#/components/schemas/PlaceFigures"
+     },
+     "uats": {
+      "items": {
+       "$ref": "#/components/schemas/CountyUat"
+      },
+      "type": "array",
+      "title": "Uats"
+     }
+    },
+    "type": "object",
+    "required": [
+     "place",
+     "council",
+     "figures",
+     "uats"
+    ],
+    "title": "County",
+    "description": "A county, its figures added up over its UATs and its council."
+   },
+   "CountyRow": {
+    "properties": {
+     "place": {
+      "$ref": "#/components/schemas/PlaceRef"
+     },
+     "uats": {
+      "type": "integer",
+      "title": "Uats"
+     },
+     "population": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Population"
+     }
+    },
+    "type": "object",
+    "required": [
+     "place",
+     "uats",
+     "population"
+    ],
+    "title": "CountyRow"
+   },
+   "CountyUat": {
+    "properties": {
+     "place": {
+      "$ref": "#/components/schemas/PlaceRef"
+     },
+     "population": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Population"
+     },
+     "capital": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capital",
+      "description": "Capital spending in the county's budget year."
+     },
+     "contract_value": {
+      "type": "number",
+      "title": "Contract Value"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "place",
+     "population",
+     "capital",
+     "contract_value",
+     "contracts"
+    ],
+    "title": "CountyUat"
+   },
    "CpvDivision": {
     "properties": {
      "code": {
@@ -2666,6 +2999,17 @@
        }
       ]
      },
+     "located": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/PlaceRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The UAT any institution is located in (Finance Ministry's list, else ANAF)."
+     },
      "funder": {
       "anyOf": [
        {
@@ -2701,6 +3045,7 @@
     "type": "object",
     "required": [
      "place",
+     "located",
      "funder",
      "budget",
      "programme_payments"
@@ -2793,6 +3138,182 @@
     ],
     "title": "LocalBudgetOut",
     "description": "A year of a town hall's or county council's budget, executed to 31 December."
+   },
+   "LocalInstitution": {
+    "properties": {
+     "entity": {
+      "$ref": "#/components/schemas/EntityRef"
+     },
+     "town_hall": {
+      "type": "boolean",
+      "title": "Town Hall"
+     },
+     "contract_value": {
+      "type": "number",
+      "title": "Contract Value"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "entity",
+     "town_hall",
+     "contract_value",
+     "contracts"
+    ],
+    "title": "LocalInstitution"
+   },
+   "LocalProject": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "investment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Investment"
+     },
+     "builder": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "builder_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Builder Text"
+     },
+     "progress": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Progress",
+      "description": "As the town hall typed it in the latest file."
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid"
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "match": {
+      "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
+      "title": "Match"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "investment",
+     "builder",
+     "builder_text",
+     "progress",
+     "paid",
+     "payments",
+     "match"
+    ],
+    "title": "LocalProject",
+    "description": "An Anghel Saligny project of the town hall."
+   },
+   "Locality": {
+    "properties": {
+     "place": {
+      "$ref": "#/components/schemas/PlaceRef"
+     },
+     "town_hall": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Its town hall, when held."
+     },
+     "parts": {
+      "items": {
+       "$ref": "#/components/schemas/PlaceRef"
+      },
+      "type": "array",
+      "title": "Parts"
+     },
+     "figures": {
+      "$ref": "#/components/schemas/PlaceFigures"
+     },
+     "budget": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/LocalBudgetOut"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The town hall's latest budget held."
+     },
+     "projects": {
+      "items": {
+       "$ref": "#/components/schemas/LocalProject"
+      },
+      "type": "array",
+      "title": "Projects"
+     },
+     "institutions": {
+      "items": {
+       "$ref": "#/components/schemas/LocalInstitution"
+      },
+      "type": "array",
+      "title": "Institutions",
+      "description": "Every institution held there."
+     }
+    },
+    "type": "object",
+    "required": [
+     "place",
+     "town_hall",
+     "parts",
+     "figures",
+     "budget",
+     "projects",
+     "institutions"
+    ],
+    "title": "Locality",
+    "description": "One UAT. Bucharest lists its sectors in `parts`."
    },
    "MatchCount": {
     "properties": {
@@ -3189,6 +3710,121 @@
     "title": "Period",
     "description": "The days we hold. Contract totals count the contracts signed inside them."
    },
+   "PlaceContracts": {
+    "properties": {
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "buyers": {
+      "type": "integer",
+      "title": "Buyers"
+     },
+     "period": {
+      "$ref": "#/components/schemas/Period"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "contracts",
+     "buyers",
+     "period",
+     "source"
+    ],
+    "title": "PlaceContracts",
+    "description": "Contracts signed in the period held by every buyer located in the place."
+   },
+   "PlaceFigures": {
+    "properties": {
+     "population": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Population"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "programme_payments": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ProgrammePayments"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "capital": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Capital"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "contracts": {
+      "$ref": "#/components/schemas/PlaceContracts"
+     },
+     "supplier_counties": {
+      "$ref": "#/components/schemas/SupplierCounties"
+     },
+     "top_winners": {
+      "items": {
+       "$ref": "#/components/schemas/TopWinner"
+      },
+      "type": "array",
+      "title": "Top Winners"
+     }
+    },
+    "type": "object",
+    "required": [
+     "population",
+     "programme_payments",
+     "capital",
+     "contracts",
+     "supplier_counties",
+     "top_winners"
+    ],
+    "title": "PlaceFigures"
+   },
+   "PlaceHit": {
+    "properties": {
+     "place": {
+      "$ref": "#/components/schemas/PlaceRef"
+     },
+     "village": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Village",
+      "description": "The village searched for, when it is one."
+     }
+    },
+    "type": "object",
+    "required": [
+     "place",
+     "village"
+    ],
+    "title": "PlaceHit",
+    "description": "A UAT found by its name or by the name of one of its villages."
+   },
    "PlaceRef": {
     "properties": {
      "siruta": {
@@ -3198,7 +3834,7 @@
      "name": {
       "type": "string",
       "title": "Name",
-      "description": "As the national list of places writes it."
+      "description": "As the site shows it: 'Comuna Albac', 'Sectorul 3', 'Alba'."
      },
      "kind": {
       "type": "string",
@@ -3210,15 +3846,70 @@
        "sector"
       ],
       "title": "Kind"
+     },
+     "slug": {
+      "type": "string",
+      "title": "Slug",
+      "description": "'comuna-albac'; for a county, its own slug."
+     },
+     "county_slug": {
+      "type": "string",
+      "title": "County Slug",
+      "description": "'alba', 'bistrita-nasaud', 'bucuresti'."
+     },
+     "county": {
+      "type": "string",
+      "title": "County",
+      "description": "The county's name: 'Alba', 'București'."
      }
     },
     "type": "object",
     "required": [
      "siruta",
      "name",
-     "kind"
+     "kind",
+     "slug",
+     "county_slug",
+     "county"
     ],
-    "title": "PlaceRef"
+    "title": "PlaceRef",
+    "description": "A county or a UAT, named as the site shows it and addressed by its slugs."
+   },
+   "PlaceResults": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/PlaceHit"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "items"
+    ],
+    "title": "PlaceResults"
+   },
+   "Population": {
+    "properties": {
+     "people": {
+      "type": "integer",
+      "title": "People"
+     },
+     "on": {
+      "type": "string",
+      "format": "date",
+      "title": "On",
+      "description": "1 January of the year counted."
+     }
+    },
+    "type": "object",
+    "required": [
+     "people",
+     "on"
+    ],
+    "title": "Population"
    },
    "Programme": {
     "properties": {
@@ -3481,9 +4172,16 @@
       "description": "As the files write it, the key of the programme's counties."
      },
      "town_hall": {
-      "type": "string",
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
       "title": "Town Hall",
-      "description": "As the files write it, to find its projects."
+      "description": "As the files write it, to find its projects; null for a county's town halls."
      },
      "amount": {
       "type": "number",
@@ -4607,6 +5305,81 @@
      "source"
     ],
     "title": "SupplierContracts"
+   },
+   "SupplierCounties": {
+    "properties": {
+     "county": {
+      "type": "string",
+      "title": "County"
+     },
+     "local": {
+      "type": "number",
+      "title": "Local",
+      "description": "Won by suppliers, or associations, all in the county."
+     },
+     "mixed": {
+      "type": "number",
+      "title": "Mixed",
+      "description": "Won by associations with members in and out of it."
+     },
+     "elsewhere": {
+      "type": "number",
+      "title": "Elsewhere",
+      "description": "Won by suppliers outside it, or of no known county."
+     }
+    },
+    "type": "object",
+    "required": [
+     "county",
+     "local",
+     "mixed",
+     "elsewhere"
+    ],
+    "title": "SupplierCounties",
+    "description": "The contract value of `PlaceContracts` by where its winners are, after ANAF. An\nassociation counts as from the county only when all its members are; one with\nmembers in and out of it is counted apart, and no member stands for it."
+   },
+   "TopWinner": {
+    "properties": {
+     "members": {
+      "items": {
+       "$ref": "#/components/schemas/EntityRef"
+      },
+      "type": "array",
+      "title": "Members"
+     },
+     "counties": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Counties",
+      "description": "Each member's county, in `members`' order."
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "members",
+     "counties",
+     "value",
+     "contracts"
+    ],
+    "title": "TopWinner",
+    "description": "One supplier, or one association of suppliers, and what it won from the place's\nbuyers. An association is one row with its whole value, never split."
    },
    "TraceBuilder": {
     "properties": {

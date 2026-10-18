@@ -35,6 +35,7 @@ src/date_romania/
   local_money.py  the local budget file read once: revenue lines, capital, chapters
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
   places.py     where things are: kinds of place, UAT names, and locate() for entities
+  place_names.py  how a place is named and addressed: 'Comuna Albac', comuna-albac
   models/       SQLAlchemy models by source, shared by the API and the collectors
   sources.py    one PublicSource per source
   storage.py    raw store: files kept untouched, addressed by SHA-256

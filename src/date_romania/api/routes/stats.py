@@ -7,20 +7,35 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from date_romania import money
+from date_romania import places as places_
 from date_romania.api.routes.common import Db, list_source, summary
 from date_romania.api.schemas import Dataset, Datasets, Stats
 from date_romania.models import (
     SUCCEEDED,
+    AnafRecord,
     AwardContract,
     AwardNotice,
     DirectPurchase,
     ExportContract,
     JobRun,
+    LocalBudget,
+    Place,
     PniasPayment,
+    PublicEntity,
     SourceDocument,
     done_days,
 )
-from date_romania.sources import PNIAS_PAYMENTS, SEAP_AWARDS, SEAP_DIRECT, SEAP_EXPORTS
+from date_romania.models import Population as PopulationRow
+from date_romania.sources import (
+    ANAF,
+    LOCAL_BUDGETS,
+    PNIAS_PAYMENTS,
+    PUBLIC_ENTITIES,
+    SEAP_AWARDS,
+    SEAP_DIRECT,
+    SEAP_EXPORTS,
+    SIRUTA,
+)
 
 router = APIRouter(tags=["overview"])
 
@@ -64,6 +79,46 @@ def _last_run_whole(session: Session, job: str) -> bool:
     return status in (None, SUCCEEDED)
 
 
+def _count(session: Session, *columns) -> tuple:
+    return session.execute(select(*columns)).one()
+
+
+def _place_datasets(session: Session) -> list[tuple]:
+    """The place sources (release 3), as (source, first day, last day, records, counts).
+    SIRUTA and the list of public entities are lists, with no period of their own."""
+    places, uats = _count(session, func.count(), func.count().filter(Place.kind.in_(places_.UATS)))
+    entities, placed = _count(
+        session, func.count(PublicEntity.cui), func.count(PublicEntity.siruta)
+    )
+    budgets, figures, first_year, last_year = _count(
+        session,
+        func.count(LocalBudget.siruta.distinct()),
+        func.count(),
+        func.min(LocalBudget.year),
+        func.max(LocalBudget.year),
+    )
+    people = session.scalar(select(func.count()).select_from(PopulationRow))
+    asked, found, first_asked, last_asked = _count(
+        session,
+        func.count(AnafRecord.cui),
+        func.count().filter(AnafRecord.found),
+        func.min(AnafRecord.asked_on),
+        func.max(AnafRecord.asked_on),
+    )
+    return [
+        (SIRUTA, None, None, places, {"uats": uats}),
+        (PUBLIC_ENTITIES, None, None, entities, {"placed": placed}),
+        (
+            LOCAL_BUDGETS,
+            first_year and date(first_year, 1, 1),
+            last_year and date(last_year, 12, 31),
+            budgets,
+            {"figures": figures, "population": people},
+        ),
+        (ANAF, first_asked, last_asked, asked, {"found": found}),
+    ]
+
+
 def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict) -> list[Dataset]:
     """The sources that come as files, not as days: listed once we hold a file of theirs.
 
@@ -88,6 +143,7 @@ def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict
         (PNIAS_PAYMENTS, first_file, last_file, payments, {"projects": projects}),
         # A contract has a row for each winner and for each export it is in.
         (SEAP_EXPORTS, first_notice, last_notice, winners, {}),
+        *_place_datasets(session),
     )
     return [
         Dataset(
