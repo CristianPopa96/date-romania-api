@@ -1,62 +1,56 @@
 # Data sources
 
-## Collected today
+Everything on Date România comes from public sources. This page lists each one, what it
+tells us, and what it does not.
 
-| Key | Source | What it gives | Table(s) |
-| --- | --- | --- | --- |
-| `seap-direct` | [SEAP](https://e-licitatie.ro/pub/direct-acquisitions/list/1) direct purchases, by the day they were finalized | Small purchases without an auction, with buyer, supplier, CUI, value, state and contract type | `direct_purchase` |
-| `seap-awards` | [SEAP](https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0) award notices, by publication day | Each notice with its contracts and winners, its detail (financing, the notice that opened the procedure) and its versions | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
-| `pnias-payments` | [MDLPA payment files](https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent) of the Anghel Saligny programme, on data.gov.ro | One row per settlement request paid: town hall, project, builder and designer, amount | `pnias_payment` |
-| `seap-exports` | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today | Only the contracts of the programme's builders, and every buyer | `export_contract`, `export_buyer` |
+## Used today
 
-| `siruta` | [SIRUTA](https://data.gov.ro/organization/ins), the national list of places (INS), twice a year | Every county, UAT and village with its code and the place it belongs to | `place` |
-| `public-entities` | The Finance Ministry's [list of public entities](https://extranet.anaf.mfinante.gov.ro/anaf/extranet/EXECUTIEBUGETARA) ("Alte Rapoarte"), monthly | Every public entity's county, UAT and the institutions that fund it | `public_entity` |
-| `local-budgets` | The Ministry of Development's [local budgets and population](https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale), on data.gov.ro | The executed budget of every UAT and county council (2024: revenue by source, spending by title and chapter), UAT population 2021 to 2024 | `local_budget`, `population` |
-| `anaf` | [ANAF's web services](https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf), by tax ID | County and locality of the registered office (never the street), CAEN, VAT and inactive status | `anaf_record` |
+| Source                                                                                                                          | Who publishes it                       | What it tells us                                                                                                                 |
+| ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [SEAP direct purchases](https://e-licitatie.ro/pub/direct-acquisitions/list/1)                                                  | ADR, which runs SEAP                   | Small purchases made without an auction: who bought, from whom, what kind of thing, for how much, and whether it went through    |
+| [SEAP award notices](https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0)                                        | ADR                                    | Who won a public procurement procedure: the contracts, their value, the winners, how they were financed (including EU funds)     |
+| [Anghel Saligny payments](https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent) | Ministry of Development (MDLPA)        | Each payment the ministry made to a town hall for a road, water or sewage project, and the company building it                   |
+| SEAP's quarterly contract lists, since 2021                                                                                     | ADR, on data.gov.ro                    | Older contracts, used only to find which contract an Anghel Saligny builder signed with the town hall                            |
+| [SIRUTA](https://data.gov.ro/organization/ins)                                                                                  | National Institute of Statistics (INS) | Every county, town, commune and village, with an official code, and which commune each village belongs to                        |
+| [List of public entities](https://extranet.anaf.mfinante.gov.ro/anaf/extranet/EXECUTIEBUGETARA)                                 | Finance Ministry                       | Every public institution, where it is, and which institution funds it (a school and its town hall, for example)                  |
+| [Local budgets and population](https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale)                                 | Ministry of Development                | What every town hall and county council received and spent in 2024, and how many people live in each town and commune            |
+| [ANAF register](https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf)                                       | The tax agency                         | For each institution and company: the town of its office (never the street), its activity, VAT status and whether it is inactive |
 
-The first two are collected by day. The others come as files or lookups: a run fetches
-what is not held yet and needs no date.
+## What each source does not tell us
 
-Every source has one entry in `src/date_romania/sources.py` (key, publisher, the public
-list page and the page of one record). A new source is added there first.
+| Source                  | What is missing                                                                                                                                                        |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SEAP direct purchases   | Which budget line pays for it. The list of items bought is published in a detail not collected yet.                                                                    |
+| SEAP award notices      | Which budget line pays for it, and how many offers there were. Contracts appear weeks after signing: half more than 17 days later, one in ten more than 50 days later. |
+| Anghel Saligny payments | The day of the payment. The town hall is named only by name, without its tax ID. Only files from 27 August 2026 on give the builder's tax ID.                          |
+| SEAP contract lists     | Used only to follow the programme, never in totals: they repeat each contract in every later list and list an association once per member.                             |
+| Local budgets           | Only town halls and county councils, only for whole years.                                                                                                             |
 
-### Known limits
+## The period held
 
-| Source | Limits |
-| --- | --- |
-| SEAP direct purchases | No budget line. The items bought, payment and delivery conditions are in a detail endpoint not collected yet. |
-| SEAP award notices | No budget line. The number of offers is not published. Contracts appear weeks after signing: half after more than 17 days, one in ten after more than 50. |
-| Anghel Saligny payments | No payment day. The town hall is named only by name, without CUI. Only the file of 27 August 2026 and later ones give the builder's CUI. |
-| SEAP exports | Never enter a total, a ranking or an entity page (see [Linking records](Linking-Records)). No contract title from 2023 on. An association appears once per member, each with the whole value, and a contract is repeated in every later export. |
+The site is being built on a fixed slice of **40 days, 1 September to 10 October 2026**
+(decided on 11.10.2026). No other days are collected for now. The one exception is the
+Anghel Saligny trace, which looks at contracts back to 2021, because the 40 days alone
+would tie only 2% of the payments to a contract.
 
-### The SEAP API is unofficial
+## Not used yet
 
-SEAP's public pages are backed by an API that is not documented as public. The
-collectors use it carefully: at most one call per second, retries with backoff, and
-slicing so no call asks for more than the 2,000-row cap. The award notice list pages
-normally and caps at 3,000, far above a day's notices.
+| Source                                                | What it would add                                                                                                                                                                               |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Budgets of every other institution (Finance Ministry) | What each school, hospital or ministry spent, month by month. The ministry's website asks for a verification code on every search, so it cannot be read; a request for the whole set is planned |
+| Company financial statements (ANAF)                   | A company's turnover, staff and debts, year by year                                                                                                                                             |
+| EU funds ministry (MIPE)                              | EU-funded projects, and how much EU money is used                                                                                                                                               |
+| TED, the EU's procurement journal                     | Large procedures published at EU level                                                                                                                                                          |
+| SEAP purchase details                                 | The items bought in each direct purchase                                                                                                                                                        |
+| Payments published voluntarily (Cluj-Napoca, others)  | Named payments to companies                                                                                                                                                                     |
+| Office holders (Monitorul Oficial, gov.ro)            | Who led each institution, and when                                                                                                                                                              |
 
-## The frozen period
+## Why it is allowed
 
-The site is being built on 40 days, **1 September to 10 October 2026** (decided
-11.10.2026). No day outside it is collected, and the `scheduler` service is stopped.
-The programme trace is the one exception: it reads contracts from 2021 on, because the
-40 days alone tie only 2% of the payments.
+The data is public under Law 544/2001 (access to public information), Law 98/2016
+(public procurement) and Law 179/2022 (open data and its reuse). Date România republishes
+it under the CC BY 4.0 licence, with the source of every record.
 
-## Planned, not collected yet
-
-| Source | What it would bring | Needed for |
-| --- | --- | --- |
-| Budget execution per institution (Forexebug) | What each institution spent, monthly, by budget chapter. The Finance Ministry's portal asks for a captcha on every search, so it cannot be collected; a bulk request to the ministry is planned | "Money in" for institutions other than town halls and county councils |
-| ANAF financial statements | Turnover, staff, debts of a company, by year | Supplier pages, patterns |
-| MIPE | EU funded projects and absorption | EU projects, available versus unused funds |
-| TED | Notices published in the EU's Official Journal | Above-threshold procedures |
-| SEAP direct purchase detail | Items bought, payment and delivery conditions | Direct purchase page |
-| Voluntary payment publishers (e.g. Cluj-Napoca) | Named payments to suppliers | Payments on institution and locality pages |
-| Office holders (Monitorul Oficial, gov.ro) | Who led each institution, and when | Responsibility timeline, politicians |
-
-## Legal basis
-
-Data is public under Law 544/2001 (access to public information), Law 98/2016 (public
-procurement) and Law 179/2022 (open data and reuse). Date România republishes it under
-CC BY 4.0, with the source of every record.
+SEAP's website runs on a data service that is not officially documented for the public.
+Date România uses it carefully and slowly, and the published bulk files on data.gov.ro are
+the fallback.

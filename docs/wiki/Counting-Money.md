@@ -1,60 +1,81 @@
 # Counting money
 
-All the rules below live in one module, `src/date_romania/money.py`, and are applied in
-SQL by every endpoint. They are never restated in a route or a collector.
+A total is only useful if it means the same thing on every page. These are the rules
+Date România follows. They are written once and used everywhere, so two pages can never
+disagree. All amounts are in **lei without VAT**, as SEAP publishes them.
 
-All amounts are **lei without VAT**, as SEAP publishes them, and are JSON numbers in the
-API.
+## Small direct purchases
 
-## Direct purchases
+An institution can buy something small without an auction, straight from SEAP's
+catalogue. These are **direct purchases**.
 
-| Rule | Why |
-| --- | --- |
-| Only purchases whose offer was **accepted** (SEAP state 7) are added up | The other states (refused by the supplier or the institution, no answer) carry values that were never spent |
-| An accepted purchase published **above 900,400 lei** is left out of totals and reported apart as `above_limit` | 900,400 lei is the legal ceiling for works, the highest a direct purchase may have. One such value can outweigh a whole day. It is what SEAP publishes; it is not called an error. |
+- **Only accepted purchases are counted.** A purchase the supplier or the institution
+  refused, or that got no answer, is still listed, but its value was never spent, so it
+  is not added up.
+- **Values above the legal limit are set apart.** The highest a direct purchase may be
+  is 900,400 lei (for works). When SEAP shows an accepted purchase above that, it is left
+  out of the totals and shown next to them. Date România does not call it an error; it
+  is what SEAP publishes, and one such value could outweigh a whole day.
+- The limit for goods and services is lower (270,120 lei), but it is not applied yet,
+  because some services have higher limits and cannot be told apart yet.
 
-The ceiling for goods and services is lower (270,120 lei). Since 16.10.2026 each
-purchase stores its contract type, so the per-type ceiling can be applied; it is not yet
-applied to `above_limit`, because some services (Annex 2 of the law) have higher ceilings
-and are not told apart yet.
+### Purchases just under the limit
 
-### The "just under the ceiling" pattern
+The site shows pairs of the same institution and the same company with **at least two**
+accepted direct purchases, each worth between 90% of the legal limit and the limit. A
+value close to the limit does not prove a purchase was split to avoid an auction. It is
+a fact worth asking for documents about, never an accusation.
 
-`/v1/patterns/near-limit` finds pairs of the same buyer and the same supplier with **at
-least two** accepted direct purchases, each between **90% of the ceiling of its contract
-type** and the ceiling. It is a fact worth asking documents about, never an accusation:
-a value close to the ceiling does not show that a purchase was split.
+## Contracts
 
-## Award notices and contracts
+A **contract notice** on SEAP announces who won a procedure. One notice can hold several
+contracts, and SEAP publishes the notice again each time a contract is added or changed.
 
-| Rule | Why |
-| --- | --- |
-| Count contracts by `contract_date`, never by the notice's publication day | SEAP republishes a notice whenever a contract is added or changed, so the notices of one day carry contracts signed over several years |
-| Totals count **ordinary** (kind 1) and **subsequent** (kind 3) contracts, never **framework agreements** (kind 2) | A framework agreement is a ceiling; the money committed is in its subsequent contracts |
-| When a notice is republished under a new id, the contracts of the withdrawn one are left out (`contract_in_force`) | Otherwise the same contract would count twice |
-| An **association** has one value; it is never split between members | SEAP gives one value for the whole contract and names no leader |
-| Entity pages and rankings count contracts **signed in the period held**, with a note that the list is incomplete | Contracts appear in SEAP weeks after signing |
-| A notice's own page shows the notice's own total, whatever the signing dates | It describes the notice, not a period |
-
-On a company: contracts won **alone** and **in association** are two figures, never
-added. In the supplier ranking, a contract won in association appears at every member,
-with its full value.
+- **Contracts are counted by the day they were signed**, not by the day the notice was
+  published, because a notice republished today can hold contracts signed years ago.
+- **A framework agreement is a ceiling, not spending.** It sets the most that may be
+  bought later. The money appears in the contracts signed under it, and only those are
+  counted.
+- **A withdrawn notice is not counted twice.** When a notice is corrected and
+  republished, the contracts of the old version are left out.
+- **A contract won by several companies together is never split.** SEAP gives one value
+  for the whole contract and does not say who does how much. A company's page shows
+  contracts won alone and contracts won together side by side, never added.
+- **The list of contracts is always a little incomplete**: contracts reach SEAP weeks
+  after signing. Every total of contracts carries that note.
 
 ## Never added together
 
-Direct purchases and contracts are separate figures, separate lists and separate
-ranking tabs. They are different kinds of spending and their periods are counted
-differently.
+- **Direct purchases and contracts** are always separate figures, separate lists and
+  separate rankings.
+- **Figures from different periods** are never added or subtracted. A town hall's budget
+  covers all of 2024, its contracts the 40 days held, its Anghel Saligny payments the
+  dates of the ministry's files. Each figure names its own period.
 
-## Programme exports
+## Town hall and county council budgets
 
-`export_contract` (SEAP's quarterly exports) serves only the Anghel Saligny trace. It
-never enters a total, a ranking or an entity page: it is a second reading of SEAP with
-fewer fields, an association is listed once per member with the whole value, and a
-contract is repeated in every later export.
+The budget of a town hall or county council comes from the Ministry of Development's
+yearly file of executed budgets (what really came in and went out by 31 December). The
+site sorts the revenue into seven lines that always add up to the total:
 
-## Which days a total covers
+1. Subsidies from the state budget
+2. The town's share of income tax
+3. The town's share of VAT
+4. Its own revenue (local taxes and fees)
+5. EU funds
+6. Money from other public administrations
+7. Other revenue
 
-Every total is computed over the days held and says so. The API returns the period with
-every figure, and `source.documents` says how many stored answers the figure's own rows
-were read from.
+On the spending side it shows **capital spending** (investments: roads, buildings,
+networks) and spending by **chapter** (transport, education, and so on).
+
+The Anghel Saligny payments to the town hall are shown as a separate card and never
+added to the state subsidies, because they cover a different period.
+
+## The Anghel Saligny contract lists
+
+To follow the programme, Date România also reads SEAP's older quarterly lists of
+contracts. They are used **only** to find the builder's contract. They never enter a
+total or a ranking: they repeat each contract in every later list and give the full
+value once per member of an association, so adding them up would count the same money
+many times.

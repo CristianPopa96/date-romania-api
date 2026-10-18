@@ -1,54 +1,55 @@
-# Date România: data and API
+# Date România: behind the numbers
 
-Date România is a tracker of where Romanian public money goes. This repository is its
-back end: it **collects** public data, **keeps** every file exactly as received,
-**reads** and **links** the records, and **serves** them through a public API that the
-site (and anyone else) reads.
+Date România shows where Romanian public money goes. This wiki explains, in plain words,
+what happens behind the site: where each number comes from, how it is checked, what is
+counted and what is not, and how records from different sources are tied together.
 
-This wiki explains the data side: which sources are used, what happens to the data from
-download to page, the rules for counting money and linking records, the API, and how to
-run and operate the whole stack. The pages a reader sees are documented in the
-[site wiki](https://github.com/CristianPopa96/date-romania-web/wiki).
+You don't need any technical knowledge to read it. What the site shows, page by page,
+is in the [site wiki](https://github.com/CristianPopa96/date-romania-web/wiki).
+Instructions for running or changing the code are in this repository's
+[README](https://github.com/CristianPopa96/date-romania-api#readme).
 
 ## Start here
 
-| If you want to… | Read |
-| --- | --- |
-| Understand the path data takes, in plain words | [How data flows](How-Data-Flows) |
-| Know which public sources are used and what each one gives | [Data sources](Data-Sources) |
-| Know why a total is what it is | [Counting money](Counting-Money) |
-| Know how records are tied together, and how sure each tie is | [Linking records](Linking-Records) |
-| See the tables in the database | [Data model](Data-Model) |
-| Use the API | [API reference](API-Reference) |
-| Run the stack on your computer | [Running the stack](Running-the-Stack) |
-| Fill the database and keep it up to date | [Collecting data](Collecting-Data) |
-| Review the errors readers report | [Reader reports](Reader-Reports) |
-| Move it to a server | [Hosting](Hosting) |
-| Change the code | [Development](Development) |
+| If you want to know…                                        | Read                                 |
+| ----------------------------------------------------------- | ------------------------------------ |
+| The journey of a number, from a public website to the page  | [How data flows](How-Data-Flows)     |
+| Which public sources are used, and what each one can't tell | [Data sources](Data-Sources)         |
+| Why a total is what it is                                   | [Counting money](Counting-Money)     |
+| How a payment, a contract and a place are tied together     | [Linking records](Linking-Records)   |
+| What happens when someone reports an error                  | [Reporting an error](Reader-Reports) |
 
-## What makes the data side strong
+## Why you can trust the numbers
 
-- **Nothing is thrown away.** Every answer from a public source is stored untouched,
-  addressed by its SHA-256 fingerprint, before it is read. Any figure can be traced back
-  to the exact file, and any parser can be rerun from storage without the network.
-- **Every row knows where it came from.** Each record keeps the stored document it was
-  read from and the parser version that read it; the API returns that with every answer.
-- **Rejected rows are counted, not dropped.** Each reading of a file records how many
-  rows could not be read, and the site shows it per source.
-- **Money rules are written once** (`money.py`) and used by every endpoint, so totals
-  cannot drift apart between pages.
-- **Every link carries a method and a confidence** (sure, probable, possible).
-- **Polite to the sources.** A clear User-Agent, at most one call per second per host,
-  retries with backoff, and catch-up of missed days instead of bursts.
-- **Portable.** Everything is configured through environment variables, files go
-  through the S3 API, schedules live in the stack, and images are built by GitHub
-  Actions, so it moves to any Docker host without code changes.
-- **Open.** Code under AGPL-3.0, data and API answers under CC BY 4.0.
+- **Nothing is invented.** Every number comes from a public source: SEAP (the state's
+  procurement system), ministries, the national statistics institute, the tax agency.
+- **The original is kept.** Everything received from a source is saved exactly as it
+  came, before anything is read from it, with a digital fingerprint that would change if
+  a single character did. Any figure can be traced back to the file it came from.
+- **Mistakes can be undone.** Because the originals are kept, the reading can be redone
+  at any time without asking the source again, for example after a reading error is
+  fixed.
+- **Nothing is dropped quietly.** When a row of a file cannot be read, it is counted and
+  the site shows how many there were, per source.
+- **One set of counting rules.** What counts as money spent is decided in one place and
+  used by every page, so two pages can never give different totals for the same thing.
+- **Every link says how sure it is**: sure, probable or possible, with the evidence.
+- **Respect for the sources.** Date România asks public websites slowly and politely,
+  never in bursts, and says who it is.
+- **Open.** The code is open source, and the data can be reused by anyone under CC BY
+  4.0, naming the source.
 
 ## Where things stand
 
-As of 17.10.2026 the dataset is **frozen at 1 September to 10 October 2026** and the
-scheduler is stopped on purpose. Held: 293,712 direct purchases (complete for the
-period), 6,058 award notices with 77,401 contracts (4,796 of them signed in the period),
-six Anghel Saligny payment files, and SEAP's contract exports from 2021 for the
-programme's builders.
+As of 18.10.2026 the data is fixed on purpose while the site is built, and no new days
+are collected:
+
+- **Purchases and contracts from SEAP**: 1 September to 10 October 2026. That is
+  293,712 small direct purchases, and 6,058 contract notices holding 77,401 contracts,
+  4,796 of them signed in those days.
+- **Anghel Saligny programme**: six payment files from the ministry (May to August
+  2026), and SEAP's contract lists since 2021 to find the builders' contracts.
+- **Places and budgets**: every county, town, commune and village; the 2024 budget of
+  every town hall and county council, and their population; the Finance Ministry's list
+  of 13,485 public entities; and the tax agency's record of the 49,525 institutions and
+  companies held.

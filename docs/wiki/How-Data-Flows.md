@@ -1,80 +1,74 @@
 # How data flows
 
-Data moves one way, in five steps. Each step can be redone on its own.
+Every number on the site makes the same journey, in five steps.
 
 ```
- 1. Collect          2. Store raw          3. Read (parse)        4. Link              5. Serve
- ───────────         ────────────          ───────────────        ────────             ────────
- SEAP API,      ──►  S3 storage,      ──►  rows in          ──►   ties between    ──►  JSON API ──► site
- data.gov.ro         untouched,            PostgreSQL,            records, each        /v1/...       readers
- files               by SHA-256            with source            with method and                    developers
-                                           and parser version     confidence
+ 1. Ask        2. Keep the original     3. Read           4. Tie together       5. Show
+ public   ──►  saved untouched,    ──►  turn it into ──►  link records    ──►  the site and
+ websites      with a fingerprint       tidy rows         that belong          anyone who
+                                                          together             downloads
 ```
 
-## 1. Collect
+## 1. Ask the public sources
 
-A **collector** is a command (`dr collect <name>`) that asks one public source for one
-period. The scheduler container runs them every day from `infra/crontab`.
+Small programs called **collectors** visit the public websites (SEAP, data.gov.ro, the
+tax agency) and ask for one day, or one file, at a time.
 
-- It fetches **every day missed** since the first day it ever tried, because a local
-  machine is often asleep. One failing day does not stop the days after it.
-- Each run is recorded in `job_run` (running, succeeded, partial, failed). A day the
-  source would not give in full ends as `partial`: it counts as done and is collected
-  again by hand once the cause is fixed.
-- It is polite: our User-Agent, one second between calls per host, retries with
-  backoff.
-- SEAP's list never returns more than 2,000 rows and will not page past them, so a day
-  is split by the filters that work (state, contract type, dates, flags, CPV) until each
-  slice fits.
+- They are polite: they wait between requests, say who they are, and try again later
+  when a website is busy.
+- If a day fails, the next days still go ahead, and the failed day is tried again.
+- A day the source could not give in full is marked as such, so nobody mistakes a
+  partial day for a complete one.
+- SEAP's lists give at most 2,000 rows at once. A busy day is cut into smaller slices
+  until every slice fits, so nothing is cut off.
 
-## 2. Store raw
+## 2. Keep the original
 
-Before anything is read, the answer is written **untouched** to S3-compatible storage
-under its SHA-256 fingerprint (`<source>/<sha[:2]>/<sha>`), and a `source_document` row
-records the address, the request, the size and when it was fetched.
+Before anything is read, what the source sent is saved **exactly as received**, together
+with where it came from and when. Each saved file gets a digital fingerprint: a code that
+changes if a single character of the file changes.
 
-This store is private, because it can hold personal codes that the site masks. It is
-what makes every figure traceable and every reading repeatable.
+This is what lets anyone check a number later: the site can say which file a figure
+came from, and that file has not been touched since. The saved copies are not public,
+because some contain personal ID numbers that the site hides.
 
-## 3. Read (parse)
+## 3. Read
 
-A **parser** turns a stored document into rows. Parsers are versioned, and every stored
-document can be read again with `dr reparse <name>`, with no network.
+The saved file is then read and turned into tidy rows: a purchase, a contract, a
+payment, a budget line.
 
-- Each reading goes through one function (`jobs.record_parse()`), which logs rejected
-  rows and keeps their count and the parser version on the `source_document`. The
-  sources page shows "Erori" per source.
-- Tax IDs go through `parse_cui()`, which strips `RO` and spaces and checks the
-  checksum.
-- Personal numeric codes (CNP) of sole traders are masked as `[CNP]` before a row is
-  stored.
-- File formats are detected by signature, not by the label on data.gov.ro: the
-  contract exports came in six layouts and five formats in six years.
-- Every row keeps `source_document_id` and `parser_version`.
+- If the way of reading changes (a bug is fixed, for example), everything can be read
+  again from the saved originals, without asking the source again.
+- Rows that cannot be read are counted, never silently dropped, and the site shows how
+  many there were for each source ("Erori").
+- Tax IDs (CUI) are checked with their built-in check digit, so a typo does not create a
+  new company.
+- Personal ID numbers (CNP) of sole traders are hidden before anything is saved as a
+  row.
+- Public files change format often (the contract lists came in six layouts in six
+  years), so each file's real format is recognised from its content, not its label.
 
-Institutions and companies go into one `entity` table keyed by CUI, so any name on any
-page links to the same kind of page.
+Every institution and company goes into one list, by its tax ID, so any name on any page
+leads to the same kind of page.
 
-## 4. Link
+## 4. Tie records together
 
-Linking ties records from different sources together and **stores how**: a method and a
-confidence level (sure, probable, possible). Today the main linking step ties Anghel
-Saligny payments to SEAP contracts (`dr link pnias`). See
+Records from different sources rarely share a number. Date România ties them only on
+stated evidence, and always records how sure the tie is. See
 [Linking records](Linking-Records).
 
-## 5. Serve
+## 5. Show
 
-The FastAPI app serves read-only JSON under `/v1/`. Money rules (`money.py`) are applied
-here, in SQL, the same way for every endpoint. Every answer about the data carries a
-`source`: publisher, record, address and fetch time; for one record also the SHA-256 and
-parser version; for a total, how many stored documents it is added up from.
+The site, and anyone who asks, gets the figures with their source attached. The counting
+rules are applied at this step, the same way for every page. See
+[Counting money](Counting-Money).
 
-The site calls the API from its own server and renders the pages. The only write is
-`POST /v1/reports`, a reader's error report, which waits for a person to review it.
+The only thing anyone can send in is an error report, and it changes nothing until a
+person reviews it. See [Reporting an error](Reader-Reports).
 
 ## Where the data stops
 
-A full money trail (budget → commitment → contract → payment → subcontractor) cannot be
-built from published data: payments are not published per supplier, and the systems
-share no identifier. Date România shows the ends it can read and marks the middle as a
-gap. See [Data sources](Data-Sources) for what is held and what is not.
+A full trail of a leu (budget, commitment, contract, payment, subcontractor) cannot be
+built from what is published: payments to companies are mostly not published, and the
+systems share no common number. Date România shows the ends it can read and marks the
+middle as a gap, rather than guessing.
