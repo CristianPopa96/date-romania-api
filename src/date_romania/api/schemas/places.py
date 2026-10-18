@@ -91,6 +91,9 @@ class Locality(Answer):
     place: PlaceRef
     town_hall: EntityRef | None = Field(description="Its town hall, when held.")
     parts: list[PlaceRef]
+    localities: list[str] = Field(
+        description="The names of its villages and component localities, in SIRUTA's order."
+    )
     figures: PlaceFigures
     budget: LocalBudgetOut | None = Field(description="The town hall's latest budget held.")
     projects: list[LocalProject]
@@ -111,6 +114,7 @@ class County(Answer):
     place: PlaceRef
     council: EntityRef | None
     figures: PlaceFigures
+    capital_year: int | None = Field(description="The budget year of the UATs' capital spending.")
     uats: list[CountyUat]
 
 

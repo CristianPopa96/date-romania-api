@@ -2604,6 +2604,18 @@
      "figures": {
       "$ref": "#/components/schemas/PlaceFigures"
      },
+     "capital_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capital Year",
+      "description": "The budget year of the UATs' capital spending."
+     },
      "uats": {
       "items": {
        "$ref": "#/components/schemas/CountyUat"
@@ -2617,6 +2629,7 @@
      "place",
      "council",
      "figures",
+     "capital_year",
      "uats"
     ],
     "title": "County",
@@ -3272,6 +3285,14 @@
       "type": "array",
       "title": "Parts"
      },
+     "localities": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Localities",
+      "description": "The names of its villages and component localities, in SIRUTA's order."
+     },
      "figures": {
       "$ref": "#/components/schemas/PlaceFigures"
      },
@@ -3307,6 +3328,7 @@
      "place",
      "town_hall",
      "parts",
+     "localities",
      "figures",
      "budget",
      "projects",

@@ -1746,6 +1746,7 @@
      }
     ]
    },
+   "capital_year": 2024,
    "uats": [
     {
      "place": {
@@ -1781,6 +1782,10 @@
     "kind": "authority"
    },
    "parts": [],
+   "localities": [
+    "Țânțăreni",
+    "Florești"
+   ],
    "figures": {
     "population": {
      "people": 5533,

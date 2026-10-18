@@ -865,6 +865,8 @@ def test_a_commune_page_names_each_figure_with_its_own_period(client):
         "county": "Gorj",
     }
     assert page["town_hall"]["cui"] == TOWN_HALL
+    # Its villages, so the site can check the one a reader searched for.
+    assert page["localities"] == ["Țânțăreni", "Florești"]
     figures = page["figures"]
     assert figures["population"] == {"people": 5533, "on": "2024-01-01"}
     assert figures["programme_payments"]["payments"] == 3
@@ -902,6 +904,8 @@ def test_a_county_adds_up_its_uats_and_lists_them(client):
     # Its council is not among the entities held.
     assert county["council"] is None
     assert county["figures"]["contracts"]["value"] == 6330000
+    # The year of the UATs' capital spending, the council's left out.
+    assert county["capital_year"] == 2024
     assert [
         (u["place"]["slug"], u["population"], u["capital"], u["contracts"]) for u in county["uats"]
     ] == [("comuna-tantareni", 5533, 6000000, 2)]

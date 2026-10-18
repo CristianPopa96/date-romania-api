@@ -185,6 +185,7 @@ def county(session: Db, county: str) -> County:
         place=place_ref(session, found),
         council=ref(council),
         figures=_figures(session, [*sirutas, found.siruta], [*sirutas, found.siruta], name),
+        capital_year=year if capitals else None,
         uats=sorted(rows, key=lambda row: row.place.slug.split("-", 1)[-1]),
     )
 
@@ -258,11 +259,17 @@ def locality(session: Db, county: str, uat: str) -> Locality:
         )
     )
     sirutas = [found.siruta, *(part.siruta for part in parts)]
+    localities = session.scalars(
+        select(Place.name)
+        .where(Place.parent == found.siruta, Place.kind == places.VILLAGE)
+        .order_by(Place.siruta)
+    )
     town_hall = session.get(Entity, found.town_hall_cui) if found.town_hall_cui else None
     return Locality(
         place=place_ref(session, found),
         town_hall=ref(town_hall),
         parts=[place_ref(session, part) for part in parts],
+        localities=[place_names.title(name) for name in localities],
         figures=_figures(session, sirutas, [found.siruta], place_names.display(found_county)),
         budget=local_budget(session, found.siruta),
         projects=_projects(session, sirutas),
