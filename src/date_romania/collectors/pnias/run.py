@@ -52,11 +52,11 @@ def collect(session: Session, client: PoliteClient) -> int:
                     datagov.forget(session, doc)
                     raise
         run.records = payments
-    # A new file can name builders whose contracts are not kept yet: `dr reparse
-    # seap-exports` reads them from the stored exports.
-    pnias_links.link(session)
-    places.locate(session)
-    session.commit()
+        # Inside the run, so a failure here marks it failed. A new file can name
+        # builders whose contracts are not kept yet: `dr reparse seap-exports` reads them
+        # from the stored exports.
+        pnias_links.link(session)
+        places.locate(session)
     return payments
 
 
