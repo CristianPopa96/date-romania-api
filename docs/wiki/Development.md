@@ -32,6 +32,7 @@ src/date_romania/
   collectors/   one package per public source; http.py (polite client), jobs.py (runs,
                 due days, record_parse), datagov.py and sheets.py (file sources)
   money.py      what counts as money spent: every rule, written once
+  local_money.py  the local budget file read once: revenue lines, capital, chapters
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
   places.py     where things are: kinds of place, UAT names, and locate() for entities
   models/       SQLAlchemy models by source, shared by the API and the collectors

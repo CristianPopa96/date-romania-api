@@ -123,7 +123,12 @@ Ministry's list is used first, ANAF next (`places.py`). The budgets are yearly a
 only town halls and county councils: the ministry's per-institution reports cannot be
 collected, since its portal asks for a captcha on every search. A budget row is one
 column of the ministry's file, kept with the file's own column number, code and title;
-the column number is what the county sheets agree on.
+the column number is what the county sheets agree on. `local_money.py` turns the columns
+into the lines the site shows: seven revenue lines that add up to the total (the income
+tax shares sit inside own revenue in the file), capital spending and the chapters. Each
+place knows its town hall or county council (`place.town_hall_cui`), and each Anghel
+Saligny payment its place, so an institution's page can show the budget of the place it
+governs and the payments to it (`/v1/institutions/{cui}/budget`).
 
 Four things to know before adding award notices up (`money.py` holds the rules):
 
@@ -189,7 +194,9 @@ Totals count only purchases whose offer was accepted. An accepted purchase publi
 a value above 900,400 lei is left out of the totals and reported next to them as
 `above_limit`, because one such value can outweigh a whole day. 900,400 lei is the legal
 limit for works, the highest a direct purchase may have. Goods and services have a lower
-limit, 270,120 lei, which is not applied: the list does not give the contract type.
+limit, 270,120 lei. Since 16.10.2026 each purchase stores its contract type, but the
+lower limit is not applied to `above_limit` yet: some services (Annex 2 of the law) have
+higher limits and are not told apart.
 
 ## Layout
 
@@ -198,6 +205,7 @@ src/date_romania/
   api/          FastAPI app: `routes/` the endpoints by area, `schemas/` the answers
   collectors/   one package per public source
   money.py      what counts as money spent
+  local_money.py  the local budget file read once: revenue lines, capital, chapters
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
   places.py     where things are: the kinds of place, UAT names, `locate()`
   models/       SQLAlchemy models by source, shared by the API and the collectors
