@@ -1,92 +1,83 @@
 # Linking records
 
-Records from different sources rarely share an identifier. Date România ties them only
-on stated evidence, and **every link stores its method and a confidence level**.
+A contract, a payment and a budget each come from a different source, and they rarely
+share a common number. To show the road of the money, Date România has to tie them
+together. It does so only on evidence it can state, and **every tie says how sure it
+is**.
 
-| Confidence | Evidence |
-| --- | --- |
-| **sure** | The same CUI on both records, or both named in one published record |
-| **probable** | Evidence put together by us that makes the tie likely: an SMIS code in a contract title, or a builder's CUI plus a buyer with the town hall's name |
-| **possible** | Weaker evidence: a name other records share, or name, amount and period only |
+## How sure a tie is
 
-The site shows the level on every link, and headline figures never count a link weaker
-than they say.
+| Level        | What it rests on                                                                                                                                |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sure**     | The same tax ID (CUI) on both records, or both named in the same published record                                                               |
+| **Probable** | Evidence put together by Date România that makes the tie likely, for example the builder's tax ID plus the town hall's name in the right county |
+| **Possible** | Weaker evidence, for example a name that other records also carry                                                                               |
 
-## The CUI joins
+The site shows the level next to every tie, and headline figures never count a tie
+weaker than they say.
 
-Institutions and companies are one `entity` table keyed by CUI. A direct purchase or a
-contract names its buyer and supplier by CUI, so the institution page and the company
-page are sure joins.
+## Institutions and companies
 
-## Anghel Saligny: payments to SEAP contracts
+Every purchase and contract on SEAP names the buyer and the seller by tax ID. So an
+institution's page and a company's page are tied **surely** to everything they bought
+and sold.
 
-The payment files of the Anghel Saligny programme are the best payment-level data
-published: they name the town hall, the project and, in recent files, the builder's
-CUI. The rule, in `src/date_romania/pnias_links.py`:
+## Anghel Saligny: from payment to contract
 
-1. A payment names its **builder by CUI** and its **town hall by name**.
-2. It is tied to the **works contracts** that builder won from a buyer whose **name is
-   the town hall's**, found in SEAP's quarterly exports from 2021 on (`export_contract`).
-3. The tie is **probable** when an export puts the buyer in the payment's county, or when
-   no other buyer in the exports carries that name; **possible** when other buyers do. A
-   buyer an export puts in another county is not tied.
-4. **No tie is sure**: the payment files do not name the contract.
+The Anghel Saligny payment files are the most detailed payment data Romania publishes:
+they name the town hall, the project and, in recent files, the tax ID of the company
+building it. But they never name the SEAP contract. So the tie is made like this:
 
-Ties are stored in `pnias_link`, with `method` and `confidence`, and are rebuilt
-whenever either side is loaded (`dr link pnias` does it by hand).
+1. The payment names the **builder** by tax ID and the **town hall** by name.
+2. Date România looks, in SEAP's contract lists since 2021, for the **works contracts**
+   that builder won from a buyer with that town hall's name.
+3. The tie is **probable** when SEAP puts that buyer in the same county, or when no other
+   buyer anywhere carries that name. It is **possible** when other buyers carry the same
+   name. A buyer in another county is never tied.
+4. No tie is ever **sure**, because the payment does not name the contract.
 
-Methods, as the API names them:
+Each project ends in one of four states:
 
-| Method | Confidence |
-| --- | --- |
-| `builder-cui+town-hall-name+county` | probable |
-| `builder-cui+only-town-hall-of-that-name` | probable |
-| `builder-cui+town-hall-name` | possible |
+| On the site                        | Meaning                                                                           |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| "Probabil un singur contract"      | Exactly one contract fits: the chain from the ministry to the builder is complete |
+| "Mai multe contracte posibile"     | Several contracts fit; all are shown and none is picked                           |
+| "Niciun contract găsit"            | No contract found; the chain stops at the builder                                 |
+| "Constructor numit doar cu numele" | The file names the builder without a tax ID, so no search is made                 |
 
-### Match states
+Only the first state counts as tied in the headline figures. Files before 27 August
+2026 name builders without a tax ID; inside a project, such a payment goes with the
+payments that name the same builder with one.
 
-Each payment, and each project, ends in one of four states:
-
-| State | Meaning | Counted as tied? |
-| --- | --- | --- |
-| `one` | Exactly one contract fits | Yes |
-| `several` | More than one contract fits; all are shown, none is picked | No |
-| `none` | No contract found; the chain stops at the builder | No |
-| `unnamed` | The file gives the builder only by name, so nothing is searched | No |
-
-Payments from files older than 27 August 2026 name builders without CUI. Inside a
-project, such a payment goes with the payments that name the same builder with its CUI.
-
-### Why "no contract found" happens
-
-Possible causes, not checked row by row: the contract was signed by an association of
-communes or the county council; it was published before 2021; the works were bought by
-direct purchase; or the town hall's name is written differently in SEAP.
+**Why "no contract found" happens.** Possible reasons, not checked one by one: the
+contract was signed by an association of communes or by the county council; it was
+published before 2021; the works were bought through a direct purchase; or the town
+hall's name is written differently in SEAP.
 
 ## Places
 
-`places.py` ties records to places, all through SIRUTA, the national code of every
-county, UAT (the unit with a town hall) and village. `dr link places` runs it again from
-what is held; every place collector and the payments collector run it after loading.
+Everything is tied to a place through SIRUTA, the official list of every county, town,
+commune and village.
 
-| Link | Rule | Held (18.10.2026) |
-| --- | --- | --- |
-| Entity -> its UAT and county (`entity.siruta`) | The UAT the Finance Ministry's list names for it; else the locality of its office at ANAF | 49,523 of 49,525 entities |
-| Entity -> the institution that funds it (`entity.parent_cui`) | The first main credit holder in the Finance Ministry's list that we also hold | 8,135 institutions |
-| Place -> its town hall or county council (`place.town_hall_cui`) | The entity of the list that no one funds and whose own name is the place's ("COMUNA ALBAC", "JUDETUL ALBA"); a place with two such entities gets none | 3,174 UATs, 41 counties |
-| Anghel Saligny payment -> the place paid (`pnias_payment.siruta`) | The town hall's name in its county, or "Județul X prin Consiliul Județean X" | all 3,821 |
+| Tie                                                | How it is made                                                                                         | Held (18.10.2026)                     |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| An institution or company → its town or commune    | The place the Finance Ministry's list gives for it; otherwise the town of its office at the tax agency | 49,523 of 49,525                      |
+| An institution → the institution that funds it     | The Finance Ministry's list                                                                            | 8,135 institutions                    |
+| A town or county → its town hall or county council | The public entity nobody funds whose name is the place's ("COMUNA ALBAC", "JUDETUL ALBA")              | 3,174 towns and communes, 41 counties |
+| An Anghel Saligny payment → the place paid         | The town hall's name in its county                                                                     | all 3,821                             |
 
-A name is matched to SIRUTA by its county, its kind (municipality, town, commune,
-sector) and its name in one plain form. Old spelling is forgiven only for î written for
-â between consonants and a dropped article ("Tirgu Mures", "Sfantul Gheorghe"), never a
-near miss; two candidates are never told apart.
+Names are matched carefully: the county, the kind of place (commune, town, municipality,
+sector) and the name must all agree. Old spellings are forgiven only in the most common
+cases ("Tirgu Mures" for "Târgu Mureș"), never a near miss. When two places could fit,
+none is picked.
 
-The budget of a town hall or county council is filed under the place it governs, so it
-reaches the institution through `place.town_hall_cui`. No budget line is ever named on a
-contract.
+The budget of a town hall is tied to the town it governs, and through it to the town
+hall's own page. No budget line is ever tied to a specific contract: the budget files do
+not say which contract a line pays.
 
-## Planned links
+## Planned
 
-- **SMIS codes** in contract titles, to tie contracts to EU projects (probable).
-- **Named payments** from voluntary publishers, to contracts (possible, by name, amount
-  and period).
+- **EU projects**: the project codes written in some contract titles would tie contracts
+  to EU-funded projects (probable).
+- **Payments published voluntarily** by some institutions would tie to contracts by
+  name, amount and period (possible).
