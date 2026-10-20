@@ -41,15 +41,14 @@ Instructions for running or changing the code are in this repository's
 
 ## Where things stand
 
-As of 18.10.2026 the data is fixed on purpose while the site is built, and no new days
-are collected:
+As of 20.10.2026 a new day is collected each morning. Held:
 
-- **Purchases and contracts from SEAP**: 1 September to 10 October 2026. That is
-  293,712 small direct purchases, and 6,058 contract notices holding 77,401 contracts,
-  4,796 of them signed in those days.
+- **Purchases and contracts from SEAP**: every day from 1 January 2026. That is
+  1,808,179 small direct purchases, and 34,445 contract notices holding 246,883
+  contracts, 76,281 of them signed in those days.
 - **Anghel Saligny programme**: six payment files from the ministry (May to August
   2026), and SEAP's contract lists since 2021 to find the builders' contracts.
 - **Places and budgets**: every county, town, commune and village; the 2024 budget of
   every town hall and county council, and their population; the Finance Ministry's list
-  of 13,485 public entities; and the tax agency's record of the 49,525 institutions and
+  of 13,485 public entities; and the tax agency's record of the 87,472 institutions and
   companies held.
