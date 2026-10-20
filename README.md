@@ -216,6 +216,7 @@ one record).
 | 04:30 every day | `dr collect seap-direct`                    |
 | 05:30 every day | `dr collect seap-awards`                    |
 | 07:30 every day | `dr collect seap-award-details`             |
+| 08:30 every day | `dr collect anaf`                           |
 
 The file collectors are not scheduled yet; payment files appear about monthly, exports
 quarterly.

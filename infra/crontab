@@ -16,7 +16,13 @@
 # left without them. Nothing to ask for on most days.
 30 7 * * * dr collect seap-award-details
 
+# Every day at 08:30 UTC, after the SEAP jobs: ANAF's record (county and locality) of the
+# institutions and companies they brought that ANAF was not asked about yet, 100 tax IDs
+# a call, then every entity placed again. A few calls on most days, none when nothing
+# is new.
+30 8 * * * dr collect anaf
+
 # Not scheduled, on purpose: `pnias-payments` and `seap-exports` read files that appear
 # about monthly and quarterly, and a new payment file also needs `dr reparse seap-exports`
-# for its new builders. They are run by hand until collection resumes; whether they join
-# this file then is an open todo in the workspace notes.
+# for its new builders. They are run by hand for now; whether they join this file is an
+# open todo in the workspace notes.
