@@ -56,9 +56,10 @@ and open http://localhost:3000. A new install has an empty database: see
 [Collectors](#collectors).
 
 > **The scheduler.** `docker compose up -d` with no service names also starts
-> `scheduler`, which collects every day missed so far. **The dataset is frozen at 1
-> September to 10 October 2026** and the scheduler is left stopped: bring services up by
-> name, and do not collect other days without the maintainer's decision.
+> `scheduler`, which collects every day missed since its last run, then a new day each
+> morning. It runs the published image: after a merge, `docker compose pull scheduler`
+> and `docker compose up -d scheduler`. Collecting days before 1 January 2026, or the
+> detail of every direct purchase, is a long run: ask the maintainer first.
 
 Without `--build`, Compose pulls the images that CI publishes to GitHub Container
 Registry (`ghcr.io/cristianpopa96/date-romania-api` and `date-romania-web`) instead of
@@ -207,8 +208,7 @@ one record).
 
 ### The schedule
 
-`infra/crontab` (UTC), run by the `scheduler` container (stopped while the dataset is
-frozen):
+`infra/crontab` (UTC), run by the `scheduler` container:
 
 | When            | Command                                     |
 | --------------- | ------------------------------------------- |

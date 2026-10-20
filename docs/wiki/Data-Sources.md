@@ -28,10 +28,12 @@ tells us, and what it does not.
 
 ## The period held
 
-The site is being built on a fixed slice of **40 days, 1 September to 10 October 2026**
-(decided on 11.10.2026). No other days are collected for now. The one exception is the
-Anghel Saligny trace, which looks at contracts back to 2021, because the 40 days alone
-would tie only 2% of the payments to a contract.
+Purchases and contracts from SEAP are held for **every day from 1 January 2026**, and a
+new day is collected each morning. From 11 to 18 October 2026 the site was built on a
+fixed slice of 40 days (1 September to 10 October 2026); the rest of the year was
+collected on 18 to 20 October 2026. The Anghel Saligny trace also looks at contracts
+back to 2021, from SEAP's quarterly lists, because the programme pays for contracts
+signed since then.
 
 ## Not used yet
 

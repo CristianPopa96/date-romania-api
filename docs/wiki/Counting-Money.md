@@ -49,7 +49,7 @@ contracts, and SEAP publishes the notice again each time a contract is added or 
 - **Direct purchases and contracts** are always separate figures, separate lists and
   separate rankings.
 - **Figures from different periods** are never added or subtracted. A town hall's budget
-  covers all of 2024, its contracts the 40 days held, its Anghel Saligny payments the
+  covers all of 2024, its contracts the days held, its Anghel Saligny payments the
   dates of the ministry's files. Each figure names its own period.
 
 ## Town hall and county council budgets
