@@ -2059,6 +2059,18 @@
       "title": "Versions",
       "description": "Null until the versions are collected."
      },
+     "replaced_by": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Replaced By",
+      "description": "The newest notice we hold that SEAP published in place of this one. Its contracts then count there, not here."
+     },
      "detail": {
       "anyOf": [
        {
@@ -2110,6 +2122,7 @@
      "published_at",
      "first_published_at",
      "versions",
+     "replaced_by",
      "detail",
      "contracts",
      "ordinary",
