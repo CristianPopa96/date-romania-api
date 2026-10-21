@@ -22,7 +22,10 @@
 # is new.
 30 8 * * * dr collect anaf
 
-# Not scheduled, on purpose: `pnias-payments` and `seap-exports` read files that appear
-# about monthly and quarterly, and a new payment file also needs `dr reparse seap-exports`
-# for its new builders. They are run by hand for now; whether they join this file is an
-# open todo in the workspace notes.
+# On the 1st of every month at 09:30 UTC: the Anghel Saligny payment files and SEAP's
+# contract exports (data.gov.ro) not held yet. The ministry adds a payment file about
+# monthly and SEAP an export each quarter; a file already held is not downloaded again,
+# so a month with nothing new costs a few calls. In this order: a new payment file can
+# name builders, whose contracts the stored exports are read again for, then a new
+# export keeps those of every builder known. Each step ties the payments again.
+30 9 1 * * dr collect pnias-payments && dr reparse seap-exports && dr collect seap-exports
