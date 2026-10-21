@@ -249,12 +249,19 @@ def test_iter_pages_returns_every_purchase_of_a_busy_day():
     assert len(calls) < 1000
 
 
-def test_iter_pages_fetches_a_quiet_day_in_one_page():
+def test_iter_pages_asks_a_quiet_day_by_type_for_its_accepted_purchases():
+    """A day under the cap would fit in one page, but that page tells no contract type."""
     rng = random.Random(4)
-    fetch, calls = fake_seap([_item(n, rng, busy=False) for n in range(99)])
+    items = [_item(n, rng, busy=False) for n in range(99)]
+    fetch, calls = fake_seap(items)
     pages = list(iter_pages(DAY, fetch))
-    assert [len(page.data["items"]) for page in pages] == [99]
-    assert [size for _, size in calls] == [1, CAP]
+    seen = [row["directAcquisitionId"] for page in pages for row in page.data["items"]]
+    assert sorted(seen) == [item["id"] for item in items]
+    accepted = [page for page in pages if page.slice.state == 7]
+    assert accepted and all(page.slice.contract_type for page in accepted)
+    assert all(page.slice.state for page in pages)
+    # Every other state comes whole, in one page.
+    assert len(pages) - len(accepted) <= 4
 
 
 def test_iter_pages_makes_no_full_request_for_an_empty_day():

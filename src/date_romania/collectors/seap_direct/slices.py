@@ -7,6 +7,7 @@ from dataclasses import dataclass, replace
 from datetime import date, timedelta
 
 from date_romania.collectors.http import PoliteClient
+from date_romania.money import DIRECT_PURCHASE_ACCEPTED
 from date_romania.sources import SEAP_DIRECT
 
 log = logging.getLogger(__name__)
@@ -196,6 +197,12 @@ def iter_pages(
         probe = call(sl, 1)
         if not is_capped(probe.data):
             if not probe.data.get("total"):
+                continue
+            # Only a query by type tells an accepted purchase's contract type, and the
+            # legal limit depends on it, so accepted purchases are always asked for by
+            # type, even on a day small enough to fit under the cap.
+            if sl.contract_type is None and sl.state in (None, DIRECT_PURCHASE_ACCEPTED):
+                todo.extend(reversed(sl.children()))
                 continue
             page = call(sl, CAP)
             if not is_capped(page.data):
