@@ -771,6 +771,7 @@
    "published_at": "2026-10-06T07:00:00Z",
    "first_published_at": "2024-03-20T07:00:00Z",
    "versions": 2,
+   "replaced_by": null,
    "detail": {
     "call_notice_no": "SCN0000009",
     "call_published_at": "2024-01-10T07:00:00Z",
@@ -1016,6 +1017,7 @@
    "published_at": "2026-10-07T07:00:00Z",
    "first_published_at": null,
    "versions": null,
+   "replaced_by": null,
    "detail": null,
    "contracts": 1,
    "ordinary": 1,
@@ -1111,6 +1113,7 @@
    "published_at": "2026-10-07T08:00:00Z",
    "first_published_at": null,
    "versions": null,
+   "replaced_by": null,
    "detail": null,
    "contracts": 0,
    "ordinary": 0,

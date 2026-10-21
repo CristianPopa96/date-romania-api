@@ -82,6 +82,10 @@ class AwardNoticeOut(Answer):
         description="The earliest publication SEAP lists. Null until the versions are collected."
     )
     versions: int | None = Field(description="Null until the versions are collected.")
+    replaced_by: int | None = Field(
+        description="The newest notice we hold that SEAP published in place of this one. "
+        "Its contracts then count there, not here."
+    )
     detail: NoticeDetail | None = Field(description="Null until the detail is collected.")
     contracts: int
     ordinary: int

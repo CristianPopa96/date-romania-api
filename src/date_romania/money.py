@@ -12,12 +12,24 @@ and contracts are never added together.
 from datetime import date, timedelta
 from decimal import Decimal
 
-from sqlalchemy import ColumnElement, Date, Text, and_, case, cast, false, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy import (
+    ColumnElement,
+    Date,
+    Text,
+    and_,
+    case,
+    cast,
+    false,
+    func,
+    select,
+    tuple_,
+)
+from sqlalchemy.orm import Session, aliased
 
 from date_romania.dates import BUCHAREST, day_bounds
 from date_romania.models import (
     AwardContract,
+    AwardNotice,
     AwardNoticeVersion,
     AwardWinner,
     DirectPurchase,
@@ -112,14 +124,20 @@ _COUNTED_KINDS = (AWARD_CONTRACT, AWARD_SUBSEQUENT)
 contract_counted = AwardContract.kind.in_(_COUNTED_KINDS)
 contract_value = func.coalesce(func.sum(AwardContract.value_ron), 0)
 
-# SEAP publishes a changed notice under a new id, with every contract again, and withdraws
-# the one before. When both were collected, the contracts of the withdrawn one must not be
-# counted a second time.
-contract_in_force = AwardContract.notice_id.not_in(
-    select(AwardNoticeVersion.version_id).where(
-        AwardNoticeVersion.version_id != AwardNoticeVersion.notice_id
-    )
+# SEAP publishes a changed notice under a new id, with every contract again under new
+# contract ids, and withdraws the one before. When both were collected, the contracts of
+# the withdrawn one must not be counted a second time. SEAP lists every version of a
+# notice, newer ones too, under each of them, so a notice is replaced only by a held
+# notice published after it that lists it: one row per such pair.
+_older, _newer = aliased(AwardNotice), aliased(AwardNotice)
+replaced = (
+    select(_older.id.label("notice_id"), _newer.id.label("replaced_by"))
+    .join(AwardNoticeVersion, AwardNoticeVersion.version_id == _older.id)
+    .join(_newer, _newer.id == AwardNoticeVersion.notice_id)
+    .where(tuple_(_newer.published_at, _newer.id) > tuple_(_older.published_at, _older.id))
+    .subquery()
 )
+contract_in_force = AwardContract.notice_id.not_in(select(replaced.c.notice_id))
 
 # An association: a contract with more than one winner. SEAP gives one value for the whole
 # contract and names no leader, so the value is never split between the members and never

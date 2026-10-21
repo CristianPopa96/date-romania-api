@@ -546,6 +546,12 @@ def test_a_withdrawn_notice_does_not_count_its_contracts_again(client, session):
     session.flush()
     session.add_all(rows[1:])
     session.flush()
+    # SEAP lists every version under each of them, the newer one too.
+    session.add_all(
+        AwardNoticeVersion(notice_id=8000, version_id=version, state_id=2, source_document_id=doc)
+        for version in (8000, ROAD)
+    )
+    session.flush()
 
     assert client.get(f"/v1/institutions/{TOWN_HALL}/contracts").json() == before
     assert before["contracts"] == 2
@@ -556,8 +562,11 @@ def test_a_withdrawn_notice_does_not_count_its_contracts_again(client, session):
     alone = client.get("/v1/rankings/contract-suppliers").json()
     assert [(row["cui"], row["contracts"]) for row in alone["items"]] == [(BUILDER, 1)]
     assert client.get("/v1/datasets").json()["items"][1]["records"] == 3
-    # The withdrawn notice keeps its own page, with its own contracts.
-    assert client.get("/v1/award-notices/8000").json()["contracts"] == 1
+    # The withdrawn notice keeps its own page, with its own contracts, and names the one
+    # that replaced it.
+    withdrawn = client.get("/v1/award-notices/8000").json()
+    assert (withdrawn["contracts"], withdrawn["replaced_by"]) == (1, ROAD)
+    assert client.get(f"/v1/award-notices/{ROAD}").json()["replaced_by"] is None
 
 
 def test_a_day_collected_far_from_the_rest_does_not_stretch_the_period(client, session):

@@ -54,6 +54,13 @@ def award_notice(session: Db, notice_id: int) -> AwardNoticeOut:
             AwardNoticeVersion.notice_id == notice_id
         )
     ).one()
+    replaced_by = session.scalar(
+        select(money.replaced.c.replaced_by)
+        .join(AwardNotice, AwardNotice.id == money.replaced.c.replaced_by)
+        .where(money.replaced.c.notice_id == notice_id)
+        .order_by(AwardNotice.published_at.desc(), AwardNotice.id.desc())
+        .limit(1)
+    )
     detail = session.get(AwardNoticeDetail, notice_id)
     kinds = dict(
         session.execute(
@@ -81,6 +88,7 @@ def award_notice(session: Db, notice_id: int) -> AwardNoticeOut:
         published_at=notice.published_at,
         first_published_at=first_published,
         versions=versions or None,
+        replaced_by=replaced_by,
         detail=detail and NoticeDetail.model_validate(detail),
         contracts=sum(kinds.values()),
         ordinary=kinds.get(money.AWARD_CONTRACT, 0),
