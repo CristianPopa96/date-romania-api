@@ -210,16 +210,18 @@ one record).
 
 `infra/crontab` (UTC), run by the `scheduler` container:
 
-| When            | Command                                     |
-| --------------- | ------------------------------------------- |
-| Every hour      | `dr check` (database and storage reachable) |
-| 04:30 every day | `dr collect seap-direct`                    |
-| 05:30 every day | `dr collect seap-awards`                    |
-| 07:30 every day | `dr collect seap-award-details`             |
-| 08:30 every day | `dr collect anaf`                           |
+| When                            | Command                                                                                   |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| Every hour                      | `dr check` (database and storage reachable)                                               |
+| 04:30 every day                 | `dr collect seap-direct`                                                                  |
+| 05:30 every day                 | `dr collect seap-awards`                                                                  |
+| 07:30 every day                 | `dr collect seap-award-details`                                                           |
+| 08:30 every day                 | `dr collect anaf`                                                                         |
+| 09:30 on the 1st of every month | `dr collect pnias-payments`, then `dr reparse seap-exports` and `dr collect seap-exports` |
 
-The file collectors are not scheduled yet; payment files appear about monthly, exports
-quarterly.
+The file collectors run monthly: payment files appear about monthly, exports quarterly.
+Unlike the daily jobs, a month whose run was missed (the machine asleep at that hour) is
+not made up on start; it waits for the next 1st, or run the line by hand.
 
 ### Checking a run
 
