@@ -1,0 +1,34 @@
+{
+ "items": [
+  {
+   "alocat_eur": 20106860700,
+   "platit_eur": 14939205346.68,
+   "incasat_eur": 13274906265,
+   "prefinantare_eur": 4081717802,
+   "suspendat_eur": 0,
+   "revocat_eur": 468128928,
+   "nr_beneficiari_contracte": 13758,
+   "nr_beneficiari_plati": 7768,
+   "nr_proiecte": 21710,
+   "nr_proiecte_impact_national": 177
+  }
+ ],
+ "hasMore": false,
+ "limit": 25,
+ "offset": 0,
+ "count": 1,
+ "links": [
+  {
+   "rel": "self",
+   "href": "http://pnrr.fonduri-ue.ro/ords/pnrr/mfe/indicatori_total"
+  },
+  {
+   "rel": "describedby",
+   "href": "http://pnrr.fonduri-ue.ro/ords/pnrr/metadata-catalog/mfe/item"
+  },
+  {
+   "rel": "first",
+   "href": "http://pnrr.fonduri-ue.ro/ords/pnrr/mfe/indicatori_total"
+  }
+ ]
+}

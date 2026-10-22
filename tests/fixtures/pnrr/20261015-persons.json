@@ -1,0 +1,35 @@
+[
+ {
+  "unique identifier": 16054368,
+  "full legal name": "COMPANIA NAŢIONALĂ DE ADMINISTRARE A INFRASTRUCTURII RUTIERE S.A.",
+  "last name": null,
+  "first name": null,
+  "vat number": null,
+  "tax identification number": 16054368,
+  "other unique identifier": null,
+  "received amount in lei": 9230807557.04,
+  "last date funding received": "2026.09.25"
+ },
+ {
+  "unique identifier": 11054529,
+  "full legal name": "COMPANIA NATIONALA DE CAI FERATE \"CFR\" SA",
+  "last name": null,
+  "first name": null,
+  "vat number": null,
+  "tax identification number": 11054529,
+  "other unique identifier": null,
+  "received amount in lei": 7214223160.31,
+  "last date funding received": "2026.09.29"
+ },
+ {
+  "unique identifier": 38918422,
+  "full legal name": "MINISTERUL INVESTITIILOR SI PROIECTELOR EUROPENE",
+  "last name": null,
+  "first name": null,
+  "vat number": null,
+  "tax identification number": 38918422,
+  "other unique identifier": null,
+  "received amount in lei": 5125822538,
+  "last date funding received": "2026.08.31"
+ }
+]

@@ -20,6 +20,14 @@ from date_romania.models.places import (
     Population,
     PublicEntity,
 )
+from date_romania.models.pnrr import (
+    PnrrContract,
+    PnrrContractLine,
+    PnrrEdition,
+    PnrrMeasure,
+    PnrrPayment,
+    PnrrTopRecipient,
+)
 from date_romania.models.programme import ExportBuyer, ExportContract, PniasLink, PniasPayment
 from date_romania.models.reports import Report
 from date_romania.models.seap_awards import (
@@ -65,4 +73,10 @@ __all__ = [
     "LocalBudget",
     "Population",
     "AnafRecord",
+    "PnrrEdition",
+    "PnrrMeasure",
+    "PnrrContract",
+    "PnrrContractLine",
+    "PnrrPayment",
+    "PnrrTopRecipient",
 ]

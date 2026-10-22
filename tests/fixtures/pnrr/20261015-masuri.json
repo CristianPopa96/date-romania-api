@@ -1,0 +1,80 @@
+[
+ {
+  "componenta_cod": "C2",
+  "masura_cod": "I1",
+  "submasura_cod": null,
+  "cri_acronim": "MMAP",
+  "cri_denumire": "Ministerul Mediului, Apelor și Pădurilor",
+  "sursa_finantare": "grant",
+  "masura_denumire": "Investiția 1. Campania națională de împădurire și reîmpădurire, inclusiv păduri urbane ",
+  "alocare_financiare_eur": 306882498,
+  "contractare_anhajata_total_fe_ron": 1531511092.2714946,
+  "valoare_plata_total_fe_ron": 767594994,
+  "valoare_plata_total_fe_eur": 152458398
+ },
+ {
+  "componenta_cod": "C5",
+  "masura_cod": "I1",
+  "submasura_cod": "a",
+  "cri_acronim": "MDLPA",
+  "cri_denumire": "Ministerul Dezvoltării, Lucrărilor Publice și Administrației",
+  "sursa_finantare": "grant",
+  "masura_denumire": "Investiția 1.a. Instituirea unui fond pentru Valul renovării care să finanțeze lucrări de creștere a eficienței energetice a fondului construit existent",
+  "alocare_financiare_eur": 1380320898,
+  "contractare_anhajata_total_fe_ron": 12850257854.01,
+  "valoare_plata_total_fe_ron": 3521837286,
+  "valoare_plata_total_fe_eur": 689204948
+ },
+ {
+  "componenta_cod": "C7",
+  "masura_cod": "I7",
+  "submasura_cod": null,
+  "cri_acronim": "ANAP",
+  "cri_denumire": "Agenția Națională pentru Achiziții Publice",
+  "sursa_finantare": "grant",
+  "masura_denumire": "Investiția 7. Introducerea formularelor electronice (eForms) în domeniul achizițiilor publice",
+  "alocare_financiare_eur": 851600,
+  "contractare_anhajata_total_fe_ron": 3273961.97,
+  "valoare_plata_total_fe_ron": 3273962,
+  "valoare_plata_total_fe_eur": 654792
+ },
+ {
+  "componenta_cod": "C8",
+  "masura_cod": "I4",
+  "submasura_cod": null,
+  "cri_acronim": "MF",
+  "cri_denumire": "Ministerul Finanțelor",
+  "sursa_finantare": "grant",
+  "masura_denumire": "Investiția 4. Instituirea vămii electronice",
+  "alocare_financiare_eur": 62000000,
+  "contractare_anhajata_total_fe_ron": 280693482.561305,
+  "valoare_plata_total_fe_ron": 267792893,
+  "valoare_plata_total_fe_eur": 53308790
+ },
+ {
+  "componenta_cod": "C10",
+  "masura_cod": "I4",
+  "submasura_cod": null,
+  "cri_acronim": "MDLPA",
+  "cri_denumire": "Ministerul Dezvoltării, Lucrărilor Publice și Administrației",
+  "sursa_finantare": "loan",
+  "masura_denumire": "Investiția 4. Elaborarea/actualizarea în format GIS a documentelor de amenajare a teritoriului și de urbanism",
+  "alocare_financiare_eur": 17258412,
+  "contractare_anhajata_total_fe_ron": 354493269.9,
+  "valoare_plata_total_fe_ron": 149083038,
+  "valoare_plata_total_fe_eur": 29568704
+ },
+ {
+  "componenta_cod": "C14",
+  "masura_cod": "R8",
+  "submasura_cod": null,
+  "cri_acronim": "ANAP",
+  "cri_denumire": "Agenția Națională pentru Achiziții Publice",
+  "sursa_finantare": "grant",
+  "masura_denumire": "Reforma 8. Modernizarea și raționalizarea sistemului național de achiziții publice",
+  "alocare_financiare_eur": 4600000,
+  "contractare_anhajata_total_fe_ron": 17224423.88,
+  "valoare_plata_total_fe_ron": 17224424,
+  "valoare_plata_total_fe_eur": 3442788
+ }
+]

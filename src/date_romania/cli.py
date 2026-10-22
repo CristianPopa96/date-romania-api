@@ -17,6 +17,7 @@ from date_romania.collectors import (
     anaf,
     local_budgets,
     pnias,
+    pnrr,
     public_entities,
     seap_awards,
     seap_direct,
@@ -141,6 +142,13 @@ def collect_pnias_payments() -> None:
         typer.echo(f"{pnias.collect(session, client)} payments")
 
 
+@collect_app.command("pnrr")
+def collect_pnrr() -> None:
+    """The newest edition of MIPE's PNRR dashboard data, if it is not loaded yet."""
+    with Session(get_engine()) as session, PoliteClient(timeout=120.0) as client:
+        typer.echo(f"{pnrr.collect(session, client)} PNRR contracts")
+
+
 @collect_app.command("seap-exports")
 def collect_seap_exports() -> None:
     """SEAP's quarterly contract exports from data.gov.ro; only the files not held yet."""
@@ -194,6 +202,12 @@ def reparse_seap_awards() -> None:
 def reparse_pnias_payments() -> None:
     """Parse the stored Anghel Saligny payment files again, without calling data.gov.ro."""
     _reparse(pnias)
+
+
+@reparse_app.command("pnrr")
+def reparse_pnrr() -> None:
+    """Load the newest PNRR edition held again, without calling MIPE."""
+    _reparse(pnrr)
 
 
 @reparse_app.command("seap-exports")
