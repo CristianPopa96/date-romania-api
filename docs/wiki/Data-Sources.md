@@ -33,7 +33,9 @@ new day is collected each morning. From 11 to 18 October 2026 the site was built
 fixed slice of 40 days (1 September to 10 October 2026); the rest of the year was
 collected on 18 to 20 October 2026. The Anghel Saligny trace also looks at contracts
 back to 2021, from SEAP's quarterly lists, because the programme pays for contracts
-signed since then.
+signed since then. The ministry's payment files and SEAP's quarterly lists are checked
+for new files on the 1st of every month, and the tax agency's record each morning, for
+the institutions and companies that are new.
 
 ## Not used yet
 

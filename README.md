@@ -266,19 +266,26 @@ endpoint; they are never restated in a route or a collector. Amounts are lei wit
 VAT, as SEAP publishes them.
 
 - **Direct purchases.** Only accepted offers (SEAP state 7) are added up. An accepted
-  purchase published above 900,400 lei (the works ceiling, the highest a direct purchase
-  may have) is left out of totals and reported apart as `above_limit`. The goods and
-  services ceiling (270,120 lei) is not applied to `above_limit` yet: some services
-  (Annex 2 of the law) have higher ceilings and are not told apart. Each purchase stores
-  its contract type since 16.10.2026.
+  purchase published above the ceiling of its contract type (270,120 lei for goods and
+  services, 900,400 lei for works and for a purchase whose type is not known; Law
+  98/2016 art. 7(5)) is left out of totals and reported apart as `above_limit`. Services
+  of Annex 2 of the law (health, social, education, culture, hotels and restaurants,
+  legal, security, postal...) have no direct purchase ceiling: they are told by CPV code
+  (`cpv.py`; the database stores the flag as the generated column
+  `direct_purchase.annex_2`) and always counted. The type is SEAP's, as the buyer filed
+  it; accepted purchases are always asked for by type (api #30).
 - **Near-limit pattern** (`/v1/patterns/near-limit`): the same buyer and supplier with at
   least two accepted direct purchases, each between 90% of the ceiling of its contract
-  type and the ceiling.
+  type and the ceiling. Annex 2 services have no ceiling to be near and are counted
+  apart (`annex_2`).
 - **Award notices.** A notice is published again whenever a contract is added or
   changed, so count by `contract_date`, not by the publication day. Totals count
   ordinary (`kind` 1) and subsequent (`kind` 3) contracts, never framework agreements
   (`kind` 2). When a changed notice is republished under a new id, the contracts of the
-  withdrawn one are left out (`award_notice_version`, `contract_in_force`). An
+  withdrawn one are left out (`award_notice_version`, `contract_in_force`): a notice is
+  replaced by a held notice published after it that lists it among its versions (SEAP
+  lists the newer versions too). A republished contract gets a new id. The withdrawn
+  notice names its replacement (`replaced_by`). An
   association wins one contract with one value; `award_winner` has a row per member and
   the value is not split.
 - Entity pages and rankings count contracts signed in the period held, with a note that
@@ -481,6 +488,7 @@ src/date_romania/
   collectors/   one package per public source; http.py (polite client), jobs.py (runs,
                 due days, record_parse), datagov.py and sheets.py (file sources)
   money.py      what counts as money spent: every rule, written once
+  cpv.py        the CPV codes the law names (the services of Annex 2)
   local_money.py  the local budget file read once: revenue lines, capital, chapters
   pnias_links.py  how an Anghel Saligny payment is tied to a SEAP contract
   places.py     where things are: kinds of place, UAT names, and locate() for entities
