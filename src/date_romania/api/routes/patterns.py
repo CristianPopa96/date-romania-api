@@ -3,7 +3,7 @@
 from decimal import ROUND_FLOOR, Decimal
 
 from fastapi import APIRouter, Response
-from sqlalchemy import func, select, tuple_
+from sqlalchemy import and_, func, select, tuple_
 from sqlalchemy.orm import aliased
 
 from date_romania import money
@@ -81,19 +81,21 @@ def near_limit(
     }
     if format == "csv":
         return _csv(found, rows, entities, fetched)
-    # What could be checked: accepted purchases of a known type, under the same filters. The
-    # type is known only where SEAP's list was asked by type, so quiet days stay unchecked;
-    # the period is the one of the purchases checked, not of all the data.
+    # What could be checked: accepted purchases of a known type and outside Annex 2, under
+    # the same filters; the period is the one of the purchases checked, not of all the data.
     scope = [money.accepted]
     if cpv:
         scope.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
-    typed = DirectPurchase.contract_type_id.is_not(None)
-    checked, accepted_total, first_day, last_day = session.execute(
+    untyped = DirectPurchase.contract_type_id.is_(None)
+    checkable = and_(~untyped, ~money.annex_2)
+    checked, accepted_total, unknown_type, annex_2, first_day, last_day = session.execute(
         select(
-            func.count().filter(typed),
+            func.count().filter(checkable),
             func.count(),
-            func.min(money.day).filter(typed),
-            func.max(money.day).filter(typed),
+            func.count().filter(untyped, ~money.annex_2),
+            func.count().filter(money.annex_2),
+            func.min(money.day).filter(checkable),
+            func.max(money.day).filter(checkable),
         ).where(*scope)
     ).one()
     return NearLimitPattern(
@@ -119,7 +121,8 @@ def near_limit(
         ],
         checked=checked,
         accepted_total=accepted_total,
-        unknown_type=accepted_total - checked,
+        unknown_type=unknown_type,
+        annex_2=annex_2,
         source=list_source(session, *filters),
     )
 

@@ -37,9 +37,9 @@ def upsert_rows(
 ) -> None:
     """Insert rows keyed by the publisher's own id; a row already stored is replaced.
 
-    Every column is updated except the key and `updated_at`, which is set to now, so a row
-    must carry every value it means to keep. A column in `keep` keeps its stored value
-    when the new row has none for it.
+    Every column is updated except the key, generated columns and `updated_at`, which is
+    set to now, so a row must carry every value it means to keep. A column in `keep` keeps
+    its stored value when the new row has none for it.
     """
     table = model.__table__
     for batch in batched(rows, 500):
@@ -51,7 +51,8 @@ def upsert_rows(
                 else statement.excluded[column.name]
             )
             for column in table.columns
-            if column.name not in (*index_elements, "updated_at")
+            # A generated column is the database's to write.
+            if column.name not in (*index_elements, "updated_at") and column.computed is None
         }
         if "updated_at" in table.columns:
             changed["updated_at"] = func.now()

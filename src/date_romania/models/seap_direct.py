@@ -5,6 +5,8 @@ from decimal import Decimal
 
 from sqlalchemy import (
     BigInteger,
+    Boolean,
+    Computed,
     DateTime,
     ForeignKey,
     Numeric,
@@ -15,6 +17,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
+from date_romania.cpv import annex_2_sql
 from date_romania.models.core import Base
 
 
@@ -34,6 +37,11 @@ class DirectPurchase(Base):
     # 1 goods, 2 services, 3 works. The list rows do not give it: it is the filter of the
     # query that returned the row. Null when the day fit under the cap without that filter.
     contract_type_id: Mapped[int | None] = mapped_column(SmallInteger)
+    # A service of Annex 2 of Law 98/2016, which has no direct purchase limit: worked out
+    # by the database from the CPV code, so totals compare a stored flag.
+    annex_2: Mapped[bool] = mapped_column(
+        Boolean, Computed(annex_2_sql("cpv_code"), persisted=True)
+    )
     # The CUI is null when SEAP's text holds no valid Romanian tax ID; the text is always kept.
     buyer_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
     buyer_text: Mapped[str | None] = mapped_column(Text)

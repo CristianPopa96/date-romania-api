@@ -54,6 +54,7 @@ def stats(session: Db) -> Stats:
         institutions=institutions,
         suppliers=suppliers,
         limit=money.DIRECT_PURCHASE_LIMIT_RON,
+        limit_goods_services=money.DIRECT_PURCHASE_LIMIT_GOODS_SERVICES_RON,
         source=list_source(session),
     )
 

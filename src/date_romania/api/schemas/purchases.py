@@ -22,10 +22,11 @@ class Summary(Answer):
     accepted: int = Field(description="Purchases where the offer was accepted.")
     value: float = Field(description="Sum of the accepted purchases at or under `limit`.")
     above_limit: int = Field(
-        description=f"Accepted purchases published with a value above {_LIMIT}, the highest "
-        "legal limit for a direct purchase (the one for works). They are not counted in "
-        "`value` and are listed separately. A goods or services purchase between its own "
-        f"limit of {_LIMIT_GOODS_SERVICES} and this one is not marked."
+        description=f"Accepted purchases published with a value above the legal limit of "
+        f"their type: {_LIMIT_GOODS_SERVICES} for goods and services, {_LIMIT} for works "
+        "(and for a purchase whose type is not known). Services of Annex 2 of Law 98/2016, "
+        "told by CPV code, have no limit. They are not counted in `value` and are listed "
+        "separately."
     )
     above_limit_value: float
     first_day: date | None = Field(description="First day we have data for.")
@@ -48,9 +49,16 @@ class Purchase(Answer):
     finalized_at: datetime | None
     estimated_value: float | None
     value: float | None = Field(description="The closing value.")
+    contract_type_id: int | None = Field(
+        description="SEAP's type, as the buyer filed it: 1 goods, 2 services, 3 works."
+    )
+    limit: float | None = Field(
+        description="The legal limit this purchase is held to, in lei without VAT; null for "
+        "services of Annex 2 of Law 98/2016, which have none."
+    )
     above_limit: bool = Field(
-        description=f"The purchase was accepted with a value above {_LIMIT}, the highest "
-        "legal limit for a direct purchase. Always false for a purchase that was not accepted."
+        description="The purchase was accepted with a value above `limit`. Always false for a "
+        "purchase that was not accepted."
     )
     source: Source
 
