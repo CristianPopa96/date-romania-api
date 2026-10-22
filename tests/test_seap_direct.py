@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from date_romania.collectors.seap_direct.parse import parse_page, split_party
+from date_romania.collectors.seap_direct.parse import parse_detail, parse_page, split_party
 from date_romania.collectors.seap_direct.slices import (
     CAP,
     CPV_DIVISIONS,
@@ -19,6 +19,8 @@ from date_romania.collectors.seap_direct.slices import (
 )
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"
+# One purchase's own page, three of its lines kept; the officials' names are made up.
+DETAIL = Path(__file__).parent / "fixtures" / "seap_direct_detail.json"
 DAY = date(2026, 10, 6)
 
 
@@ -285,3 +287,57 @@ def test_iter_pages_stops_when_the_filters_do_nothing():
 
     with pytest.raises(SeapError):
         list(iter_pages(DAY, fetch, max_requests=200))
+
+
+def detail() -> dict:
+    return json.loads(DETAIL.read_text(encoding="utf-8"))
+
+
+def test_parse_detail_reads_the_lines_and_conditions():
+    parsed = parse_detail(detail(), 123236907)
+    assert parsed.rejected == []
+    (row,) = parsed.details
+    assert row["purchase_id"] == parsed.items_of == 123236907
+    assert row["payment_condition"].startswith("Conform cerintelor din caietul de sarcini")
+    assert "Măgurele" in row["delivery_condition"]
+    assert (row["eu_funded"], row["eu_fund"]) == (False, None)
+    assert [
+        (item["position"], item["cpv_code"], item["quantity"], item["unit"], item["unit_price"])
+        for item in parsed.items
+    ] == [
+        (1, "30237460-1", Decimal("30.0"), "bucata", Decimal("821.15")),
+        (2, "30237280-5", Decimal("5.0"), "bucata", Decimal("320.15")),
+        (3, "30237200-1", Decimal("30.0"), "bucata", Decimal("710.15")),
+    ]
+    # The price is for one unit: the lines add up to the purchase's value.
+    total = sum(item["unit_price"] * item["quantity"] for item in parsed.items)
+    assert total == Decimal(str(detail()["closingValue"]))
+
+
+def test_parse_detail_never_reads_the_officials():
+    data = detail()
+    parsed = parse_detail(data)
+    values = [str(value) for row in parsed.details + parsed.items for value in row.values()]
+    assert not any(data["assignedCAUser"] in value or "@" in value for value in values)
+
+
+def test_parse_detail_rejects_an_answer_about_another_purchase():
+    parsed = parse_detail(detail(), 1)
+    assert (parsed.details, parsed.items, parsed.items_of) == ([], [], None)
+    assert "asked for purchase 1" in parsed.rejected[0][1]
+
+
+def test_parse_detail_names_a_fund_by_its_key_when_seap_gives_no_name():
+    data = detail()
+    data["financingType"] = True
+    data["sysEuropeanFund"] = {"text": "", "localeKey": "Common.Clasiff.SysEuropeanFund.PEO"}
+    (row,) = parse_detail(data).details
+    assert (row["eu_funded"], row["eu_fund"]) == (True, "PEO")
+
+
+def test_parse_detail_rejects_an_unreadable_line_and_keeps_the_rest():
+    data = detail()
+    data["directAcquisitionItems"][1]["itemQuantity"] = "many"
+    parsed = parse_detail(data)
+    assert [item["position"] for item in parsed.items] == [1, 3]
+    assert len(parsed.rejected) == 1

@@ -109,6 +109,16 @@ def collect_seap_direct(date: Date = None, since: Since = None) -> None:
     _collect(seap_direct, "direct purchases", date, since)
 
 
+@collect_app.command("seap-direct-details")
+def collect_seap_direct_details(
+    limit: Annotated[int | None, typer.Option(help="Stop after this many purchases.")] = None,
+) -> None:
+    """The lines and conditions of accepted direct purchases of 100,000 lei or more that
+    lack them, newest first; safe to run again."""
+    with Session(get_engine()) as session, PoliteClient() as client:
+        typer.echo(f"{seap_direct.collect_details(session, client, limit)} purchases")
+
+
 @collect_app.command("seap-awards")
 def collect_seap_awards(date: Date = None, since: Since = None) -> None:
     """SEAP award notices by publication day. With no option, every day missed so far."""

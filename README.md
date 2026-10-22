@@ -160,6 +160,7 @@ uv run dr collect seap-direct                     # every day missed so far (fir
 uv run dr collect seap-direct --date 2026-10-06   # one day
 uv run dr collect seap-direct --since 2026-10-01  # from a day up to yesterday
 uv run dr reparse seap-direct                     # rebuild the rows from the raw store
+uv run dr collect seap-direct-details --limit 100 # lines and conditions of purchases of 100,000 lei or more
 uv run dr collect seap-awards                     # the same options for every daily collector
 uv run dr collect seap-award-details              # detail and versions of notices that lack them
 uv run dr collect pnias-payments                  # Anghel Saligny payment files not held yet
@@ -174,18 +175,23 @@ uv run dr link places                             # give every entity its county
 uv run dr reparse siruta                          # also public-entities, local-budgets, anaf
 ```
 
-| Collector         | Source                                                                                                                                                        | Table                                                                                           |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `seap-direct`     | SEAP direct purchases, by finalization day                                                                                                                    | `direct_purchase`                                                                               |
-| `seap-awards`     | SEAP award notices, by publication day, with the contracts and winners of each, its detail (financing, the notice that opened the procedure) and its versions | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
-| `pnias-payments`  | Payment files of the Anghel Saligny programme (MDLPA, on data.gov.ro): one row per settlement request paid                                                    | `pnias_payment`                                                                                 |
-| `seap-exports`    | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today: only the contracts of the programme's builders, and every buyer                    | `export_contract`, `export_buyer`                                                               |
-| `siruta`          | SIRUTA (INS, on data.gov.ro): every county, UAT and village, with the place it belongs to                                                                     | `place`                                                                                         |
-| `public-entities` | The Finance Ministry's monthly list of public entities: the UAT each works in and the institutions that fund it                                               | `public_entity`                                                                                 |
-| `local-budgets`   | The Ministry of Development's yearly executed budget of every UAT and county council (2024), and UAT population (2021 to 2024)                                | `local_budget`, `population`                                                                    |
-| `anaf`            | ANAF's register, asked by tax ID: the county and locality of the registered office (never the street), CAEN code, VAT and inactive status                     | `anaf_record`                                                                                   |
+| Collector             | Source                                                                                                                                                                  | Table                                                                                           |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `seap-direct`         | SEAP direct purchases, by finalization day                                                                                                                              | `direct_purchase`                                                                               |
+| `seap-direct-details` | The page of one direct purchase: its lines, payment and delivery conditions, EU fund. One request each, so only accepted purchases of 100,000 lei or more, newest first | `direct_purchase_detail`, `direct_purchase_item`                                                |
+| `seap-awards`         | SEAP award notices, by publication day, with the contracts and winners of each, its detail (financing, the notice that opened the procedure) and its versions           | `award_notice`, `award_contract`, `award_winner`, `award_notice_detail`, `award_notice_version` |
+| `pnias-payments`      | Payment files of the Anghel Saligny programme (MDLPA, on data.gov.ro): one row per settlement request paid                                                              | `pnias_payment`                                                                                 |
+| `seap-exports`        | SEAP's quarterly "Contracte" exports (ADR, on data.gov.ro), 2021 to today: only the contracts of the programme's builders, and every buyer                              | `export_contract`, `export_buyer`                                                               |
+| `siruta`              | SIRUTA (INS, on data.gov.ro): every county, UAT and village, with the place it belongs to                                                                               | `place`                                                                                         |
+| `public-entities`     | The Finance Ministry's monthly list of public entities: the UAT each works in and the institutions that fund it                                                         | `public_entity`                                                                                 |
+| `local-budgets`       | The Ministry of Development's yearly executed budget of every UAT and county council (2024), and UAT population (2021 to 2024)                                          | `local_budget`, `population`                                                                    |
+| `anaf`                | ANAF's register, asked by tax ID: the county and locality of the registered office (never the street), CAEN code, VAT and inactive status                               | `anaf_record`                                                                                   |
 
-Only `seap-direct` and `seap-awards` are collected by day. The others come as files or
+Only `seap-direct` and `seap-awards` are collected by day. `seap-direct-details` takes
+the purchases already held that lack their detail; its answers are stored under the
+`seap-direct` source, and `dr reparse seap-direct` reads list pages and purchase pages
+apart by their address. A purchase page also names the officials who handled it: they
+stay in the raw store and are never parsed. The others come as files or
 lookups: a run fetches what is not held yet and needs no date. Every source has one
 `PublicSource` entry in `src/date_romania/sources.py` (key, publisher, list page, page of
 one record).
@@ -215,6 +221,7 @@ one record).
 | Every hour                      | `dr check` (database and storage reachable)                                               |
 | 04:30 every day                 | `dr collect seap-direct`                                                                  |
 | 05:30 every day                 | `dr collect seap-awards`                                                                  |
+| 06:00 every day                 | `dr collect seap-direct-details --limit 4000` (about an hour and a half at most)          |
 | 07:30 every day                 | `dr collect seap-award-details`                                                           |
 | 08:30 every day                 | `dr collect anaf`                                                                         |
 | 09:30 on the 1st of every month | `dr collect pnias-payments`, then `dr reparse seap-exports` and `dr collect seap-exports` |
@@ -380,27 +387,29 @@ migrations are Alembic, in `migrations/`.
  report
 ```
 
-| Table                  | One row is                                                | Notes                                                                                                                                                              |
-| ---------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `source_document`      | One stored answer or file                                 | Source key, address, request, storage key (SHA-256), size, fetch time, parser version, rejected rows                                                               |
-| `job_run`              | One collector run over a period                           | Status, records read, error                                                                                                                                        |
-| `entity`               | An institution or a company, by CUI                       | Name, kind (`authority`, `company`, `other`), county, locality, `siruta`, `parent_cui`; a search column with `unaccent` and `pg_trgm` for typo-tolerant search     |
-| `direct_purchase`      | One SEAP direct purchase                                  | Code (`DA…`), state, CPV, contract type, buyer and supplier CUI, dates, values                                                                                     |
-| `award_notice`         | One SEAP award notice, latest version held                | Notice number (`CAN…`), procedure, buyer, CPV, contract type, value, publication day                                                                               |
-| `award_contract`       | One contract in a notice                                  | Number, signing date, kind (1 ordinary, 2 framework agreement, 3 subsequent), lots, value, offers range                                                            |
-| `award_winner`         | One winner of a contract, in SEAP's order                 | More than one row means an association                                                                                                                             |
-| `award_notice_detail`  | The detail of a notice                                    | Notice that opened the procedure, TED number, lots, EU funded, financing types                                                                                     |
-| `award_notice_version` | One published version of a notice                         | Used to leave out the contracts of a withdrawn version                                                                                                             |
-| `pnias_payment`        | One Anghel Saligny settlement request paid                | County, town hall (and its `siruta`), project, ministry contract, values, amount, progress, builder and designer                                                   |
-| `export_contract`      | One winner of one contract in one quarterly export        | Programme trace only, never in totals                                                                                                                              |
-| `export_buyer`         | A buyer seen in the exports                               | Its county, to check town hall names                                                                                                                               |
-| `pnias_link`           | A tie between a payment and an export contract            | `method`, `confidence`                                                                                                                                             |
-| `place`                | A county, UAT or village, by SIRUTA code                  | Name as INS writes it, kind (`county`, `municipality`, `town`, `commune`, `sector`, `village`), the place it belongs to, its county, urban or not, `town_hall_cui` |
-| `public_entity`        | One row of the Finance Ministry's list of public entities | County and UAT as written, the UAT found in SIRUTA, up to two funders                                                                                              |
-| `local_budget`         | One figure of a UAT's or county council's executed budget | The file's column number, section (`revenue`, `spending`, `chapter`), code and title as printed, amount                                                            |
-| `population`           | People in a UAT at 1 January                              | Bucharest by its six sectors                                                                                                                                       |
-| `anaf_record`          | ANAF's answer for one tax ID                              | Found or not, name, county and locality of the office (never the street), the UAT found in SIRUTA, CAEN, registration, VAT and inactive status                     |
-| `report`               | A reader's error report                                   | Page, message, evidence, a keyed hash of the sender, status (`new`, `accepted`, `rejected`), the published correction                                              |
+| Table                    | One row is                                                | Notes                                                                                                                                                              |
+| ------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `source_document`        | One stored answer or file                                 | Source key, address, request, storage key (SHA-256), size, fetch time, parser version, rejected rows                                                               |
+| `job_run`                | One collector run over a period                           | Status, records read, error                                                                                                                                        |
+| `entity`                 | An institution or a company, by CUI                       | Name, kind (`authority`, `company`, `other`), county, locality, `siruta`, `parent_cui`; a search column with `unaccent` and `pg_trgm` for typo-tolerant search     |
+| `direct_purchase`        | One SEAP direct purchase                                  | Code (`DA…`), state, CPV, contract type, buyer and supplier CUI, dates, values                                                                                     |
+| `direct_purchase_detail` | What the page of one purchase adds                        | The buyer's description, payment and delivery conditions in its own words, EU fund                                                                                 |
+| `direct_purchase_item`   | One line of a purchase, in SEAP's order                   | Name, CPV, quantity, unit, price of one unit, turned down by the supplier                                                                                          |
+| `award_notice`           | One SEAP award notice, latest version held                | Notice number (`CAN…`), procedure, buyer, CPV, contract type, value, publication day                                                                               |
+| `award_contract`         | One contract in a notice                                  | Number, signing date, kind (1 ordinary, 2 framework agreement, 3 subsequent), lots, value, offers range                                                            |
+| `award_winner`           | One winner of a contract, in SEAP's order                 | More than one row means an association                                                                                                                             |
+| `award_notice_detail`    | The detail of a notice                                    | Notice that opened the procedure, TED number, lots, EU funded, financing types                                                                                     |
+| `award_notice_version`   | One published version of a notice                         | Used to leave out the contracts of a withdrawn version                                                                                                             |
+| `pnias_payment`          | One Anghel Saligny settlement request paid                | County, town hall (and its `siruta`), project, ministry contract, values, amount, progress, builder and designer                                                   |
+| `export_contract`        | One winner of one contract in one quarterly export        | Programme trace only, never in totals                                                                                                                              |
+| `export_buyer`           | A buyer seen in the exports                               | Its county, to check town hall names                                                                                                                               |
+| `pnias_link`             | A tie between a payment and an export contract            | `method`, `confidence`                                                                                                                                             |
+| `place`                  | A county, UAT or village, by SIRUTA code                  | Name as INS writes it, kind (`county`, `municipality`, `town`, `commune`, `sector`, `village`), the place it belongs to, its county, urban or not, `town_hall_cui` |
+| `public_entity`          | One row of the Finance Ministry's list of public entities | County and UAT as written, the UAT found in SIRUTA, up to two funders                                                                                              |
+| `local_budget`           | One figure of a UAT's or county council's executed budget | The file's column number, section (`revenue`, `spending`, `chapter`), code and title as printed, amount                                                            |
+| `population`             | People in a UAT at 1 January                              | Bucharest by its six sectors                                                                                                                                       |
+| `anaf_record`            | ANAF's answer for one tax ID                              | Found or not, name, county and locality of the office (never the street), the UAT found in SIRUTA, CAEN, registration, VAT and inactive status                     |
+| `report`                 | A reader's error report                                   | Page, message, evidence, a keyed hash of the sender, status (`new`, `accepted`, `rejected`), the published correction                                              |
 
 Every data row keeps `source_document_id`, and most keep `parser_version`. Raw files live
 in S3-compatible storage, written by `storage.put_raw()` under `<source>/<sha[:2]>/<sha>`

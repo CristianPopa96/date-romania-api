@@ -565,7 +565,7 @@
      "direct purchases"
     ],
     "summary": "Direct Purchase",
-    "description": "One direct purchase, by SEAP's own id.",
+    "description": "One direct purchase, by SEAP's own id, with its lines and conditions once collected.",
     "operationId": "direct_purchase_v1_direct_purchases__purchase_id__get",
     "parameters": [
      {
@@ -584,7 +584,7 @@
       "content": {
        "application/json": {
         "schema": {
-         "$ref": "#/components/schemas/Purchase"
+         "$ref": "#/components/schemas/PurchaseWithDetail"
         }
        }
       }
@@ -4940,6 +4940,163 @@
     ],
     "title": "Purchase"
    },
+   "PurchaseDetail": {
+    "properties": {
+     "payment_condition": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Payment Condition",
+      "description": "The buyer's own words."
+     },
+     "delivery_condition": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Delivery Condition",
+      "description": "The buyer's own words."
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/PurchaseItem"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "items_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Items Value",
+      "description": "The lines added up; null when a line has no price or quantity."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "payment_condition",
+     "delivery_condition",
+     "items",
+     "items_value",
+     "source"
+    ],
+    "title": "PurchaseDetail",
+    "description": "What the purchase's own page adds to the list: its lines and conditions."
+   },
+   "PurchaseItem": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "cpv_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Code"
+     },
+     "quantity": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Quantity"
+     },
+     "unit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit",
+      "description": "The buyer's own word, e.g. 'bucată', 'pachet'."
+     },
+     "unit_price": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit Price",
+      "description": "Lei without VAT, for one unit."
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "`unit_price` times `quantity`."
+     },
+     "rejected": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rejected",
+      "description": "The supplier turned this line down."
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "cpv_code",
+     "quantity",
+     "unit",
+     "unit_price",
+     "value",
+     "rejected"
+    ],
+    "title": "PurchaseItem",
+    "description": "One line of a direct purchase, as the buyer listed it."
+   },
    "PurchasePage": {
     "properties": {
      "total": {
@@ -4960,6 +5117,238 @@
      "items"
     ],
     "title": "PurchasePage"
+   },
+   "PurchaseWithDetail": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "state_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State Id"
+     },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State"
+     },
+     "cpv_code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Code"
+     },
+     "cpv_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cpv Name"
+     },
+     "buyer": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null when SEAP gives no valid CUI."
+     },
+     "buyer_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Buyer Text",
+      "description": "The buyer as SEAP writes it."
+     },
+     "supplier": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "supplier_text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Supplier Text"
+     },
+     "published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published At"
+     },
+     "finalized_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Finalized At"
+     },
+     "estimated_value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Estimated Value"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "The closing value."
+     },
+     "contract_type_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contract Type Id",
+      "description": "SEAP's type, as the buyer filed it: 1 goods, 2 services, 3 works."
+     },
+     "limit": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Limit",
+      "description": "The legal limit this purchase is held to, in lei without VAT; null for services of Annex 2 of Law 98/2016, which have none."
+     },
+     "above_limit": {
+      "type": "boolean",
+      "title": "Above Limit",
+      "description": "The purchase was accepted with a value above `limit`. Always false for a purchase that was not accepted."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     },
+     "detail": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/PurchaseDetail"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null until collected: the detail is asked for one purchase at a time, so far for the accepted ones of 100,000 lei or more."
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "code",
+     "name",
+     "state_id",
+     "state",
+     "cpv_code",
+     "cpv_name",
+     "buyer",
+     "buyer_text",
+     "supplier",
+     "supplier_text",
+     "published_at",
+     "finalized_at",
+     "estimated_value",
+     "value",
+     "contract_type_id",
+     "limit",
+     "above_limit",
+     "source",
+     "detail"
+    ],
+    "title": "PurchaseWithDetail"
    },
    "Ranking": {
     "properties": {

@@ -17,8 +17,15 @@ from date_romania.api.routes.common import (
     ref,
     summary,
 )
-from date_romania.api.schemas import Purchase, PurchasePage, Summary
-from date_romania.models import DirectPurchase, Entity, SourceDocument
+from date_romania.api.schemas import (
+    Purchase,
+    PurchaseDetail,
+    PurchaseItem,
+    PurchasePage,
+    PurchaseWithDetail,
+    Summary,
+)
+from date_romania.models import DirectPurchase, DirectPurchaseDetail, Entity, SourceDocument
 from date_romania.sources import SEAP_DIRECT
 
 router = APIRouter(tags=["direct purchases"])
@@ -126,10 +133,53 @@ def direct_purchases_summary(
     return summary(session, *filters)
 
 
+def _detail(session: Db, purchase: Purchase) -> PurchaseDetail | None:
+    row = session.execute(
+        select(DirectPurchaseDetail, SourceDocument.fetched_at, SourceDocument.sha256)
+        .join(SourceDocument, DirectPurchaseDetail.source_document_id == SourceDocument.id)
+        .where(DirectPurchaseDetail.purchase_id == purchase.id)
+    ).one_or_none()
+    if row is None:
+        return None
+    detail, fetched_at, sha256 = row
+    items = [
+        PurchaseItem(
+            name=item.name,
+            cpv_code=item.cpv_code,
+            quantity=item.quantity,
+            unit=item.unit,
+            unit_price=item.unit_price,
+            value=(
+                None
+                if item.unit_price is None or item.quantity is None
+                else round(item.unit_price * item.quantity, 2)
+            ),
+            rejected=item.rejected,
+        )
+        for item in detail.items
+    ]
+    values = [item.value for item in items]
+    return PurchaseDetail(
+        payment_condition=detail.payment_condition,
+        delivery_condition=detail.delivery_condition,
+        items=items,
+        items_value=None if None in values else round(sum(values), 2),
+        source=record_source(
+            SEAP_DIRECT,
+            detail,
+            record=purchase.code,
+            url=SEAP_DIRECT.record_url.format(id=purchase.id),
+            fetched_at=fetched_at,
+            sha256=sha256,
+        ),
+    )
+
+
 @router.get("/direct-purchases/{purchase_id}")
-def direct_purchase(session: Db, purchase_id: int) -> Purchase:
-    """One direct purchase, by SEAP's own id."""
+def direct_purchase(session: Db, purchase_id: int) -> PurchaseWithDetail:
+    """One direct purchase, by SEAP's own id, with its lines and conditions once collected."""
     row = session.execute(_purchases().where(DirectPurchase.id == purchase_id)).one_or_none()
     if row is None:
         raise HTTPException(404, f"No direct purchase with id {purchase_id}")
-    return _purchase(row)
+    purchase = _purchase(row)
+    return PurchaseWithDetail(**dict(purchase), detail=_detail(session, purchase))

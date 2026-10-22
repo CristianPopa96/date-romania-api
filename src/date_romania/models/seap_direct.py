@@ -15,7 +15,7 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from date_romania.cpv import annex_2_sql
 from date_romania.models.core import Base
@@ -58,3 +58,58 @@ class DirectPurchase(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
+
+class DirectPurchaseDetail(Base):
+    """What the page of one direct purchase adds to the list row: the buyer's description,
+    the payment and delivery conditions and the financing. One row per purchase, from one
+    detail answer; collected for some purchases only (`seap_direct.details`).
+
+    The answer also names the officials who handled the purchase; that stays in the raw
+    store and is never parsed.
+    """
+
+    __tablename__ = "direct_purchase_detail"
+
+    purchase_id: Mapped[int] = mapped_column(
+        ForeignKey("direct_purchase.id", ondelete="CASCADE"), primary_key=True, autoincrement=False
+    )
+    description: Mapped[str | None] = mapped_column(Text)
+    # The buyer's own words, e.g. 'OP la 30 de zile', 'La sediul unitatii'.
+    payment_condition: Mapped[str | None] = mapped_column(Text)
+    delivery_condition: Mapped[str | None] = mapped_column(Text)
+    # SEAP's `financingType`: true when the buyer named an EU fund or programme.
+    eu_funded: Mapped[bool | None] = mapped_column(Boolean)
+    # The fund's name, or its key when SEAP gives no name, e.g. 'PEO'.
+    eu_fund: Mapped[str | None] = mapped_column(Text)
+    source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
+    parser_version: Mapped[int] = mapped_column(SmallInteger)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+    items: Mapped[list["DirectPurchaseItem"]] = relationship(
+        order_by="DirectPurchaseItem.position", viewonly=True
+    )
+
+
+class DirectPurchaseItem(Base):
+    """One line of a direct purchase, in SEAP's order; the lines of a purchase are replaced
+    as a whole each time its detail is read."""
+
+    __tablename__ = "direct_purchase_item"
+
+    purchase_id: Mapped[int] = mapped_column(
+        ForeignKey("direct_purchase_detail.purchase_id", ondelete="CASCADE"), primary_key=True
+    )
+    position: Mapped[int] = mapped_column(SmallInteger, primary_key=True, autoincrement=False)
+    name: Mapped[str | None] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
+    cpv_code: Mapped[str | None] = mapped_column(String(16))
+    quantity: Mapped[Decimal | None] = mapped_column(Numeric(18, 4))
+    unit: Mapped[str | None] = mapped_column(String(64))
+    # Lei without VAT, for one unit: the line is worth `unit_price` times `quantity`.
+    unit_price: Mapped[Decimal | None] = mapped_column(Numeric(18, 4))
+    # The supplier turned this line down.
+    rejected: Mapped[bool | None] = mapped_column(Boolean)
+    source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))

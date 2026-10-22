@@ -25,6 +25,8 @@ from date_romania.models import (
     AwardNoticeVersion,
     AwardWinner,
     DirectPurchase,
+    DirectPurchaseDetail,
+    DirectPurchaseItem,
     Entity,
     JobRun,
     Report,
@@ -85,6 +87,55 @@ def contract(n: int, notice: int, kind: int, value: str, when: str, winners: lis
             for position, winner in enumerate(winners)
         ),
     ]
+
+
+def add_purchase_detail(session):
+    """The lines and conditions of purchase 3, read from its own page; the others have none."""
+    doc = SourceDocument(
+        source="seap-direct",
+        url="https://e-licitatie.ro/api-pub/PublicDirectAcquisition/getView/3",
+        sha256="d3" * 32,
+        storage_key="k3",
+        size_bytes=1,
+        parser_version=1,
+        rejected_rows=0,
+    )
+    session.add(doc)
+    session.flush()
+    session.add(
+        DirectPurchaseDetail(
+            purchase_id=3,
+            description="Rechizite pentru primărie",
+            payment_condition="OP la 30 de zile de la recepție",
+            delivery_condition="La sediul primăriei",
+            eu_funded=False,
+            source_document_id=doc.id,
+            parser_version=1,
+        )
+    )
+    session.flush()
+    session.add_all(
+        [
+            DirectPurchaseItem(
+                purchase_id=3,
+                position=position,
+                name=name,
+                cpv_code="30192000-1",
+                quantity=Decimal(quantity),
+                unit=unit,
+                unit_price=Decimal(price),
+                rejected=False,
+                source_document_id=doc.id,
+            )
+            for position, (name, quantity, unit, price) in enumerate(
+                [
+                    ("Hârtie copiator A4", "10", "top", "25"),
+                    ("Toner imprimantă", "2", "bucată", "125"),
+                ],
+                1,
+            )
+        ]
+    )
 
 
 def add_award_notices(session):
@@ -244,6 +295,7 @@ def client(session):
         row.source_document_id = doc.id
     session.add_all(rows)
     session.flush()
+    add_purchase_detail(session)
     add_award_notices(session)
     # Reports from readers: one checked and corrected, one still waiting, one turned down.
     session.add_all(
@@ -348,6 +400,28 @@ def test_direct_purchase_carries_its_parties_and_its_source(client):
     assert foreign["supplier"] is None
     assert foreign["supplier_text"] == "ATU1 Lab GmbH"
     assert foreign["above_limit"] is False
+
+
+def test_one_purchase_carries_its_lines_once_collected(client):
+    detail = client.get("/v1/direct-purchases/3").json()["detail"]
+    assert (detail["payment_condition"], detail["delivery_condition"]) == (
+        "OP la 30 de zile de la recepție",
+        "La sediul primăriei",
+    )
+    assert [
+        (i["name"], i["quantity"], i["unit"], i["unit_price"], i["value"]) for i in detail["items"]
+    ] == [
+        ("Hârtie copiator A4", 10.0, "top", 25.0, 250.0),
+        ("Toner imprimantă", 2.0, "bucată", 125.0, 250.0),
+    ]
+    assert detail["items_value"] == 500.0
+    # Its own source: the stored answer of the purchase's page.
+    assert (detail["source"]["sha256"], detail["source"]["parser_version"]) == ("d3" * 32, 1)
+    assert detail["source"]["url"].endswith("/view/3")
+    # Not collected yet: no lines, rather than an empty list.
+    assert client.get("/v1/direct-purchases/5").json()["detail"] is None
+    # The lists never carry it.
+    assert "detail" not in client.get("/v1/direct-purchases").json()["items"][0]
 
 
 def test_a_refused_purchase_is_never_above_the_limit(client, session):
@@ -712,7 +786,8 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert awards["counts"] == {"notices": 3, "contracts": 5, "counted_contracts": 3}
     assert direct["counts"] == {"purchases": 6, "accepted": 5, "above_limit": 1}
     assert (awards["days_collected"], awards["days_partial"], awards["documents"]) == (3, 0, 1)
-    assert (direct["days_collected"], direct["documents"]) == (0, 1)
+    # The list page, and the answer of one purchase's own page.
+    assert (direct["days_collected"], direct["documents"]) == (0, 2)
     # Rows the parser could not read: none, two, and not known for files parsed before
     # the count was kept.
     assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
@@ -732,7 +807,7 @@ def test_rejected_rows_are_known_only_once_every_document_was_seen(client, sessi
     session.flush()
     direct = client.get("/v1/datasets").json()["items"][0]
     # One document from before the count: the source's count is not known.
-    assert (direct["documents"], direct["rejected_rows"]) == (2, None)
+    assert (direct["documents"], direct["rejected_rows"]) == (3, None)
     # Set aside unread by a parser that counts, it no longer stands in the way.
     record_skipped(
         session.scalar(select(SourceDocument).where(SourceDocument.sha256 == "e" * 64)), 3, "test"
