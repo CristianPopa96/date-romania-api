@@ -144,6 +144,7 @@ def upgrade() -> None:
         sa.Column("reported_on", sa.Date(), nullable=True),
         sa.Column("beneficiary_cui", sa.BigInteger(), nullable=True),
         sa.Column("beneficiary_name", sa.Text(), nullable=True),
+        sa.Column("natural_person", sa.Boolean(), nullable=False),
         sa.Column("county", sa.Text(), nullable=True),
         sa.Column("locality", sa.Text(), nullable=True),
         sa.Column("caen_division", sa.String(length=8), nullable=True),

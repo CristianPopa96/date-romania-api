@@ -255,6 +255,7 @@ def parse_payments(data: object) -> Parsed:
                     "reported_on": _day(item.get("data_raportarii")),
                     "beneficiary_cui": cui,
                     "beneficiary_name": name,
+                    "natural_person": cui is None,
                     "county": _text(item.get("judet_beneficiar")),
                     "locality": _text(item.get("localitate_beneficiar")),
                     "caen_division": _text(item.get("cod_diviziune_caen")),

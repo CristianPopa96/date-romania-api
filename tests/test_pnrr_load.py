@@ -3,6 +3,7 @@
 import gzip
 import hashlib
 import json
+from datetime import date
 from pathlib import Path
 
 import httpx
@@ -91,6 +92,19 @@ def test_collect_loads_an_edition_once(session, raw_store):
     with PoliteClient(transport=mipe(asked), sleep=no_sleep) as client:
         assert run.collect(session, client) == 0
     assert asked == [INDEX_URL]
+
+
+def test_an_older_edition_never_replaces_a_newer_one(session, raw_store):
+    """If MIPE's index fell back to an older edition, the one held stays."""
+    with PoliteClient(transport=mipe([]), sleep=no_sleep) as client:
+        run.collect(session, client)
+    session.get(PnrrEdition, DAY).day = date(2026, 11, 1)
+    session.flush()
+    asked: list[str] = []
+    with PoliteClient(transport=mipe(asked), sleep=no_sleep) as client:
+        assert run.collect(session, client) == 0
+    assert asked == [INDEX_URL]
+    assert session.scalars(select(PnrrEdition.day)).all() == [date(2026, 11, 1)]
 
 
 def test_payments_are_tied_and_beneficiaries_become_entities(session, raw_store):

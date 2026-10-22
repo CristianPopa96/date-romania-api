@@ -1,6 +1,10 @@
 """The Recovery and Resilience Plan (PNRR), as MIPE's dashboard publishes it: the measures,
 every financing contract, every payment, the largest recipients.
 
+Text is stored as published, personal codes included (Crispy, 22.10.2026: personal data
+from these sources is collected, not shown). Whatever a route serves from it goes through
+`personal_id.mask_cnp()` first, and a natural person's name is never served at all.
+
 Every table holds one edition, the newest held: a new edition replaces them all, since
 each file gives everything again (contracts with their progress, payments since 2020).
 """
@@ -141,7 +145,10 @@ class PnrrPayment(Base):
     paid_on: Mapped[date | None] = mapped_column(Date, index=True)
     reported_on: Mapped[date | None] = mapped_column(Date)
     beneficiary_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
+    # A payment does not say what its beneficiary is: without a valid CUI the name may be a
+    # person's, so it is flagged as one, stored, and never served.
     beneficiary_name: Mapped[str | None] = mapped_column(Text)
+    natural_person: Mapped[bool] = mapped_column(Boolean)
     county: Mapped[str | None] = mapped_column(Text)
     locality: Mapped[str | None] = mapped_column(Text)
     caen_division: Mapped[str | None] = mapped_column(String(8))

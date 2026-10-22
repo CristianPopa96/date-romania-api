@@ -4,7 +4,7 @@ raw store."""
 import logging
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from date_romania import places
@@ -98,11 +98,15 @@ def _parse_and_load(session: Session, day: date, docs: dict[str, SourceDocument]
 
 
 def collect(session: Session, client: PoliteClient) -> int:
-    """Fetch the newest complete edition if it is not loaded yet, and load it in place of
-    the one held; returns its contracts, or 0 when there is nothing new."""
+    """Fetch the newest complete edition if it is newer than the one held, and load it in
+    its place; returns its contracts, or 0 when there is nothing new. An index that falls
+    back to an older edition never takes the data backwards."""
     with job_run(session, JOB, today()) as run:
         edition = fetch.newest(client)
-        held = session.get(PnrrEdition, edition.day)
+        held = session.scalar(select(func.max(PnrrEdition.day)))
+        if held is not None and edition.day <= held:
+            log.info("PNRR %s: nothing newer than the edition of %s held", edition.day, held)
+            return 0
         docs: dict[str, SourceDocument] = {}
         for endpoint, url in edition.files.items():
             doc = _held(session, url)
@@ -113,12 +117,9 @@ def collect(session: Session, client: PoliteClient) -> int:
                 )
                 session.commit()
             docs[endpoint] = doc
-        if held is None:
-            run.records = _parse_and_load(session, edition.day, docs)
-            places.locate(session)
-        else:
-            log.info("PNRR %s is held already", edition.day)
-    return run.records or 0
+        run.records = _parse_and_load(session, edition.day, docs)
+        places.locate(session)
+    return run.records
 
 
 def reparse(session: Session) -> int:

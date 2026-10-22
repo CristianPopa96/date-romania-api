@@ -110,6 +110,14 @@ def test_payments_keep_alike_rows_and_their_order():
     assert all(isinstance(each["amount"], Decimal) for each in parsed.payments)
 
 
+def test_a_payment_without_a_cui_is_flagged_as_a_possible_person():
+    data = fixture("plati_pnrr")
+    data[0]["cui_beneficiar_final"] = None
+    first, second, *_ = parse_payments(data).payments
+    assert (first["natural_person"], first["beneficiary_cui"]) == (True, None)
+    assert second["natural_person"] is False
+
+
 def test_a_payment_is_tied_only_to_the_one_contract_on_its_measure():
     contracts = parse_contracts(fixture("progres_tehnic_proiecte"))
     payments = parse_payments(fixture("plati_pnrr")).payments
