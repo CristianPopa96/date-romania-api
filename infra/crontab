@@ -26,6 +26,11 @@
 # is new.
 30 8 * * * dr collect anaf
 
+# Every day at 09:00 UTC: the newest edition of the PNRR dashboard data (MIPE), if it is
+# not loaded yet. One small request on most days; about 6.5 MB when an edition is new,
+# every two weeks or so.
+0 9 * * * dr collect pnrr
+
 # On the 1st of every month at 09:30 UTC: the Anghel Saligny payment files and SEAP's
 # contract exports (data.gov.ro) not held yet. The ministry adds a payment file about
 # monthly and SEAP an export each quarter; a file already held is not downloaded again,

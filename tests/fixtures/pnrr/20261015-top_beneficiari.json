@@ -1,0 +1,38 @@
+{
+ "items": [
+  {
+   "beneficiar": "COMPANIA NAŢIONALĂ DE ADMINISTRARE A INFRASTRUCTURII RUTIERE S.A.",
+   "cui": 16054368,
+   "nerambursabil": 1757430691.82,
+   "rambursabil": 7473376865.22,
+   "total": 9230807557.04,
+   "total_euro": 1825928445.95
+  },
+  {
+   "beneficiar": "COMPANIA NATIONALA DE CAI FERATE \"CFR\" SA",
+   "cui": 11054529,
+   "nerambursabil": 7214223160.31,
+   "rambursabil": -6300917.46,
+   "total": 7207922242.85,
+   "total_euro": 1455751342.45
+  }
+ ],
+ "hasMore": false,
+ "limit": 25,
+ "offset": 0,
+ "count": 5,
+ "links": [
+  {
+   "rel": "self",
+   "href": "http://pnrr.fonduri-ue.ro/ords/pnrr/mfe/top_beneficiari"
+  },
+  {
+   "rel": "describedby",
+   "href": "http://pnrr.fonduri-ue.ro/ords/pnrr/metadata-catalog/mfe/item"
+  },
+  {
+   "rel": "first",
+   "href": "http://pnrr.fonduri-ue.ro/ords/pnrr/mfe/top_beneficiari"
+  }
+ ]
+}

@@ -45,6 +45,16 @@ PNIAS_PAYMENTS = PublicSource(
     record_url="https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
 )
 
+# The Recovery and Resilience Plan, from the files MIPE's dashboard reads (every contract,
+# every payment, the measures). A contract has no public page of its own.
+PNRR = PublicSource(
+    key="pnrr",
+    publisher="MIPE",
+    dataset="Tabloul de bord PNRR",
+    list_url="https://mfe.gov.ro/pnrr-dashboard/",
+    record_url="https://mfe.gov.ro/pnrr-dashboard/",
+)
+
 # SEAP's own quarterly exports, published by ADR. One dataset per year.
 SEAP_EXPORTS = PublicSource(
     key="seap-exports",
