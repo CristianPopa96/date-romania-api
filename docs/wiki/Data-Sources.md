@@ -18,13 +18,13 @@ tells us, and what it does not.
 
 ## What each source does not tell us
 
-| Source                  | What is missing                                                                                                                                                        |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SEAP direct purchases   | Which budget line pays for it. The list of items bought is published in a detail not collected yet.                                                                    |
-| SEAP award notices      | Which budget line pays for it, and how many offers there were. Contracts appear weeks after signing: half more than 17 days later, one in ten more than 50 days later. |
-| Anghel Saligny payments | The day of the payment. The town hall is named only by name, without its tax ID. Only files from 27 August 2026 on give the builder's tax ID.                          |
-| SEAP contract lists     | Used only to follow the programme, never in totals: they repeat each contract in every later list and list an association once per member.                             |
-| Local budgets           | Only town halls and county councils, only for whole years.                                                                                                             |
+| Source                  | What is missing                                                                                                                                                                                     |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SEAP direct purchases   | Which budget line pays for it. The items bought and the payment and delivery terms are on each purchase's own page, one request each: collected for accepted purchases of 100,000 lei or more only. |
+| SEAP award notices      | Which budget line pays for it, and how many offers there were. Contracts appear weeks after signing: half more than 17 days later, one in ten more than 50 days later.                              |
+| Anghel Saligny payments | The day of the payment. The town hall is named only by name, without its tax ID. Only files from 27 August 2026 on give the builder's tax ID.                                                       |
+| SEAP contract lists     | Used only to follow the programme, never in totals: they repeat each contract in every later list and list an association once per member.                                                          |
+| Local budgets           | Only town halls and county councils, only for whole years.                                                                                                                                          |
 
 ## The period held
 
@@ -45,7 +45,6 @@ the institutions and companies that are new.
 | Company financial statements (ANAF)                   | A company's turnover, staff and debts, year by year                                                                                                                                             |
 | EU funds ministry (MIPE)                              | EU-funded projects, and how much EU money is used                                                                                                                                               |
 | TED, the EU's procurement journal                     | Large procedures published at EU level                                                                                                                                                          |
-| SEAP purchase details                                 | The items bought in each direct purchase                                                                                                                                                        |
 | Payments published voluntarily (Cluj-Napoca, others)  | Named payments to companies                                                                                                                                                                     |
 | Office holders (Monitorul Oficial, gov.ro)            | Who led each institution, and when                                                                                                                                                              |
 
