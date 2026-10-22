@@ -23,6 +23,11 @@ SEAP_DIRECT = PublicSource(
     record_url="https://e-licitatie.ro/pub/direct-acquisition/view/{id}",
 )
 
+# The page of one direct purchase (its lines and conditions) is stored under its own key,
+# so that the list's fetch time and count of answers stay the list's own. Same publisher
+# and record page as SEAP_DIRECT.
+SEAP_DIRECT_DETAILS_KEY = f"{SEAP_DIRECT.key}-details"
+
 SEAP_AWARDS = PublicSource(
     key="seap-awards",
     publisher="SEAP",

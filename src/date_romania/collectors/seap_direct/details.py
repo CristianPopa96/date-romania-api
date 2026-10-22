@@ -8,14 +8,15 @@ collected yet.
 from dataclasses import dataclass
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import exists, func, select
 from sqlalchemy.orm import Session
 
 from date_romania import money
 from date_romania.collectors.http import PoliteClient
-from date_romania.models import DirectPurchase, DirectPurchaseDetail
-from date_romania.sources import SEAP_DIRECT
+from date_romania.models import DirectPurchase, DirectPurchaseDetail, SourceDocument
+from date_romania.sources import SEAP_DIRECT, SEAP_DIRECT_DETAILS_KEY
 
+SOURCE = SEAP_DIRECT_DETAILS_KEY
 # Ends with the purchase id.
 DETAIL_URL = "https://e-licitatie.ro/api-pub/PublicDirectAcquisition/getView/"
 MIN_VALUE = Decimal(100_000)
@@ -50,7 +51,13 @@ def fetch(client: PoliteClient, purchase_id: int) -> Answer:
 
 
 def due(session: Session, limit: int | None = None) -> list[int]:
-    """The purchases whose detail is wanted and not held, newest first."""
+    """The purchases whose detail is wanted and not asked for yet, newest first. An answer
+    the parser could not read is not asked for again: a reparse reads it once the parser
+    is fixed."""
+    asked = exists().where(
+        SourceDocument.source == SOURCE,
+        SourceDocument.url == func.concat(DETAIL_URL, DirectPurchase.id),
+    )
     return list(
         session.scalars(
             select(DirectPurchase.id)
@@ -58,6 +65,7 @@ def due(session: Session, limit: int | None = None) -> list[int]:
                 money.accepted,
                 DirectPurchase.closing_value >= MIN_VALUE,
                 DirectPurchase.id.not_in(select(DirectPurchaseDetail.purchase_id)),
+                ~asked,
             )
             .order_by(DirectPurchase.published_at.desc().nulls_last(), DirectPurchase.id.desc())
             .limit(limit)

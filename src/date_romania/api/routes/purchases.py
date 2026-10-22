@@ -158,12 +158,13 @@ def _detail(session: Db, purchase: Purchase) -> PurchaseDetail | None:
         )
         for item in detail.items
     ]
-    values = [item.value for item in items]
+    # What was bought: the lines the supplier did not turn down.
+    values = [item.value for item in items if not item.rejected]
     return PurchaseDetail(
         payment_condition=detail.payment_condition,
         delivery_condition=detail.delivery_condition,
         items=items,
-        items_value=None if None in values else round(sum(values), 2),
+        items_value=None if not values or None in values else round(sum(values), 2),
         source=record_source(
             SEAP_DIRECT,
             detail,

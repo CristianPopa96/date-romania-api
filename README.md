@@ -188,9 +188,10 @@ uv run dr reparse siruta                          # also public-entities, local-
 | `anaf`                | ANAF's register, asked by tax ID: the county and locality of the registered office (never the street), CAEN code, VAT and inactive status                               | `anaf_record`                                                                                   |
 
 Only `seap-direct` and `seap-awards` are collected by day. `seap-direct-details` takes
-the purchases already held that lack their detail; its answers are stored under the
-`seap-direct` source, and `dr reparse seap-direct` reads list pages and purchase pages
-apart by their address. A purchase page also names the officials who handled it: they
+the purchases already held that lack their detail; its answers are stored under their
+own source, `seap-direct-details`, so that the list's fetch time and count of answers
+stay the list's own, and `dr reparse seap-direct` reads both. An answer the parser could
+not read is not asked for again: a reparse reads it once the parser is fixed. A purchase page also names the officials who handled it: they
 stay in the raw store and are never parsed. The others come as files or
 lookups: a run fetches what is not held yet and needs no date. Every source has one
 `PublicSource` entry in `src/date_romania/sources.py` (key, publisher, list page, page of
@@ -216,15 +217,14 @@ one record).
 
 `infra/crontab` (UTC), run by the `scheduler` container:
 
-| When                            | Command                                                                                   |
-| ------------------------------- | ----------------------------------------------------------------------------------------- |
-| Every hour                      | `dr check` (database and storage reachable)                                               |
-| 04:30 every day                 | `dr collect seap-direct`                                                                  |
-| 05:30 every day                 | `dr collect seap-awards`                                                                  |
-| 06:00 every day                 | `dr collect seap-direct-details --limit 4000` (about an hour and a half at most)          |
-| 07:30 every day                 | `dr collect seap-award-details`                                                           |
-| 08:30 every day                 | `dr collect anaf`                                                                         |
-| 09:30 on the 1st of every month | `dr collect pnias-payments`, then `dr reparse seap-exports` and `dr collect seap-exports` |
+| When                            | Command                                                                                                                                                         |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Every hour                      | `dr check` (database and storage reachable)                                                                                                                     |
+| 04:30 every day                 | `dr collect seap-direct`                                                                                                                                        |
+| 05:30 every day                 | `dr collect seap-awards`                                                                                                                                        |
+| 07:30 every day                 | `dr collect seap-award-details`, then `dr collect seap-direct-details --limit 4000` (about an hour and a half at most), so that two jobs never ask SEAP at once |
+| 08:30 every day                 | `dr collect anaf`                                                                                                                                               |
+| 09:30 on the 1st of every month | `dr collect pnias-payments`, then `dr reparse seap-exports` and `dr collect seap-exports`                                                                       |
 
 The file collectors run monthly: payment files appear about monthly, exports quarterly.
 Unlike the daily jobs, a month whose run was missed (the machine asleep at that hour) is

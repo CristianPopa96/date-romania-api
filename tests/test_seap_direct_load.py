@@ -231,6 +231,24 @@ def test_collect_details_stops_when_seap_refuses_every_purchase(session, raw_sto
     assert len(asked) == 1
 
 
+def test_an_answer_the_parser_cannot_read_is_not_asked_for_again(session, raw_store):
+    ids = held_purchases(session)
+
+    def unreadable(request: httpx.Request) -> httpx.Response:
+        page = request.url.path.rsplit("/", 1)[1]
+        return httpx.Response(200, json={"directAcquisitionID": "not a number", "page": page})
+
+    with PoliteClient(transport=httpx.MockTransport(unreadable), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 2
+    docs = session.scalars(select(SourceDocument).where(SourceDocument.source == run.DETAILS_JOB))
+    assert [doc.rejected_rows for doc in docs] == [1, 1]
+    assert details_held(session) == []
+    # Stored and logged: the next run asks for nothing; a reparse reads them once fixed.
+    with PoliteClient(transport=seap(), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 0
+    assert ids
+
+
 def test_a_reparse_reads_list_pages_and_purchase_pages_apart(session, raw_store):
     ids = held_purchases(session)
     with PoliteClient(transport=seap(), sleep=no_sleep) as client:

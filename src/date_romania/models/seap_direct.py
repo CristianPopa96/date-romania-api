@@ -75,7 +75,8 @@ class DirectPurchaseDetail(Base):
         ForeignKey("direct_purchase.id", ondelete="CASCADE"), primary_key=True, autoincrement=False
     )
     description: Mapped[str | None] = mapped_column(Text)
-    # The buyer's own words, e.g. 'OP la 30 de zile', 'La sediul unitatii'.
+    # The buyer's own words, e.g. 'OP la 30 de zile', 'La sediul unitatii'. A contact
+    # person they name is kept as SEAP publishes it (Crispy, 22.10.2026).
     payment_condition: Mapped[str | None] = mapped_column(Text)
     delivery_condition: Mapped[str | None] = mapped_column(Text)
     # SEAP's `financingType`: true when the buyer named an EU fund or programme.

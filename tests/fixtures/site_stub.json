@@ -677,7 +677,7 @@
      "fetched_at": "2026-10-07T04:30:00Z",
      "days_collected": 0,
      "days_partial": 0,
-     "documents": 2,
+     "documents": 1,
      "rejected_rows": 0,
      "counts": {
       "purchases": 6,
@@ -1227,6 +1227,15 @@
       "unit_price": 125.0,
       "value": 250.0,
       "rejected": false
+     },
+     {
+      "name": "Plicuri C4",
+      "cpv_code": "30192000-1",
+      "quantity": 100.0,
+      "unit": "bucată",
+      "unit_price": 1.5,
+      "value": 150.0,
+      "rejected": true
      }
     ],
     "items_value": 500.0,

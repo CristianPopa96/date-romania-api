@@ -11,7 +11,7 @@ import places_seed
 import programme_seed
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from date_romania.api import main
 from date_romania.api.main import app
@@ -90,9 +90,10 @@ def contract(n: int, notice: int, kind: int, value: str, when: str, winners: lis
 
 
 def add_purchase_detail(session):
-    """The lines and conditions of purchase 3, read from its own page; the others have none."""
+    """The lines and conditions of purchase 3, read from its own page, one of them turned
+    down by the supplier; the others have none."""
     doc = SourceDocument(
-        source="seap-direct",
+        source="seap-direct-details",
         url="https://e-licitatie.ro/api-pub/PublicDirectAcquisition/getView/3",
         sha256="d3" * 32,
         storage_key="k3",
@@ -124,13 +125,14 @@ def add_purchase_detail(session):
                 quantity=Decimal(quantity),
                 unit=unit,
                 unit_price=Decimal(price),
-                rejected=False,
+                rejected=rejected,
                 source_document_id=doc.id,
             )
-            for position, (name, quantity, unit, price) in enumerate(
+            for position, (name, quantity, unit, price, rejected) in enumerate(
                 [
-                    ("Hârtie copiator A4", "10", "top", "25"),
-                    ("Toner imprimantă", "2", "bucată", "125"),
+                    ("Hârtie copiator A4", "10", "top", "25", False),
+                    ("Toner imprimantă", "2", "bucată", "125", False),
+                    ("Plicuri C4", "100", "bucată", "1.5", True),
                 ],
                 1,
             )
@@ -413,7 +415,10 @@ def test_one_purchase_carries_its_lines_once_collected(client):
     ] == [
         ("Hârtie copiator A4", 10.0, "top", 25.0, 250.0),
         ("Toner imprimantă", 2.0, "bucată", 125.0, 250.0),
+        ("Plicuri C4", 100.0, "bucată", 1.5, 150.0),
     ]
+    # The total is what was bought: not the line the supplier turned down.
+    assert [i["rejected"] for i in detail["items"]] == [False, False, True]
     assert detail["items_value"] == 500.0
     # Its own source: the stored answer of the purchase's page.
     assert (detail["source"]["sha256"], detail["source"]["parser_version"]) == ("d3" * 32, 1)
@@ -422,6 +427,13 @@ def test_one_purchase_carries_its_lines_once_collected(client):
     assert client.get("/v1/direct-purchases/5").json()["detail"] is None
     # The lists never carry it.
     assert "detail" not in client.get("/v1/direct-purchases").json()["items"][0]
+
+
+def test_a_purchase_page_with_no_lines_has_no_total(client, session):
+    session.execute(delete(DirectPurchaseItem))
+    session.flush()
+    detail = client.get("/v1/direct-purchases/3").json()["detail"]
+    assert (detail["items"], detail["items_value"]) == ([], None)
 
 
 def test_a_refused_purchase_is_never_above_the_limit(client, session):
@@ -786,8 +798,8 @@ def test_datasets_say_what_the_site_is_built_on(client):
     assert awards["counts"] == {"notices": 3, "contracts": 5, "counted_contracts": 3}
     assert direct["counts"] == {"purchases": 6, "accepted": 5, "above_limit": 1}
     assert (awards["days_collected"], awards["days_partial"], awards["documents"]) == (3, 0, 1)
-    # The list page, and the answer of one purchase's own page.
-    assert (direct["days_collected"], direct["documents"]) == (0, 2)
+    # The list page only: the pages of single purchases are stored apart.
+    assert (direct["days_collected"], direct["documents"]) == (0, 1)
     # Rows the parser could not read: none, two, and not known for files parsed before
     # the count was kept.
     assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
@@ -807,13 +819,18 @@ def test_rejected_rows_are_known_only_once_every_document_was_seen(client, sessi
     session.flush()
     direct = client.get("/v1/datasets").json()["items"][0]
     # One document from before the count: the source's count is not known.
-    assert (direct["documents"], direct["rejected_rows"]) == (3, None)
+    assert (direct["documents"], direct["rejected_rows"]) == (2, None)
     # Set aside unread by a parser that counts, it no longer stands in the way.
     record_skipped(
         session.scalar(select(SourceDocument).where(SourceDocument.sha256 == "e" * 64)), 3, "test"
     )
     session.flush()
     assert client.get("/v1/datasets").json()["items"][0]["rejected_rows"] == 0
+    # The pages of single purchases count with the list pages.
+    detail = session.scalar(select(SourceDocument).where(SourceDocument.sha256 == "d3" * 32))
+    detail.rejected_rows = 2
+    session.flush()
+    assert client.get("/v1/datasets").json()["items"][0]["rejected_rows"] == 2
 
 
 def test_a_day_read_outside_the_period_is_not_counted_with_its_days(client, session):

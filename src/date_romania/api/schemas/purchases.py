@@ -82,7 +82,8 @@ class PurchaseDetail(Answer):
     delivery_condition: str | None = Field(description="The buyer's own words.")
     items: list[PurchaseItem]
     items_value: float | None = Field(
-        description="The lines added up; null when a line has no price or quantity."
+        description="The lines the supplier did not turn down, added up; null when there "
+        "are none, or when one has no price or quantity."
     )
     source: Source
 

@@ -37,15 +37,15 @@ from date_romania.sources import SEAP_DIRECT
 log = logging.getLogger(__name__)
 
 SOURCE = JOB = SEAP_DIRECT.key
-DETAILS_JOB = f"{JOB}-details"
+DETAILS_JOB = details.SOURCE
 
 
 def _parse_and_load(
     session: Session, data: dict, doc: SourceDocument, url: str | None = None
 ) -> Parsed:
-    """List pages and the details of purchases are stored under one source; the address
-    tells them apart. `url` is the address just asked: two answers with the same bytes
-    share one document, which keeps only the first address.
+    """A list page, or the detail of one purchase (stored under `details.SOURCE`): the
+    address tells them apart. `url` is the address just asked: two answers with the same
+    bytes share one document, which keeps only the first address.
     """
     url = url or doc.url
     if url.startswith(details.DETAIL_URL):
@@ -110,7 +110,7 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
             try:
                 answer = details.fetch(client, purchase_id)
                 doc = store_document(
-                    session, SOURCE, answer.url, answer.content, None, "application/json"
+                    session, details.SOURCE, answer.url, answer.content, None, "application/json"
                 )
                 _parse_and_load(session, answer.data, doc, answer.url)
                 session.commit()
@@ -136,8 +136,9 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
 
 
 def reparse(session: Session) -> int:
-    """Rebuild the rows from the raw store, oldest file first, without calling SEAP."""
-    docs = stored_documents(session, SOURCE)
+    """Rebuild the rows from the raw store, without calling SEAP: the list pages oldest
+    first, then the details of purchases, which need the purchases."""
+    docs = stored_documents(session, SOURCE) + stored_documents(session, details.SOURCE)
     for doc in docs:
         _parse_and_load(session, stored_json(doc), doc)
         session.commit()
