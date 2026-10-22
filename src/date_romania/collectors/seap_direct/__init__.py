@@ -5,6 +5,12 @@ and ignores the time of day in its date filters, while a working day has well ov
 purchases. So one day is split by the filters that do work until every slice fits.
 """
 
-from date_romania.collectors.seap_direct.run import JOB, SOURCE, collect_day, reparse
+from date_romania.collectors.seap_direct.run import (
+    JOB,
+    SOURCE,
+    collect_day,
+    collect_details,
+    reparse,
+)
 
-__all__ = ["JOB", "SOURCE", "collect_day", "reparse"]
+__all__ = ["JOB", "SOURCE", "collect_day", "collect_details", "reparse"]

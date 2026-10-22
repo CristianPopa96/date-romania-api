@@ -1,20 +1,33 @@
 """Loading into PostgreSQL, inside a transaction that is rolled back (see conftest.py)."""
 
+import hashlib
 import json
-from datetime import date
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
+import httpx
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.orm import Session
 
+from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, tried_days
 from date_romania.collectors.seap_direct import run
 from date_romania.collectors.seap_direct.load import load
 from date_romania.collectors.seap_direct.parse import PARSER_VERSION, parse_page
-from date_romania.models import DirectPurchase, Entity, SourceDocument, done_days
+from date_romania.models import (
+    DirectPurchase,
+    DirectPurchaseDetail,
+    DirectPurchaseItem,
+    Entity,
+    JobRun,
+    SourceDocument,
+    done_days,
+)
+from date_romania.storage import StoredObject
 
 FIXTURE = Path(__file__).parent / "fixtures" / "seap_direct_page.json"
+DETAIL = Path(__file__).parent / "fixtures" / "seap_direct_detail.json"
 
 
 def document(session: Session, sha256: str) -> SourceDocument:
@@ -103,3 +116,146 @@ def test_a_parse_keeps_on_its_document_what_it_rejected_and_which_parser(session
     # A later parse that reads every row sets it back to none.
     run._parse_and_load(session, json.loads(FIXTURE.read_text(encoding="utf-8")), doc)
     assert doc.rejected_rows == 0
+
+
+def held_purchases(session: Session) -> list[int]:
+    """The fixture's purchases, oldest first, all accepted and small but for four: the two
+    oldest accepted at 150,000 lei, the third at 99,999, the fourth refused at 500,000."""
+    data = json.loads(FIXTURE.read_text(encoding="utf-8"))
+    load(session, parse_page(data), document(session, "0" * 64).id)
+    ids = sorted(session.scalars(select(DirectPurchase.id)))
+    for n, purchase_id in enumerate(ids):
+        session.execute(
+            update(DirectPurchase)
+            .where(DirectPurchase.id == purchase_id)
+            .values(
+                state_id=7,
+                closing_value=1000,
+                published_at=datetime(2026, 10, 1, 10) + timedelta(hours=n),
+            )
+        )
+    for purchase_id, state, value in [
+        (ids[0], 7, 150_000),
+        (ids[1], 7, 150_000),
+        (ids[2], 7, 99_999),
+        (ids[3], 3, 500_000),
+    ]:
+        session.execute(
+            update(DirectPurchase)
+            .where(DirectPurchase.id == purchase_id)
+            .values(state_id=state, closing_value=value)
+        )
+    return ids
+
+
+def seap(broken: frozenset[int] = frozenset()) -> httpx.MockTransport:
+    """SEAP's purchase pages: the fixture, under the id asked; 403 unless the request
+    names the purchase's public page."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        purchase_id = int(request.url.path.rsplit("/", 1)[1])
+        page = f"https://e-licitatie.ro/pub/direct-acquisition/view/{purchase_id}"
+        if request.headers.get("Referer") != page:
+            return httpx.Response(403)
+        if purchase_id in broken:
+            return httpx.Response(404)
+        data = json.loads(DETAIL.read_text(encoding="utf-8"))
+        data["directAcquisitionID"] = purchase_id
+        return httpx.Response(200, json=data)
+
+    return httpx.MockTransport(handler)
+
+
+@pytest.fixture
+def raw_store(monkeypatch) -> dict[str, bytes]:
+    """The raw store, in memory: stored bytes by their hash."""
+    stored: dict[str, bytes] = {}
+
+    def put_raw(source, content, content_type=None):
+        sha256 = hashlib.sha256(content).hexdigest()
+        stored[sha256] = content
+        return StoredObject(key=sha256, sha256=sha256, size_bytes=len(content))
+
+    monkeypatch.setattr("date_romania.collectors.jobs.put_raw", put_raw)
+    monkeypatch.setattr(
+        "date_romania.collectors.seap_direct.run.stored_json",
+        lambda doc: json.loads(stored[doc.sha256]),
+    )
+    return stored
+
+
+def details_held(session: Session) -> list[int]:
+    return list(session.scalars(select(DirectPurchaseDetail.purchase_id)))
+
+
+def no_sleep(seconds: float) -> None:
+    pass
+
+
+def test_collect_details_asks_only_for_accepted_purchases_of_100000_lei_or_more(session, raw_store):
+    ids = held_purchases(session)
+    with PoliteClient(transport=seap(broken=frozenset({ids[0]})), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 1
+    job = session.scalars(select(JobRun).where(JobRun.job == run.DETAILS_JOB)).one()
+    assert (job.status, job.records) == ("partial", 1)
+    assert "1 of 2" in job.error
+    assert details_held(session) == [ids[1]]
+    lines = session.scalars(select(DirectPurchaseItem.position).order_by("position")).all()
+    assert lines == [1, 2, 3]
+
+    # The next run asks only for the one left behind.
+    with PoliteClient(transport=seap(), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 1
+        assert run.collect_details(session, client) == 0
+    assert sorted(details_held(session)) == ids[:2]
+
+
+def test_collect_details_asks_for_the_newest_first_and_stops_at_the_limit(session, raw_store):
+    ids = held_purchases(session)
+    with PoliteClient(transport=seap(), sleep=no_sleep) as client:
+        assert run.collect_details(session, client, limit=1) == 1
+    assert details_held(session) == [ids[1]]
+
+
+def test_collect_details_stops_when_seap_refuses_every_purchase(session, raw_store, monkeypatch):
+    monkeypatch.setattr("date_romania.collectors.seap_direct.details.MAX_FAILURES_IN_A_ROW", 1)
+    held_purchases(session)
+    asked = []
+
+    def refuse(request: httpx.Request) -> httpx.Response:
+        asked.append(request.url)
+        return httpx.Response(403)
+
+    with PoliteClient(transport=httpx.MockTransport(refuse), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 0
+    assert len(asked) == 1
+
+
+def test_an_answer_the_parser_cannot_read_is_not_asked_for_again(session, raw_store):
+    ids = held_purchases(session)
+
+    def unreadable(request: httpx.Request) -> httpx.Response:
+        page = request.url.path.rsplit("/", 1)[1]
+        return httpx.Response(200, json={"directAcquisitionID": "not a number", "page": page})
+
+    with PoliteClient(transport=httpx.MockTransport(unreadable), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 2
+    docs = session.scalars(select(SourceDocument).where(SourceDocument.source == run.DETAILS_JOB))
+    assert [doc.rejected_rows for doc in docs] == [1, 1]
+    assert details_held(session) == []
+    # Stored and logged: the next run asks for nothing; a reparse reads them once fixed.
+    with PoliteClient(transport=seap(), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 0
+    assert ids
+
+
+def test_a_reparse_reads_list_pages_and_purchase_pages_apart(session, raw_store):
+    ids = held_purchases(session)
+    with PoliteClient(transport=seap(), sleep=no_sleep) as client:
+        run.collect_details(session, client)
+    session.execute(delete(DirectPurchaseDetail))
+    assert session.scalar(select(func.count()).select_from(DirectPurchaseItem)) == 0
+
+    run.reparse(session)
+    assert sorted(details_held(session)) == ids[:2]
+    assert session.scalar(select(func.count()).select_from(DirectPurchaseItem)) == 6

@@ -13,8 +13,12 @@
 30 5 * * * dr collect seap-awards
 
 # Every day at 07:30 UTC: the detail and versions of the notices that a failed request
-# left without them. Nothing to ask for on most days.
-30 7 * * * dr collect seap-award-details
+# left without them (nothing to ask for on most days); then, once it ends, so that two
+# jobs never ask SEAP at once, the lines and conditions of accepted direct purchases of
+# 100,000 lei or more, newest first, one request each. At most 4,000 a run (about an
+# hour and a half): the 30,000 held when this began are done in about eight days, then
+# about a hundred new ones a day.
+30 7 * * * dr collect seap-award-details; dr collect seap-direct-details --limit 4000
 
 # Every day at 08:30 UTC, after the SEAP jobs: ANAF's record (county and locality) of the
 # institutions and companies they brought that ANAF was not asked about yet, 100 tax IDs

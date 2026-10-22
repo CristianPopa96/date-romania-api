@@ -33,6 +33,7 @@ from date_romania.sources import (
     PUBLIC_ENTITIES,
     SEAP_AWARDS,
     SEAP_DIRECT,
+    SEAP_DIRECT_DETAILS_KEY,
     SEAP_EXPORTS,
     SIRUTA,
 )
@@ -166,6 +167,12 @@ def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict
     ]
 
 
+def _rejected(rejected: dict[str, int | None], *keys: str) -> int | None:
+    """The rows rejected over several stored sources, known only if known for each held."""
+    counts = [rejected[key] for key in keys if key in rejected]
+    return None if not counts or None in counts else sum(counts)
+
+
 @router.get("/datasets")
 def datasets(session: Db) -> Datasets:
     """What the site is built on: each source, the days we hold and how many records."""
@@ -214,7 +221,8 @@ def datasets(session: Db) -> Datasets:
                 days_collected=direct_days[0],
                 days_partial=direct_days[1],
                 documents=stored.get(SEAP_DIRECT.key, 0),
-                rejected_rows=rejected.get(SEAP_DIRECT.key),
+                # The list pages and the pages of single purchases, read by two parsers.
+                rejected_rows=_rejected(rejected, SEAP_DIRECT.key, SEAP_DIRECT_DETAILS_KEY),
                 counts={
                     "purchases": direct.purchases,
                     "accepted": direct.accepted,

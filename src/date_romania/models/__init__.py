@@ -29,7 +29,11 @@ from date_romania.models.seap_awards import (
     AwardNoticeVersion,
     AwardWinner,
 )
-from date_romania.models.seap_direct import DirectPurchase
+from date_romania.models.seap_direct import (
+    DirectPurchase,
+    DirectPurchaseDetail,
+    DirectPurchaseItem,
+)
 
 __all__ = [
     "DONE",
@@ -44,6 +48,8 @@ __all__ = [
     "JobRun",
     "Entity",
     "DirectPurchase",
+    "DirectPurchaseDetail",
+    "DirectPurchaseItem",
     "AwardNotice",
     "AwardContract",
     "AwardWinner",

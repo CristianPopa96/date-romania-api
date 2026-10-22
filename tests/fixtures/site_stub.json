@@ -817,7 +817,7 @@
     "record": "CAN0000001",
     "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 2,
+    "document_id": 3,
     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "parser_version": 2,
     "documents": null
@@ -868,7 +868,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -921,7 +921,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -965,7 +965,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -1009,7 +1009,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -1050,7 +1050,7 @@
     "record": "SCNA0000002",
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 2,
+    "document_id": 3,
     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "parser_version": 2,
     "documents": null
@@ -1097,7 +1097,7 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -1146,7 +1146,7 @@
     "record": "CAN0000003",
     "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9003",
     "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": 2,
+    "document_id": 3,
     "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "parser_version": 2,
     "documents": null
@@ -1205,6 +1205,50 @@
     "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     "parser_version": 1,
     "documents": null
+   },
+   "detail": {
+    "payment_condition": "OP la 30 de zile de la recepție",
+    "delivery_condition": "La sediul primăriei",
+    "items": [
+     {
+      "name": "Hârtie copiator A4",
+      "cpv_code": "30192000-1",
+      "quantity": 10.0,
+      "unit": "top",
+      "unit_price": 25.0,
+      "value": 250.0,
+      "rejected": false
+     },
+     {
+      "name": "Toner imprimantă",
+      "cpv_code": "30192000-1",
+      "quantity": 2.0,
+      "unit": "bucată",
+      "unit_price": 125.0,
+      "value": 250.0,
+      "rejected": false
+     },
+     {
+      "name": "Plicuri C4",
+      "cpv_code": "30192000-1",
+      "quantity": 100.0,
+      "unit": "bucată",
+      "unit_price": 1.5,
+      "value": 150.0,
+      "rejected": true
+     }
+    ],
+    "items_value": 500.0,
+    "source": {
+     "publisher": "SEAP",
+     "record": "DA00000003",
+     "url": "https://e-licitatie.ro/pub/direct-acquisition/view/3",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": 2,
+     "sha256": "d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3d3",
+     "parser_version": 1,
+     "documents": null
+    }
    }
   }
  },
@@ -1246,7 +1290,8 @@
     "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     "parser_version": 1,
     "documents": null
-   }
+   },
+   "detail": null
   }
  },
  "/v1/direct-purchases/5": {
@@ -1287,7 +1332,8 @@
     "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
     "parser_version": 1,
     "documents": null
-   }
+   },
+   "detail": null
   }
  },
  "/v1/direct-purchases/999": {
@@ -1416,7 +1462,7 @@
      "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
      "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
      "fetched_at": "2026-10-07T04:30:00Z",
-     "document_id": 6,
+     "document_id": 7,
      "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
      "parser_version": 1,
      "documents": null
@@ -1559,7 +1605,7 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -1712,7 +1758,7 @@
       "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
       "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 6,
+      "document_id": 7,
       "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
       "parser_version": 1,
       "documents": null
@@ -1853,7 +1899,7 @@
       "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
       "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 6,
+      "document_id": 7,
       "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
       "parser_version": 1,
       "documents": null
@@ -1976,7 +2022,7 @@
      "record": "MDLPA · Situația veniturilor și cheltuielilor 2024",
      "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
      "fetched_at": "2026-10-07T04:30:00Z",
-     "document_id": 6,
+     "document_id": 7,
      "sha256": "5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed",
      "parser_version": 1,
      "documents": null
@@ -2119,7 +2165,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2172,7 +2218,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2255,7 +2301,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2308,7 +2354,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2379,7 +2425,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2423,7 +2469,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2463,7 +2509,7 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2634,7 +2680,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2678,7 +2724,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2718,7 +2764,7 @@
       "record": "SCNA0000002",
       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2783,7 +2829,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null
@@ -2827,7 +2873,7 @@
       "record": "CAN0000001",
       "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
       "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 2,
+      "document_id": 3,
       "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "parser_version": 2,
       "documents": null

@@ -63,6 +63,38 @@ class Purchase(Answer):
     source: Source
 
 
+class PurchaseItem(Answer):
+    """One line of a direct purchase, as the buyer listed it."""
+
+    name: str | None
+    cpv_code: str | None
+    quantity: float | None
+    unit: str | None = Field(description="The buyer's own word, e.g. 'bucată', 'pachet'.")
+    unit_price: float | None = Field(description="Lei without VAT, for one unit.")
+    value: float | None = Field(description="`unit_price` times `quantity`.")
+    rejected: bool | None = Field(description="The supplier turned this line down.")
+
+
+class PurchaseDetail(Answer):
+    """What the purchase's own page adds to the list: its lines and conditions."""
+
+    payment_condition: str | None = Field(description="The buyer's own words.")
+    delivery_condition: str | None = Field(description="The buyer's own words.")
+    items: list[PurchaseItem]
+    items_value: float | None = Field(
+        description="The lines the supplier did not turn down, added up; null when there "
+        "are none, or when one has no price or quantity."
+    )
+    source: Source
+
+
+class PurchaseWithDetail(Purchase):
+    detail: PurchaseDetail | None = Field(
+        description="Null until collected: the detail is asked for one purchase at a time, "
+        "so far for the accepted ones of 100,000 lei or more."
+    )
+
+
 class PurchasePage(Answer):
     total: int
     items: list[Purchase]
