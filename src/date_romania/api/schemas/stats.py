@@ -15,8 +15,11 @@ class Stats(Answer):
     institutions: int = Field(description="Institutions with at least one purchase.")
     suppliers: int
     limit: float = Field(
-        description="The limit used for `above_limit`: the legal one for works, the highest a "
-        "direct purchase may have, in lei without VAT."
+        description="The highest legal limit for a direct purchase (the one for works), in "
+        "lei without VAT. Each purchase is held to the limit of its type: see `Summary`."
+    )
+    limit_goods_services: float = Field(
+        description="The legal limit for goods and services, in lei without VAT."
     )
     source: Source
 

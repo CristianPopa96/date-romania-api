@@ -358,6 +358,66 @@ def test_a_refused_purchase_is_never_above_the_limit(client, session):
     assert (row["state_id"], row["value"], row["above_limit"]) == (3, 250000000.0, False)
 
 
+def test_a_purchase_is_held_to_the_limit_of_its_type_and_annex_2_to_none(client, session):
+    """Goods and services stop at 270,120 lei, works at 900,400; Annex 2 services, told by
+    CPV code whatever their type, have no limit (Crispy, 22.10.2026)."""
+    before = client.get("/v1/stats").json()["direct_purchases"]
+    doc = session.scalar(select(SourceDocument.id).where(SourceDocument.source == "seap-direct"))
+    rows = [
+        # Goods above their own limit, under the works one: set apart.
+        purchase(30, HOSPITAL, STATIONER, 7, "300000", "2026-10-06T14:00:00+03:00"),
+        # Works at the same value: under their limit.
+        purchase(31, TOWN_HALL, BUILDER, 7, "300000", "2026-10-06T15:00:00+03:00"),
+        # Hospital catering (Annex 2), filed as goods, above both limits: counted.
+        purchase(
+            32,
+            HOSPITAL,
+            STATIONER,
+            7,
+            "1000000",
+            "2026-10-06T16:00:00+03:00",
+            cpv_code="55520000-1",
+        ),
+        # Near the goods limit, but an Annex 2 service twice: no pattern.
+        purchase(
+            33, HOSPITAL, BUILDER, 7, "260000", "2026-10-05T16:00:00+03:00", cpv_code="85100000-0"
+        ),
+        purchase(
+            34, HOSPITAL, BUILDER, 7, "265000", "2026-10-06T16:00:00+03:00", cpv_code="85100000-0"
+        ),
+    ]
+    kinds = {30: GOODS, 31: WORKS, 32: GOODS, 33: SERVICES, 34: SERVICES}
+    for row in rows:
+        row.source_document_id = doc
+        row.contract_type_id = kinds[row.id]
+    session.add_all(rows)
+    session.flush()
+
+    summary = client.get("/v1/stats").json()["direct_purchases"]
+    assert summary["above_limit"] == before["above_limit"] + 1
+    assert summary["above_limit_value"] == before["above_limit_value"] + 300000
+    assert summary["value"] == before["value"] + 300000 + 1000000 + 260000 + 265000
+    goods = client.get("/v1/direct-purchases/30").json()
+    assert (goods["contract_type_id"], goods["limit"], goods["above_limit"]) == (
+        GOODS,
+        270120.0,
+        True,
+    )
+    assert client.get("/v1/direct-purchases/31").json()["above_limit"] is False
+    catering = client.get("/v1/direct-purchases/32").json()
+    assert (catering["limit"], catering["above_limit"]) == (None, False)
+    # A purchase whose type is not known is held to the highest limit.
+    assert client.get("/v1/direct-purchases/1").json()["limit"] == 900400.0
+
+    pattern = client.get("/v1/patterns/near-limit").json()
+    assert pattern["pairs"] == 0
+    assert pattern["annex_2"] == 3
+    assert (
+        pattern["checked"] + pattern["unknown_type"] + pattern["annex_2"]
+        == (pattern["accepted_total"])
+    )
+
+
 def test_rankings_order_by_accepted_value(client):
     suppliers = client.get("/v1/rankings/suppliers").json()
     assert [(r["rank"], r["cui"], r["value"]) for r in suppliers["items"]] == [
@@ -780,6 +840,7 @@ def test_near_limit_lists_repeated_purchases_just_under_their_own_limit(client, 
     assert [row["id"] for row in pattern["items"][1]["items"]] == [20, 21]
     # Purchases 1, 2, 3, 5 and 6 of the fixture and 27 here have no type.
     assert (pattern["checked"], pattern["accepted_total"], pattern["unknown_type"]) == (7, 13, 6)
+    assert pattern["annex_2"] == 0
     assert (pattern["first_day"], pattern["last_day"]) == ("2026-10-05", "2026-10-07")
 
 

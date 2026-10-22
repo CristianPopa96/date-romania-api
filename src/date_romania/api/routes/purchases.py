@@ -54,7 +54,11 @@ def _purchase(row) -> Purchase:
         finalized_at=purchase.finalized_at,
         estimated_value=purchase.estimated_value_ron,
         value=value,
-        above_limit=money.is_above_limit(purchase.state_id, value),
+        contract_type_id=purchase.contract_type_id,
+        limit=money.limit_of(purchase.contract_type_id, purchase.cpv_code),
+        above_limit=money.is_above_limit(
+            purchase.state_id, value, purchase.contract_type_id, purchase.cpv_code
+        ),
         source=record_source(
             SEAP_DIRECT,
             purchase,

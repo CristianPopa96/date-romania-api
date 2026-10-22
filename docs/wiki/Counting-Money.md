@@ -12,17 +12,24 @@ catalogue. These are **direct purchases**.
 - **Only accepted purchases are counted.** A purchase the supplier or the institution
   refused, or that got no answer, is still listed, but its value was never spent, so it
   is not added up.
-- **Values above the legal limit are set apart.** The highest a direct purchase may be
-  is 900,400 lei (for works). When SEAP shows an accepted purchase above that, it is left
-  out of the totals and shown next to them. Date România does not call it an error; it
-  is what SEAP publishes, and one such value could outweigh a whole day.
-- The limit for goods and services is lower (270,120 lei), but it is not applied yet,
-  because some services have higher limits and cannot be told apart yet.
+- **Values above the legal limit are set apart.** The law (Law 98/2016, art. 7(5))
+  allows a direct purchase under **270,120 lei** for goods and services and under
+  **900,400 lei** for works. Each purchase is held to the limit of its type, as the
+  institution filed it in SEAP; when the type is not known, to the higher one. When SEAP
+  shows an accepted purchase above its limit, it is left out of the totals and shown
+  next to them. Date România does not call it an error; it is what SEAP publishes, and
+  one such value could outweigh a whole day.
+- **Some services have no limit.** The social and other specific services listed in
+  Annex 2 of the law (health, social services, education, culture, hotels and
+  restaurants, legal, security, postal and a few more) are bought by each institution's
+  own procedure, with no limit for a direct purchase. They are recognised by their CPV
+  code and always counted.
 
 ### Purchases just under the limit
 
 The site shows pairs of the same institution and the same company with **at least two**
-accepted direct purchases, each worth between 90% of the legal limit and the limit. A
+accepted direct purchases, each worth between 90% of the legal limit of its type and the
+limit. Annex 2 services are left out, since they have no limit to be near. A
 value close to the limit does not prove a purchase was split to avoid an auction. It is
 a fact worth asking for documents about, never an accusation.
 
@@ -37,7 +44,9 @@ contracts, and SEAP publishes the notice again each time a contract is added or 
   bought later. The money appears in the contracts signed under it, and only those are
   counted.
 - **A withdrawn notice is not counted twice.** When a notice is corrected and
-  republished, the contracts of the old version are left out.
+  republished, SEAP gives the new version a new id (the notice number stays the same)
+  and withdraws the old one. When both are held, only the newest is counted, and the old
+  version's page links to it.
 - **A contract won by several companies together is never split.** SEAP gives one value
   for the whole contract and does not say who does how much. A company's page shows
   contracts won alone and contracts won together side by side, never added.

@@ -44,10 +44,16 @@ class NearLimitPattern(Answer):
     pairs: int = Field(description="Every pair that matches, beyond the ones listed.")
     items: list[NearLimitPair]
     checked: int = Field(
-        description="Accepted purchases of known contract type: the ones that were checked."
+        description="Accepted purchases of known contract type, outside Annex 2: the ones "
+        "that were checked."
     )
     accepted_total: int = Field(description="Accepted purchases, checked or not.")
     unknown_type: int = Field(
-        description="Accepted purchases of unknown contract type, which cannot be checked."
+        description="Accepted purchases of unknown contract type outside Annex 2, which cannot "
+        "be checked. `checked`, `unknown_type` and `annex_2` add up to `accepted_total`."
+    )
+    annex_2: int = Field(
+        description="Accepted purchases of services in Annex 2 of Law 98/2016 (by CPV code), "
+        "which have no direct purchase limit to be near."
     )
     source: Source
