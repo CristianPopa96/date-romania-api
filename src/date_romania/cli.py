@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from date_romania import places, pnias_links, reports
 from date_romania.collectors import (
     anaf,
+    eu_projects,
     local_budgets,
     pnias,
     pnrr,
@@ -142,6 +143,14 @@ def collect_pnias_payments() -> None:
         typer.echo(f"{pnias.collect(session, client)} payments")
 
 
+@collect_app.command("eu-projects")
+def collect_eu_projects() -> None:
+    """The newest list of contracted projects of each EU programme, and the Health
+    programme's payments, if not held yet."""
+    with Session(get_engine()) as session, PoliteClient(timeout=300.0) as client:
+        typer.echo(f"{eu_projects.collect(session, client)} EU projects")
+
+
 @collect_app.command("pnrr")
 def collect_pnrr() -> None:
     """The newest edition of MIPE's PNRR dashboard data, if it is not loaded yet."""
@@ -202,6 +211,12 @@ def reparse_seap_awards() -> None:
 def reparse_pnias_payments() -> None:
     """Parse the stored Anghel Saligny payment files again, without calling data.gov.ro."""
     _reparse(pnias)
+
+
+@reparse_app.command("eu-projects")
+def reparse_eu_projects() -> None:
+    """Load the newest stored list of each EU programme again, without calling anyone."""
+    _reparse(eu_projects)
 
 
 @reparse_app.command("pnrr")

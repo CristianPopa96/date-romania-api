@@ -13,6 +13,7 @@ from date_romania.models.core import (
     done_days,
     search_text,
 )
+from date_romania.models.eu_projects import EuProject, EuProjectPayment
 from date_romania.models.places import (
     AnafRecord,
     LocalBudget,
@@ -79,4 +80,6 @@ __all__ = [
     "PnrrContractLine",
     "PnrrPayment",
     "PnrrTopRecipient",
+    "EuProject",
+    "EuProjectPayment",
 ]
