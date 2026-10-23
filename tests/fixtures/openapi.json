@@ -5236,7 +5236,19 @@
         "type": "null"
        }
       ],
-      "title": "Name"
+      "title": "Name",
+      "description": "As the dashboard writes it."
+     },
+     "entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The entity we hold under the CUI, with its kind: which page it opens."
      },
      "received": {
       "anyOf": [
@@ -5267,6 +5279,7 @@
     "required": [
      "cui",
      "name",
+     "entity",
      "received",
      "last_received_on"
     ],

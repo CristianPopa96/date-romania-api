@@ -40,6 +40,7 @@ def test_the_programme_is_one_edition_with_its_measures_and_top_recipients(clien
     assert by_code["C10.I3"]["contracts"] == 3
     assert by_code["C2.I1"]["contracts"] == 2
     assert [t["cui"] for t in answer["top"]] == [pnrr_seed.TOWN_HALL, pnrr_seed.HOSPITAL]
+    assert answer["top"][0]["entity"]["kind"] == "authority"
     assert (answer["source"]["record"], answer["source"]["documents"]) == (
         "Tabloul de bord PNRR",
         5,

@@ -29,7 +29,10 @@ class PnrrMeasureRow(Answer):
 
 class PnrrTopRecipient(Answer):
     cui: int
-    name: str | None
+    name: str | None = Field(description="As the dashboard writes it.")
+    entity: EntityRef | None = Field(
+        description="The entity we hold under the CUI, with its kind: which page it opens."
+    )
     received: float | None = Field(description="Lei received, grants and loans together.")
     last_received_on: date | None
 

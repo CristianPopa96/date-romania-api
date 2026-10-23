@@ -3762,12 +3762,22 @@
     {
      "cui": 4981310,
      "name": "COMUNA TANTARENI",
+     "entity": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
      "received": 2300000.0,
      "last_received_on": "2026-10-02"
     },
     {
      "cui": 4491342,
      "name": "SPITALUL JUDETEAN",
+     "entity": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
      "received": 1800000.0,
      "last_received_on": "2026-07-08"
     }

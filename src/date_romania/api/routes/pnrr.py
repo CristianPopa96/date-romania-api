@@ -110,7 +110,11 @@ def programme(session: Db) -> PnrrProgramme:
         .outerjoin(contracts, contracts.c.measure_code == Measure.code)
         .order_by(Measure.code)
     ).all()
-    top = session.scalars(select(Top).order_by(Top.total.desc().nulls_last(), Top.cui))
+    top = session.execute(
+        select(Top, Entity)
+        .outerjoin(Entity, Entity.cui == Top.cui)
+        .order_by(Top.total.desc().nulls_last(), Top.cui)
+    ).all()
     return PnrrProgramme(
         edition=edition.day,
         allocated_eur=edition.allocated_eur,
@@ -125,10 +129,11 @@ def programme(session: Db) -> PnrrProgramme:
             PnrrTopRecipient(
                 cui=each.cui,
                 name=_text(each.name),
+                entity=ref(entity),
                 received=each.total,
                 last_received_on=each.last_received_on,
             )
-            for each in top
+            for each, entity in top
         ],
         source=_source(session, edition),
     )
