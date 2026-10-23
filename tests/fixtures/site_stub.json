@@ -3884,7 +3884,8 @@
      "county": "GORJ",
      "total": 6200000.0,
      "status": "in_progress",
-     "physical_progress": 0.4
+     "physical_progress": 0.4,
+     "measures_differ": false
     },
     {
      "id": 702,
@@ -3898,7 +3899,8 @@
      "county": "CLUJ",
      "total": 2450000.0,
      "status": "in_progress",
-     "physical_progress": 0.6
+     "physical_progress": 0.6,
+     "measures_differ": false
     },
     {
      "id": 703,
@@ -3912,7 +3914,8 @@
      "county": "CLUJ",
      "total": 1900000.0,
      "status": "finished",
-     "physical_progress": 1.0
+     "physical_progress": 1.0,
+     "measures_differ": false
     }
    ],
    "natural_persons": 0
@@ -3935,7 +3938,8 @@
      "county": "CLUJ",
      "total": 1900000.0,
      "status": "finished",
-     "physical_progress": 1.0
+     "physical_progress": 1.0,
+     "measures_differ": false
     }
    ],
    "natural_persons": 0
@@ -3958,7 +3962,8 @@
      "county": "GORJ",
      "total": 300000.0,
      "status": "in_progress",
-     "physical_progress": 0.5
+     "physical_progress": 0.5,
+     "measures_differ": false
     }
    ],
    "natural_persons": 1
@@ -3987,6 +3992,7 @@
    "ends_on": "2026-11-30",
    "physical_progress": 0.4,
    "financial_progress": 0.35,
+   "measures_differ": false,
    "lines": [
     {
      "measure": "C10.I3",
@@ -4064,6 +4070,7 @@
    "ends_on": "2026-11-30",
    "physical_progress": 0.6,
    "financial_progress": 0.5,
+   "measures_differ": false,
    "lines": [
     {
      "measure": "C10.I3",
@@ -4143,6 +4150,7 @@
    "ends_on": "2026-11-30",
    "physical_progress": null,
    "financial_progress": null,
+   "measures_differ": true,
    "lines": [
     {
      "measure": "C15.I11",

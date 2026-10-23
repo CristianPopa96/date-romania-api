@@ -48,7 +48,12 @@ _RAW_STATUS = {ours: theirs for theirs, ours in _STATUS.items()}
 
 
 def status(written: str | None) -> PnrrStatus | None:
-    return _STATUS.get((written or "").strip().upper())
+    return _STATUS.get(_plain_status(written))
+
+
+def _plain_status(written: str | None) -> str:
+    """The dashboard writes a status in either case: 'ÎN IMPLEMENTARE (sub 30%)'."""
+    return (written or "").strip().upper()
 
 
 def _text(value: str | None) -> str | None:
@@ -85,7 +90,7 @@ def _per_contract():
             Line.contract_id,
             func.sum(Line.total).label("total"),
             func.sum(Line.eu).label("eu"),
-            func.count(Line.status.distinct()).label("statuses"),
+            func.count(func.upper(func.trim(Line.status)).distinct()).label("statuses"),
             func.min(Line.status).label("status"),
             func.count(Line.physical_progress.distinct()).label("physicals"),
             func.min(Line.physical_progress).label("physical"),
@@ -222,7 +227,11 @@ def contracts(
         filters.append(Contract.beneficiary_cui == beneficiary)
     if status_:
         filters.append(
-            Contract.id.in_(select(Line.contract_id).where(Line.status == _RAW_STATUS[status_]))
+            Contract.id.in_(
+                select(Line.contract_id).where(
+                    func.upper(func.trim(Line.status)) == _RAW_STATUS[status_]
+                )
+            )
         )
     if q:
         like = containing(q)
@@ -259,6 +268,8 @@ def contracts(
                 total=row.total,
                 status=status(row.status) if row.statuses == 1 else None,
                 physical_progress=row.physical if row.physicals == 1 else None,
+                # Zero distinct values is a value nobody published, not a disagreement.
+                measures_differ=row.statuses > 1 or row.physicals > 1,
             )
             for row in rows
             for contract, entity in [(row[0], row[1])]
@@ -297,10 +308,10 @@ def contract(session: Db, contract_id: int) -> PnrrContract:
     ).all()
     doc = session.get(SourceDocument, found.source_document_id)
     edition = _edition(session)
-    statuses = {line.status for line, _ in lines}
+    statuses = {_plain_status(line.status) for line, _ in lines if line.status}
     physical = {line.physical_progress for line, _ in lines}
     financial = {line.financial_progress for line, _ in lines}
-    one = len(statuses) == 1 and len(physical) == 1 and len(financial) == 1
+    differ = len(statuses) > 1 or len(physical) > 1 or len(financial) > 1
     return PnrrContract(
         id=found.id,
         number=found.number,
@@ -320,10 +331,11 @@ def contract(session: Db, contract_id: int) -> PnrrContract:
         locality=found.locality,
         total=sum((line.total or 0) for line, _ in lines),
         eu=sum((line.eu or 0) for line, _ in lines),
-        status=status(lines[0][0].status) if len(statuses) == 1 and lines else None,
+        status=status(next(iter(statuses))) if len(statuses) == 1 else None,
         ends_on=max((line.ends_on for line, _ in lines if line.ends_on), default=None),
-        physical_progress=lines[0][0].physical_progress if one and lines else None,
-        financial_progress=lines[0][0].financial_progress if one and lines else None,
+        physical_progress=None if differ or not lines else lines[0][0].physical_progress,
+        financial_progress=None if differ or not lines else lines[0][0].financial_progress,
+        measures_differ=differ,
         lines=[
             PnrrLine(
                 measure=line.measure_code,

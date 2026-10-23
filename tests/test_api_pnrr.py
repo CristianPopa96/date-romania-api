@@ -7,7 +7,7 @@ from pnrr_seed import FOREST, MANY_MEASURES, ONE, OTHER, PERSON, SEVERAL
 
 from date_romania.api.main import app
 from date_romania.db import get_session
-from date_romania.models import Entity
+from date_romania.models import Entity, PnrrContractLine
 
 ROOT = "/v1/programmes/pnrr"
 
@@ -69,6 +69,12 @@ def test_contracts_are_the_largest_first_with_filters(client):
     assert [row["id"] for row in page["items"]] == [ONE, SEVERAL, OTHER, MANY_MEASURES, FOREST]
     finished = client.get(f"{ROOT}/contracts", params={"status": "finished"}).json()
     assert [row["id"] for row in finished["items"]] == [OTHER]
+    # Written 'ÎN IMPLEMENTARE (sub 30%)': matched whatever its case.
+    under = client.get(f"{ROOT}/contracts", params={"status": "under_30"}).json()
+    assert [row["id"] for row in under["items"]] == [MANY_MEASURES]
+    rows = {row["id"]: row for row in page["items"]}
+    assert (rows[MANY_MEASURES]["status"], rows[MANY_MEASURES]["measures_differ"]) == (None, True)
+    assert (rows[ONE]["status"], rows[ONE]["measures_differ"]) == ("in_progress", False)
     found = client.get(f"{ROOT}/contracts", params={"q": "spitalul"}).json()
     assert {row["id"] for row in found["items"]} == {SEVERAL, OTHER}
     gorj = client.get(f"{ROOT}/contracts", params={"county": "GORJ", "measure": "C10.I3"}).json()
@@ -79,6 +85,7 @@ def test_a_contract_alone_on_its_measure_has_the_payments_as_its_own(client):
     contract = client.get(f"{ROOT}/contracts/{ONE}").json()
     assert (contract["number"], contract["status"]) == ("12321", "in_progress")
     assert (contract["physical_progress"], contract["financial_progress"]) == (0.4, 0.35)
+    assert contract["measures_differ"] is False
     assert contract["beneficiary"]["cui"] == pnrr_seed.TOWN_HALL
     (paid,) = contract["payments"]
     assert (paid["contracts"], paid["count"], paid["paid"]) == (1, 3, 2300000.0)
@@ -98,6 +105,7 @@ def test_a_contract_on_measures_that_disagree_gives_each_its_own(client):
     contract = client.get(f"{ROOT}/contracts/{MANY_MEASURES}").json()
     assert contract["total"] == 1416076.55
     assert (contract["status"], contract["physical_progress"]) == (None, None)
+    assert contract["measures_differ"] is True
     assert [(line["measure"], line["status"]) for line in contract["lines"]] == [
         ("C15.I11", "in_progress"),
         ("C15.I9", "under_30"),
@@ -106,6 +114,15 @@ def test_a_contract_on_measures_that_disagree_gives_each_its_own(client):
     assert (paid["C15.I11"]["count"], paid["C15.I9"]["count"]) == (1, 0)
     # A personal code typed into the title is masked.
     assert contract["title"] == "Dotări școlare Beta [CNP]"
+
+
+def test_a_value_nobody_published_is_not_a_disagreement(client, session):
+    line = session.get(PnrrContractLine, (FOREST, 1))
+    line.physical_progress = None
+    session.flush()
+    rows = {row["id"]: row for row in client.get(f"{ROOT}/contracts").json()["items"]}
+    assert (rows[FOREST]["physical_progress"], rows[FOREST]["measures_differ"]) == (None, False)
+    assert client.get(f"{ROOT}/contracts/{FOREST}").json()["measures_differ"] is False
 
 
 def test_a_natural_persons_contract_has_no_page(client):

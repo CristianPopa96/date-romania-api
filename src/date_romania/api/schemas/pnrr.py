@@ -62,8 +62,15 @@ class PnrrContractRow(Answer):
     beneficiary: EntityRef | None
     county: str | None
     total: float | None = Field(description="Lei, every measure of the contract added up.")
-    status: PnrrStatus | None = Field(description="Null when its measures differ.")
-    physical_progress: float | None = Field(description="0 to 1; null when its measures differ.")
+    status: PnrrStatus | None = Field(
+        description="Null when its measures differ, or when none gives a status we know."
+    )
+    physical_progress: float | None = Field(
+        description="0 to 1; null when its measures differ, or when none gives it."
+    )
+    measures_differ: bool = Field(
+        description="Its measures report different statuses or progress: see the contract."
+    )
 
 
 class PnrrContractPage(Answer):
@@ -147,10 +154,17 @@ class PnrrContract(Answer):
     locality: str | None
     total: float | None
     eu: float | None
-    status: PnrrStatus | None = Field(description="Null when its measures differ: see `lines`.")
+    status: PnrrStatus | None = Field(
+        description="Null when its measures differ (see `lines`) or none gives a status."
+    )
     ends_on: date | None
-    physical_progress: float | None = Field(description="Null when its measures differ.")
+    physical_progress: float | None = Field(
+        description="Null when its measures differ or none gives it."
+    )
     financial_progress: float | None
+    measures_differ: bool = Field(
+        description="Its measures report different statuses or progress; `lines` has each."
+    )
     lines: list[PnrrLine]
     payments: list[PnrrPayments] = Field(description="One per measure of the contract.")
     edition: date

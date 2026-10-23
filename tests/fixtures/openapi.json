@@ -4335,7 +4335,7 @@
        }
       ],
       "title": "Status",
-      "description": "Null when its measures differ: see `lines`."
+      "description": "Null when its measures differ (see `lines`) or none gives a status."
      },
      "ends_on": {
       "anyOf": [
@@ -4359,7 +4359,7 @@
        }
       ],
       "title": "Physical Progress",
-      "description": "Null when its measures differ."
+      "description": "Null when its measures differ or none gives it."
      },
      "financial_progress": {
       "anyOf": [
@@ -4371,6 +4371,11 @@
        }
       ],
       "title": "Financial Progress"
+     },
+     "measures_differ": {
+      "type": "boolean",
+      "title": "Measures Differ",
+      "description": "Its measures report different statuses or progress; `lines` has each."
      },
      "lines": {
       "items": {
@@ -4414,6 +4419,7 @@
      "ends_on",
      "physical_progress",
      "financial_progress",
+     "measures_differ",
      "lines",
      "payments",
      "edition",
@@ -4526,7 +4532,7 @@
        }
       ],
       "title": "Status",
-      "description": "Null when its measures differ."
+      "description": "Null when its measures differ, or when none gives a status we know."
      },
      "physical_progress": {
       "anyOf": [
@@ -4538,7 +4544,12 @@
        }
       ],
       "title": "Physical Progress",
-      "description": "0 to 1; null when its measures differ."
+      "description": "0 to 1; null when its measures differ, or when none gives it."
+     },
+     "measures_differ": {
+      "type": "boolean",
+      "title": "Measures Differ",
+      "description": "Its measures report different statuses or progress: see the contract."
      }
     },
     "type": "object",
@@ -4550,7 +4561,8 @@
      "county",
      "total",
      "status",
-     "physical_progress"
+     "physical_progress",
+     "measures_differ"
     ],
     "title": "PnrrContractRow"
    },
