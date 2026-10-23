@@ -34,15 +34,17 @@ jobs:
       - run: uv run alembic check
       - run: uv run pytest
 
+  # On a pull request the image is built, not pushed: a dependency that cannot install in
+  # the image fails the PR, not main (api #35 broke the image on main that way).
   image:
     needs: check
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - uses: docker/login-action@v3
+        if: github.event_name == 'push'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -51,7 +53,9 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.event_name == 'push' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ghcr.io/cristianpopa96/date-romania-api:latest
             ghcr.io/cristianpopa96/date-romania-api:${{ github.sha }}
