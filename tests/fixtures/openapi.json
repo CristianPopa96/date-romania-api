@@ -1674,6 +1674,266 @@
     }
    }
   },
+  "/v1/programmes/pnrr": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Programme",
+    "description": "The plan from the newest dashboard edition held: its totals, its 143 measures and\nthe largest final recipients.",
+    "operationId": "programme_v1_programmes_pnrr_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PnrrProgramme"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/pnrr/measures/{code}": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Measure",
+    "description": "One measure: its money, how much went to beneficiaries without a contract in the\nlist, and how many of its contracts are natural persons'.",
+    "operationId": "measure_v1_programmes_pnrr_measures__code__get",
+    "parameters": [
+     {
+      "name": "code",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Code"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PnrrMeasure"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/pnrr/contracts": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Contracts",
+    "description": "Financing contracts, the largest first. Natural persons' are counted, never listed.",
+    "operationId": "contracts_v1_programmes_pnrr_contracts_get",
+    "parameters": [
+     {
+      "name": "measure",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A measure code, e.g. 'C10.I3'.",
+       "title": "Measure"
+      },
+      "description": "A measure code, e.g. 'C10.I3'."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "As the dashboard writes it.",
+       "title": "County"
+      },
+      "description": "As the dashboard writes it."
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "in_progress",
+          "under_30",
+          "finished"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Part of the title or beneficiary.",
+       "title": "Q"
+      },
+      "description": "Part of the title or beneficiary."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PnrrContractPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/pnrr/contracts/{contract_id}": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Contract",
+    "description": "One financing contract: its measures, and for each the payments to the beneficiary,\nwhich are the contract's own only when it is the beneficiary's one contract there.",
+    "operationId": "contract_v1_programmes_pnrr_contracts__contract_id__get",
+    "parameters": [
+     {
+      "name": "contract_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Contract Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PnrrContract"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/places": {
    "get": {
     "tags": [
@@ -3931,6 +4191,1111 @@
      "items"
     ],
     "title": "PlaceResults"
+   },
+   "PnrrContract": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "number": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Number"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "beneficiary": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "ministry": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry"
+     },
+     "ministry_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry Name"
+     },
+     "signed_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Signed On"
+     },
+     "starts_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Starts On"
+     },
+     "county": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "County"
+     },
+     "locality": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Locality"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total"
+     },
+     "eu": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Eu"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "in_progress",
+         "under_30",
+         "finished"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status",
+      "description": "Null when its measures differ (see `lines`) or none gives a status."
+     },
+     "ends_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends On"
+     },
+     "physical_progress": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Physical Progress",
+      "description": "Null when its measures differ or none gives it."
+     },
+     "financial_progress": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Financial Progress"
+     },
+     "measures_differ": {
+      "type": "boolean",
+      "title": "Measures Differ",
+      "description": "Its measures report different statuses or progress; `lines` has each."
+     },
+     "lines": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrLine"
+      },
+      "type": "array",
+      "title": "Lines"
+     },
+     "payments": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrPayments"
+      },
+      "type": "array",
+      "title": "Payments",
+      "description": "One per measure of the contract."
+     },
+     "edition": {
+      "type": "string",
+      "format": "date",
+      "title": "Edition"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "number",
+     "title",
+     "beneficiary",
+     "ministry",
+     "ministry_name",
+     "signed_on",
+     "starts_on",
+     "county",
+     "locality",
+     "total",
+     "eu",
+     "status",
+     "ends_on",
+     "physical_progress",
+     "financial_progress",
+     "measures_differ",
+     "lines",
+     "payments",
+     "edition",
+     "source"
+    ],
+    "title": "PnrrContract"
+   },
+   "PnrrContractPage": {
+    "properties": {
+     "total": {
+      "type": "integer",
+      "title": "Total"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrContractRow"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "natural_persons": {
+      "type": "integer",
+      "title": "Natural Persons",
+      "description": "Contracts of natural persons that match and are left out: never named."
+     }
+    },
+    "type": "object",
+    "required": [
+     "total",
+     "items",
+     "natural_persons"
+    ],
+    "title": "PnrrContractPage"
+   },
+   "PnrrContractRow": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id",
+      "description": "MIPE's commitment id: the page's address."
+     },
+     "number": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Number",
+      "description": "The contract's own number; not unique."
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "beneficiary": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "county": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "County"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total",
+      "description": "Lei, every measure of the contract added up."
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "in_progress",
+         "under_30",
+         "finished"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status",
+      "description": "Null when its measures differ, or when none gives a status we know."
+     },
+     "physical_progress": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Physical Progress",
+      "description": "0 to 1; null when its measures differ, or when none gives it."
+     },
+     "measures_differ": {
+      "type": "boolean",
+      "title": "Measures Differ",
+      "description": "Its measures report different statuses or progress: see the contract."
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "number",
+     "title",
+     "beneficiary",
+     "county",
+     "total",
+     "status",
+     "physical_progress",
+     "measures_differ"
+    ],
+    "title": "PnrrContractRow"
+   },
+   "PnrrLine": {
+    "properties": {
+     "measure": {
+      "type": "string",
+      "title": "Measure"
+     },
+     "measure_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Measure Name"
+     },
+     "funding": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Funding"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total"
+     },
+     "eu": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Eu"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "in_progress",
+         "under_30",
+         "finished"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     },
+     "ends_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends On"
+     },
+     "physical_progress": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Physical Progress"
+     },
+     "financial_progress": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Financial Progress"
+     }
+    },
+    "type": "object",
+    "required": [
+     "measure",
+     "measure_name",
+     "funding",
+     "total",
+     "eu",
+     "status",
+     "ends_on",
+     "physical_progress",
+     "financial_progress"
+    ],
+    "title": "PnrrLine",
+    "description": "The part of a contract under one measure and funding, as the dashboard gives it."
+   },
+   "PnrrMeasure": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "'C10.I3', or 'C10.I3.a' for a sub-measure."
+     },
+     "component": {
+      "type": "string",
+      "title": "Component"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "ministry": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry",
+      "description": "The coordinating ministry, e.g. 'MDLPA'."
+     },
+     "funding": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Funding",
+      "description": "'grant' or 'loan'."
+     },
+     "allocated_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Allocated Eur",
+      "description": "Published in euro only."
+     },
+     "contracted_ron": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contracted Ron",
+      "description": "EU money contracted, published in lei only."
+     },
+     "paid_ron": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid Ron"
+     },
+     "paid_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid Eur"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts",
+      "description": "Contracts held on the measure, natural persons' too."
+     },
+     "ministry_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry Name"
+     },
+     "paid_without_contract": {
+      "type": "number",
+      "title": "Paid Without Contract",
+      "description": "Paid on the measure to beneficiaries with no contract on it in the list (state companies, transfers)."
+     },
+     "payments_without_contract": {
+      "type": "integer",
+      "title": "Payments Without Contract"
+     },
+     "natural_persons": {
+      "type": "integer",
+      "title": "Natural Persons",
+      "description": "Contracts of natural persons on the measure."
+     },
+     "counties": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Counties",
+      "description": "The counties of its listed contracts, as the dashboard writes them: what `/contracts?county=` takes."
+     },
+     "edition": {
+      "type": "string",
+      "format": "date",
+      "title": "Edition"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "component",
+     "name",
+     "ministry",
+     "funding",
+     "allocated_eur",
+     "contracted_ron",
+     "paid_ron",
+     "paid_eur",
+     "contracts",
+     "ministry_name",
+     "paid_without_contract",
+     "payments_without_contract",
+     "natural_persons",
+     "counties",
+     "edition",
+     "source"
+    ],
+    "title": "PnrrMeasure"
+   },
+   "PnrrMeasureRow": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "'C10.I3', or 'C10.I3.a' for a sub-measure."
+     },
+     "component": {
+      "type": "string",
+      "title": "Component"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "ministry": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ministry",
+      "description": "The coordinating ministry, e.g. 'MDLPA'."
+     },
+     "funding": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Funding",
+      "description": "'grant' or 'loan'."
+     },
+     "allocated_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Allocated Eur",
+      "description": "Published in euro only."
+     },
+     "contracted_ron": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contracted Ron",
+      "description": "EU money contracted, published in lei only."
+     },
+     "paid_ron": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid Ron"
+     },
+     "paid_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid Eur"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts",
+      "description": "Contracts held on the measure, natural persons' too."
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "component",
+     "name",
+     "ministry",
+     "funding",
+     "allocated_eur",
+     "contracted_ron",
+     "paid_ron",
+     "paid_eur",
+     "contracts"
+    ],
+    "title": "PnrrMeasureRow"
+   },
+   "PnrrPayment": {
+    "properties": {
+     "paid_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid On"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "funding": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Funding"
+     }
+    },
+    "type": "object",
+    "required": [
+     "paid_on",
+     "amount",
+     "funding"
+    ],
+    "title": "PnrrPayment"
+   },
+   "PnrrPayments": {
+    "properties": {
+     "measure": {
+      "type": "string",
+      "title": "Measure"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts",
+      "description": "The beneficiary's contracts on the measure."
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day"
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrPayment"
+      },
+      "type": "array",
+      "title": "Items"
+     },
+     "others": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrSibling"
+      },
+      "type": "array",
+      "title": "Others",
+      "description": "The beneficiary's other contracts on the measure, when it has several."
+     }
+    },
+    "type": "object",
+    "required": [
+     "measure",
+     "contracts",
+     "paid",
+     "count",
+     "first_day",
+     "last_day",
+     "items",
+     "others"
+    ],
+    "title": "PnrrPayments",
+    "description": "The payments to the beneficiary on one measure. They name the beneficiary and the\nmeasure, never the contract: they are this contract's only when it is the beneficiary's\none contract on the measure (`contracts` is 1)."
+   },
+   "PnrrProgramme": {
+    "properties": {
+     "edition": {
+      "type": "string",
+      "format": "date",
+      "title": "Edition",
+      "description": "The day of the dashboard edition held."
+     },
+     "allocated_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Allocated Eur"
+     },
+     "paid_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid Eur"
+     },
+     "received_eur": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Received Eur",
+      "description": "What the EU has paid Romania so far."
+     },
+     "contracts": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Contracts",
+      "description": "As the edition counts them."
+     },
+     "beneficiaries_contracted": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Beneficiaries Contracted"
+     },
+     "beneficiaries_paid": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Beneficiaries Paid"
+     },
+     "contracted_ron": {
+      "type": "number",
+      "title": "Contracted Ron",
+      "description": "EU money contracted, the measures added up."
+     },
+     "measures": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrMeasureRow"
+      },
+      "type": "array",
+      "title": "Measures"
+     },
+     "top": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrTopRecipient"
+      },
+      "type": "array",
+      "title": "Top",
+      "description": "The largest final recipients (EU Reg. 2021/241 art. 25a), largest first."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "edition",
+     "allocated_eur",
+     "paid_eur",
+     "received_eur",
+     "contracts",
+     "beneficiaries_contracted",
+     "beneficiaries_paid",
+     "contracted_ron",
+     "measures",
+     "top",
+     "source"
+    ],
+    "title": "PnrrProgramme",
+    "description": "The plan as one edition of MIPE's dashboard gives it."
+   },
+   "PnrrSibling": {
+    "properties": {
+     "id": {
+      "type": "integer",
+      "title": "Id"
+     },
+     "number": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Number"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "number",
+     "title",
+     "total"
+    ],
+    "title": "PnrrSibling"
+   },
+   "PnrrTopRecipient": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name",
+      "description": "As the dashboard writes it."
+     },
+     "entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The entity we hold under the CUI, with its kind: which page it opens."
+     },
+     "received": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Received",
+      "description": "Lei received, grants and loans together."
+     },
+     "last_received_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Received On"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "entity",
+     "received",
+     "last_received_on"
+    ],
+    "title": "PnrrTopRecipient"
    },
    "Population": {
     "properties": {

@@ -3697,6 +3697,531 @@
    "detail": "No project 999 in the Anghel Saligny programme"
   }
  },
+ "/v1/programmes/pnrr": {
+  "status": 200,
+  "body": {
+   "edition": "2026-10-15",
+   "allocated_eur": 20106860700.0,
+   "paid_eur": 14939205346.68,
+   "received_eur": 13274906265.0,
+   "contracts": 21710,
+   "beneficiaries_contracted": 13758,
+   "beneficiaries_paid": 7768,
+   "contracted_ron": 3250000000.0,
+   "measures": [
+    {
+     "code": "C10.I3",
+     "component": "C10",
+     "name": "Investiția 3. Renovarea energetică a clădirilor publice",
+     "ministry": "MDLPA",
+     "funding": "grant",
+     "allocated_eur": 500000000.0,
+     "contracted_ron": 2000000000.0,
+     "paid_ron": 900000000.0,
+     "paid_eur": 180000000.0,
+     "contracts": 3
+    },
+    {
+     "code": "C15.I11",
+     "component": "C15",
+     "name": "Investiția 11. Echipamente digitale",
+     "ministry": "MEC",
+     "funding": "grant",
+     "allocated_eur": 100000000.0,
+     "contracted_ron": 400000000.0,
+     "paid_ron": 100000000.0,
+     "paid_eur": 20000000.0,
+     "contracts": 1
+    },
+    {
+     "code": "C15.I9",
+     "component": "C15",
+     "name": "Investiția 9. Dotarea laboratoarelor",
+     "ministry": "MEC",
+     "funding": "grant",
+     "allocated_eur": 200000000.0,
+     "contracted_ron": 700000000.0,
+     "paid_ron": 300000000.0,
+     "paid_eur": 60000000.0,
+     "contracts": 1
+    },
+    {
+     "code": "C2.I1",
+     "component": "C2",
+     "name": "Investiția 1. Campania națională de împădurire",
+     "ministry": "MMAP",
+     "funding": "grant",
+     "allocated_eur": 300000000.0,
+     "contracted_ron": 150000000.0,
+     "paid_ron": 60000000.0,
+     "paid_eur": 12000000.0,
+     "contracts": 2
+    }
+   ],
+   "top": [
+    {
+     "cui": 4981310,
+     "name": "COMUNA TANTARENI",
+     "entity": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "received": 2300000.0,
+     "last_received_on": "2026-10-02"
+    },
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN",
+     "entity": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "received": 1800000.0,
+     "last_received_on": "2026-07-08"
+    }
+   ],
+   "source": {
+    "publisher": "MIPE",
+    "record": "Tabloul de bord PNRR",
+    "url": "https://mfe.gov.ro/pnrr-dashboard/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 5
+   }
+  }
+ },
+ "/v1/programmes/pnrr/measures/C10.I3": {
+  "status": 200,
+  "body": {
+   "code": "C10.I3",
+   "component": "C10",
+   "name": "Investiția 3. Renovarea energetică a clădirilor publice",
+   "ministry": "MDLPA",
+   "funding": "grant",
+   "allocated_eur": 500000000.0,
+   "contracted_ron": 2000000000.0,
+   "paid_ron": 900000000.0,
+   "paid_eur": 180000000.0,
+   "contracts": 3,
+   "ministry_name": "Ministerul Dezvoltării",
+   "paid_without_contract": 0.0,
+   "payments_without_contract": 0,
+   "natural_persons": 0,
+   "counties": [
+    "CLUJ",
+    "GORJ"
+   ],
+   "edition": "2026-10-15",
+   "source": {
+    "publisher": "MIPE",
+    "record": "Tabloul de bord PNRR",
+    "url": "https://mfe.gov.ro/pnrr-dashboard/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 5
+   }
+  }
+ },
+ "/v1/programmes/pnrr/measures/C2.I1": {
+  "status": 200,
+  "body": {
+   "code": "C2.I1",
+   "component": "C2",
+   "name": "Investiția 1. Campania națională de împădurire",
+   "ministry": "MMAP",
+   "funding": "grant",
+   "allocated_eur": 300000000.0,
+   "contracted_ron": 150000000.0,
+   "paid_ron": 60000000.0,
+   "paid_eur": 12000000.0,
+   "contracts": 2,
+   "ministry_name": "Ministerul Mediului",
+   "paid_without_contract": 50000.0,
+   "payments_without_contract": 1,
+   "natural_persons": 1,
+   "counties": [
+    "GORJ"
+   ],
+   "edition": "2026-10-15",
+   "source": {
+    "publisher": "MIPE",
+    "record": "Tabloul de bord PNRR",
+    "url": "https://mfe.gov.ro/pnrr-dashboard/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 5
+   }
+  }
+ },
+ "/v1/programmes/pnrr/measures/C99.I9": {
+  "status": 404,
+  "body": {
+   "detail": "No PNRR measure C99.I9"
+  }
+ },
+ "/v1/programmes/pnrr/contracts?measure=C10.I3&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 3,
+   "items": [
+    {
+     "id": 701,
+     "number": "12321",
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 6200000.0,
+     "status": "in_progress",
+     "physical_progress": 0.4,
+     "measures_differ": false
+    },
+    {
+     "id": 702,
+     "number": "12345",
+     "title": "Renovare energetică Spitalul Județean",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "county": "CLUJ",
+     "total": 2450000.0,
+     "status": "in_progress",
+     "physical_progress": 0.6,
+     "measures_differ": false
+    },
+    {
+     "id": 703,
+     "number": "12346",
+     "title": "Renovare energetică ambulatoriu",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "county": "CLUJ",
+     "total": 1900000.0,
+     "status": "finished",
+     "physical_progress": 1.0,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 0
+  }
+ },
+ "/v1/programmes/pnrr/contracts?measure=C10.I3&status=finished&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 703,
+     "number": "12346",
+     "title": "Renovare energetică ambulatoriu",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "county": "CLUJ",
+     "total": 1900000.0,
+     "status": "finished",
+     "physical_progress": 1.0,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 0
+  }
+ },
+ "/v1/programmes/pnrr/contracts?measure=C2.I1&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 706,
+     "number": "992",
+     "title": "Împădurire teren comunal",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 300000.0,
+     "status": "in_progress",
+     "physical_progress": 0.5,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 1
+  }
+ },
+ "/v1/programmes/pnrr/contracts/701": {
+  "status": 200,
+  "body": {
+   "id": 701,
+   "number": "12321",
+   "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+   "beneficiary": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "ministry": "MDLPA",
+   "ministry_name": "Ministerul Dezvoltării",
+   "signed_on": "2024-08-26",
+   "starts_on": "2024-09-01",
+   "county": "GORJ",
+   "locality": null,
+   "total": 6200000.0,
+   "eu": 5200000.0,
+   "status": "in_progress",
+   "ends_on": "2026-11-30",
+   "physical_progress": 0.4,
+   "financial_progress": 0.35,
+   "measures_differ": false,
+   "lines": [
+    {
+     "measure": "C10.I3",
+     "measure_name": "Investiția 3. Renovarea energetică a clădirilor publice",
+     "funding": "grant",
+     "total": 6200000.0,
+     "eu": 5200000.0,
+     "status": "in_progress",
+     "ends_on": "2026-11-30",
+     "physical_progress": 0.4,
+     "financial_progress": 0.35
+    }
+   ],
+   "payments": [
+    {
+     "measure": "C10.I3",
+     "contracts": 1,
+     "paid": 2300000.0,
+     "count": 3,
+     "first_day": "2025-12-19",
+     "last_day": "2026-10-02",
+     "items": [
+      {
+       "paid_on": "2026-10-02",
+       "amount": 640000.0,
+       "funding": "grant"
+      },
+      {
+       "paid_on": "2026-06-11",
+       "amount": 910000.0,
+       "funding": "grant"
+      },
+      {
+       "paid_on": "2025-12-19",
+       "amount": 750000.0,
+       "funding": "grant"
+      }
+     ],
+     "others": []
+    }
+   ],
+   "edition": "2026-10-15",
+   "source": {
+    "publisher": "MIPE",
+    "record": "Tabloul de bord PNRR",
+    "url": "https://mfe.gov.ro/pnrr-dashboard/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 8,
+    "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+    "parser_version": 1,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/pnrr/contracts/702": {
+  "status": 200,
+  "body": {
+   "id": 702,
+   "number": "12345",
+   "title": "Renovare energetică Spitalul Județean",
+   "beneficiary": {
+    "cui": 4491342,
+    "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+    "kind": "authority"
+   },
+   "ministry": "MDLPA",
+   "ministry_name": "Ministerul Dezvoltării",
+   "signed_on": "2024-08-26",
+   "starts_on": "2024-09-01",
+   "county": "CLUJ",
+   "locality": null,
+   "total": 2450000.0,
+   "eu": 2000000.0,
+   "status": "in_progress",
+   "ends_on": "2026-11-30",
+   "physical_progress": 0.6,
+   "financial_progress": 0.5,
+   "measures_differ": false,
+   "lines": [
+    {
+     "measure": "C10.I3",
+     "measure_name": "Investiția 3. Renovarea energetică a clădirilor publice",
+     "funding": "grant",
+     "total": 2450000.0,
+     "eu": 2000000.0,
+     "status": "in_progress",
+     "ends_on": "2026-11-30",
+     "physical_progress": 0.6,
+     "financial_progress": 0.5
+    }
+   ],
+   "payments": [
+    {
+     "measure": "C10.I3",
+     "contracts": 2,
+     "paid": 1800000.0,
+     "count": 2,
+     "first_day": "2026-03-04",
+     "last_day": "2026-07-08",
+     "items": [
+      {
+       "paid_on": "2026-07-08",
+       "amount": 800000.0,
+       "funding": "grant"
+      },
+      {
+       "paid_on": "2026-03-04",
+       "amount": 1000000.0,
+       "funding": "grant"
+      }
+     ],
+     "others": [
+      {
+       "id": 703,
+       "number": "12346",
+       "title": "Renovare energetică ambulatoriu",
+       "total": 1900000.0
+      }
+     ]
+    }
+   ],
+   "edition": "2026-10-15",
+   "source": {
+    "publisher": "MIPE",
+    "record": "Tabloul de bord PNRR",
+    "url": "https://mfe.gov.ro/pnrr-dashboard/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 8,
+    "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+    "parser_version": 1,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/pnrr/contracts/704": {
+  "status": 200,
+  "body": {
+   "id": 704,
+   "number": "8811",
+   "title": "Dotări școlare Beta [CNP]",
+   "beneficiary": {
+    "cui": 18288250,
+    "name": "Beta Birotică SRL",
+    "kind": "company"
+   },
+   "ministry": "MEC",
+   "ministry_name": "Ministerul Educației",
+   "signed_on": "2024-08-26",
+   "starts_on": "2024-09-01",
+   "county": "GORJ",
+   "locality": null,
+   "total": 1416076.55,
+   "eu": 1416076.55,
+   "status": null,
+   "ends_on": "2026-11-30",
+   "physical_progress": null,
+   "financial_progress": null,
+   "measures_differ": true,
+   "lines": [
+    {
+     "measure": "C15.I11",
+     "measure_name": "Investiția 11. Echipamente digitale",
+     "funding": "grant",
+     "total": 807781.76,
+     "eu": 807781.76,
+     "status": "in_progress",
+     "ends_on": "2026-11-30",
+     "physical_progress": 0.9529,
+     "financial_progress": 0.9019
+    },
+    {
+     "measure": "C15.I9",
+     "measure_name": "Investiția 9. Dotarea laboratoarelor",
+     "funding": "grant",
+     "total": 608294.79,
+     "eu": 608294.79,
+     "status": "under_30",
+     "ends_on": "2026-11-30",
+     "physical_progress": 0.0,
+     "financial_progress": null
+    }
+   ],
+   "payments": [
+    {
+     "measure": "C15.I11",
+     "contracts": 1,
+     "paid": 612245.0,
+     "count": 1,
+     "first_day": "2026-05-05",
+     "last_day": "2026-05-05",
+     "items": [
+      {
+       "paid_on": "2026-05-05",
+       "amount": 612245.0,
+       "funding": "grant"
+      }
+     ],
+     "others": []
+    },
+    {
+     "measure": "C15.I9",
+     "contracts": 1,
+     "paid": 0.0,
+     "count": 0,
+     "first_day": null,
+     "last_day": null,
+     "items": [],
+     "others": []
+    }
+   ],
+   "edition": "2026-10-15",
+   "source": {
+    "publisher": "MIPE",
+    "record": "Tabloul de bord PNRR",
+    "url": "https://mfe.gov.ro/pnrr-dashboard/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 8,
+    "sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+    "parser_version": 1,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/pnrr/contracts/705": {
+  "status": 404,
+  "body": {
+   "detail": "No PNRR contract 705"
+  }
+ },
  "/v1/cpv-divisions": {
   "status": 200,
   "body": [
