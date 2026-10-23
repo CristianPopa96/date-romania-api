@@ -11,7 +11,7 @@ dependencies = [
     "fastapi>=0.143.0",
     "httpx>=0.28.1",
     "psycopg[binary]>=3.3.6",
-    "py7zr==0.22.0",
+    "py7zr==1.0.0",
     "pydantic-settings>=2.15.0",
     "python-calamine==0.8.2",
     "sqlalchemy>=2.1.4",
