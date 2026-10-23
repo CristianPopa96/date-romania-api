@@ -10,6 +10,7 @@ from date_romania.api.routes import (
     entities,
     patterns,
     places,
+    pnrr,
     programme_project,
     programmes,
     purchases,
@@ -30,6 +31,7 @@ for module in (
     award_totals,
     programmes,
     programme_project,
+    pnrr,
     places,
     reports,
 ):

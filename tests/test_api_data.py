@@ -8,6 +8,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import places_seed
+import pnrr_seed
 import programme_seed
 import pytest
 from fastapi.testclient import TestClient
@@ -316,6 +317,7 @@ def client(session):
     session.flush()
     programme_seed.seed(session)
     places_seed.seed(session)
+    pnrr_seed.seed(session)
 
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
@@ -1181,6 +1183,17 @@ SITE_CALLS = (
     "/v1/programmes/anghel-saligny/projects/103",
     "/v1/programmes/anghel-saligny/projects/104",
     "/v1/programmes/anghel-saligny/projects/999",
+    "/v1/programmes/pnrr",
+    "/v1/programmes/pnrr/measures/C10.I3",
+    "/v1/programmes/pnrr/measures/C2.I1",
+    "/v1/programmes/pnrr/measures/C99.I9",
+    "/v1/programmes/pnrr/contracts?measure=C10.I3&limit=20&offset=0",
+    "/v1/programmes/pnrr/contracts?measure=C10.I3&status=finished&limit=20&offset=0",
+    "/v1/programmes/pnrr/contracts?measure=C2.I1&limit=20&offset=0",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.MANY_MEASURES}",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}",
 )
 # Read once the purchases near their limit are added, so the answers above stay as the
 # pages that use them expect.

@@ -56,6 +56,20 @@ from date_romania.api.schemas.places import (
     SupplierCounties,
     TopWinner,
 )
+from date_romania.api.schemas.pnrr import (
+    PnrrContract,
+    PnrrContractPage,
+    PnrrContractRow,
+    PnrrLine,
+    PnrrMeasure,
+    PnrrMeasureRow,
+    PnrrPayment,
+    PnrrPayments,
+    PnrrProgramme,
+    PnrrSibling,
+    PnrrStatus,
+    PnrrTopRecipient,
+)
 from date_romania.api.schemas.programmes import (
     Confidence,
     Match,
@@ -166,4 +180,16 @@ __all__ = [
     "TraceContract",
     "TraceParty",
     "Winner",
+    "PnrrContract",
+    "PnrrContractPage",
+    "PnrrContractRow",
+    "PnrrLine",
+    "PnrrMeasure",
+    "PnrrMeasureRow",
+    "PnrrPayment",
+    "PnrrPayments",
+    "PnrrProgramme",
+    "PnrrSibling",
+    "PnrrStatus",
+    "PnrrTopRecipient",
 ]
