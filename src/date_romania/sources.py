@@ -55,6 +55,16 @@ PNRR = PublicSource(
     record_url="https://mfe.gov.ro/pnrr-dashboard/",
 )
 
+# The lists of contracted EU cohesion projects: the 2014-2020 programmes on data.gov.ro, the
+# 2021-2027 national programmes on mfe.gov.ro. A project has no public page of its own.
+EU_PROJECTS = PublicSource(
+    key="eu-projects",
+    publisher="MIPE",
+    dataset="Liste de proiecte contractate",
+    list_url="https://mfe.gov.ro/programe/",
+    record_url="https://mfe.gov.ro/programe/",
+)
+
 # SEAP's own quarterly exports, published by ADR. One dataset per year.
 SEAP_EXPORTS = PublicSource(
     key="seap-exports",

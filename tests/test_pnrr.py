@@ -12,7 +12,6 @@ from date_romania.collectors.pnrr.fetch import edition_of, editions, url_of
 from date_romania.collectors.pnrr.parse import (
     ENDPOINTS,
     is_natural_person,
-    kind_of,
     measure_code,
     parse_contracts,
     parse_measures,
@@ -22,6 +21,7 @@ from date_romania.collectors.pnrr.parse import (
     read,
     tie,
 )
+from date_romania.entities import kind_of
 
 FIXTURES = Path(__file__).parent / "fixtures" / "pnrr"
 DAY = date(2026, 10, 15)

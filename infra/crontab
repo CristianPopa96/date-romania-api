@@ -31,6 +31,11 @@
 # every two weeks or so.
 0 9 * * * dr collect pnrr
 
+# Every Monday at 09:15 UTC: the newest list of contracted projects of each EU programme
+# (MIPE, on data.gov.ro and mfe.gov.ro) and the Health programme's monthly payments, if
+# not held yet. About ten small requests to find them; a list is fetched only when new.
+15 9 * * 1 dr collect eu-projects
+
 # On the 1st of every month at 09:30 UTC: the Anghel Saligny payment files and SEAP's
 # contract exports (data.gov.ro) not held yet. The ministry adds a payment file about
 # monthly and SEAP an export each quarter; a file already held is not downloaded again,

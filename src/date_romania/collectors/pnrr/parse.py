@@ -9,6 +9,7 @@ from decimal import Decimal, InvalidOperation
 
 from date_romania.cui import parse_cui
 from date_romania.dates import BUCHAREST
+from date_romania.entities import kind_of
 from date_romania.text import plain
 
 PARSER_VERSION = 1
@@ -27,49 +28,6 @@ _ERRORS = (AttributeError, KeyError, TypeError, ValueError, InvalidOperation)
 
 # How the ministries write a natural person's type, compared in `plain()` form.
 _NATURAL_PERSON = {"PF", "P F", "PERSOANA FIZICA"}
-# Words that make a beneficiary public, or a company, in the ministries' free text.
-_PUBLIC = (
-    "UAT",
-    "INSTITUTI",
-    "INVATAMANT",
-    "UNIVERSITAT",
-    "SPITAL",
-    "SANATORIU",
-    "AUTORITATE",
-    "ADMINISTRATI",
-    "MINISTER",
-    "DIRECTIE",
-    "INSTITUT",
-    "GRADINITA",
-    "AUTORITATI",
-)
-_PUBLIC_EXACT = {"DSP", "SAJ", "CJ", "INCD", "IP", "ASSMB", "MS", "MAI", "CNAS", "SRI", "CCD"}
-_COMPANY = (
-    "IMM",
-    "INTREPRINDERE",
-    "SOCIETATE",
-    "COMPANIE",
-    "COOPERATIVA",
-    "MEDIC FAMILIE",
-)
-_COMPANY_EXACT = {
-    "SRL",
-    "S R L",
-    "SA",
-    "S A",
-    "SC",
-    "S C",
-    "PFA",
-    "P F A",
-    "II",
-    "I I",
-    "I F",
-    "RA",
-    "R A",
-    "CMI",
-    "PJ",
-    "MICROINTREPRINDERE",
-}
 
 
 @dataclass
@@ -131,17 +89,6 @@ def _text(value) -> str | None:
 
 def is_natural_person(beneficiary_type: str | None) -> bool:
     return plain(beneficiary_type) in _NATURAL_PERSON
-
-
-def kind_of(beneficiary_type: str | None) -> str:
-    """The entity kind the ministry's own word suggests: 'authority' only when it is
-    clearly public, 'company' when clearly a business, else 'other'."""
-    words = plain(beneficiary_type)
-    if words in _PUBLIC_EXACT or any(word in words for word in _PUBLIC):
-        return "authority"
-    if words in _COMPANY_EXACT or any(word in words for word in _COMPANY):
-        return "company"
-    return "other"
 
 
 def _cui(parsed: Parsed, value) -> int | None:
