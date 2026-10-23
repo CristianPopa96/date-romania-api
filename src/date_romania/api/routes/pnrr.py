@@ -309,8 +309,11 @@ def contract(session: Db, contract_id: int) -> PnrrContract:
     doc = session.get(SourceDocument, found.source_document_id)
     edition = _edition(session)
     statuses = {_plain_status(line.status) for line, _ in lines if line.status}
-    physical = {line.physical_progress for line, _ in lines}
-    financial = {line.financial_progress for line, _ in lines}
+    # A blank figure is one nobody published, as in the list: never a disagreement.
+    physical = {line.physical_progress for line, _ in lines if line.physical_progress is not None}
+    financial = {
+        line.financial_progress for line, _ in lines if line.financial_progress is not None
+    }
     differ = len(statuses) > 1 or len(physical) > 1 or len(financial) > 1
     return PnrrContract(
         id=found.id,
@@ -333,8 +336,8 @@ def contract(session: Db, contract_id: int) -> PnrrContract:
         eu=sum((line.eu or 0) for line, _ in lines),
         status=status(next(iter(statuses))) if len(statuses) == 1 else None,
         ends_on=max((line.ends_on for line, _ in lines if line.ends_on), default=None),
-        physical_progress=None if differ or not lines else lines[0][0].physical_progress,
-        financial_progress=None if differ or not lines else lines[0][0].financial_progress,
+        physical_progress=None if differ else next(iter(physical), None),
+        financial_progress=None if differ else next(iter(financial), None),
         measures_differ=differ,
         lines=[
             PnrrLine(

@@ -125,6 +125,22 @@ def test_a_value_nobody_published_is_not_a_disagreement(client, session):
     assert client.get(f"{ROOT}/contracts/{FOREST}").json()["measures_differ"] is False
 
 
+def test_a_blank_measure_does_not_make_the_list_and_the_page_disagree(client, session):
+    """Two measures, one with progress and one blank: one figure, in both answers."""
+    blank = session.get(PnrrContractLine, (MANY_MEASURES, 2))
+    blank.physical_progress, blank.financial_progress = None, None
+    blank.status = "ÎN IMPLEMENTARE"
+    session.flush()
+    rows = {row["id"]: row for row in client.get(f"{ROOT}/contracts").json()["items"]}
+    page = client.get(f"{ROOT}/contracts/{MANY_MEASURES}").json()
+    assert (rows[MANY_MEASURES]["physical_progress"], rows[MANY_MEASURES]["measures_differ"]) == (
+        0.9529,
+        False,
+    )
+    assert (page["physical_progress"], page["financial_progress"]) == (0.9529, 0.9019)
+    assert (page["status"], page["measures_differ"]) == ("in_progress", False)
+
+
 def test_a_natural_persons_contract_has_no_page(client):
     assert client.get(f"{ROOT}/contracts/{PERSON}").status_code == 404
     assert client.get(f"{ROOT}/contracts/1").status_code == 404
