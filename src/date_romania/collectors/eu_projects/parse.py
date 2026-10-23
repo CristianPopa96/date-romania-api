@@ -16,6 +16,7 @@ from datetime import date, datetime
 from decimal import Decimal
 
 import py7zr
+import py7zr.exceptions
 
 from date_romania.collectors.sheets import is_workbook, workbook_sheets
 from date_romania.cui import parse_cui
@@ -76,18 +77,22 @@ def last_day(label: str | None) -> date | None:
 def workbooks(content: bytes) -> list[tuple[str, bytes]]:
     """The workbooks in a file: itself, or each one inside a zip or a 7z archive. An xlsx is
     a zip too: it is told apart by its own content list."""
-    if content[:6] == _SEVEN_ZIP:
-        with py7zr.SevenZipFile(io.BytesIO(content)) as archive:
-            files = archive.readall()
-        return sorted(
-            (name, data.read()) for name, data in files.items() if is_workbook(data.getvalue())
-        )
-    if content[:2] == b"PK":
-        with zipfile.ZipFile(io.BytesIO(content)) as archive:
-            names = archive.namelist()
-            if "[Content_Types].xml" not in names:
-                inner = [(name, archive.read(name)) for name in sorted(names)]
-                return [(name, data) for name, data in inner if is_workbook(data)]
+    try:
+        if content[:6] == _SEVEN_ZIP:
+            with py7zr.SevenZipFile(io.BytesIO(content)) as archive:
+                files = archive.readall()
+            return sorted(
+                (name, data.read()) for name, data in files.items() if is_workbook(data.getvalue())
+            )
+        if content[:2] == b"PK":
+            with zipfile.ZipFile(io.BytesIO(content)) as archive:
+                names = archive.namelist()
+                if "[Content_Types].xml" not in names:
+                    inner = [(name, archive.read(name)) for name in sorted(names)]
+                    return [(name, data) for name, data in inner if is_workbook(data)]
+    except (zipfile.BadZipFile, py7zr.exceptions.ArchiveError, EOFError, OSError) as exc:
+        # A cut or broken archive is that file's failure, never the run's.
+        raise ValueError(f"unreadable archive: {exc!r}") from exc
     return [("", content)] if is_workbook(content) else []
 
 
@@ -268,6 +273,9 @@ def _amount(value) -> Decimal | None:
         )
     elif "," in text:
         text = text.replace(",", ".") if len(text.rsplit(",", 1)[1]) <= 2 else text.replace(",", "")
+    elif "." in text and (text.count(".") > 1 or len(text.rsplit(".", 1)[1]) == 3):
+        # Lei have two decimals: '12.500' and '1.250.000' group thousands.
+        text = text.replace(".", "")
     return Decimal(text).quantize(Decimal("0.01"))
 
 
@@ -302,8 +310,11 @@ def _rate(value) -> Decimal | None:
 def _sheets(content: bytes) -> list[tuple[str, list[list], Columns]]:
     found = []
     for book, data in workbooks(content):
-        for name, rows in workbook_sheets(data):
-            rows = [list(row) for row in rows]
+        try:
+            sheets = [(name, [list(row) for row in rows]) for name, rows in workbook_sheets(data)]
+        except Exception as exc:  # calamine's own errors: a broken workbook
+            raise ValueError(f"unreadable workbook {book!r}: {exc!r}") from exc
+        for name, rows in sheets:
             where = columns(rows)
             if where is not None:
                 found.append((f"{book}:{name}", rows, where))

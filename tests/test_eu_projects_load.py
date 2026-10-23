@@ -127,7 +127,7 @@ def count(session, model, *where) -> int:
 def test_collect_finds_the_newest_list_of_each_programme(session, raw_store):
     asked: list[str] = []
     with PoliteClient(transport=mfe(asked), sleep=no_sleep) as client:
-        assert run.collect(session, client) == 15
+        assert run.collect(session, client) == 12
     # The newest POR list, never the older one.
     assert "https://data.gov.ro/por-2024-12.xlsx" not in asked
     by_programme = dict(
@@ -135,7 +135,8 @@ def test_collect_finds_the_newest_list_of_each_programme(session, raw_store):
             select(EuProject.programme, func.count()).group_by(EuProject.programme)
         ).all()
     )
-    assert by_programme == {"POR": 3, "PoIDS": 3, "PoCIDIF": 4, "PDDTJ": 3, "PS": 2}
+    # PDDTJ's second list has no post here: its first is not loaded alone.
+    assert by_programme == {"POR": 3, "PoIDS": 3, "PoCIDIF": 4, "PS": 2}
     por = session.get(EuProject, 103910)
     assert (por.programme, por.period, por.cut_off) == ("POR", "2014-2020", date(2025, 8, 31))
     assert session.scalar(select(EuProject.cut_off).where(EuProject.programme == "PS")) == date(
@@ -144,7 +145,79 @@ def test_collect_finds_the_newest_list_of_each_programme(session, raw_store):
     # The programmes with no post found: the run says so, and the others are loaded.
     job = session.scalars(select(JobRun).where(JobRun.job == run.JOB)).one()
     assert job.status == "partial"
-    assert "PEO" in job.error and "PoAT" in job.error and "PDDTJ" in job.error
+    assert "PEO" in job.error and "PoAT" in job.error
+    assert "PDDTJ: 1 of its 2 lists found" in job.error
+
+
+def test_a_list_found_without_its_other_part_keeps_the_projects_held(session, raw_store):
+    """Loading one PDDTJ list alone would drop the other's projects for good."""
+    session.add(
+        EuProject(
+            smis=999001,
+            programme="PDDTJ",
+            period="2021-2027",
+            title="Proiect din lista Tranziție Justă",
+            source_document_id=session.scalar(select(func.min(SourceDocument.id)))
+            or _document(session).id,
+            parser_version=1,
+        )
+    )
+    session.flush()
+    with PoliteClient(transport=mfe([]), sleep=no_sleep) as client:
+        run.collect(session, client)
+    held = session.scalars(select(EuProject.smis).where(EuProject.programme == "PDDTJ")).all()
+    assert held == [999001]
+
+
+def test_a_list_whose_read_failed_is_read_again_next_run(session, raw_store, monkeypatch):
+    real = run.parse_projects
+
+    def fails_for_health(content, code, period, cut_off):
+        if code == "PS":
+            raise ValueError("cut short")
+        return real(content, code, period, cut_off)
+
+    monkeypatch.setattr(run, "parse_projects", fails_for_health)
+    with PoliteClient(transport=mfe([]), sleep=no_sleep) as client:
+        run.collect(session, client)
+    assert count(session, EuProject, EuProject.programme == "PS") == 0
+    monkeypatch.setattr(run, "parse_projects", real)
+    asked: list[str] = []
+    with PoliteClient(transport=mfe(asked), sleep=no_sleep) as client:
+        run.collect(session, client)
+    # Read from the raw store again, not downloaded again.
+    assert f"{UPLOADS}ps-list.xlsx" not in asked
+    assert count(session, EuProject, EuProject.programme == "PS") == 2
+
+
+def test_a_broken_archive_fails_its_programme_only(session, raw_store, monkeypatch):
+    monkeypatch.setitem(FILES, f"{UPLOADS}pocidif.7z", "broken.7z")
+    monkeypatch.setattr(Path, "read_bytes", _broken_7z(Path.read_bytes), raising=True)
+    with PoliteClient(transport=mfe([]), sleep=no_sleep) as client:
+        run.collect(session, client)
+    job = session.scalars(select(JobRun).where(JobRun.job == run.JOB)).one()
+    assert "PoCIDIF" in job.error
+    assert count(session, EuProject, EuProject.programme == "PoCIDIF") == 0
+    assert count(session, EuProject, EuProject.programme == "PS") == 2
+    assert count(session, EuProjectPayment) == 3
+
+
+def _broken_7z(read_bytes):
+    def read(path):
+        if path.name == "broken.7z":
+            return bytes.fromhex("377abcaf271c") + bytes(40)
+        return read_bytes(path)
+
+    return read
+
+
+def _document(session) -> SourceDocument:
+    doc = SourceDocument(
+        source="test", url="https://example.test", sha256="e" * 64, storage_key="k", size_bytes=1
+    )
+    session.add(doc)
+    session.flush()
+    return doc
 
 
 def test_a_smis_held_by_one_programme_is_not_taken_by_another(session, raw_store):

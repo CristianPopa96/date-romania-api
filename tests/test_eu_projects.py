@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from date_romania.collectors.eu_projects.parse import (
+    _amount,
     last_day,
     parse_payments,
     parse_projects,
@@ -95,6 +96,29 @@ def test_a_cell_that_cannot_be_read_leaves_its_field_empty_and_is_counted(monkey
     assert parsed.unread == {"cofinancing_rate": 3}
     assert all(row["cofinancing_rate"] is None for row in parsed.projects)
     assert real("85%") == Decimal("0.8500") and real(0.6837) == Decimal("0.6837")
+
+
+@pytest.mark.parametrize(
+    ("written", "lei"),
+    [
+        ("12.500", Decimal("12500.00")),
+        ("1.250.000", Decimal("1250000.00")),
+        ("12.50", Decimal("12.50")),
+        ("1.234.567,89", Decimal("1234567.89")),
+        ("1,234,567.89", Decimal("1234567.89")),
+        ("1234,5", Decimal("1234.50")),
+        (1048806.5, Decimal("1048806.50")),
+    ],
+)
+def test_amounts_in_either_convention(written, lei):
+    assert _amount(written) == lei
+
+
+def test_a_broken_archive_is_the_files_error():
+    with pytest.raises(ValueError, match="unreadable archive"):
+        workbooks(bytes.fromhex("377abcaf271c") + bytes(40))
+    with pytest.raises(ValueError, match="unreadable archive"):
+        workbooks(bytes.fromhex("504b0304") + b" not a zip")
 
 
 def test_payments_one_by_one():

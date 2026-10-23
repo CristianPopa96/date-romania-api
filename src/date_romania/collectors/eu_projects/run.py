@@ -52,7 +52,8 @@ def _held(session: Session, url: str) -> SourceDocument | None:
 def _fetch(session: Session, client: PoliteClient, found: Found) -> tuple[SourceDocument, bool]:
     doc = _held(session, found.url)
     if doc is not None:
-        return doc, False
+        # Held but never read (its read failed): read it again, as the run promises.
+        return doc, doc.parser_version is None
     response = client.request("GET", found.url, follow_redirects=True)
     about = {
         "programme": found.programme,
@@ -151,6 +152,11 @@ def collect(session: Session, client: PoliteClient) -> int:
                 by_programme.setdefault(each.programme, []).append(each)
         projects = 0
         for code, lists in by_programme.items():
+            parts = max(1, len(BY_CODE[code].posts))
+            if len({each.part for each in lists}) < parts:
+                # Loading one part alone would drop the other's projects: keep them all.
+                failed.append(f"{code}: {len(lists)} of its {parts} lists found")
+                continue
             try:
                 fetched = [
                     _fetch(session, client, each) for each in sorted(lists, key=lambda f: f.part)
