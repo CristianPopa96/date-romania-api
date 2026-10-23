@@ -9,11 +9,13 @@ by its place, and the sheet by the projects it holds.
 
 import io
 import re
+import tempfile
 import zipfile
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from decimal import Decimal
+from pathlib import Path
 
 import py7zr
 import py7zr.exceptions
@@ -79,11 +81,16 @@ def workbooks(content: bytes) -> list[tuple[str, bytes]]:
     a zip too: it is told apart by its own content list."""
     try:
         if content[:6] == _SEVEN_ZIP:
-            with py7zr.SevenZipFile(io.BytesIO(content)) as archive:
-                files = archive.readall()
-            return sorted(
-                (name, data.read()) for name, data in files.items() if is_workbook(data.getvalue())
-            )
+            # py7zr extracts to files only; the archive stays small (a few MB).
+            with tempfile.TemporaryDirectory() as folder:
+                with py7zr.SevenZipFile(io.BytesIO(content)) as archive:
+                    archive.extractall(folder)
+                inner = [
+                    (path.relative_to(folder).as_posix(), path.read_bytes())
+                    for path in sorted(Path(folder).rglob("*"))
+                    if path.is_file()
+                ]
+            return [(name, data) for name, data in inner if is_workbook(data)]
         if content[:2] == b"PK":
             with zipfile.ZipFile(io.BytesIO(content)) as archive:
                 names = archive.namelist()
