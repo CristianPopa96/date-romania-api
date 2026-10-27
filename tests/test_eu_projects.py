@@ -12,6 +12,7 @@ from date_romania.collectors.eu_projects.parse import (
     last_day,
     parse_payments,
     parse_projects,
+    split_lead,
     workbooks,
 )
 
@@ -67,6 +68,31 @@ def test_a_2021_2027_list_gives_the_lead_cui_and_the_total_of_both_funds():
     assert third["total_value"] == Decimal("14888772.35")
     assert third["eu_value"] == Decimal("5955508.94")
     assert all(cui in parsed.entities for cui in (47259371, 39382569, 18408844))
+
+
+def test_pocu_writes_the_lead_and_its_cui_in_the_name():
+    parsed = parse_projects(fixture("pocu.xlsx"), "POCU", "2014-2020", None)
+    first = parsed.projects[0]
+    assert first["beneficiary_cui"] == 20806019
+    assert first["beneficiary_name"].startswith("ORGANISMUL INTERMEDIAR REGIONAL")
+    assert "CUI" not in first["beneficiary_name"] and first["partners"] is None
+    assert 20806019 in parsed.entities
+
+
+@pytest.mark.parametrize(
+    ("name", "partners", "split"),
+    [
+        (
+            "L: NEW TOMIS 2018 S.R.L. CUI 41086859 ; PARTENERI:- 27494488-ASOCIATIA HANDMADE",
+            "L: NEW TOMIS 2018 S.R.L. CUI 41086859 ; PARTENERI:- 27494488-ASOCIATIA HANDMADE",
+            ("NEW TOMIS 2018 S.R.L.", "41086859", "27494488-ASOCIATIA HANDMADE"),
+        ),
+        ("UAT MUNICIPIUL BACĂU", "Liceul X", ("UAT MUNICIPIUL BACĂU", None, "Liceul X")),
+        (None, None, (None, None, None)),
+    ],
+)
+def test_a_lead_written_with_its_partners_is_split(name, partners, split):
+    assert split_lead(name, partners) == split
 
 
 def test_the_list_sheet_is_the_one_with_titles_not_a_working_sheet():

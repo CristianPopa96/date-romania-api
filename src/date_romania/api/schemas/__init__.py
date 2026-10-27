@@ -32,6 +32,17 @@ from date_romania.api.schemas.common import (
     SearchResults,
     Source,
 )
+from date_romania.api.schemas.eu_projects import (
+    EuBeneficiary,
+    EuFunds,
+    EuPayment,
+    EuProgramme,
+    EuProject,
+    EuProjectPage,
+    EuProjectRow,
+    EuStatus,
+    LinkConfidence,
+)
 from date_romania.api.schemas.patterns import (
     ContractType,
     NearLimitPair,
@@ -180,6 +191,15 @@ __all__ = [
     "TraceContract",
     "TraceParty",
     "Winner",
+    "EuBeneficiary",
+    "EuFunds",
+    "EuPayment",
+    "EuProgramme",
+    "EuProject",
+    "EuProjectPage",
+    "EuProjectRow",
+    "EuStatus",
+    "LinkConfidence",
     "PnrrContract",
     "PnrrContractPage",
     "PnrrContractRow",

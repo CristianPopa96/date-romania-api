@@ -9,8 +9,8 @@ import httpx
 from sqlalchemy import delete, insert, select
 from sqlalchemy.orm import Session
 
-from date_romania import entities, places
-from date_romania.collectors.eu_projects.discover import BY_CODE, Found, discover
+from date_romania import entities, eu_links, places
+from date_romania.collectors.eu_projects.discover import Found, discover
 from date_romania.collectors.eu_projects.parse import (
     PARSER_VERSION,
     Parsed,
@@ -26,6 +26,7 @@ from date_romania.collectors.jobs import (
     stored_documents,
 )
 from date_romania.dates import today
+from date_romania.eu_programmes import BY_CODE
 from date_romania.models import PARTIAL, EuProject, EuProjectPayment, SourceDocument
 from date_romania.sources import EU_PROJECTS
 from date_romania.storage import get_raw
@@ -181,6 +182,7 @@ def collect(session: Session, client: PoliteClient) -> int:
             run.status = PARTIAL
             run.error = f"not read: {', '.join(failed)}; run again to retry them"
         places.locate(session)
+        eu_links.link(session)
     return projects
 
 
@@ -207,5 +209,6 @@ def reparse(session: Session) -> int:
         if _about(doc).get("kind") == "payments":
             _load_payments(session, doc)
     places.locate(session)
+    eu_links.link(session)
     session.commit()
     return len(docs)
