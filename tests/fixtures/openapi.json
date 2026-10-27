@@ -3476,13 +3476,31 @@
       ],
       "title": "Confidence",
       "description": "sure: the list gives the tax ID; probable: tied by name and place."
+     },
+     "method": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "cui-in-list",
+         "administration-name+place",
+         "name+place",
+         "company-name"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Method"
      }
     },
     "type": "object",
     "required": [
      "name",
      "entity",
-     "confidence"
+     "confidence",
+     "method"
     ],
     "title": "EuBeneficiary"
    },

@@ -4296,7 +4296,8 @@
      "beneficiary": {
       "name": "APAREGIO GORJ SA",
       "entity": null,
-      "confidence": null
+      "confidence": null,
+      "method": null
      },
      "county": "Gorj",
      "total": 9000000.0,
@@ -4315,7 +4316,8 @@
        "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
        "kind": "authority"
       },
-      "confidence": "probable"
+      "confidence": "probable",
+      "method": "administration-name+place"
      },
      "county": "Gorj",
      "total": 6200000.0,
@@ -4334,7 +4336,8 @@
        "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
        "kind": "authority"
       },
-      "confidence": "sure"
+      "confidence": "sure",
+      "method": "cui-in-list"
      },
      "county": "GJ",
      "total": 3000000.0,
@@ -4353,7 +4356,8 @@
        "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
        "kind": "authority"
       },
-      "confidence": "sure"
+      "confidence": "sure",
+      "method": "cui-in-list"
      },
      "county": "GJ",
      "total": 2100000.0,
@@ -4368,7 +4372,8 @@
      "beneficiary": {
       "name": "ASOCIATIA PENTRU EDUCATIE DIGITALA",
       "entity": null,
-      "confidence": null
+      "confidence": null,
+      "method": null
      },
      "county": "Gorj",
      "total": null,
@@ -4395,7 +4400,8 @@
        "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
        "kind": "authority"
       },
-      "confidence": "probable"
+      "confidence": "probable",
+      "method": "administration-name+place"
      },
      "county": "Gorj",
      "total": 6200000.0,
@@ -4422,7 +4428,8 @@
        "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
        "kind": "authority"
       },
-      "confidence": "probable"
+      "confidence": "probable",
+      "method": "administration-name+place"
      },
      "county": "Gorj",
      "total": 6200000.0,
@@ -4453,7 +4460,8 @@
      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
      "kind": "authority"
     },
-    "confidence": "sure"
+    "confidence": "sure",
+    "method": "cui-in-list"
    },
    "county": "GJ",
    "total": 2100000.0,
@@ -4498,7 +4506,8 @@
      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
      "kind": "authority"
     },
-    "confidence": "probable"
+    "confidence": "probable",
+    "method": "administration-name+place"
    },
    "county": "Gorj",
    "total": 6200000.0,
@@ -4539,7 +4548,8 @@
    "beneficiary": {
     "name": "ASOCIATIA PENTRU EDUCATIE DIGITALA",
     "entity": null,
-    "confidence": null
+    "confidence": null,
+    "method": null
    },
    "county": "Gorj",
    "total": null,
@@ -4584,7 +4594,8 @@
      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
      "kind": "authority"
     },
-    "confidence": "sure"
+    "confidence": "sure",
+    "method": "cui-in-list"
    },
    "county": "GJ",
    "total": 3000000.0,

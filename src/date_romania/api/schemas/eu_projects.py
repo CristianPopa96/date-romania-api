@@ -13,6 +13,8 @@ from date_romania.api.schemas.common import Answer, EntityRef, Source
 
 EuStatus = Literal["in_progress", "finished", "terminated"]
 LinkConfidence = Literal["sure", "probable"]
+# How it was tied (see eu_links.py).
+LinkMethod = Literal["cui-in-list", "administration-name+place", "name+place", "company-name"]
 
 
 class EuProgramme(Answer):
@@ -38,6 +40,7 @@ class EuBeneficiary(Answer):
     confidence: LinkConfidence | None = Field(
         description="sure: the list gives the tax ID; probable: tied by name and place."
     )
+    method: LinkMethod | None
 
 
 class EuProjectRow(Answer):

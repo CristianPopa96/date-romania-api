@@ -42,6 +42,7 @@ from date_romania.api.schemas.eu_projects import (
     EuProjectRow,
     EuStatus,
     LinkConfidence,
+    LinkMethod,
 )
 from date_romania.api.schemas.patterns import (
     ContractType,
@@ -200,6 +201,7 @@ __all__ = [
     "EuProjectRow",
     "EuStatus",
     "LinkConfidence",
+    "LinkMethod",
     "PnrrContract",
     "PnrrContractPage",
     "PnrrContractRow",

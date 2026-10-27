@@ -47,10 +47,12 @@ def test_projects_the_largest_first_with_how_their_beneficiary_is_tied(client):
     assert by_smis[PEO]["beneficiary"]["confidence"] == "sure"
     assert by_smis[POR]["beneficiary"]["entity"]["cui"] == eu_seed.TOWN_HALL
     assert by_smis[POR]["beneficiary"]["confidence"] == "probable"
+    assert by_smis[POR]["beneficiary"]["method"] == "administration-name+place"
     assert by_smis[POCU]["beneficiary"] == {
         "name": "ASOCIATIA PENTRU EDUCATIE DIGITALA",
         "entity": None,
         "confidence": None,
+        "method": None,
     }
 
 

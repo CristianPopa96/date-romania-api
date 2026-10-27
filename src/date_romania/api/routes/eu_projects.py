@@ -143,6 +143,7 @@ def _row(project: Project, entity: Entity | None) -> dict:
             name=_text(project.beneficiary_name),
             entity=ref(entity),
             confidence=project.entity_confidence if entity else None,
+            method=project.entity_method if entity else None,
         ),
         "county": project.county,
         "total": project.total_value,
