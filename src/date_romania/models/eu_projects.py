@@ -28,6 +28,11 @@ class EuProject(Base):
     # Given by the 2021-2027 lists of PEO, PoIDS and Health ('CUI LIDER'); null elsewhere,
     # where only the name is published.
     beneficiary_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
+    # The beneficiary's entity, tied by `eu_links.link()` after every load: by the tax ID
+    # in the list (sure), or by name and place (probable). Null when nothing ties it.
+    entity_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
+    entity_method: Mapped[str | None] = mapped_column(String(32))
+    entity_confidence: Mapped[str | None] = mapped_column(String(16))
     beneficiary_name: Mapped[str | None] = mapped_column(Text)
     beneficiary_type: Mapped[str | None] = mapped_column(Text)
     partners: Mapped[str | None] = mapped_column(Text)

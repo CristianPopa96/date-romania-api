@@ -4222,6 +4222,467 @@
    "detail": "No PNRR contract 705"
   }
  },
+ "/v1/programmes/eu-funds": {
+  "status": 200,
+  "body": {
+   "programmes": [
+    {
+     "code": "POR",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "projects": 1,
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "cut_off": "2025-08-31"
+    },
+    {
+     "code": "POIM",
+     "name": "Programul Operațional Infrastructură Mare",
+     "period": "2014-2020",
+     "projects": 1,
+     "total": 9000000.0,
+     "paid": 0.0,
+     "cut_off": "2025-08-31"
+    },
+    {
+     "code": "POCU",
+     "name": "Programul Operațional Capital Uman",
+     "period": "2014-2020",
+     "projects": 1,
+     "total": null,
+     "paid": 400000.0,
+     "cut_off": "2025-08-31"
+    },
+    {
+     "code": "PEO",
+     "name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "projects": 1,
+     "total": 2100000.0,
+     "paid": 600000.0,
+     "cut_off": "2026-09-30"
+    },
+    {
+     "code": "PS",
+     "name": "Programul Sănătate",
+     "period": "2021-2027",
+     "projects": 1,
+     "total": 3000000.0,
+     "paid": 900000.0,
+     "cut_off": "2026-08-31"
+    }
+   ],
+   "source": {
+    "publisher": "MIPE",
+    "record": "Liste de proiecte contractate",
+    "url": "https://mfe.gov.ro/programe/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 3
+   }
+  }
+ },
+ "/v1/programmes/eu-funds/projects?limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 5,
+   "items": [
+    {
+     "smis": 118003,
+     "programme": "POIM",
+     "title": "Extinderea rețelei de apă",
+     "beneficiary": {
+      "name": "APAREGIO GORJ SA",
+      "entity": null,
+      "confidence": null,
+      "method": null
+     },
+     "county": "Gorj",
+     "total": 9000000.0,
+     "paid": 0.0,
+     "status": "terminated",
+     "status_written": "REZILIAT"
+    },
+    {
+     "smis": 118001,
+     "programme": "POR",
+     "title": "Modernizarea drumului comunal DC 12",
+     "beneficiary": {
+      "name": "UAT Comuna Țânțăreni",
+      "entity": {
+       "cui": 4981310,
+       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+       "kind": "authority"
+      },
+      "confidence": "probable",
+      "method": "administration-name+place"
+     },
+     "county": "Gorj",
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat"
+    },
+    {
+     "smis": 324809,
+     "programme": "PS",
+     "title": "Echipamente pentru secția de terapie intensivă",
+     "beneficiary": {
+      "name": "SPITALUL JUDETEAN DE URGENTA",
+      "entity": {
+       "cui": 4491342,
+       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+       "kind": "authority"
+      },
+      "confidence": "sure",
+      "method": "cui-in-list"
+     },
+     "county": "GJ",
+     "total": 3000000.0,
+     "paid": 900000.0,
+     "status": "in_progress",
+     "status_written": "in implementare"
+    },
+    {
+     "smis": 312456,
+     "programme": "PEO",
+     "title": "Dotarea laboratoarelor spitalului",
+     "beneficiary": {
+      "name": "SPITALUL JUDETEAN DE URGENTA",
+      "entity": {
+       "cui": 4491342,
+       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+       "kind": "authority"
+      },
+      "confidence": "sure",
+      "method": "cui-in-list"
+     },
+     "county": "GJ",
+     "total": 2100000.0,
+     "paid": 600000.0,
+     "status": "in_progress",
+     "status_written": "în implementare"
+    },
+    {
+     "smis": 118002,
+     "programme": "POCU",
+     "title": "Competențe digitale pentru adulți",
+     "beneficiary": {
+      "name": "ASOCIATIA PENTRU EDUCATIE DIGITALA",
+      "entity": null,
+      "confidence": null,
+      "method": null
+     },
+     "county": "Gorj",
+     "total": null,
+     "paid": 400000.0,
+     "status": null,
+     "status_written": "etapizat"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/eu-funds/projects?programme=POR&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "smis": 118001,
+     "programme": "POR",
+     "title": "Modernizarea drumului comunal DC 12",
+     "beneficiary": {
+      "name": "UAT Comuna Țânțăreni",
+      "entity": {
+       "cui": 4981310,
+       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+       "kind": "authority"
+      },
+      "confidence": "probable",
+      "method": "administration-name+place"
+     },
+     "county": "Gorj",
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/eu-funds/projects?status=finished&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "smis": 118001,
+     "programme": "POR",
+     "title": "Modernizarea drumului comunal DC 12",
+     "beneficiary": {
+      "name": "UAT Comuna Țânțăreni",
+      "entity": {
+       "cui": 4981310,
+       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+       "kind": "authority"
+      },
+      "confidence": "probable",
+      "method": "administration-name+place"
+     },
+     "county": "Gorj",
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/eu-funds/projects?q=zzzz&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 0,
+   "items": []
+  }
+ },
+ "/v1/programmes/eu-funds/projects?q=118001&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "smis": 118001,
+     "programme": "POR",
+     "title": "Modernizarea drumului comunal DC 12",
+     "beneficiary": {
+      "name": "UAT Comuna Țânțăreni",
+      "entity": {
+       "cui": 4981310,
+       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+       "kind": "authority"
+      },
+      "confidence": "probable",
+      "method": "administration-name+place"
+     },
+     "county": "Gorj",
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/eu-funds/projects/312456": {
+  "status": 200,
+  "body": {
+   "smis": 312456,
+   "programme": "PEO",
+   "title": "Dotarea laboratoarelor spitalului",
+   "beneficiary": {
+    "name": "SPITALUL JUDETEAN DE URGENTA",
+    "entity": {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority"
+    },
+    "confidence": "sure",
+    "method": "cui-in-list"
+   },
+   "county": "GJ",
+   "total": 2100000.0,
+   "paid": 600000.0,
+   "status": "in_progress",
+   "status_written": "în implementare",
+   "programme_name": "Programul Educație și Ocupare",
+   "period": "2021-2027",
+   "partners": "Asociația Sănătate pentru Toți",
+   "summary": null,
+   "beneficiary_type": null,
+   "locality": "Târgu Jiu",
+   "starts_on": "2024-03-01",
+   "ends_on": "2027-02-28",
+   "cofinancing_rate": 0.85,
+   "eu": 1785000.0,
+   "cut_off": "2026-09-30",
+   "payments": null,
+   "payments_source": null,
+   "source": {
+    "publisher": "MIPE",
+    "record": "Lista proiectelor contractate PEO",
+    "url": "https://mfe.gov.ro/wp-content/uploads/2026/10/peo.xlsx",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 13,
+    "sha256": "e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1e1",
+    "parser_version": 2,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/eu-funds/projects/118001": {
+  "status": 200,
+  "body": {
+   "smis": 118001,
+   "programme": "POR",
+   "title": "Modernizarea drumului comunal DC 12",
+   "beneficiary": {
+    "name": "UAT Comuna Țânțăreni",
+    "entity": {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority"
+    },
+    "confidence": "probable",
+    "method": "administration-name+place"
+   },
+   "county": "Gorj",
+   "total": 6200000.0,
+   "paid": 6100000.0,
+   "status": "finished",
+   "status_written": "Proiect finalizat",
+   "programme_name": "Programul Operațional Regional",
+   "period": "2014-2020",
+   "partners": null,
+   "summary": null,
+   "beneficiary_type": null,
+   "locality": "Țânțăreni",
+   "starts_on": null,
+   "ends_on": null,
+   "cofinancing_rate": null,
+   "eu": 5270000.0,
+   "cut_off": "2025-08-31",
+   "payments": null,
+   "payments_source": null,
+   "source": {
+    "publisher": "MIPE",
+    "record": "Lista proiectelor contractate POR",
+    "url": "https://data.gov.ro/dataset/proiecte-contractate/resource/1/por.xlsx",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 14,
+    "sha256": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
+    "parser_version": 2,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/eu-funds/projects/118002": {
+  "status": 200,
+  "body": {
+   "smis": 118002,
+   "programme": "POCU",
+   "title": "Competențe digitale pentru adulți",
+   "beneficiary": {
+    "name": "ASOCIATIA PENTRU EDUCATIE DIGITALA",
+    "entity": null,
+    "confidence": null,
+    "method": null
+   },
+   "county": "Gorj",
+   "total": null,
+   "paid": 400000.0,
+   "status": null,
+   "status_written": "etapizat",
+   "programme_name": "Programul Operațional Capital Uman",
+   "period": "2014-2020",
+   "partners": null,
+   "summary": null,
+   "beneficiary_type": null,
+   "locality": null,
+   "starts_on": null,
+   "ends_on": null,
+   "cofinancing_rate": null,
+   "eu": 850000.0,
+   "cut_off": "2025-08-31",
+   "payments": null,
+   "payments_source": null,
+   "source": {
+    "publisher": "MIPE",
+    "record": "Lista proiectelor contractate POCU",
+    "url": "https://data.gov.ro/dataset/proiecte-contractate/resource/1/por.xlsx",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 14,
+    "sha256": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
+    "parser_version": 2,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/eu-funds/projects/324809": {
+  "status": 200,
+  "body": {
+   "smis": 324809,
+   "programme": "PS",
+   "title": "Echipamente pentru secția de terapie intensivă",
+   "beneficiary": {
+    "name": "SPITALUL JUDETEAN DE URGENTA",
+    "entity": {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority"
+    },
+    "confidence": "sure",
+    "method": "cui-in-list"
+   },
+   "county": "GJ",
+   "total": 3000000.0,
+   "paid": 900000.0,
+   "status": "in_progress",
+   "status_written": "in implementare",
+   "programme_name": "Programul Sănătate",
+   "period": "2021-2027",
+   "partners": null,
+   "summary": null,
+   "beneficiary_type": null,
+   "locality": null,
+   "starts_on": null,
+   "ends_on": null,
+   "cofinancing_rate": null,
+   "eu": 2550000.0,
+   "cut_off": "2026-08-31",
+   "payments": [
+    {
+     "paid_on": "2026-09-02",
+     "amount": 600000.0,
+     "kind": "Plată",
+     "funding": "FEDR"
+    },
+    {
+     "paid_on": "2025-12-19",
+     "amount": 300000.0,
+     "kind": "Prefinanțare",
+     "funding": "FEDR"
+    }
+   ],
+   "payments_source": {
+    "publisher": "MIPE",
+    "record": "Plăți efectuate",
+    "url": "https://mfe.gov.ro/programe/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   },
+   "source": {
+    "publisher": "MIPE",
+    "record": "Lista proiectelor contractate PS",
+    "url": "https://mfe.gov.ro/wp-content/uploads/2026/10/ps.xlsx",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 15,
+    "sha256": "e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3",
+    "parser_version": 2,
+    "documents": null
+   }
+  }
+ },
+ "/v1/programmes/eu-funds/projects/999999": {
+  "status": 404,
+  "body": {
+   "detail": "No EU project with SMIS 999999"
+  }
+ },
  "/v1/cpv-divisions": {
   "status": 200,
   "body": [

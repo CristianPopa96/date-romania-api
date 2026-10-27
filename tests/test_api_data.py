@@ -7,6 +7,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
+import eu_seed
 import places_seed
 import pnrr_seed
 import programme_seed
@@ -318,6 +319,7 @@ def client(session):
     programme_seed.seed(session)
     places_seed.seed(session)
     pnrr_seed.seed(session)
+    eu_seed.seed(session)
 
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
@@ -1194,6 +1196,18 @@ SITE_CALLS = (
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.MANY_MEASURES}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}",
+    "/v1/programmes/eu-funds",
+    "/v1/programmes/eu-funds/projects?limit=20&offset=0",
+    "/v1/programmes/eu-funds/projects?programme=POR&limit=20&offset=0",
+    "/v1/programmes/eu-funds/projects?status=finished&limit=20&offset=0",
+    "/v1/programmes/eu-funds/projects?q=zzzz&limit=20&offset=0",
+    f"/v1/programmes/eu-funds/projects?q={eu_seed.POR}&limit=20&offset=0",
+    # One project per kind of beneficiary tie and payments, and one not held.
+    f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}",
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POR}",
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POCU}",
+    f"/v1/programmes/eu-funds/projects/{eu_seed.HEALTH}",
+    "/v1/programmes/eu-funds/projects/999999",
 )
 # Read once the purchases near their limit are added, so the answers above stay as the
 # pages that use them expect.

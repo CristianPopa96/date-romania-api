@@ -25,10 +25,14 @@ from date_romania.cui import parse_cui
 from date_romania.entities import kind_of
 from date_romania.text import plain
 
-PARSER_VERSION = 1
+# 2: the lead and partners POCU writes in one cell are told apart.
+PARSER_VERSION = 2
 
 _SEVEN_ZIP = b"7z\xbc\xaf\x27\x1c"
 _SMIS = re.compile(r"\d{4,7}")
+# POCU writes the lead, its tax ID and the partners in one cell, the same in the beneficiary
+# and the partners columns: 'L: UAT MUNICIPIUL BACĂU CUI 4278337 ; PARTENERI:- 27494488-...'.
+_LEAD = re.compile(r"L:\s*(.+?)\s+CUI\s*:?\s*(\d+)\s*;\s*PARTENERI\s*:\s*-?\s*(.*)", re.S)
 _MONTHS = {
     "IANUARIE": 1,
     "FEBRUARIE": 2,
@@ -371,13 +375,26 @@ def _read(parsed: Parsed, name: str, read, value):
         return None
 
 
+def split_lead(name: str | None, partners: str | None) -> tuple[str | None, str | None, str | None]:
+    """The lead's name, its tax ID as written (or None) and the partners, from POCU's one
+    cell; any other name is given back as it is."""
+    lead = _LEAD.fullmatch(name or "")
+    if lead is None:
+        return name, None, partners
+    if partners == name:
+        partners = _text(lead.group(3))
+    return _text(lead.group(1)), lead.group(2), partners
+
+
 def _project(parsed, row, cols: Columns, smis, programme, period, cut_off) -> dict:
     cui = None
-    written = _text(_at(row, cols.cui))
+    name, written_cui, partners = split_lead(
+        _text(_at(row, cols.name)), _text(_at(row, cols.partners))
+    )
+    written = _text(_at(row, cols.cui)) or written_cui
     if written:
         cui = parse_cui(written)
         parsed.invalid_cuis += cui is None
-    name = _text(_at(row, cols.name))
     kind = _text(_at(row, cols.kind))
     if cui is not None:
         parsed.entities.setdefault(cui, (name or f"CUI {cui}", kind_of(kind)))
@@ -390,7 +407,7 @@ def _project(parsed, row, cols: Columns, smis, programme, period, cut_off) -> di
         "beneficiary_cui": cui,
         "beneficiary_name": name,
         "beneficiary_type": kind,
-        "partners": _text(_at(row, cols.partners)),
+        "partners": partners,
         "summary": _text(_at(row, cols.summary)),
         "starts_on": _read(parsed, "starts_on", _day, _at(row, cols.starts)),
         "ends_on": _read(parsed, "ends_on", _day, _at(row, cols.ends)),

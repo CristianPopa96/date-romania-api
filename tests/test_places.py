@@ -51,6 +51,7 @@ def test_every_source_names_a_uat_in_one_form():
         assert uat_key(sector) == (places.SECTOR, "SECTORUL 2")
     assert county_key("JUDEŢUL BISTRIŢA-NĂSĂUD") == county_key("Bistrita - Nasaud")
     assert county_key("MUNICIPIUL BUCUREŞTI") == "BUCURESTI"
+    assert county_key("CS") == county_key("Caraş-Severin") and county_key("B") == "BUCURESTI"
 
 
 def test_siruta_gives_every_place_its_kind_parent_and_county(siruta):

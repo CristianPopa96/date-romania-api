@@ -256,7 +256,7 @@ def test_health_payments_are_kept_and_a_file_that_is_not_payments_is_set_aside(s
         select(SourceDocument).where(SourceDocument.url == f"{UPLOADS}ps-august.xlsx")
     )
     # Seen and set aside: counted as read, with no rejected rows to show.
-    assert (august.parser_version, august.rejected_rows) == (1, None)
+    assert (august.parser_version, august.rejected_rows) == (run.PARSER_VERSION, None)
     september = session.scalar(
         select(SourceDocument).where(SourceDocument.url == f"{UPLOADS}ps-september.xlsx")
     )

@@ -16,6 +16,13 @@ _NAMES = (
 
 COUNTIES = {plain(name): name for name in _NAMES.split(", ")}
 
+# The two-letter codes some lists write instead of the name ('AG', 'DJ'; București is 'B').
+_CODES = (
+    "AB AR AG BC BH BN BT BR BV B BZ CL CS CJ CT CV DB DJ GL GR GJ HR HD IL IS IF MM MH MS "
+    "NT OT PH SJ SM SB SV TR TM TL VL VS VN"
+)
+CODES = dict(zip(_CODES.split(), COUNTIES, strict=True))
+
 
 def county_name(key: str | None) -> str | None:
     """'BISTRITA NASAUD' is Bistrița-Năsăud. A name not in the list is given back as is."""

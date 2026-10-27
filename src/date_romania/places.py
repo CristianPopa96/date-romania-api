@@ -12,7 +12,7 @@ import re
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
-from date_romania.counties import county_name
+from date_romania.counties import CODES, county_name
 from date_romania.models import AnafRecord, Entity, Place, PniasPayment, PublicEntity
 from date_romania.text import plain
 
@@ -41,9 +41,10 @@ _SECTOR = re.compile(r"\bSECTOR(?:UL)? ([1-6])\b")
 
 
 def county_key(name: str | None) -> str:
-    """'JUDEŢUL BISTRIŢA-NĂSĂUD', 'Bistrita - Nasaud' and 'MUNICIPIUL BUCUREŞTI' as one
-    form: 'BISTRITA NASAUD', 'BUCURESTI'."""
+    """'JUDEŢUL BISTRIŢA-NĂSĂUD', 'Bistrita - Nasaud', 'BN' and 'MUNICIPIUL BUCUREŞTI' as
+    one form: 'BISTRITA NASAUD', 'BUCURESTI'."""
     key = plain(name)
+    key = CODES.get(key, key)
     for prefix in ("JUDETUL ", "JUD ", "MUNICIPIUL "):
         key = key.removeprefix(prefix)
     return key

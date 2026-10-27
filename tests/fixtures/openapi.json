@@ -1934,6 +1934,205 @@
     }
    }
   },
+  "/v1/programmes/eu-funds": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Eu Funds",
+    "description": "The programmes held, each from its newest list: projects, value and paid so far.",
+    "operationId": "eu_funds_v1_programmes_eu_funds_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuFunds"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/eu-funds/projects": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Projects",
+    "description": "Projects, the largest first.",
+    "operationId": "projects_v1_programmes_eu_funds_projects_get",
+    "parameters": [
+     {
+      "name": "programme",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A programme code, e.g. 'POR'.",
+       "title": "Programme"
+      },
+      "description": "A programme code, e.g. 'POR'."
+     },
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "in_progress",
+          "finished",
+          "terminated"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Part of the title or the beneficiary's name, or a SMIS code.",
+       "title": "Q"
+      },
+      "description": "Part of the title or the beneficiary's name, or a SMIS code."
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuProjectPage"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/eu-funds/projects/{smis}": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Project",
+    "description": "One project, from its programme's newest list, with its payments one by one where\nthe programme publishes them (Health).",
+    "operationId": "project_v1_programmes_eu_funds_projects__smis__get",
+    "parameters": [
+     {
+      "name": "smis",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Smis"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuProject"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/places": {
    "get": {
     "tags": [
@@ -3236,6 +3435,594 @@
      "kind"
     ],
     "title": "EntityRef"
+   },
+   "EuBeneficiary": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name",
+      "description": "As the list writes it."
+     },
+     "entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The entity it is tied to, when one is."
+     },
+     "confidence": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "sure",
+         "probable"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confidence",
+      "description": "sure: the list gives the tax ID; probable: tied by name and place."
+     },
+     "method": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "cui-in-list",
+         "administration-name+place",
+         "name+place",
+         "company-name"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Method"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "entity",
+     "confidence",
+     "method"
+    ],
+    "title": "EuBeneficiary"
+   },
+   "EuFunds": {
+    "properties": {
+     "programmes": {
+      "items": {
+       "$ref": "#/components/schemas/EuProgramme"
+      },
+      "type": "array",
+      "title": "Programmes"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "programmes",
+     "source"
+    ],
+    "title": "EuFunds",
+    "description": "The programmes held. Their figures describe different days: never add them up."
+   },
+   "EuPayment": {
+    "properties": {
+     "paid_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid On"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Kind",
+      "description": "'Plată', 'Prefinanțare'..., as published."
+     },
+     "funding": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Funding"
+     }
+    },
+    "type": "object",
+    "required": [
+     "paid_on",
+     "amount",
+     "kind",
+     "funding"
+    ],
+    "title": "EuPayment"
+   },
+   "EuProgramme": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "'POR', 'PEO', 'PoIDS'..."
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "period": {
+      "type": "string",
+      "title": "Period",
+      "description": "'2014-2020' or '2021-2027'."
+     },
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total",
+      "description": "Lei, the projects' total value added up."
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid",
+      "description": "Lei paid up to `cut_off`; null when not published."
+     },
+     "cut_off": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cut Off",
+      "description": "The day the programme's newest list describes."
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name",
+     "period",
+     "projects",
+     "total",
+     "paid",
+     "cut_off"
+    ],
+    "title": "EuProgramme"
+   },
+   "EuProject": {
+    "properties": {
+     "smis": {
+      "type": "integer",
+      "title": "Smis"
+     },
+     "programme": {
+      "type": "string",
+      "title": "Programme"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "beneficiary": {
+      "$ref": "#/components/schemas/EuBeneficiary"
+     },
+     "county": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "County",
+      "description": "As the list writes it."
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total"
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "in_progress",
+         "finished",
+         "terminated"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     },
+     "status_written": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status Written",
+      "description": "The status as the list writes it."
+     },
+     "programme_name": {
+      "type": "string",
+      "title": "Programme Name"
+     },
+     "period": {
+      "type": "string",
+      "title": "Period"
+     },
+     "partners": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Partners",
+      "description": "As the list writes them; never tied."
+     },
+     "summary": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Summary"
+     },
+     "beneficiary_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Beneficiary Type"
+     },
+     "locality": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Locality"
+     },
+     "starts_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Starts On"
+     },
+     "ends_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ends On"
+     },
+     "cofinancing_rate": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cofinancing Rate",
+      "description": "The EU's share, from 0 to 1."
+     },
+     "eu": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Eu"
+     },
+     "cut_off": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cut Off",
+      "description": "The day `paid` is counted up to."
+     },
+     "payments": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/EuPayment"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Payments",
+      "description": "One by one, newest first; null where the programme does not publish them."
+     },
+     "payments_source": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Source"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "smis",
+     "programme",
+     "title",
+     "beneficiary",
+     "county",
+     "total",
+     "paid",
+     "status",
+     "status_written",
+     "programme_name",
+     "period",
+     "partners",
+     "summary",
+     "beneficiary_type",
+     "locality",
+     "starts_on",
+     "ends_on",
+     "cofinancing_rate",
+     "eu",
+     "cut_off",
+     "payments",
+     "payments_source",
+     "source"
+    ],
+    "title": "EuProject"
+   },
+   "EuProjectPage": {
+    "properties": {
+     "total": {
+      "type": "integer",
+      "title": "Total"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/EuProjectRow"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "total",
+     "items"
+    ],
+    "title": "EuProjectPage"
+   },
+   "EuProjectRow": {
+    "properties": {
+     "smis": {
+      "type": "integer",
+      "title": "Smis"
+     },
+     "programme": {
+      "type": "string",
+      "title": "Programme"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "beneficiary": {
+      "$ref": "#/components/schemas/EuBeneficiary"
+     },
+     "county": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "County",
+      "description": "As the list writes it."
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total"
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "in_progress",
+         "finished",
+         "terminated"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     },
+     "status_written": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status Written",
+      "description": "The status as the list writes it."
+     }
+    },
+    "type": "object",
+    "required": [
+     "smis",
+     "programme",
+     "title",
+     "beneficiary",
+     "county",
+     "total",
+     "paid",
+     "status",
+     "status_written"
+    ],
+    "title": "EuProjectRow"
    },
    "HTTPValidationError": {
     "properties": {
