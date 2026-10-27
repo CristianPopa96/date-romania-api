@@ -66,6 +66,7 @@ def test_projects_the_largest_first_with_how_their_beneficiary_is_tied(client):
         ("status=terminated", [POIM]),
         ("q=tantareni", [POR]),
         ("q=laboratoarelor", [PEO]),
+        (f"q={POCU}", [POCU]),
     ],
 )
 def test_projects_are_filtered(client, query, found):

@@ -1201,6 +1201,7 @@ SITE_CALLS = (
     "/v1/programmes/eu-funds/projects?programme=POR&limit=20&offset=0",
     "/v1/programmes/eu-funds/projects?status=finished&limit=20&offset=0",
     "/v1/programmes/eu-funds/projects?q=zzzz&limit=20&offset=0",
+    f"/v1/programmes/eu-funds/projects?q={eu_seed.POR}&limit=20&offset=0",
     # One project per kind of beneficiary tie and payments, and one not held.
     f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}",
     f"/v1/programmes/eu-funds/projects/{eu_seed.POR}",

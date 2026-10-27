@@ -4447,6 +4447,34 @@
    "items": []
   }
  },
+ "/v1/programmes/eu-funds/projects?q=118001&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "smis": 118001,
+     "programme": "POR",
+     "title": "Modernizarea drumului comunal DC 12",
+     "beneficiary": {
+      "name": "UAT Comuna Țânțăreni",
+      "entity": {
+       "cui": 4981310,
+       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+       "kind": "authority"
+      },
+      "confidence": "probable",
+      "method": "administration-name+place"
+     },
+     "county": "Gorj",
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat"
+    }
+   ]
+  }
+ },
  "/v1/programmes/eu-funds/projects/312456": {
   "status": 200,
   "body": {

@@ -100,7 +100,11 @@ def projects(
     status_: Annotated[EuStatus | None, Query(alias="status")] = None,
     q: Annotated[
         str | None,
-        Query(min_length=2, max_length=100, description="Part of the title or beneficiary."),
+        Query(
+            min_length=2,
+            max_length=100,
+            description="Part of the title or the beneficiary's name, or a SMIS code.",
+        ),
     ] = None,
     limit: Limit = 20,
     offset: Offset = 0,
@@ -116,9 +120,14 @@ def projects(
         filters.append(Project.status.in_([each for each in spellings if status(each) == status_]))
     if q:
         like = containing(q)
-        filters.append(
-            search_text(Project.title).like(like) | search_text(Project.beneficiary_name).like(like)
+        found = search_text(Project.title).like(like) | search_text(Project.beneficiary_name).like(
+            like
         )
+        # A SMIS code typed alone finds its project too.
+        code = q.strip()
+        if code.isdecimal() and len(code) <= 9:
+            found = found | (Project.smis == int(code))
+        filters.append(found)
     total = session.scalar(select(func.count()).select_from(Project).where(*filters))
     rows = session.execute(
         select(Project, Entity)

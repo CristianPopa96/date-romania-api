@@ -2037,10 +2037,10 @@
          "type": "null"
         }
        ],
-       "description": "Part of the title or beneficiary.",
+       "description": "Part of the title or the beneficiary's name, or a SMIS code.",
        "title": "Q"
       },
-      "description": "Part of the title or beneficiary."
+      "description": "Part of the title or the beneficiary's name, or a SMIS code."
      },
      {
       "name": "limit",
