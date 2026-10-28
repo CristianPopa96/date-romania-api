@@ -8,6 +8,7 @@ from date_romania.api.routes import (
     awards,
     budget,
     entities,
+    eu_beneficiaries,
     eu_projects,
     eu_seap,
     patterns,
@@ -36,6 +37,7 @@ for module in (
     pnrr,
     eu_projects,
     eu_seap,
+    eu_beneficiaries,
     places,
     reports,
 ):

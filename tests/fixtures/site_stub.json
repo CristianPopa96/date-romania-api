@@ -4475,6 +4475,252 @@
    ]
   }
  },
+ "/v1/programmes/eu-beneficiaries/4981310": {
+  "status": 200,
+  "body": {
+   "entity": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "cohesion": [
+    {
+     "code": "POR",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "projects": 1,
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "cut_off": "2025-08-31",
+     "by_name": 1
+    }
+   ],
+   "cohesion_source": {
+    "publisher": "MIPE",
+    "record": "Liste de proiecte contractate",
+    "url": "https://mfe.gov.ro/programe/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   },
+   "pnrr": {
+    "contracts": 2,
+    "total": 6500000.0,
+    "paid": 2300000.0,
+    "payments": 3,
+    "first_day": "2025-12-19",
+    "last_day": "2026-10-02",
+    "edition": "2026-10-15",
+    "source": {
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
+    }
+   }
+  }
+ },
+ "/v1/programmes/eu-beneficiaries/4491342": {
+  "status": 200,
+  "body": {
+   "entity": {
+    "cui": 4491342,
+    "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+    "kind": "authority"
+   },
+   "cohesion": [
+    {
+     "code": "PEO",
+     "name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "projects": 1,
+     "total": 2100000.0,
+     "paid": 600000.0,
+     "cut_off": "2026-09-30",
+     "by_name": 0
+    },
+    {
+     "code": "PS",
+     "name": "Programul Sănătate",
+     "period": "2021-2027",
+     "projects": 1,
+     "total": 3000000.0,
+     "paid": 900000.0,
+     "cut_off": "2026-08-31",
+     "by_name": 0
+    }
+   ],
+   "cohesion_source": {
+    "publisher": "MIPE",
+    "record": "Liste de proiecte contractate",
+    "url": "https://mfe.gov.ro/programe/",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 2
+   },
+   "pnrr": {
+    "contracts": 2,
+    "total": 4350000.0,
+    "paid": 1850000.0,
+    "payments": 3,
+    "first_day": "2026-02-02",
+    "last_day": "2026-07-08",
+    "edition": "2026-10-15",
+    "source": {
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
+    }
+   }
+  }
+ },
+ "/v1/programmes/eu-beneficiaries/17886786": {
+  "status": 200,
+  "body": {
+   "entity": {
+    "cui": 17886786,
+    "name": "ALFA CONSTRUCT S.R.L.",
+    "kind": "company"
+   },
+   "cohesion": [],
+   "cohesion_source": null,
+   "pnrr": null
+  }
+ },
+ "/v1/programmes/eu-beneficiaries/12345674": {
+  "status": 404,
+  "body": {
+   "detail": "Entity not found"
+  }
+ },
+ "/v1/programmes/eu-funds/projects?beneficiary=4981310&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "smis": 118001,
+     "programme": "POR",
+     "title": "Modernizarea drumului comunal DC 12",
+     "beneficiary": {
+      "name": "UAT Comuna Țânțăreni",
+      "entity": {
+       "cui": 4981310,
+       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+       "kind": "authority"
+      },
+      "confidence": "probable",
+      "method": "administration-name+place"
+     },
+     "county": "Gorj",
+     "total": 6200000.0,
+     "paid": 6100000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/eu-funds/projects?beneficiary=4491342&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "items": [
+    {
+     "smis": 324809,
+     "programme": "PS",
+     "title": "Echipamente pentru secția de terapie intensivă",
+     "beneficiary": {
+      "name": "SPITALUL JUDETEAN DE URGENTA",
+      "entity": {
+       "cui": 4491342,
+       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+       "kind": "authority"
+      },
+      "confidence": "sure",
+      "method": "cui-in-list"
+     },
+     "county": "GJ",
+     "total": 3000000.0,
+     "paid": 900000.0,
+     "status": "in_progress",
+     "status_written": "in implementare"
+    },
+    {
+     "smis": 312456,
+     "programme": "PEO",
+     "title": "Dotarea laboratoarelor spitalului",
+     "beneficiary": {
+      "name": "SPITALUL JUDETEAN DE URGENTA",
+      "entity": {
+       "cui": 4491342,
+       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+       "kind": "authority"
+      },
+      "confidence": "sure",
+      "method": "cui-in-list"
+     },
+     "county": "GJ",
+     "total": 2100000.0,
+     "paid": 600000.0,
+     "status": "in_progress",
+     "status_written": "în implementare"
+    }
+   ]
+  }
+ },
+ "/v1/programmes/pnrr/contracts?beneficiary=4981310&limit=20&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "items": [
+    {
+     "id": 701,
+     "number": "12321",
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 6200000.0,
+     "status": "in_progress",
+     "physical_progress": 0.4,
+     "measures_differ": false
+    },
+    {
+     "id": 706,
+     "number": "992",
+     "title": "Împădurire teren comunal",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 300000.0,
+     "status": "in_progress",
+     "physical_progress": 0.5,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 0
+  }
+ },
  "/v1/programmes/eu-funds/projects/312456": {
   "status": 200,
   "body": {
