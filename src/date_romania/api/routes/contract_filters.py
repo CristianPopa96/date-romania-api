@@ -36,9 +36,6 @@ def winner(cui: ColumnElement | int) -> ColumnElement[bool]:
     )
 
 
-# The winner of a contract won alone. SEAP can list one company twice: it is still one, and
-
-
 def eu_funded_filter(funded: bool) -> ColumnElement[bool]:
     return (
         select(AwardNoticeDetail.notice_id)
