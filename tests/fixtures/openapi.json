@@ -3661,19 +3661,19 @@
       ],
       "title": "End"
      },
-     "purchases": {
+     "count": {
       "type": "integer",
-      "title": "Purchases"
+      "title": "Count"
      }
     },
     "type": "object",
     "required": [
      "start",
      "end",
-     "purchases"
+     "count"
     ],
     "title": "Band",
-    "description": "Purchases whose closing value is from `start` up to `end` (excluded; null: no end)."
+    "description": "Rows whose value is from `start` up to `end` (excluded; null: no end)."
    },
    "Capital": {
     "properties": {
@@ -4310,16 +4310,17 @@
       ],
       "title": "Name"
      },
-     "purchases": {
+     "count": {
       "type": "integer",
-      "title": "Purchases"
+      "title": "Count",
+      "description": "Purchases under the other filters."
      }
     },
     "type": "object",
     "required": [
      "code",
      "name",
-     "purchases"
+     "count"
     ],
     "title": "CpvOption"
    },
@@ -6152,18 +6153,18 @@
       "type": "integer",
       "title": "Value"
      },
-     "purchases": {
+     "count": {
       "type": "integer",
-      "title": "Purchases"
+      "title": "Count"
      }
     },
     "type": "object",
     "required": [
      "value",
-     "purchases"
+     "count"
     ],
     "title": "Option",
-    "description": "One option of a choice filter, with the purchases it leaves under the other filters."
+    "description": "One option of a choice filter, with the rows it leaves under the other filters."
    },
    "Others": {
     "properties": {
@@ -6183,7 +6184,7 @@
      "value"
     ],
     "title": "Others",
-    "description": "The rest of the accepted purchases after the largest parties."
+    "description": "The rest of the value after the largest parties."
    },
    "Partner": {
     "properties": {
@@ -6234,9 +6235,10 @@
       "title": "Kind",
       "description": "authority, company or other"
      },
-     "purchases": {
+     "count": {
       "type": "integer",
-      "title": "Purchases"
+      "title": "Count",
+      "description": "Purchases under the other filters."
      }
     },
     "type": "object",
@@ -6244,7 +6246,7 @@
      "cui",
      "name",
      "kind",
-     "purchases"
+     "count"
     ],
     "title": "PartyOption"
    },
@@ -7577,9 +7579,9 @@
       "title": "Start",
       "description": "The first day of the month, or the day."
      },
-     "accepted": {
+     "count": {
       "type": "integer",
-      "title": "Accepted"
+      "title": "Count"
      },
      "value": {
       "type": "number",
@@ -7589,11 +7591,11 @@
     "type": "object",
     "required": [
      "start",
-     "accepted",
+     "count",
      "value"
     ],
     "title": "Point",
-    "description": "Accepted purchases counted in totals, in one month or one day."
+    "description": "The rows a list's totals count, in one month or one day, and their value."
    },
    "Population": {
     "properties": {
@@ -10034,18 +10036,18 @@
       "type": "string",
       "title": "Param"
      },
-     "purchases": {
+     "count": {
       "type": "integer",
-      "title": "Purchases"
+      "title": "Count"
      }
     },
     "type": "object",
     "required": [
      "param",
-     "purchases"
+     "count"
     ],
     "title": "Without",
-    "description": "How many purchases one filter alone keeps out, for a list it leaves empty."
+    "description": "How many rows one filter alone keeps out, for a list it leaves empty."
    }
   }
  }

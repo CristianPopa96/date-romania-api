@@ -907,32 +907,32 @@ def test_the_list_of_one_party_says_what_the_filters_keep_of_it(client):
     assert town["last_day_held"] == "2026-10-07"
     # Two days apart: drawn per day, only the accepted purchases counted in totals.
     assert town["step"] == "day"
-    assert [(p["start"], p["accepted"], p["value"]) for p in town["points"]] == [
+    assert [(p["start"], p["count"], p["value"]) for p in town["points"]] == [
         ("2026-10-05", 1, 1000),
         ("2026-10-06", 2, 2500),
     ]
     assert town["party"] == "supplier"
     assert [(p["cui"], p["value"]) for p in town["parties"]] == [(BUILDER, 3000), (STATIONER, 500)]
     assert town["others"] == {"parties": 0, "value": 0}
-    assert [(o["value"], o["purchases"]) for o in town["states"]] == [(7, 3), (3, 1)]
-    assert [(o["value"], o["purchases"]) for o in town["contract_types"]] == [(0, 4)]
-    assert [b["purchases"] for b in town["bands"]][:4] == [1, 2, 1, 0]
-    assert town["bands"][-1] == {"start": 900400, "end": None, "purchases": 0}
+    assert [(o["value"], o["count"]) for o in town["states"]] == [(7, 3), (3, 1)]
+    assert [(o["value"], o["count"]) for o in town["contract_types"]] == [(0, 4)]
+    assert [b["count"] for b in town["bands"]][:4] == [1, 2, 1, 0]
+    assert town["bands"][-1] == {"start": 900400, "end": None, "count": 0}
     assert town["without"] == []
 
     # An option is counted under every filter but its own.
     some = overview(buyer=TOWN_HALL, scope="buyer", supplier=STATIONER, state=7)
     assert (some["summary"]["purchases"], some["whole"]) == (1, 4)
-    assert [(o["value"], o["purchases"]) for o in some["states"]] == [(3, 1), (7, 1)]
+    assert [(o["value"], o["count"]) for o in some["states"]] == [(3, 1), (7, 1)]
 
     # Nothing found: what each filter alone keeps out, never the party of the list.
     empty = overview(buyer=TOWN_HALL, scope="buyer", supplier=STATIONER, state=7, value_min=5000)
     assert empty["summary"]["purchases"] == 0
     assert empty["points"] == []
     assert empty["without"] == [
-        {"param": "supplier", "purchases": 0},
-        {"param": "state", "purchases": 1},
-        {"param": "value_min", "purchases": 1},
+        {"param": "supplier", "count": 0},
+        {"param": "state", "count": 1},
+        {"param": "value_min", "count": 1},
     ]
 
     # A purchase above the limit is in no chart; a party with no CUI is among the others.
@@ -946,7 +946,7 @@ def test_the_list_of_one_party_says_what_the_filters_keep_of_it(client):
 def test_the_typeahead_filters_offer_what_the_list_holds(client):
     def parties(**params):
         found = client.get("/v1/direct-purchases/parties", params=params).json()
-        return [(p["cui"], p["purchases"]) for p in found]
+        return [(p["cui"], p["count"]) for p in found]
 
     assert parties(buyer=TOWN_HALL, side="supplier") == [(BUILDER, 2), (STATIONER, 2)]
     assert parties(buyer=TOWN_HALL, side="supplier", find="birotica") == [(STATIONER, 2)]
@@ -956,7 +956,7 @@ def test_the_typeahead_filters_offer_what_the_list_holds(client):
 
     def codes(**params):
         found = client.get("/v1/direct-purchases/cpv-codes", params=params).json()
-        return [(c["code"], c["purchases"]) for c in found]
+        return [(c["code"], c["count"]) for c in found]
 
     assert codes(buyer=TOWN_HALL) == [("30192000-1", 3), ("45233140-2", 1)]
     assert codes(buyer=TOWN_HALL, find="4523") == [("45233140-2", 1)]

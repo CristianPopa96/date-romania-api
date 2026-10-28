@@ -52,6 +52,7 @@ from date_romania.api.schemas.eu_projects import (
     SeapLink,
     SeapLinkMethod,
 )
+from date_romania.api.schemas.lists import Band, Option, Others, Point, Without
 from date_romania.api.schemas.patterns import (
     ContractType,
     NearLimitPair,
@@ -106,16 +107,7 @@ from date_romania.api.schemas.programmes import (
     TraceContract,
     TraceParty,
 )
-from date_romania.api.schemas.purchase_list import (
-    Band,
-    CpvOption,
-    Option,
-    Others,
-    PartyOption,
-    Point,
-    PurchaseOverview,
-    Without,
-)
+from date_romania.api.schemas.purchase_list import CpvOption, PartyOption, PurchaseOverview
 from date_romania.api.schemas.purchases import (
     CpvDivision,
     EntityPage,

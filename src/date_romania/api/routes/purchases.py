@@ -19,6 +19,7 @@ from date_romania.api.routes.common import (
     ref,
     summary,
 )
+from date_romania.api.routes.list_common import ordered
 from date_romania.api.routes.purchase_list import Filters
 from date_romania.api.schemas import (
     Purchase,
@@ -105,9 +106,7 @@ def direct_purchases(
         "supplier": func.lower(func.coalesce(Supplier.name, DirectPurchase.supplier_text)),
         "buyer": func.lower(func.coalesce(Buyer.name, DirectPurchase.buyer_text)),
     }.get(sort, DirectPurchase.finalized_at)
-    first = column.asc() if order == "asc" else column.desc()
-    tie = DirectPurchase.id.asc() if order == "asc" else DirectPurchase.id.desc()
-    query = purchases_query().where(*conditions).order_by(first.nulls_last(), tie)
+    query = ordered(purchases_query().where(*conditions), column, order, DirectPurchase.id)
     if format == "csv":
         if not {"buyer", "supplier"} & filters.named.keys():
             raise HTTPException(400, "A file of direct purchases needs a buyer or a supplier.")

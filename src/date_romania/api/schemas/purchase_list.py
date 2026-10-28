@@ -7,44 +7,8 @@ from typing import Literal
 from pydantic import Field
 
 from date_romania.api.schemas.common import Answer, EntityRef
+from date_romania.api.schemas.lists import Band, Option, Others, Point, Without
 from date_romania.api.schemas.purchases import Partner, Summary
-
-
-class Option(Answer):
-    """One option of a choice filter, with the purchases it leaves under the other filters."""
-
-    value: int
-    purchases: int
-
-
-class Band(Answer):
-    """Purchases whose closing value is from `start` up to `end` (excluded; null: no end)."""
-
-    start: float
-    end: float | None
-    purchases: int
-
-
-class Point(Answer):
-    """Accepted purchases counted in totals, in one month or one day."""
-
-    start: date = Field(description="The first day of the month, or the day.")
-    accepted: int
-    value: float
-
-
-class Others(Answer):
-    """The rest of the accepted purchases after the largest parties."""
-
-    parties: int = Field(description="How many other parties, told apart by CUI or by text.")
-    value: float
-
-
-class Without(Answer):
-    """How many purchases one filter alone keeps out, for a list it leaves empty."""
-
-    param: str
-    purchases: int
 
 
 class PurchaseOverview(Answer):
@@ -80,10 +44,10 @@ class PurchaseOverview(Answer):
 
 
 class PartyOption(EntityRef):
-    purchases: int
+    count: int = Field(description="Purchases under the other filters.")
 
 
 class CpvOption(Answer):
     code: str
     name: str | None
-    purchases: int
+    count: int = Field(description="Purchases under the other filters.")
