@@ -42,6 +42,7 @@ Side = Literal["buyer", "supplier"]
 BAND_EDGES = (0, 10_000, 100_000, 500_000, 1_000_000, 5_000_000, 25_000_000, 100_000_000)
 TOP_PARTIES = 5
 
+# The winner of a contract won alone. SEAP can list one company twice: it is still one, and
 # reading it here instead of joining the winners never counts its contract twice.
 _sole_cui = (
     select(func.min(AwardWinner.supplier_cui))
