@@ -1,22 +1,25 @@
 """Direct purchases: the list with its filters, and one purchase."""
 
+from collections.abc import Iterable
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import aliased
 
 from date_romania import money
 from date_romania.api.routes.common import (
-    Day,
     Db,
+    Format,
     Limit,
     Offset,
-    in_period,
+    cell,
+    csv_file,
     record_source,
     ref,
     summary,
 )
+from date_romania.api.routes.purchase_list import Filters
 from date_romania.api.schemas import (
     Purchase,
     PurchaseDetail,
@@ -80,41 +83,37 @@ def purchase_row(row) -> Purchase:
 @router.get("/direct-purchases")
 def direct_purchases(
     session: Db,
-    buyer: Annotated[int | None, Query(description="CUI of the buying institution.")] = None,
-    supplier: Annotated[int | None, Query(description="CUI of the supplier.")] = None,
-    cpv: Annotated[
-        str | None, Query(max_length=10, description="Start of a CPV code, e.g. 4523.")
-    ] = None,
-    state: Annotated[int | None, Query(description="SEAP state id; 7 is accepted.")] = None,
-    date_from: Day = None,
-    date_to: Day = None,
-    sort: Literal["newest", "value"] = "newest",
+    filters: Filters,
+    sort: Annotated[
+        Literal["date", "value", "supplier", "buyer", "newest"],
+        Query(
+            description="The finalization day, the closing value or a party's name; "
+            "`newest` is the day, as before."
+        ),
+    ] = "date",
+    order: Literal["desc", "asc"] = "desc",
     limit: Limit = 20,
     offset: Offset = 0,
+    format: Format = "json",
 ) -> PurchasePage:
-    """Direct purchases by finalization day, newest or largest first."""
-    filters = in_period(date_from, date_to)
-    if buyer is not None:
-        filters.append(DirectPurchase.buyer_cui == buyer)
-    if supplier is not None:
-        filters.append(DirectPurchase.supplier_cui == supplier)
-    if cpv:
-        filters.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
-    if state is not None:
-        filters.append(DirectPurchase.state_id == state)
-    order = (
-        [DirectPurchase.closing_value.desc().nulls_last()]
-        if sort == "value"
-        else [DirectPurchase.finalized_at.desc().nulls_last()]
-    )
-    total = session.scalar(select(func.count()).select_from(DirectPurchase).where(*filters))
-    rows = session.execute(
-        purchases_query()
-        .where(*filters)
-        .order_by(*order, DirectPurchase.id.desc())
-        .limit(limit)
-        .offset(offset)
-    )
+    """Direct purchases under the filters given, by finalization day, value or party.
+
+    As csv, the whole list in the same order; a file needs a buyer or a supplier."""
+    conditions = filters.all()
+    column = {
+        "value": DirectPurchase.closing_value,
+        "supplier": func.lower(func.coalesce(Supplier.name, DirectPurchase.supplier_text)),
+        "buyer": func.lower(func.coalesce(Buyer.name, DirectPurchase.buyer_text)),
+    }.get(sort, DirectPurchase.finalized_at)
+    first = column.asc() if order == "asc" else column.desc()
+    tie = DirectPurchase.id.asc() if order == "asc" else DirectPurchase.id.desc()
+    query = purchases_query().where(*conditions).order_by(first.nulls_last(), tie)
+    if format == "csv":
+        if not {"buyer", "supplier"} & filters.named.keys():
+            raise HTTPException(400, "A file of direct purchases needs a buyer or a supplier.")
+        return purchases_csv(purchase_row(row) for row in session.execute(query))
+    total = session.scalar(select(func.count()).select_from(DirectPurchase).where(*conditions))
+    rows = session.execute(query.limit(limit).offset(offset))
     return PurchasePage(total=total, items=[purchase_row(row) for row in rows])
 
 
@@ -131,6 +130,46 @@ def direct_purchases_summary(
     if supplier is not None:
         filters.append(DirectPurchase.supplier_cui == supplier)
     return summary(session, *filters)
+
+
+def purchases_csv(purchases: Iterable[Purchase]) -> Response:
+    """The list as a file; every row names where it was read."""
+    header = [
+        "code",
+        "finalized_at",
+        "name",
+        "state",
+        "contract_type",
+        "cpv_code",
+        "buyer_cui",
+        "buyer",
+        "supplier_cui",
+        "supplier",
+        "value_ron_without_vat",
+        "above_limit",
+        "source_url",
+        "fetched_at",
+    ]
+    rows = (
+        [
+            cell(p.code),
+            p.finalized_at and p.finalized_at.isoformat(),
+            cell(p.name),
+            cell(p.state),
+            p.contract_type_id,
+            p.cpv_code,
+            p.buyer and p.buyer.cui,
+            cell(p.buyer.name if p.buyer else p.buyer_text),
+            p.supplier and p.supplier.cui,
+            cell(p.supplier.name if p.supplier else p.supplier_text),
+            p.value,
+            p.above_limit,
+            p.source.url,
+            p.source.fetched_at and p.source.fetched_at.isoformat(),
+        ]
+        for p in purchases
+    )
+    return csv_file(header, rows, "achizitii-directe.csv")
 
 
 def _detail(session: Db, purchase: Purchase) -> PurchaseDetail | None:

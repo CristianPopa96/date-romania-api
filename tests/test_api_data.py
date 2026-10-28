@@ -873,6 +873,112 @@ def test_a_buyer_and_a_supplier_have_a_summary_together(client):
     assert (other["purchases"], other["accepted"], other["value"]) == (2, 1, 500)
 
 
+def test_the_list_of_purchases_takes_every_filter_and_sorts_by_any_column(client):
+    def ids(**params):
+        page = client.get("/v1/direct-purchases", params=params).json()
+        return [item["id"] for item in page["items"]]
+
+    mine = {"buyer": TOWN_HALL}
+    assert ids(**mine, sort="value") == [4, 2, 1, 3]
+    assert ids(**mine, sort="value", order="asc") == [3, 1, 2, 4]
+    # A party's name, A to Z; the same name keeps the oldest purchase first.
+    assert ids(**mine, sort="supplier", order="asc") == [1, 2, 3, 4]
+    assert ids(**mine, sort="newest") == ids(**mine) == [4, 3, 2, 1]
+    # Words anywhere: the name, the code, the text of a party; case and diacritics aside.
+    assert ids(q="lab gmbh") == [6]
+    assert ids(q="da00000003") == [3]
+    # Several states or types: any of them. A type not known is 0.
+    assert ids(**mine, state=[3]) == [4]
+    assert ids(**mine, state=[7, 3]) == [4, 3, 2, 1]
+    assert ids(**mine, contract_type=[0]) == [4, 3, 2, 1]
+    assert ids(**mine, contract_type=[1, 2]) == []
+    # From the lower value, under the higher one.
+    assert ids(**mine, value_min=1000, value_max=2000) == [1]
+
+
+def test_the_list_of_one_party_says_what_the_filters_keep_of_it(client):
+    def overview(**params):
+        return client.get("/v1/direct-purchases/overview", params=params).json()
+
+    town = overview(buyer=TOWN_HALL, scope="buyer")
+    found = town["summary"]
+    assert (found["purchases"], found["accepted"], found["value"]) == (4, 3, 3500)
+    assert town["whole"] == 4
+    assert town["last_day_held"] == "2026-10-07"
+    # Two days apart: drawn per day, only the accepted purchases counted in totals.
+    assert town["step"] == "day"
+    assert [(p["start"], p["accepted"], p["value"]) for p in town["points"]] == [
+        ("2026-10-05", 1, 1000),
+        ("2026-10-06", 2, 2500),
+    ]
+    assert town["party"] == "supplier"
+    assert [(p["cui"], p["value"]) for p in town["parties"]] == [(BUILDER, 3000), (STATIONER, 500)]
+    assert town["others"] == {"parties": 0, "value": 0}
+    assert [(o["value"], o["purchases"]) for o in town["states"]] == [(7, 3), (3, 1)]
+    assert [(o["value"], o["purchases"]) for o in town["contract_types"]] == [(0, 4)]
+    assert [b["purchases"] for b in town["bands"]][:4] == [1, 2, 1, 0]
+    assert town["bands"][-1] == {"start": 900400, "end": None, "purchases": 0}
+    assert town["without"] == []
+
+    # An option is counted under every filter but its own.
+    some = overview(buyer=TOWN_HALL, scope="buyer", supplier=STATIONER, state=7)
+    assert (some["summary"]["purchases"], some["whole"]) == (1, 4)
+    assert [(o["value"], o["purchases"]) for o in some["states"]] == [(3, 1), (7, 1)]
+
+    # Nothing found: what each filter alone keeps out, never the party of the list.
+    empty = overview(buyer=TOWN_HALL, scope="buyer", supplier=STATIONER, state=7, value_min=5000)
+    assert empty["summary"]["purchases"] == 0
+    assert empty["points"] == []
+    assert empty["without"] == [
+        {"param": "supplier", "purchases": 0},
+        {"param": "state", "purchases": 1},
+        {"param": "value_min", "purchases": 1},
+    ]
+
+    # A purchase above the limit is in no chart; a party with no CUI is among the others.
+    hospital = overview(buyer=HOSPITAL, scope="buyer")
+    assert (hospital["summary"]["value"], hospital["parties"]) == (700, [])
+    assert hospital["others"] == {"parties": 1, "value": 700}
+    # The list of a supplier names the buyers.
+    assert overview(supplier=BUILDER, scope="supplier")["party"] == "buyer"
+
+
+def test_the_typeahead_filters_offer_what_the_list_holds(client):
+    def parties(**params):
+        found = client.get("/v1/direct-purchases/parties", params=params).json()
+        return [(p["cui"], p["purchases"]) for p in found]
+
+    assert parties(buyer=TOWN_HALL, side="supplier") == [(BUILDER, 2), (STATIONER, 2)]
+    assert parties(buyer=TOWN_HALL, side="supplier", find="birotica") == [(STATIONER, 2)]
+    assert parties(buyer=TOWN_HALL, side="supplier", find=str(BUILDER)) == [(BUILDER, 2)]
+    # The side's own filter is left out, so the other options stay.
+    assert len(parties(buyer=TOWN_HALL, supplier=BUILDER, side="supplier")) == 2
+
+    def codes(**params):
+        found = client.get("/v1/direct-purchases/cpv-codes", params=params).json()
+        return [(c["code"], c["purchases"]) for c in found]
+
+    assert codes(buyer=TOWN_HALL) == [("30192000-1", 3), ("45233140-2", 1)]
+    assert codes(buyer=TOWN_HALL, find="4523") == [("45233140-2", 1)]
+
+
+def test_the_list_of_one_party_downloads_in_its_order(client):
+    answer = client.get(
+        "/v1/direct-purchases",
+        params={"buyer": TOWN_HALL, "sort": "value", "format": "csv"},
+    )
+    lines = answer.text.lstrip("\ufeff").splitlines()
+    assert lines[0].startswith("code,finalized_at,name")
+    assert [line.split(",")[0] for line in lines[1:]] == [
+        "DA00000004",
+        "DA00000002",
+        "DA00000001",
+        "DA00000003",
+    ]
+    # The whole register is not a file.
+    assert client.get("/v1/direct-purchases", params={"format": "csv"}).status_code == 400
+
+
 GOODS, SERVICES, WORKS = 1, 2, 3
 
 
@@ -1117,12 +1223,31 @@ SITE_CALLS = (
     f"/v1/search?q={BUILDER}&limit=30",
     "/v1/search?q=12345674&limit=30",
     f"/v1/institutions/{TOWN_HALL}?partners=10",
-    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
-    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=value&state=7&limit=20&offset=0",
+    # The list of direct purchases of an entity page: a page of it and its overview, in
+    # the list's own order, sorted by value both ways, filtered by state, emptied by three
+    # filters and given back by removing one, filtered by a supplier from the chart, and
+    # the options of the supplier filter.
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&scope=buyer",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=value&order=asc&limit=25&offset=0",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&state=7&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&state=7&scope=buyer",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&supplier={STATIONER}&state=7&value_min=5000&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&supplier={STATIONER}&state=7"
+    "&value_min=5000&scope=buyer",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&supplier={STATIONER}&value_min=5000&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&supplier={STATIONER}&value_min=5000"
+    "&scope=buyer",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&supplier={BUILDER}&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&supplier={BUILDER}&scope=buyer",
+    f"/v1/direct-purchases/parties?buyer={TOWN_HALL}&side=supplier",
     f"/v1/suppliers/{BUILDER}?partners=10",
-    f"/v1/direct-purchases?supplier={BUILDER}&sort=newest&limit=20&offset=0",
+    f"/v1/direct-purchases?supplier={BUILDER}&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?supplier={BUILDER}&scope=supplier",
     "/v1/institutions/12345674?partners=10",
-    "/v1/direct-purchases?buyer=12345674&sort=newest&limit=20&offset=0",
+    "/v1/direct-purchases?buyer=12345674&sort=date&order=desc&limit=25&offset=0",
+    "/v1/direct-purchases/overview?buyer=12345674&scope=buyer",
     "/v1/rankings/suppliers?limit=20",
     "/v1/rankings/institutions?limit=20",
     "/v1/datasets",
@@ -1150,7 +1275,8 @@ SITE_CALLS = (
     f"/v1/institutions/{HOSPITAL}/contracts",
     f"/v1/institutions/{HOSPITAL}/budget",
     f"/v1/award-contracts?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
-    f"/v1/direct-purchases?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
+    f"/v1/direct-purchases?buyer={HOSPITAL}&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={HOSPITAL}&scope=buyer",
     # Places: the counties, one county, one commune, a search by name and by village.
     "/v1/places",
     "/v1/places/gorj",

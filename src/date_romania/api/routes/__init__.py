@@ -16,6 +16,7 @@ from date_romania.api.routes import (
     pnrr,
     programme_project,
     programmes,
+    purchase_list,
     purchases,
     rankings,
     reports,
@@ -27,6 +28,8 @@ for module in (
     stats,
     entities,
     budget,
+    # Before `purchases`, whose /direct-purchases/{id} would take /direct-purchases/overview.
+    purchase_list,
     purchases,
     rankings,
     patterns,

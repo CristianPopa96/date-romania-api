@@ -307,15 +307,37 @@
     }
    }
   },
-  "/v1/direct-purchases": {
+  "/v1/direct-purchases/overview": {
    "get": {
     "tags": [
      "direct purchases"
     ],
-    "summary": "Direct Purchases",
-    "description": "Direct purchases by finalization day, newest or largest first.",
-    "operationId": "direct_purchases_v1_direct_purchases_get",
+    "summary": "Direct Purchases Overview",
+    "description": "The list of direct purchases under the filters given, in figures: the summary, accepted\nvalue per month (or per day), the largest parties, the options of each choice filter and\nthe purchases by value band.",
+    "operationId": "direct_purchases_overview_v1_direct_purchases_overview_get",
     "parameters": [
+     {
+      "name": "scope",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "buyer",
+          "supplier"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The party whose list this is: the figures say what part of it the filters keep, and the chart of parties names the other side.",
+       "title": "Scope"
+      },
+      "description": "The party whose list this is: the figures say what part of it the filters keep, and the chart of parties names the other side."
+     },
      {
       "name": "buyer",
       "in": "query",
@@ -353,23 +375,23 @@
       "description": "CUI of the supplier."
      },
      {
-      "name": "cpv",
+      "name": "q",
       "in": "query",
       "required": false,
       "schema": {
        "anyOf": [
         {
          "type": "string",
-         "maxLength": 10
+         "maxLength": 100
         },
         {
          "type": "null"
         }
        ],
-       "description": "Start of a CPV code, e.g. 4523.",
-       "title": "Cpv"
+       "description": "Words of the name, the DA code or either party.",
+       "title": "Q"
       },
-      "description": "Start of a CPV code, e.g. 4523."
+      "description": "Words of the name, the DA code or either party."
      },
      {
       "name": "state",
@@ -378,16 +400,97 @@
       "schema": {
        "anyOf": [
         {
-         "type": "integer"
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
         },
         {
          "type": "null"
         }
        ],
-       "description": "SEAP state id; 7 is accepted.",
+       "description": "SEAP state ids, any of them; 7 is accepted.",
        "title": "State"
       },
-      "description": "SEAP state id; 7 is accepted."
+      "description": "SEAP state ids, any of them; 7 is accepted."
+     },
+     {
+      "name": "contract_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them.",
+       "title": "Contract Type"
+      },
+      "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei without VAT, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei without VAT, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
       "name": "date_from",
@@ -426,19 +529,585 @@
        "title": "Date To"
       },
       "description": "A day in Romanian time, YYYY-MM-DD."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PurchaseOverview"
+        }
+       }
+      }
      },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/direct-purchases/parties": {
+   "get": {
+    "tags": [
+     "direct purchases"
+    ],
+    "summary": "Direct Purchase Parties",
+    "description": "The parties on one side of the purchases the other filters give, most purchases first:\nthe options of a typeahead filter.",
+    "operationId": "direct_purchase_parties_v1_direct_purchases_parties_get",
+    "parameters": [
+     {
+      "name": "side",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "enum": [
+        "buyer",
+        "supplier"
+       ],
+       "type": "string",
+       "description": "The side to list.",
+       "title": "Side"
+      },
+      "description": "The side to list."
+     },
+     {
+      "name": "find",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the name, or the CUI.",
+       "title": "Find"
+      },
+      "description": "Words of the name, or the CUI."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the supplier.",
+       "title": "Supplier"
+      },
+      "description": "CUI of the supplier."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the name, the DA code or either party.",
+       "title": "Q"
+      },
+      "description": "Words of the name, the DA code or either party."
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "SEAP state ids, any of them; 7 is accepted.",
+       "title": "State"
+      },
+      "description": "SEAP state ids, any of them; 7 is accepted."
+     },
+     {
+      "name": "contract_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them.",
+       "title": "Contract Type"
+      },
+      "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei without VAT, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei without VAT, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/PartyOption"
+         },
+         "title": "Response Direct Purchase Parties V1 Direct Purchases Parties Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/direct-purchases/cpv-codes": {
+   "get": {
+    "tags": [
+     "direct purchases"
+    ],
+    "summary": "Direct Purchase Cpv Codes",
+    "description": "The CPV codes of the purchases the other filters give, most purchases first: the\noptions of the CPV filter.",
+    "operationId": "direct_purchase_cpv_codes_v1_direct_purchases_cpv_codes_get",
+    "parameters": [
+     {
+      "name": "find",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The start of a code, or words of its name.",
+       "title": "Find"
+      },
+      "description": "The start of a code, or words of its name."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the supplier.",
+       "title": "Supplier"
+      },
+      "description": "CUI of the supplier."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the name, the DA code or either party.",
+       "title": "Q"
+      },
+      "description": "Words of the name, the DA code or either party."
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "SEAP state ids, any of them; 7 is accepted.",
+       "title": "State"
+      },
+      "description": "SEAP state ids, any of them; 7 is accepted."
+     },
+     {
+      "name": "contract_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them.",
+       "title": "Contract Type"
+      },
+      "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei without VAT, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei without VAT, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/CpvOption"
+         },
+         "title": "Response Direct Purchase Cpv Codes V1 Direct Purchases Cpv Codes Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/direct-purchases": {
+   "get": {
+    "tags": [
+     "direct purchases"
+    ],
+    "summary": "Direct Purchases",
+    "description": "Direct purchases under the filters given, by finalization day, value or party.\n\nAs csv, the whole list in the same order; a file needs a buyer or a supplier.",
+    "operationId": "direct_purchases_v1_direct_purchases_get",
+    "parameters": [
      {
       "name": "sort",
       "in": "query",
       "required": false,
       "schema": {
        "enum": [
-        "newest",
-        "value"
+        "date",
+        "value",
+        "supplier",
+        "buyer",
+        "newest"
        ],
        "type": "string",
-       "default": "newest",
+       "description": "The finalization day, the closing value or a party's name; `newest` is the day, as before.",
+       "default": "date",
        "title": "Sort"
+      },
+      "description": "The finalization day, the closing value or a party's name; `newest` is the day, as before."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
       }
      },
      {
@@ -463,6 +1132,214 @@
        "default": 0,
        "title": "Offset"
       }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "json",
+        "csv"
+       ],
+       "type": "string",
+       "description": "csv gives the whole list as a file.",
+       "default": "json",
+       "title": "Format"
+      },
+      "description": "csv gives the whole list as a file."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the supplier.",
+       "title": "Supplier"
+      },
+      "description": "CUI of the supplier."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the name, the DA code or either party.",
+       "title": "Q"
+      },
+      "description": "Words of the name, the DA code or either party."
+     },
+     {
+      "name": "state",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "SEAP state ids, any of them; 7 is accepted.",
+       "title": "State"
+      },
+      "description": "SEAP state ids, any of them; 7 is accepted."
+     },
+     {
+      "name": "contract_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them.",
+       "title": "Contract Type"
+      },
+      "description": "1 goods, 2 services, 3 works, 0 for a type not known; any of them."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei without VAT, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei without VAT, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei without VAT, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
      }
     ],
     "responses": {
@@ -2767,6 +3644,37 @@
     ],
     "title": "AwardNoticeOut"
    },
+   "Band": {
+    "properties": {
+     "start": {
+      "type": "number",
+      "title": "Start"
+     },
+     "end": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "End"
+     },
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases"
+     }
+    },
+    "type": "object",
+    "required": [
+     "start",
+     "end",
+     "purchases"
+    ],
+    "title": "Band",
+    "description": "Purchases whose closing value is from `start` up to `end` (excluded; null: no end)."
+   },
    "Capital": {
     "properties": {
      "amount": {
@@ -3384,6 +4292,36 @@
      "name"
     ],
     "title": "CpvDivision"
+   },
+   "CpvOption": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases"
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name",
+     "purchases"
+    ],
+    "title": "CpvOption"
    },
    "Dataset": {
     "properties": {
@@ -5208,6 +6146,45 @@
     ],
     "title": "NoticeDetail"
    },
+   "Option": {
+    "properties": {
+     "value": {
+      "type": "integer",
+      "title": "Value"
+     },
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "purchases"
+    ],
+    "title": "Option",
+    "description": "One option of a choice filter, with the purchases it leaves under the other filters."
+   },
+   "Others": {
+    "properties": {
+     "parties": {
+      "type": "integer",
+      "title": "Parties",
+      "description": "How many other parties, told apart by CUI or by text."
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "parties",
+     "value"
+    ],
+    "title": "Others",
+    "description": "The rest of the accepted purchases after the largest parties."
+   },
    "Partner": {
     "properties": {
      "cui": {
@@ -5241,6 +6218,35 @@
      "value"
     ],
     "title": "Partner"
+   },
+   "PartyOption": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     },
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind",
+     "purchases"
+    ],
+    "title": "PartyOption"
    },
    "Period": {
     "properties": {
@@ -6563,6 +7569,32 @@
     ],
     "title": "PnrrTopRecipient"
    },
+   "Point": {
+    "properties": {
+     "start": {
+      "type": "string",
+      "format": "date",
+      "title": "Start",
+      "description": "The first day of the month, or the day."
+     },
+     "accepted": {
+      "type": "integer",
+      "title": "Accepted"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "start",
+     "accepted",
+     "value"
+    ],
+    "title": "Point",
+    "description": "Accepted purchases counted in totals, in one month or one day."
+   },
    "Population": {
     "properties": {
      "people": {
@@ -7728,6 +8760,116 @@
     "title": "PurchaseItem",
     "description": "One line of a direct purchase, as the buyer listed it."
    },
+   "PurchaseOverview": {
+    "properties": {
+     "summary": {
+      "$ref": "#/components/schemas/Summary"
+     },
+     "whole": {
+      "type": "integer",
+      "title": "Whole",
+      "description": "Purchases of the same buyer or supplier, with no filter."
+     },
+     "last_day_held": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day Held",
+      "description": "The newest day collected: a month or day after it is not over yet."
+     },
+     "step": {
+      "type": "string",
+      "enum": [
+       "month",
+       "day"
+      ],
+      "title": "Step",
+      "description": "Months, or days when the purchases found span under two months."
+     },
+     "points": {
+      "items": {
+       "$ref": "#/components/schemas/Point"
+      },
+      "type": "array",
+      "title": "Points"
+     },
+     "party": {
+      "type": "string",
+      "enum": [
+       "supplier",
+       "buyer"
+      ],
+      "title": "Party",
+      "description": "The side `parties` lists: the other side of the buyer or supplier asked."
+     },
+     "parties": {
+      "items": {
+       "$ref": "#/components/schemas/Partner"
+      },
+      "type": "array",
+      "title": "Parties",
+      "description": "The largest by value, at most five."
+     },
+     "others": {
+      "$ref": "#/components/schemas/Others"
+     },
+     "states": {
+      "items": {
+       "$ref": "#/components/schemas/Option"
+      },
+      "type": "array",
+      "title": "States",
+      "description": "SEAP's states, most purchases first."
+     },
+     "contract_types": {
+      "items": {
+       "$ref": "#/components/schemas/Option"
+      },
+      "type": "array",
+      "title": "Contract Types",
+      "description": "1 goods, 2 services, 3 works, 0 for a purchase whose type is not known."
+     },
+     "bands": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Bands",
+      "description": "Purchases by closing value, whatever their state."
+     },
+     "without": {
+      "items": {
+       "$ref": "#/components/schemas/Without"
+      },
+      "type": "array",
+      "title": "Without",
+      "description": "Only when no purchase is found: what each filter given would leave out if it alone were removed, in the order of the parameters."
+     }
+    },
+    "type": "object",
+    "required": [
+     "summary",
+     "whole",
+     "last_day_held",
+     "step",
+     "points",
+     "party",
+     "parties",
+     "others",
+     "states",
+     "contract_types",
+     "bands",
+     "without"
+    ],
+    "title": "PurchaseOverview",
+    "description": "The list of direct purchases under the filters chosen, in figures.\n\nEvery figure counts the rows the filters give; `value` and the charts only the accepted\npurchases at or under their legal limit, as every total does."
+   },
    "PurchasePage": {
     "properties": {
      "total": {
@@ -8885,6 +10027,25 @@
      "country"
     ],
     "title": "Winner"
+   },
+   "Without": {
+    "properties": {
+     "param": {
+      "type": "string",
+      "title": "Param"
+     },
+     "purchases": {
+      "type": "integer",
+      "title": "Purchases"
+     }
+    },
+    "type": "object",
+    "required": [
+     "param",
+     "purchases"
+    ],
+    "title": "Without",
+    "description": "How many purchases one filter alone keeps out, for a list it leaves empty."
    }
   }
  }
