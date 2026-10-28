@@ -9,12 +9,16 @@ from typing import Literal
 
 from pydantic import Field
 
+from date_romania.api.schemas.awards import Contract
 from date_romania.api.schemas.common import Answer, EntityRef, Source
+from date_romania.api.schemas.purchases import Purchase
 
 EuStatus = Literal["in_progress", "finished", "terminated"]
 LinkConfidence = Literal["sure", "probable"]
 # How it was tied (see eu_links.py).
 LinkMethod = Literal["cui-in-list", "administration-name+place", "name+place", "company-name"]
+# How a SEAP record was tied to a project (see eu_seap_links.py).
+SeapLinkMethod = Literal["smis-in-text", "financing-number+buyer"]
 
 
 class EuProgramme(Answer):
@@ -84,3 +88,34 @@ class EuProject(EuProjectRow):
     )
     payments_source: Source | None
     source: Source
+
+
+class SeapLink(Answer):
+    cited: str = Field(
+        description="What SEAP's text cites, as written: '341497', '12321/26.08.2024'."
+    )
+    method: SeapLinkMethod
+    confidence: LinkConfidence = Field(description="Always probable: the buyer's own text.")
+
+
+class EuSeapContract(SeapLink):
+    contract: Contract
+
+
+class EuSeapPurchase(SeapLink):
+    purchase: Purchase
+
+
+class EuSeapLinks(Answer):
+    """The SEAP records whose text cites a project. Incomplete by nature: SEAP has no field
+    for the project, and many buyers never write it."""
+
+    contracts_total: int
+    contracts: list[EuSeapContract] = Field(
+        description="The contracts of the award notices tied, in a notice still in force, "
+        "the newest first, one page of them. A framework agreement is a ceiling, never a sum "
+        "spent."
+    )
+    purchases: list[EuSeapPurchase] = Field(
+        description="The accepted direct purchases tied, the newest first, all of them."
+    )

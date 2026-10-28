@@ -7,7 +7,7 @@ from datetime import date
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from date_romania import places
+from date_romania import eu_seap_links, places
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, record_parse, store_document, stored_documents
 from date_romania.collectors.pnrr import fetch
@@ -80,6 +80,8 @@ def _parse_and_load(session: Session, day: date, docs: dict[str, SourceDocument]
         found = parsed.get(endpoint, Parsed())
         record_parse(doc, found.rejected, PARSER_VERSION)
     load(session, {endpoint: (parsed[endpoint], docs[endpoint].id) for endpoint in parsed})
+    # Loading the contracts again took their SEAP links with them.
+    eu_seap_links.link(session)
     session.commit()
     contracts = parsed[CONTRACTS]
     log.info(

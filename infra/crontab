@@ -36,6 +36,11 @@
 # not held yet. About ten small requests to find them; a list is fetched only when new.
 15 9 * * 1 dr collect eu-projects
 
+# Every day at 09:45 UTC, after the SEAP jobs and the PNRR edition: the notices and direct
+# purchases whose text cites an EU project held, tied again from what is held (no request,
+# a few seconds). The two collectors of EU projects also tie them after every load.
+45 9 * * * dr link eu-seap
+
 # On the 1st of every month at 09:30 UTC: the Anghel Saligny payment files and SEAP's
 # contract exports (data.gov.ro) not held yet. The ministry adds a payment file about
 # monthly and SEAP an export each quarter; a file already held is not downloaded again,

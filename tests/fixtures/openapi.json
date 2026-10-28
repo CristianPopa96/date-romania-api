@@ -2133,6 +2133,138 @@
     }
    }
   },
+  "/v1/programmes/eu-funds/projects/{smis}/seap": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Eu Project Seap",
+    "description": "The SEAP contracts (`limit` and `offset` page them) and direct purchases whose text\ncites the project's SMIS code.",
+    "operationId": "eu_project_seap_v1_programmes_eu_funds_projects__smis__seap_get",
+    "parameters": [
+     {
+      "name": "smis",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Smis"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuSeapLinks"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/pnrr/contracts/{contract_id}/seap": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Pnrr Contract Seap",
+    "description": "The SEAP contracts and direct purchases of the beneficiary whose text cites the\ncontract's number.",
+    "operationId": "pnrr_contract_seap_v1_programmes_pnrr_contracts__contract_id__seap_get",
+    "parameters": [
+     {
+      "name": "contract_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Contract Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuSeapLinks"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/places": {
    "get": {
     "tags": [
@@ -4023,6 +4155,112 @@
      "status_written"
     ],
     "title": "EuProjectRow"
+   },
+   "EuSeapContract": {
+    "properties": {
+     "cited": {
+      "type": "string",
+      "title": "Cited",
+      "description": "What SEAP's text cites, as written: '341497', '12321/26.08.2024'."
+     },
+     "method": {
+      "type": "string",
+      "enum": [
+       "smis-in-text",
+       "financing-number+buyer"
+      ],
+      "title": "Method"
+     },
+     "confidence": {
+      "type": "string",
+      "enum": [
+       "sure",
+       "probable"
+      ],
+      "title": "Confidence",
+      "description": "Always probable: the buyer's own text."
+     },
+     "contract": {
+      "$ref": "#/components/schemas/Contract"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cited",
+     "method",
+     "confidence",
+     "contract"
+    ],
+    "title": "EuSeapContract"
+   },
+   "EuSeapLinks": {
+    "properties": {
+     "contracts_total": {
+      "type": "integer",
+      "title": "Contracts Total"
+     },
+     "contracts": {
+      "items": {
+       "$ref": "#/components/schemas/EuSeapContract"
+      },
+      "type": "array",
+      "title": "Contracts",
+      "description": "The contracts of the award notices tied, in a notice still in force, the newest first, one page of them. A framework agreement is a ceiling, never a sum spent."
+     },
+     "purchases": {
+      "items": {
+       "$ref": "#/components/schemas/EuSeapPurchase"
+      },
+      "type": "array",
+      "title": "Purchases",
+      "description": "The accepted direct purchases tied, the newest first, all of them."
+     }
+    },
+    "type": "object",
+    "required": [
+     "contracts_total",
+     "contracts",
+     "purchases"
+    ],
+    "title": "EuSeapLinks",
+    "description": "The SEAP records whose text cites a project. Incomplete by nature: SEAP has no field\nfor the project, and many buyers never write it."
+   },
+   "EuSeapPurchase": {
+    "properties": {
+     "cited": {
+      "type": "string",
+      "title": "Cited",
+      "description": "What SEAP's text cites, as written: '341497', '12321/26.08.2024'."
+     },
+     "method": {
+      "type": "string",
+      "enum": [
+       "smis-in-text",
+       "financing-number+buyer"
+      ],
+      "title": "Method"
+     },
+     "confidence": {
+      "type": "string",
+      "enum": [
+       "sure",
+       "probable"
+      ],
+      "title": "Confidence",
+      "description": "Always probable: the buyer's own text."
+     },
+     "purchase": {
+      "$ref": "#/components/schemas/Purchase"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cited",
+     "method",
+     "confidence",
+     "purchase"
+    ],
+    "title": "EuSeapPurchase"
    },
    "HTTPValidationError": {
     "properties": {
