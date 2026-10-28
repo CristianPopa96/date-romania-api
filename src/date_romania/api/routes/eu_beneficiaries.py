@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from date_romania.api.routes.common import Db, ref
 from date_romania.api.routes.eu_projects import lists_source
-from date_romania.api.routes.pnrr import edition_source
+from date_romania.api.routes.pnrr_common import edition_source
 from date_romania.api.schemas import (
     EuBeneficiaryFunds,
     EuBeneficiaryPnrr,
