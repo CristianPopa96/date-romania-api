@@ -1206,6 +1206,13 @@ SITE_CALLS = (
     "/v1/programmes/eu-funds/projects?status=finished&limit=20&offset=0",
     "/v1/programmes/eu-funds/projects?q=zzzz&limit=20&offset=0",
     f"/v1/programmes/eu-funds/projects?q={eu_seed.POR}&limit=20&offset=0",
+    # The EU money of a beneficiary, on its institution, supplier and place pages.
+    f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}",
+    f"/v1/programmes/eu-beneficiaries/{HOSPITAL}",
+    f"/v1/programmes/eu-beneficiaries/{BUILDER}",
+    f"/v1/programmes/eu-funds/projects?beneficiary={TOWN_HALL}&limit=20&offset=0",
+    f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&limit=20&offset=0",
+    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&limit=20&offset=0",
     # One project per kind of beneficiary tie and payments, and one not held.
     f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}",
     f"/v1/programmes/eu-funds/projects/{eu_seed.POR}",
@@ -1371,3 +1378,28 @@ def test_a_pnrr_contract_lists_the_purchases_of_its_beneficiary_that_cite_it(cli
     assert other["purchases"] == []
     # A natural person's contract has no page, nor its SEAP records.
     assert client.get(f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}/seap").status_code == 404
+
+
+def test_a_beneficiary_has_its_eu_money_of_both_kinds_apart(client):
+    town = client.get(f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}").json()
+    assert town["entity"]["cui"] == TOWN_HALL
+    # Its cohesion projects by programme, each at its own list's day.
+    assert [(p["code"], p["projects"], p["cut_off"]) for p in town["cohesion"]] == [
+        ("POR", 1, "2025-08-31")
+    ]
+    assert town["cohesion_source"]["documents"] == 1
+    # Its PNRR contracts, and every payment it received, on any measure.
+    pnrr = town["pnrr"]
+    assert (pnrr["contracts"], pnrr["total"]) == (2, 6500000)
+    assert (pnrr["paid"], pnrr["payments"]) == (2300000, 3)
+    assert (pnrr["first_day"], pnrr["last_day"]) == ("2025-12-19", "2026-10-02")
+    assert pnrr["edition"] == "2026-10-15"
+    hospital = client.get(f"/v1/programmes/eu-beneficiaries/{HOSPITAL}").json()
+    assert [p["code"] for p in hospital["cohesion"]] == ["PEO", "PS"]
+    # A company with nothing of either kind.
+    builder = client.get(f"/v1/programmes/eu-beneficiaries/{BUILDER}").json()
+    assert (builder["cohesion"], builder["cohesion_source"], builder["pnrr"]) == ([], None, None)
+    stationer = client.get(f"/v1/programmes/eu-beneficiaries/{STATIONER}").json()
+    assert stationer["cohesion"] == []
+    assert stationer["pnrr"]["contracts"] == 1
+    assert client.get("/v1/programmes/eu-beneficiaries/361684").status_code == 404

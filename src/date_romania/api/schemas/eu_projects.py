@@ -119,3 +119,32 @@ class EuSeapLinks(Answer):
     purchases: list[EuSeapPurchase] = Field(
         description="The accepted direct purchases tied, the newest first, all of them."
     )
+
+
+class EuBeneficiaryPnrr(Answer):
+    """A beneficiary's PNRR contracts and the payments it received, from one dashboard
+    edition. The payments name the beneficiary and a measure, never the contract: they are
+    counted for the beneficiary, not shared out among its contracts."""
+
+    contracts: int
+    total: float | None = Field(description="Lei, its contracts' values added up.")
+    paid: float = Field(description="Lei paid to it on every measure.")
+    payments: int
+    first_day: date | None
+    last_day: date | None
+    edition: date = Field(description="The day of the dashboard edition held.")
+    source: Source
+
+
+class EuBeneficiaryFunds(Answer):
+    """The EU money of one beneficiary, of both kinds, never added together: its cohesion
+    projects by programme, each at its own list's day, and its PNRR contracts and
+    payments. The projects and contracts themselves are listed by
+    `/programmes/eu-funds/projects` and `/programmes/pnrr/contracts`, by `beneficiary`."""
+
+    entity: EntityRef
+    cohesion: list[EuProgramme] = Field(
+        description="Its projects in each programme, tied by eu_links.py; empty when none."
+    )
+    cohesion_source: Source | None = Field(description="Null when it has no project.")
+    pnrr: EuBeneficiaryPnrr | None = Field(description="Null when it has no contract or payment.")

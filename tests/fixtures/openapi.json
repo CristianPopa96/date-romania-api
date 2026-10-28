@@ -2265,6 +2265,49 @@
     }
    }
   },
+  "/v1/programmes/eu-beneficiaries/{cui}": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Beneficiary",
+    "description": "What one beneficiary holds of both kinds of EU money. 404 when the CUI is not held.",
+    "operationId": "beneficiary_v1_programmes_eu_beneficiaries__cui__get",
+    "parameters": [
+     {
+      "name": "cui",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Cui"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuBeneficiaryFunds"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/places": {
    "get": {
     "tags": [
@@ -3635,6 +3678,127 @@
      "method"
     ],
     "title": "EuBeneficiary"
+   },
+   "EuBeneficiaryFunds": {
+    "properties": {
+     "entity": {
+      "$ref": "#/components/schemas/EntityRef"
+     },
+     "cohesion": {
+      "items": {
+       "$ref": "#/components/schemas/EuProgramme"
+      },
+      "type": "array",
+      "title": "Cohesion",
+      "description": "Its projects in each programme, tied by eu_links.py; empty when none."
+     },
+     "cohesion_source": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Source"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null when it has no project."
+     },
+     "pnrr": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EuBeneficiaryPnrr"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null when it has no contract or payment."
+     }
+    },
+    "type": "object",
+    "required": [
+     "entity",
+     "cohesion",
+     "cohesion_source",
+     "pnrr"
+    ],
+    "title": "EuBeneficiaryFunds",
+    "description": "The EU money of one beneficiary, of both kinds, never added together: its cohesion\nprojects by programme, each at its own list's day, and its PNRR contracts and\npayments. The projects and contracts themselves are listed by\n`/programmes/eu-funds/projects` and `/programmes/pnrr/contracts`, by `beneficiary`."
+   },
+   "EuBeneficiaryPnrr": {
+    "properties": {
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total",
+      "description": "Lei, its contracts' values added up."
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid",
+      "description": "Lei paid to it on every measure."
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day"
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     },
+     "edition": {
+      "type": "string",
+      "format": "date",
+      "title": "Edition",
+      "description": "The day of the dashboard edition held."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "contracts",
+     "total",
+     "paid",
+     "payments",
+     "first_day",
+     "last_day",
+     "edition",
+     "source"
+    ],
+    "title": "EuBeneficiaryPnrr",
+    "description": "A beneficiary's PNRR contracts and the payments it received, from one dashboard\nedition. The payments name the beneficiary and a measure, never the contract: they are\ncounted for the beneficiary, not shared out among its contracts."
    },
    "EuFunds": {
     "properties": {

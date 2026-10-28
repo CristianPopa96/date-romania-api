@@ -82,12 +82,19 @@ def eu_funds(session: Db) -> EuFunds:
             for each in PROGRAMMES
             if (row := rows.get(each.code))
         ],
-        source=Source(
-            publisher=EU_PROJECTS.publisher,
-            record=EU_PROJECTS.dataset,
-            url=EU_PROJECTS.list_url,
-            fetched_at=last_fetched(session, EU_PROJECTS),
-            documents=session.scalar(select(func.count(Project.source_document_id.distinct()))),
+        source=lists_source(session),
+    )
+
+
+def lists_source(session: Session, *filters) -> Source:
+    """The MIPE lists behind the projects `filters` pick: how many were read for them."""
+    return Source(
+        publisher=EU_PROJECTS.publisher,
+        record=EU_PROJECTS.dataset,
+        url=EU_PROJECTS.list_url,
+        fetched_at=last_fetched(session, EU_PROJECTS),
+        documents=session.scalar(
+            select(func.count(Project.source_document_id.distinct())).where(*filters)
         ),
     )
 

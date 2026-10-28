@@ -60,14 +60,14 @@ def _text(value: str | None) -> str | None:
     return mask_cnp(value, checked=True)
 
 
-def _edition(session: Session) -> Edition:
+def newest_edition(session: Session) -> Edition:
     edition = session.scalar(select(Edition).order_by(Edition.day.desc()).limit(1))
     if edition is None:
         raise HTTPException(404, "No PNRR edition collected yet")
     return edition
 
 
-def _source(session: Session, edition: Edition) -> Source:
+def edition_source(session: Session, edition: Edition) -> Source:
     """The dashboard edition behind every figure: its files, and when they were taken."""
     return Source(
         publisher=PNRR.publisher,
@@ -104,7 +104,7 @@ def _per_contract():
 def programme(session: Db) -> PnrrProgramme:
     """The plan from the newest dashboard edition held: its totals, its 143 measures and
     the largest final recipients."""
-    edition = _edition(session)
+    edition = newest_edition(session)
     contracts = (
         select(Line.measure_code, func.count(Line.contract_id.distinct()).label("contracts"))
         .group_by(Line.measure_code)
@@ -140,7 +140,7 @@ def programme(session: Db) -> PnrrProgramme:
             )
             for each, entity in top
         ],
-        source=_source(session, edition),
+        source=edition_source(session, edition),
     )
 
 
@@ -185,7 +185,7 @@ def measure(session: Db, code: str) -> PnrrMeasure:
             Payment.measure_code == found.code, Payment.contracts_on_measure == 0
         )
     ).one()
-    edition = _edition(session)
+    edition = newest_edition(session)
     return PnrrMeasure(
         **_measure_row(found, contracts),
         ministry_name=found.ministry_name,
@@ -199,7 +199,7 @@ def measure(session: Db, code: str) -> PnrrMeasure:
             .order_by(Contract.county)
         ).all(),
         edition=edition.day,
-        source=_source(session, edition),
+        source=edition_source(session, edition),
     )
 
 
@@ -307,7 +307,7 @@ def contract(session: Db, contract_id: int) -> PnrrContract:
         .order_by(Line.position)
     ).all()
     doc = session.get(SourceDocument, found.source_document_id)
-    edition = _edition(session)
+    edition = newest_edition(session)
     statuses = {_plain_status(line.status) for line, _ in lines if line.status}
     # A blank figure is one nobody published, as in the list: never a disagreement.
     physical = {line.physical_progress for line, _ in lines if line.physical_progress is not None}

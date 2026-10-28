@@ -34,6 +34,8 @@ from date_romania.api.schemas.common import (
 )
 from date_romania.api.schemas.eu_projects import (
     EuBeneficiary,
+    EuBeneficiaryFunds,
+    EuBeneficiaryPnrr,
     EuFunds,
     EuPayment,
     EuProgramme,
@@ -198,6 +200,8 @@ __all__ = [
     "TraceParty",
     "Winner",
     "EuBeneficiary",
+    "EuBeneficiaryFunds",
+    "EuBeneficiaryPnrr",
     "EuFunds",
     "EuPayment",
     "EuProgramme",
