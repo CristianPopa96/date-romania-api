@@ -9,7 +9,7 @@ import httpx
 from sqlalchemy import delete, insert, select
 from sqlalchemy.orm import Session
 
-from date_romania import entities, eu_links, places
+from date_romania import entities, eu_links, eu_seap_links, places
 from date_romania.collectors.eu_projects.discover import Found, discover
 from date_romania.collectors.eu_projects.parse import (
     PARSER_VERSION,
@@ -183,6 +183,7 @@ def collect(session: Session, client: PoliteClient) -> int:
             run.error = f"not read: {', '.join(failed)}; run again to retry them"
         places.locate(session)
         eu_links.link(session)
+        eu_seap_links.link(session)
     return projects
 
 
@@ -210,5 +211,6 @@ def reparse(session: Session) -> int:
             _load_payments(session, doc)
     places.locate(session)
     eu_links.link(session)
+    eu_seap_links.link(session)
     session.commit()
     return len(docs)

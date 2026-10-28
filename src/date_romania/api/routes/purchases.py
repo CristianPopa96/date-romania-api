@@ -33,7 +33,7 @@ router = APIRouter(tags=["direct purchases"])
 Buyer, Supplier = aliased(Entity), aliased(Entity)
 
 
-def _purchases() -> Select:
+def purchases_query() -> Select:
     return (
         select(DirectPurchase, Buyer, Supplier, SourceDocument.fetched_at, SourceDocument.sha256)
         .outerjoin(Buyer, DirectPurchase.buyer_cui == Buyer.cui)
@@ -42,7 +42,7 @@ def _purchases() -> Select:
     )
 
 
-def _purchase(row) -> Purchase:
+def purchase_row(row) -> Purchase:
     purchase, buyer, supplier, fetched_at, sha256 = row
     value = purchase.closing_value
     return Purchase(
@@ -109,13 +109,13 @@ def direct_purchases(
     )
     total = session.scalar(select(func.count()).select_from(DirectPurchase).where(*filters))
     rows = session.execute(
-        _purchases()
+        purchases_query()
         .where(*filters)
         .order_by(*order, DirectPurchase.id.desc())
         .limit(limit)
         .offset(offset)
     )
-    return PurchasePage(total=total, items=[_purchase(row) for row in rows])
+    return PurchasePage(total=total, items=[purchase_row(row) for row in rows])
 
 
 @router.get("/direct-purchases/summary")
@@ -179,8 +179,8 @@ def _detail(session: Db, purchase: Purchase) -> PurchaseDetail | None:
 @router.get("/direct-purchases/{purchase_id}")
 def direct_purchase(session: Db, purchase_id: int) -> PurchaseWithDetail:
     """One direct purchase, by SEAP's own id, with its lines and conditions once collected."""
-    row = session.execute(_purchases().where(DirectPurchase.id == purchase_id)).one_or_none()
+    row = session.execute(purchases_query().where(DirectPurchase.id == purchase_id)).one_or_none()
     if row is None:
         raise HTTPException(404, f"No direct purchase with id {purchase_id}")
-    purchase = _purchase(row)
+    purchase = purchase_row(row)
     return PurchaseWithDetail(**dict(purchase), detail=_detail(session, purchase))

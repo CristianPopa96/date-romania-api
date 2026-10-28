@@ -12,7 +12,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
-from date_romania import eu_links, places, pnias_links, reports
+from date_romania import eu_links, eu_seap_links, places, pnias_links, reports
 from date_romania.collectors import (
     anaf,
     eu_projects,
@@ -271,6 +271,15 @@ def link_eu_projects() -> None:
         count = eu_links.link(session)
         session.commit()
         typer.echo(f"{count} projects tied")
+
+
+@link_app.command("eu-seap")
+def link_eu_seap() -> None:
+    """Tie SEAP notices and direct purchases to the EU projects their text cites."""
+    with Session(get_engine()) as session:
+        count = eu_seap_links.link(session)
+        session.commit()
+        typer.echo(f"{count} links")
 
 
 @link_app.command("pnias")

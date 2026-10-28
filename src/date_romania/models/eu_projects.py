@@ -10,7 +10,17 @@ Text is stored as published (Crispy, 22.10.2026); a route masks personal codes w
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import Date, ForeignKey, Integer, Numeric, SmallInteger, String, Text
+from sqlalchemy import (
+    BigInteger,
+    CheckConstraint,
+    Date,
+    ForeignKey,
+    Integer,
+    Numeric,
+    SmallInteger,
+    String,
+    Text,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from date_romania.models.core import Base
@@ -81,3 +91,35 @@ class EuProjectPayment(Base):
     paid_on: Mapped[date | None] = mapped_column(Date, index=True)
     funding: Mapped[str | None] = mapped_column(Text)
     parser_version: Mapped[int] = mapped_column(SmallInteger)
+
+
+class EuSeapLink(Base):
+    """A SEAP award notice or direct purchase tied to the cohesion project or PNRR contract
+    its text cites (see `eu_seap_links.py`). Built from the tables, never edited: `dr link
+    eu-seap` builds every row again."""
+
+    __tablename__ = "eu_seap_link"
+    __table_args__ = (
+        CheckConstraint("num_nonnulls(smis, pnrr_contract_id) = 1", name="eu_seap_link_project"),
+        CheckConstraint("num_nonnulls(notice_id, purchase_id) = 1", name="eu_seap_link_record"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # The project: a cohesion project, or a PNRR contract.
+    smis: Mapped[int | None] = mapped_column(
+        ForeignKey("eu_project.smis", ondelete="CASCADE"), index=True
+    )
+    pnrr_contract_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("pnrr_contract.id", ondelete="CASCADE"), index=True
+    )
+    # The SEAP record: an award notice (all its contracts), or a direct purchase.
+    notice_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("award_notice.id", ondelete="CASCADE"), index=True
+    )
+    purchase_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("direct_purchase.id", ondelete="CASCADE"), index=True
+    )
+    # What the text cites, as written: '341497', '12321/26.08.2024'.
+    cited: Mapped[str] = mapped_column(String(64))
+    method: Mapped[str] = mapped_column(String(32))
+    confidence: Mapped[str] = mapped_column(String(16))  # probable: never sure

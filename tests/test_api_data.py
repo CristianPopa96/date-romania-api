@@ -15,6 +15,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import delete, select
 
+from date_romania import eu_seap_links
 from date_romania.api import main
 from date_romania.api.main import app
 from date_romania.collectors.jobs import record_skipped
@@ -108,7 +109,8 @@ def add_purchase_detail(session):
     session.add(
         DirectPurchaseDetail(
             purchase_id=3,
-            description="Rechizite pentru primărie",
+            # Its PNRR contract, cited by number: the purchase is tied to it.
+            description="Rechizite pentru primărie, contract de finanțare nr. 12321/26.08.2024",
             payment_condition="OP la 30 de zile de la recepție",
             delivery_condition="La sediul primăriei",
             eu_funded=False,
@@ -231,7 +233,8 @@ def add_award_notices(session):
             eu_funded=True,
             financing_types=["Program / Proiect"],
             eu_funds=["Programul Regional"],
-            eu_project="Proiect cod SMIS 123456",
+            # The town hall's POR project: the notice is tied to it.
+            eu_project="Proiect cod SMIS 118001",
             source_document_id=doc.id,
             parser_version=2,
         )
@@ -320,6 +323,7 @@ def client(session):
     places_seed.seed(session)
     pnrr_seed.seed(session)
     eu_seed.seed(session)
+    eu_seap_links.link(session)
 
     app.dependency_overrides[get_session] = lambda: session
     yield TestClient(app)
@@ -1208,6 +1212,18 @@ SITE_CALLS = (
     f"/v1/programmes/eu-funds/projects/{eu_seed.POCU}",
     f"/v1/programmes/eu-funds/projects/{eu_seed.HEALTH}",
     "/v1/programmes/eu-funds/projects/999999",
+    # The SEAP records tied to a project: some, none.
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap?limit=20&offset=0",
+    # A page past the end: the site goes back to the last page.
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap?limit=20&offset=160",
+    # Saved without its SEAP records, so the site's tests see that call fail.
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POIM}",
+    f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}/seap?limit=20&offset=0",
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POCU}/seap?limit=20&offset=0",
+    f"/v1/programmes/eu-funds/projects/{eu_seed.HEALTH}/seap?limit=20&offset=0",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}/seap?limit=20&offset=0",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}/seap?limit=20&offset=0",
+    f"/v1/programmes/pnrr/contracts/{pnrr_seed.MANY_MEASURES}/seap?limit=20&offset=0",
 )
 # Read once the purchases near their limit are added, so the answers above stay as the
 # pages that use them expect.
@@ -1322,3 +1338,36 @@ def test_a_total_says_how_many_stored_responses_it_is_added_up_from(client, sess
     assert town_hall["sha256"] is None
     contracts = client.get(f"/v1/institutions/{TOWN_HALL}/contracts").json()["source"]
     assert contracts["documents"] == 1
+
+
+def test_a_project_lists_the_seap_records_that_cite_it(client):
+    tied = client.get(f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap").json()
+    # Every contract of the road notice, which cites the project's SMIS code; the
+    # framework agreement among them, marked as not counted.
+    assert tied["contracts_total"] == 4
+    assert [row["contract"]["id"] for row in tied["contracts"]] == [103, 101, 102, 104]
+    assert {row["cited"] for row in tied["contracts"]} == {"118001"}
+    assert {row["method"] for row in tied["contracts"]} == {"smis-in-text"}
+    assert {row["confidence"] for row in tied["contracts"]} == {"probable"}
+    assert [row["contract"]["counted"] for row in tied["contracts"]] == [True, True, False, True]
+    assert tied["purchases"] == []
+    page = client.get(
+        f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap", params={"limit": 2, "offset": 2}
+    ).json()
+    assert [row["contract"]["id"] for row in page["contracts"]] == [102, 104]
+    none = client.get(f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}/seap").json()
+    assert none == {"contracts_total": 0, "contracts": [], "purchases": []}
+    assert client.get("/v1/programmes/eu-funds/projects/999999/seap").status_code == 404
+
+
+def test_a_pnrr_contract_lists_the_purchases_of_its_beneficiary_that_cite_it(client):
+    tied = client.get(f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}/seap").json()
+    assert tied["contracts"] == []
+    (row,) = tied["purchases"]
+    assert row["purchase"]["id"] == 3
+    assert (row["cited"], row["method"]) == ("12321/26.08.2024", "financing-number+buyer")
+    # The hospital's contract 12345 is cited by no one.
+    other = client.get(f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}/seap").json()
+    assert other["purchases"] == []
+    # A natural person's contract has no page, nor its SEAP records.
+    assert client.get(f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}/seap").status_code == 404
