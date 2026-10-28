@@ -3764,6 +3764,182 @@
     }
    }
   },
+  "/v1/programmes/eu-funds/projects/overview": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Eu Projects Overview",
+    "description": "The projects under the filters given, in figures: how many, the value and the amount\npaid per programme (never added across programmes), the options of each choice filter,\nand the projects by value band.",
+    "operationId": "eu_projects_overview_v1_programmes_eu_funds_projects_overview_get",
+    "parameters": [
+     {
+      "name": "scope",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "const": "beneficiary",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary whose list this is: `whole` counts all of its.",
+       "title": "Scope"
+      },
+      "description": "The beneficiary whose list this is: `whole` counts all of its."
+     },
+     {
+      "name": "programme",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Programme codes, e.g. 'POR'; any of them.",
+       "title": "Programme"
+      },
+      "description": "Programme codes, e.g. 'POR'; any of them."
+     },
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "in_progress",
+           "finished",
+           "terminated"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these statuses.",
+       "title": "Status"
+      },
+      "description": "Any of these statuses."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the title or the beneficiary's name, or a SMIS code.",
+       "title": "Q"
+      },
+      "description": "Words of the title or the beneficiary's name, or a SMIS code."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EuProjectOverview"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/programmes/eu-funds": {
    "get": {
     "tags": [
@@ -3792,9 +3968,62 @@
      "programmes"
     ],
     "summary": "Projects",
-    "description": "Projects, the largest first.",
+    "description": "Projects under the filters given, the largest first, or in any column's order.",
     "operationId": "projects_v1_programmes_eu_funds_projects_get",
     "parameters": [
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "paid"
+       ],
+       "type": "string",
+       "description": "The total value, or the amount paid.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The total value, or the amount paid."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     },
      {
       "name": "programme",
       "in": "query",
@@ -3802,16 +4031,19 @@
       "schema": {
        "anyOf": [
         {
-         "type": "string"
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
         },
         {
          "type": "null"
         }
        ],
-       "description": "A programme code, e.g. 'POR'.",
+       "description": "Programme codes, e.g. 'POR'; any of them.",
        "title": "Programme"
       },
-      "description": "A programme code, e.g. 'POR'."
+      "description": "Programme codes, e.g. 'POR'; any of them."
      },
      {
       "name": "beneficiary",
@@ -3838,19 +4070,24 @@
       "schema": {
        "anyOf": [
         {
-         "enum": [
-          "in_progress",
-          "finished",
-          "terminated"
-         ],
-         "type": "string"
+         "type": "array",
+         "items": {
+          "enum": [
+           "in_progress",
+           "finished",
+           "terminated"
+          ],
+          "type": "string"
+         }
         },
         {
          "type": "null"
         }
        ],
+       "description": "Any of these statuses.",
        "title": "Status"
-      }
+      },
+      "description": "Any of these statuses."
      },
      {
       "name": "q",
@@ -3867,33 +4104,48 @@
          "type": "null"
         }
        ],
-       "description": "Part of the title or the beneficiary's name, or a SMIS code.",
+       "description": "Words of the title or the beneficiary's name, or a SMIS code.",
        "title": "Q"
       },
-      "description": "Part of the title or the beneficiary's name, or a SMIS code."
+      "description": "Words of the title or the beneficiary's name, or a SMIS code."
      },
      {
-      "name": "limit",
+      "name": "value_min",
       "in": "query",
       "required": false,
       "schema": {
-       "type": "integer",
-       "maximum": 100,
-       "minimum": 1,
-       "default": 20,
-       "title": "Limit"
-      }
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
      },
      {
-      "name": "offset",
+      "name": "value_max",
       "in": "query",
       "required": false,
       "schema": {
-       "type": "integer",
-       "minimum": 0,
-       "default": 0,
-       "title": "Offset"
-      }
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
      }
     ],
     "responses": {
@@ -6375,6 +6627,66 @@
     ],
     "title": "EuProject"
    },
+   "EuProjectOverview": {
+    "properties": {
+     "summary": {
+      "$ref": "#/components/schemas/EuProjectSummary"
+     },
+     "whole": {
+      "type": "integer",
+      "title": "Whole",
+      "description": "Projects of the same beneficiary, with no other filter."
+     },
+     "programmes": {
+      "items": {
+       "$ref": "#/components/schemas/ProgrammeOption"
+      },
+      "type": "array",
+      "title": "Programmes",
+      "description": "Under every filter but the programme: the options of that filter, and each programme's value and amount paid, most projects first."
+     },
+     "statuses": {
+      "items": {
+       "$ref": "#/components/schemas/StatusOption"
+      },
+      "type": "array",
+      "title": "Statuses"
+     },
+     "other_statuses": {
+      "type": "integer",
+      "title": "Other Statuses",
+      "description": "Projects whose status the lists write in words of their own."
+     },
+     "bands": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Bands",
+      "description": "Projects by total value in lei."
+     },
+     "without": {
+      "items": {
+       "$ref": "#/components/schemas/Without"
+      },
+      "type": "array",
+      "title": "Without",
+      "description": "Only when no project is found: what each filter given would leave out if it alone were removed, in the order of the parameters."
+     }
+    },
+    "type": "object",
+    "required": [
+     "summary",
+     "whole",
+     "programmes",
+     "statuses",
+     "other_statuses",
+     "bands",
+     "without"
+    ],
+    "title": "EuProjectOverview",
+    "description": "The projects under the filters chosen, in figures."
+   },
    "EuProjectPage": {
     "properties": {
      "total": {
@@ -6496,6 +6808,46 @@
      "status_written"
     ],
     "title": "EuProjectRow"
+   },
+   "EuProjectSummary": {
+    "properties": {
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "first_start": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Start",
+      "description": "The earliest start of a project found."
+     },
+     "last_start": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Start"
+     }
+    },
+    "type": "object",
+    "required": [
+     "projects",
+     "first_start",
+     "last_start"
+    ],
+    "title": "EuProjectSummary"
    },
    "EuSeapContract": {
     "properties": {
@@ -9031,6 +9383,65 @@
     "title": "ProgrammeMatch",
     "description": "Payments or projects by whether a SEAP contract was found for them."
    },
+   "ProgrammeOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The programme's code, e.g. 'POR'."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total",
+      "description": "Lei; never add it to another programme's."
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid"
+     },
+     "cut_off": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cut Off",
+      "description": "The day its list counts `paid` up to."
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count",
+     "total",
+     "paid",
+     "cut_off"
+    ],
+    "title": "ProgrammeOption",
+    "description": "One programme of the list under the other filters, with its own figures."
+   },
    "ProgrammePayments": {
     "properties": {
      "county": {
@@ -10613,6 +11024,29 @@
      "source"
     ],
     "title": "Stats"
+   },
+   "StatusOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "in_progress",
+       "finished",
+       "terminated"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "StatusOption"
    },
    "Summary": {
     "properties": {

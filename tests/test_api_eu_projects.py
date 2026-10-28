@@ -103,3 +103,49 @@ def test_the_health_programme_publishes_its_payments_one_by_one(client):
 
 def test_a_project_not_held(client):
     assert client.get(f"{ROOT}/projects/999999").status_code == 404
+
+
+def test_a_beneficiarys_projects_filter_and_sort_over_the_whole_list(client):
+    def smis(**params):
+        page = client.get(f"{ROOT}/projects", params=params).json()
+        return [row["smis"] for row in page["items"]]
+
+    hospital = {"beneficiary": eu_seed.HOSPITAL}
+    assert smis(**hospital) == [HEALTH, PEO]
+    assert smis(**hospital, sort="paid", order="asc") == [PEO, HEALTH]
+    assert smis(**hospital, programme=["PEO", "PS"], status="in_progress") == [HEALTH, PEO]
+    assert smis(**hospital, programme="PEO") == [PEO]
+    assert smis(**hospital, value_max=2_500_000) == [PEO]
+    assert smis(**hospital, q="laboratoarelor spitalului") == [PEO]
+    # The finder's single values are still read.
+    assert smis(status="finished") == [POR]
+
+
+def test_a_beneficiarys_projects_never_add_two_programmes(client):
+    def overview(**params):
+        return client.get(f"{ROOT}/projects/overview", params=params).json()
+
+    found = overview(beneficiary=eu_seed.HOSPITAL, scope="beneficiary")
+    assert (found["summary"]["projects"], found["whole"]) == (2, 2)
+    # Each programme with its own figures and its own day, and no sum across them.
+    assert [(p["value"], p["count"], p["paid"], p["cut_off"]) for p in found["programmes"]] == [
+        ("PEO", 1, 600000.0, "2026-09-30"),
+        ("PS", 1, 900000.0, found["programmes"][1]["cut_off"]),
+    ]
+    assert "total" not in found["summary"]
+    assert [(s["value"], s["count"]) for s in found["statuses"]] == [
+        ("in_progress", 2),
+        ("finished", 0),
+        ("terminated", 0),
+    ]
+    # A status of the list's own words is counted apart.
+    assert overview(programme="POCU")["other_statuses"] == 1
+
+    empty = overview(
+        beneficiary=eu_seed.HOSPITAL, programme="PEO", value_min=5_000_000, scope="beneficiary"
+    )
+    assert empty["summary"]["projects"] == 0
+    assert empty["without"] == [
+        {"param": "programme", "count": 0},
+        {"param": "value_min", "count": 1},
+    ]
