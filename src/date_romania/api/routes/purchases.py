@@ -3,12 +3,14 @@
 from collections.abc import Iterable
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import aliased
 
 from date_romania import money
 from date_romania.api.routes.common import (
+    CSV_CHUNK,
     Db,
     Format,
     Limit,
@@ -110,7 +112,9 @@ def direct_purchases(
     if format == "csv":
         if not {"buyer", "supplier"} & filters.named.keys():
             raise HTTPException(400, "A file of direct purchases needs a buyer or a supplier.")
-        return purchases_csv(purchase_row(row) for row in session.execute(query))
+        # Read as the file is sent, a chunk at a time.
+        found = session.execute(query.execution_options(yield_per=CSV_CHUNK))
+        return purchases_csv(purchase_row(row) for row in found)
     total = session.scalar(select(func.count()).select_from(DirectPurchase).where(*conditions))
     rows = session.execute(query.limit(limit).offset(offset))
     return PurchasePage(total=total, items=[purchase_row(row) for row in rows])
@@ -131,7 +135,7 @@ def direct_purchases_summary(
     return summary(session, *filters)
 
 
-def purchases_csv(purchases: Iterable[Purchase]) -> Response:
+def purchases_csv(purchases: Iterable[Purchase]) -> StreamingResponse:
     """The list as a file; every row names where it was read."""
     header = [
         "code",

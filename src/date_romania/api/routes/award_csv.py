@@ -1,12 +1,14 @@
 """The contract list as a file."""
 
-from fastapi import Response
+from collections.abc import Iterable
+
+from fastapi.responses import StreamingResponse
 
 from date_romania.api.routes.common import cell, csv_file
 from date_romania.api.schemas import Contract
 
 
-def contracts_csv(contracts: list[Contract]) -> Response:
+def contracts_csv(contracts: Iterable[Contract]) -> StreamingResponse:
     """The list as a file; every row names its notice and where it was read."""
     header = [
         "notice_no",

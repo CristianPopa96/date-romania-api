@@ -20,7 +20,7 @@ from date_romania.api.routes.award_common import (
 )
 from date_romania.api.routes.award_csv import contracts_csv
 from date_romania.api.routes.common import Cpv, Db, Format, Limit, Offset, record_source, ref
-from date_romania.api.schemas import AwardNoticeOut, Contract, ContractPage, NoticeDetail
+from date_romania.api.schemas import AwardNoticeOut, ContractPage, NoticeDetail
 from date_romania.models import (
     AwardContract,
     AwardNotice,
@@ -170,9 +170,11 @@ def award_contracts(
     )
     query = contracts().where(*filters).order_by(order, AwardContract.id.desc())
     if format == "csv":
-        found: list[Contract] = []
-        for start in range(0, total, CSV_BATCH):
-            found += rows(session, query.limit(CSV_BATCH).offset(start))
-        return contracts_csv(found)
+        # Read a batch at a time as the file is sent, never the whole list at once.
+        return contracts_csv(
+            contract
+            for start in range(0, total, CSV_BATCH)
+            for contract in rows(session, query.limit(CSV_BATCH).offset(start))
+        )
     page = rows(session, query.limit(limit).offset(offset))
     return ContractPage(total=total, period=period(session), items=page)

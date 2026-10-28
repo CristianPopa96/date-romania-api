@@ -2,11 +2,13 @@
 
 import csv
 import io
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 from datetime import date, datetime
+from itertools import batched
 from typing import Annotated, Literal
 
-from fastapi import Depends, Query, Response
+from fastapi import Depends, Query
+from fastapi.responses import StreamingResponse
 from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
@@ -42,21 +44,40 @@ def containing(text: str) -> ColumnElement[str]:
     return search_text("%" + text.translate(_LIKE_ESCAPES) + "%")
 
 
+# What a spreadsheet program may take for the start of a formula: the four signs, and a
+# tab or a carriage return before one.
+FORMULA_STARTS = "=+-@\t\r"
+# Rows written to a file at a time, so a long list is never held whole in memory.
+CSV_CHUNK = 1_000
+
+
 def cell(text: str | None) -> str | None:
     """A text cell as a spreadsheet may open it: one that starts like a formula gets a
     quote in front, so the program shows it instead of running it."""
-    return f"'{text}" if text and text[0] in "=+-@" else text
+    return f"'{text}" if text and text[0] in FORMULA_STARTS else text
 
 
-def csv_file(header: list[str], rows: Iterable[list], filename: str) -> Response:
+def csv_file(header: list[str], rows: Iterable[list], filename: str) -> StreamingResponse:
     """A whole list as a CSV file, with the mark at the start that makes spreadsheet
-    programs read the diacritics."""
-    out = io.StringIO()
-    writer = csv.writer(out)
-    writer.writerow(header)
-    writer.writerows(rows)
-    return Response(
-        content="﻿" + out.getvalue(),
+    programs read the diacritics. It is sent as it is written, a thousand rows at a time:
+    `rows` should be read from the database as they come (`yield_per`)."""
+
+    def chunks() -> Iterator[str]:
+        out = io.StringIO()
+        writer = csv.writer(out)
+        out.write("\ufeff")
+        writer.writerow(header)
+        for batch in batched(rows, CSV_CHUNK):
+            writer.writerows(batch)
+            yield out.getvalue()
+            out.seek(0)
+            out.truncate()
+        # The rest; with no rows at all, the header alone.
+        if rest := out.getvalue():
+            yield rest
+
+    return StreamingResponse(
+        chunks(),
         media_type="text/csv; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )

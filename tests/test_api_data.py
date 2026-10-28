@@ -1233,6 +1233,10 @@ SITE_CALLS = (
     f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=value&order=asc&limit=25&offset=0",
     f"/v1/direct-purchases?buyer={TOWN_HALL}&state=7&sort=date&order=desc&limit=25&offset=0",
     f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&state=7&scope=buyer",
+    # An old link to "Cele mai mari acceptate" (?ordine=valoare), and a page past the end,
+    # which the site sends back to the last page.
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&state=7&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&sort=date&order=desc&limit=25&offset=200",
     f"/v1/direct-purchases?buyer={TOWN_HALL}&supplier={STATIONER}&state=7&value_min=5000&sort=date&order=desc&limit=25&offset=0",
     f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&supplier={STATIONER}&state=7"
     "&value_min=5000&scope=buyer",
