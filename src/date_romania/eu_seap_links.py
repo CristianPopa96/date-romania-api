@@ -46,7 +46,8 @@ _FINANCING = re.compile(
     r"([0-9A-Z][0-9A-Z._/-]*)",
     re.IGNORECASE,
 )
-# What a text must hold for either rule, to read only those purchases from the database.
+# What a text must hold for either rule, to read only those notices and purchases from
+# the database.
 _HINT = "smis|finan[tţț][aăâ]re"
 
 
@@ -105,6 +106,13 @@ def _notices(session: Session) -> Iterable[tuple[int, int | None, str]]:
         )
         .outerjoin(AwardNoticeDetail, AwardNoticeDetail.notice_id == AwardNotice.id)
         .outerjoin(titles, titles.c.notice_id == AwardNotice.id)
+        .where(
+            or_(
+                AwardNotice.title.op("~*")(_HINT),
+                AwardNoticeDetail.eu_project.op("~*")(_HINT),
+                titles.c.titles.op("~*")(_HINT),
+            )
+        )
     )
     for id_, buyer, *texts in rows:
         yield id_, buyer, " ".join(text for text in texts if text)

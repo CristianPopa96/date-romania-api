@@ -4897,6 +4897,56 @@
    "purchases": []
   }
  },
+ "/v1/programmes/eu-funds/projects/118001/seap?limit=20&offset=160": {
+  "status": 200,
+  "body": {
+   "contracts_total": 4,
+   "contracts": [],
+   "purchases": []
+  }
+ },
+ "/v1/programmes/eu-funds/projects/118003": {
+  "status": 200,
+  "body": {
+   "smis": 118003,
+   "programme": "POIM",
+   "title": "Extinderea rețelei de apă",
+   "beneficiary": {
+    "name": "APAREGIO GORJ SA",
+    "entity": null,
+    "confidence": null,
+    "method": null
+   },
+   "county": "Gorj",
+   "total": 9000000.0,
+   "paid": 0.0,
+   "status": "terminated",
+   "status_written": "REZILIAT",
+   "programme_name": "Programul Operațional Infrastructură Mare",
+   "period": "2014-2020",
+   "partners": null,
+   "summary": null,
+   "beneficiary_type": null,
+   "locality": null,
+   "starts_on": null,
+   "ends_on": null,
+   "cofinancing_rate": null,
+   "eu": 7650000.0,
+   "cut_off": "2025-08-31",
+   "payments": null,
+   "payments_source": null,
+   "source": {
+    "publisher": "MIPE",
+    "record": "Lista proiectelor contractate POIM",
+    "url": "https://data.gov.ro/dataset/proiecte-contractate/resource/1/por.xlsx",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": 14,
+    "sha256": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2",
+    "parser_version": 2,
+    "documents": null
+   }
+  }
+ },
  "/v1/programmes/eu-funds/projects/312456/seap?limit=20&offset=0": {
   "status": 200,
   "body": {

@@ -1214,6 +1214,10 @@ SITE_CALLS = (
     "/v1/programmes/eu-funds/projects/999999",
     # The SEAP records tied to a project: some, none.
     f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap?limit=20&offset=0",
+    # A page past the end: the site goes back to the last page.
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap?limit=20&offset=160",
+    # Saved without its SEAP records, so the site's tests see that call fail.
+    f"/v1/programmes/eu-funds/projects/{eu_seed.POIM}",
     f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}/seap?limit=20&offset=0",
     f"/v1/programmes/eu-funds/projects/{eu_seed.POCU}/seap?limit=20&offset=0",
     f"/v1/programmes/eu-funds/projects/{eu_seed.HEALTH}/seap?limit=20&offset=0",
