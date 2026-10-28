@@ -32,6 +32,7 @@ from date_romania.models import (
     DirectPurchaseItem,
     Entity,
     JobRun,
+    PnrrPayment,
     Report,
     SourceDocument,
 )
@@ -1210,6 +1211,8 @@ SITE_CALLS = (
     f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}",
     f"/v1/programmes/eu-beneficiaries/{HOSPITAL}",
     f"/v1/programmes/eu-beneficiaries/{BUILDER}",
+    # Asked beside the entity, so asked for a CUI not held too.
+    "/v1/programmes/eu-beneficiaries/12345674",
     f"/v1/programmes/eu-funds/projects?beneficiary={TOWN_HALL}&limit=20&offset=0",
     f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&limit=20&offset=0",
     f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&limit=20&offset=0",
@@ -1380,12 +1383,13 @@ def test_a_pnrr_contract_lists_the_purchases_of_its_beneficiary_that_cite_it(cli
     assert client.get(f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}/seap").status_code == 404
 
 
-def test_a_beneficiary_has_its_eu_money_of_both_kinds_apart(client):
+def test_a_beneficiary_has_its_eu_money_of_both_kinds_apart(client, session):
     town = client.get(f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}").json()
     assert town["entity"]["cui"] == TOWN_HALL
     # Its cohesion projects by programme, each at its own list's day.
-    assert [(p["code"], p["projects"], p["cut_off"]) for p in town["cohesion"]] == [
-        ("POR", 1, "2025-08-31")
+    # Tied by the name of its administration, not by a CUI in the list: said so.
+    assert [(p["code"], p["projects"], p["by_name"], p["cut_off"]) for p in town["cohesion"]] == [
+        ("POR", 1, 1, "2025-08-31")
     ]
     assert town["cohesion_source"]["documents"] == 1
     # Its PNRR contracts, and every payment it received, on any measure.
@@ -1395,7 +1399,7 @@ def test_a_beneficiary_has_its_eu_money_of_both_kinds_apart(client):
     assert (pnrr["first_day"], pnrr["last_day"]) == ("2025-12-19", "2026-10-02")
     assert pnrr["edition"] == "2026-10-15"
     hospital = client.get(f"/v1/programmes/eu-beneficiaries/{HOSPITAL}").json()
-    assert [p["code"] for p in hospital["cohesion"]] == ["PEO", "PS"]
+    assert [(p["code"], p["by_name"]) for p in hospital["cohesion"]] == [("PEO", 0), ("PS", 0)]
     # A company with nothing of either kind.
     builder = client.get(f"/v1/programmes/eu-beneficiaries/{BUILDER}").json()
     assert (builder["cohesion"], builder["cohesion_source"], builder["pnrr"]) == ([], None, None)
@@ -1403,3 +1407,20 @@ def test_a_beneficiary_has_its_eu_money_of_both_kinds_apart(client):
     assert stationer["cohesion"] == []
     assert stationer["pnrr"]["contracts"] == 1
     assert client.get("/v1/programmes/eu-beneficiaries/361684").status_code == 404
+    # Paid on a measure where it holds no contract: its payments are still its own.
+    session.add(
+        PnrrPayment(
+            position=99,
+            measure_code="C2.I1",
+            amount=Decimal("40000"),
+            paid_on=date(2026, 4, 1),
+            beneficiary_cui=BUILDER,
+            natural_person=False,
+            contracts_on_measure=0,
+            source_document_id=session.scalar(select(PnrrPayment.source_document_id).limit(1)),
+            parser_version=1,
+        )
+    )
+    session.flush()
+    paid = client.get(f"/v1/programmes/eu-beneficiaries/{BUILDER}").json()["pnrr"]
+    assert (paid["contracts"], paid["total"], paid["paid"], paid["payments"]) == (0, None, 40000, 1)

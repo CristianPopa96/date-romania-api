@@ -4491,7 +4491,8 @@
      "projects": 1,
      "total": 6200000.0,
      "paid": 6100000.0,
-     "cut_off": "2025-08-31"
+     "cut_off": "2025-08-31",
+     "by_name": 1
     }
    ],
    "cohesion_source": {
@@ -4541,7 +4542,8 @@
      "projects": 1,
      "total": 2100000.0,
      "paid": 600000.0,
-     "cut_off": "2026-09-30"
+     "cut_off": "2026-09-30",
+     "by_name": 0
     },
     {
      "code": "PS",
@@ -4550,7 +4552,8 @@
      "projects": 1,
      "total": 3000000.0,
      "paid": 900000.0,
-     "cut_off": "2026-08-31"
+     "cut_off": "2026-08-31",
+     "by_name": 0
     }
    ],
    "cohesion_source": {
@@ -4595,6 +4598,12 @@
    "cohesion": [],
    "cohesion_source": null,
    "pnrr": null
+  }
+ },
+ "/v1/programmes/eu-beneficiaries/12345674": {
+  "status": 404,
+  "body": {
+   "detail": "Entity not found"
   }
  },
  "/v1/programmes/eu-funds/projects?beneficiary=4981310&limit=20&offset=0": {

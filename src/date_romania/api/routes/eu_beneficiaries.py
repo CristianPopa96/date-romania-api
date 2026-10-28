@@ -12,7 +12,12 @@ from sqlalchemy.orm import Session
 from date_romania.api.routes.common import Db, ref
 from date_romania.api.routes.eu_projects import lists_source
 from date_romania.api.routes.pnrr import edition_source
-from date_romania.api.schemas import EuBeneficiaryFunds, EuBeneficiaryPnrr, EuProgramme
+from date_romania.api.schemas import (
+    EuBeneficiaryFunds,
+    EuBeneficiaryPnrr,
+    EuBeneficiaryProgramme,
+)
+from date_romania.eu_links import PROBABLE
 from date_romania.eu_programmes import PROGRAMMES
 from date_romania.models import Entity
 from date_romania.models import EuProject as Project
@@ -40,13 +45,14 @@ def beneficiary(session: Db, cui: int) -> EuBeneficiaryFunds:
                 func.sum(Project.total_value).label("total"),
                 func.sum(Project.paid).label("paid"),
                 func.max(Project.cut_off).label("cut_off"),
+                func.count().filter(Project.entity_confidence == PROBABLE).label("by_name"),
             )
             .where(mine)
             .group_by(Project.programme)
         )
     }
     cohesion = [
-        EuProgramme(
+        EuBeneficiaryProgramme(
             code=each.code,
             name=each.name,
             period=each.period,
@@ -54,6 +60,7 @@ def beneficiary(session: Db, cui: int) -> EuBeneficiaryFunds:
             total=row.total,
             paid=row.paid,
             cut_off=row.cut_off,
+            by_name=row.by_name,
         )
         for each in PROGRAMMES
         if (row := rows.get(each.code))

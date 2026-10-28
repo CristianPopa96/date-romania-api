@@ -3686,11 +3686,11 @@
      },
      "cohesion": {
       "items": {
-       "$ref": "#/components/schemas/EuProgramme"
+       "$ref": "#/components/schemas/EuBeneficiaryProgramme"
       },
       "type": "array",
       "title": "Cohesion",
-      "description": "Its projects in each programme, tied by eu_links.py; empty when none."
+      "description": "Its projects in each programme, tied by eu_links.py, by the CUI in the list or by name; empty when none."
      },
      "cohesion_source": {
       "anyOf": [
@@ -3729,7 +3729,8 @@
     "properties": {
      "contracts": {
       "type": "integer",
-      "title": "Contracts"
+      "title": "Contracts",
+      "description": "0 when it was paid on a measure with no contract held."
      },
      "total": {
       "anyOf": [
@@ -3799,6 +3800,82 @@
     ],
     "title": "EuBeneficiaryPnrr",
     "description": "A beneficiary's PNRR contracts and the payments it received, from one dashboard\nedition. The payments name the beneficiary and a measure, never the contract: they are\ncounted for the beneficiary, not shared out among its contracts."
+   },
+   "EuBeneficiaryProgramme": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "'POR', 'PEO', 'PoIDS'..."
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "period": {
+      "type": "string",
+      "title": "Period",
+      "description": "'2014-2020' or '2021-2027'."
+     },
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total",
+      "description": "Lei, the projects' total value added up."
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid",
+      "description": "Lei paid up to `cut_off`; null when not published."
+     },
+     "cut_off": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cut Off",
+      "description": "The day the programme's newest list describes."
+     },
+     "by_name": {
+      "type": "integer",
+      "title": "By Name",
+      "description": "Of `projects`, those tied by name and place (probable): the list gives no CUI for them."
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name",
+     "period",
+     "projects",
+     "total",
+     "paid",
+     "cut_off",
+     "by_name"
+    ],
+    "title": "EuBeneficiaryProgramme"
    },
    "EuFunds": {
     "properties": {

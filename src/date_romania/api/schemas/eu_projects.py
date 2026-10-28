@@ -121,12 +121,19 @@ class EuSeapLinks(Answer):
     )
 
 
+class EuBeneficiaryProgramme(EuProgramme):
+    by_name: int = Field(
+        description="Of `projects`, those tied by name and place (probable): the list gives "
+        "no CUI for them."
+    )
+
+
 class EuBeneficiaryPnrr(Answer):
     """A beneficiary's PNRR contracts and the payments it received, from one dashboard
     edition. The payments name the beneficiary and a measure, never the contract: they are
     counted for the beneficiary, not shared out among its contracts."""
 
-    contracts: int
+    contracts: int = Field(description="0 when it was paid on a measure with no contract held.")
     total: float | None = Field(description="Lei, its contracts' values added up.")
     paid: float = Field(description="Lei paid to it on every measure.")
     payments: int
@@ -143,8 +150,9 @@ class EuBeneficiaryFunds(Answer):
     `/programmes/eu-funds/projects` and `/programmes/pnrr/contracts`, by `beneficiary`."""
 
     entity: EntityRef
-    cohesion: list[EuProgramme] = Field(
-        description="Its projects in each programme, tied by eu_links.py; empty when none."
+    cohesion: list[EuBeneficiaryProgramme] = Field(
+        description="Its projects in each programme, tied by eu_links.py, by the CUI in the "
+        "list or by name; empty when none."
     )
     cohesion_source: Source | None = Field(description="Null when it has no project.")
     pnrr: EuBeneficiaryPnrr | None = Field(description="Null when it has no contract or payment.")
