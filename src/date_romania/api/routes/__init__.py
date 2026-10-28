@@ -16,6 +16,7 @@ from date_romania.api.routes import (
     patterns,
     places,
     pnrr,
+    pnrr_contract_list,
     pnrr_contracts,
     programme_project,
     programmes,
@@ -42,6 +43,8 @@ for module in (
     programmes,
     programme_project,
     pnrr,
+    # Before `pnrr_contracts`, whose /contracts/{contract_id} would take /contracts/overview.
+    pnrr_contract_list,
     pnrr_contracts,
     # Before `eu_projects`, whose /projects/{smis} would take /projects/overview.
     eu_project_list,

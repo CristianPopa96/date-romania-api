@@ -69,9 +69,10 @@ def test_contracts_are_the_largest_first_with_filters(client):
     assert [row["id"] for row in page["items"]] == [ONE, SEVERAL, OTHER, MANY_MEASURES, FOREST]
     finished = client.get(f"{ROOT}/contracts", params={"status": "finished"}).json()
     assert [row["id"] for row in finished["items"]] == [OTHER]
-    # Written 'ÎN IMPLEMENTARE (sub 30%)': matched whatever its case.
+    # A contract's status is the one all its measures give: one whose measures differ is
+    # under none, as its row says ("pe măsuri").
     under = client.get(f"{ROOT}/contracts", params={"status": "under_30"}).json()
-    assert [row["id"] for row in under["items"]] == [MANY_MEASURES]
+    assert [row["id"] for row in under["items"]] == []
     rows = {row["id"]: row for row in page["items"]}
     assert (rows[MANY_MEASURES]["status"], rows[MANY_MEASURES]["measures_differ"]) == (None, True)
     assert (rows[ONE]["status"], rows[ONE]["measures_differ"]) == ("in_progress", False)
@@ -144,3 +145,59 @@ def test_a_blank_measure_does_not_make_the_list_and_the_page_disagree(client, se
 def test_a_natural_persons_contract_has_no_page(client):
     assert client.get(f"{ROOT}/contracts/{PERSON}").status_code == 404
     assert client.get(f"{ROOT}/contracts/1").status_code == 404
+
+
+def test_a_beneficiarys_contracts_filter_and_sort_over_the_whole_list(client):
+    def ids(**params):
+        page = client.get(f"{ROOT}/contracts", params={"beneficiary": pnrr_seed.HOSPITAL, **params})
+        return [row["id"] for row in page.json()["items"]]
+
+    assert ids() == [SEVERAL, OTHER]
+    assert ids(sort="progress") == [OTHER, SEVERAL]
+    assert ids(sort="value", order="asc") == [OTHER, SEVERAL]
+    assert ids(status=["finished", "under_30"]) == [OTHER]
+    assert ids(progress_min=1) == [OTHER]
+    assert ids(progress_max=0.75) == [SEVERAL]
+    assert ids(value_max=2_000_000) == [OTHER]
+    assert ids(measure=["C10.I3"]) == [SEVERAL, OTHER]
+    assert ids(q="ambulatoriu") == [OTHER]
+
+
+def test_a_beneficiarys_contracts_say_what_their_filters_keep(client):
+    def overview(**params):
+        return client.get(f"{ROOT}/contracts/overview", params=params).json()
+
+    hospital = overview(beneficiary=pnrr_seed.HOSPITAL, scope="beneficiary")
+    assert hospital["summary"] == {"contracts": 2, "value": 4350000, "natural_persons": 0}
+    assert hospital["whole"] == 2
+    assert hospital["measures"] == [{"value": "C10.I3", "count": 2}]
+    assert [(s["value"], s["count"]) for s in hospital["statuses"]] == [
+        ("in_progress", 1),
+        ("under_30", 0),
+        ("finished", 1),
+    ]
+    assert hospital["measures_differ"] == 0
+    assert [(b["start"], b["count"]) for b in hospital["progress"]] == [
+        (0, 0),
+        (0.25, 0),
+        (0.5, 1),
+        (0.75, 0),
+        (1, 1),
+    ]
+
+    # Measures that disagree: under no status, counted apart.
+    stationer = overview(beneficiary=pnrr_seed.STATIONER, scope="beneficiary")
+    assert stationer["measures_differ"] == 1
+    assert all(s["count"] == 0 for s in stationer["statuses"])
+
+    # A natural person's contract is counted, never listed.
+    forests = overview(measure="C2.I1")
+    assert (forests["summary"]["contracts"], forests["summary"]["natural_persons"]) == (1, 1)
+
+    empty = overview(beneficiary=pnrr_seed.HOSPITAL, status="finished", value_min=5_000_000)
+    assert empty["summary"]["contracts"] == 0
+    assert empty["without"] == [
+        {"param": "status", "count": 0},
+        {"param": "beneficiary", "count": 0},
+        {"param": "value_min", "count": 1},
+    ]

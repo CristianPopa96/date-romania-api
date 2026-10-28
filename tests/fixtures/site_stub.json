@@ -7444,7 +7444,7 @@
    "without": []
   }
  },
- "/v1/programmes/pnrr/contracts?beneficiary=4981310&limit=20&offset=0": {
+ "/v1/programmes/pnrr/contracts?beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 2,
@@ -7481,6 +7481,267 @@
     }
    ],
    "natural_persons": 0
+  }
+ },
+ "/v1/programmes/pnrr/contracts/overview?beneficiary=4981310&scope=beneficiary": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 2,
+    "value": 6500000.0,
+    "natural_persons": 0
+   },
+   "whole": 2,
+   "measures": [
+    {
+     "value": "C10.I3",
+     "count": 1
+    },
+    {
+     "value": "C2.I1",
+     "count": 1
+    }
+   ],
+   "statuses": [
+    {
+     "value": "in_progress",
+     "count": 2
+    },
+    {
+     "value": "under_30",
+     "count": 0
+    },
+    {
+     "value": "finished",
+     "count": 0
+    }
+   ],
+   "measures_differ": 0,
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "progress": [
+    {
+     "start": 0.0,
+     "end": 0.25,
+     "count": 0
+    },
+    {
+     "start": 0.25,
+     "end": 0.5,
+     "count": 1
+    },
+    {
+     "start": 0.5,
+     "end": 0.75,
+     "count": 1
+    },
+    {
+     "start": 0.75,
+     "end": 1.0,
+     "count": 0
+    },
+    {
+     "start": 1.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/programmes/pnrr/contracts?beneficiary=4981310&sort=progress&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "items": [
+    {
+     "id": 706,
+     "number": "992",
+     "title": "Împădurire teren comunal",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 300000.0,
+     "status": "in_progress",
+     "physical_progress": 0.5,
+     "measures_differ": false
+    },
+    {
+     "id": 701,
+     "number": "12321",
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 6200000.0,
+     "status": "in_progress",
+     "physical_progress": 0.4,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 0
+  }
+ },
+ "/v1/programmes/pnrr/contracts?beneficiary=4981310&progress_min=0.5&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 706,
+     "number": "992",
+     "title": "Împădurire teren comunal",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "county": "GORJ",
+     "total": 300000.0,
+     "status": "in_progress",
+     "physical_progress": 0.5,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 0
+  }
+ },
+ "/v1/programmes/pnrr/contracts/overview?beneficiary=4981310&progress_min=0.5&scope=beneficiary": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 1,
+    "value": 300000.0,
+    "natural_persons": 0
+   },
+   "whole": 2,
+   "measures": [
+    {
+     "value": "C2.I1",
+     "count": 1
+    }
+   ],
+   "statuses": [
+    {
+     "value": "in_progress",
+     "count": 1
+    },
+    {
+     "value": "under_30",
+     "count": 0
+    },
+    {
+     "value": "finished",
+     "count": 0
+    }
+   ],
+   "measures_differ": 0,
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 0
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "progress": [
+    {
+     "start": 0.0,
+     "end": 0.25,
+     "count": 0
+    },
+    {
+     "start": 0.25,
+     "end": 0.5,
+     "count": 1
+    },
+    {
+     "start": 0.5,
+     "end": 0.75,
+     "count": 1
+    },
+    {
+     "start": 0.75,
+     "end": 1.0,
+     "count": 0
+    },
+    {
+     "start": 1.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
   }
  },
  "/v1/programmes/eu-funds/projects/312456": {

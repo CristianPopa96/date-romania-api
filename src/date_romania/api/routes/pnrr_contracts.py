@@ -5,22 +5,27 @@ Natural persons never appear by name (Crispy, 22.10.2026): their contracts are c
 never listed, and have no page.
 """
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
 
-from date_romania.api.routes.common import Db, Limit, Offset, containing, ref
+from date_romania.api.routes.common import Db, Limit, Offset, ref
+from date_romania.api.routes.list_common import Order, ordered
 from date_romania.api.routes.pnrr_common import (
-    RAW_STATUS,
-    find_measure,
     masked,
     newest_edition,
     on_measure,
     per_contract,
     plain_status,
     status,
+)
+from date_romania.api.routes.pnrr_contract_list import (
+    CONTRACTS,
+    LISTED,
+    SUMS,
+    PnrrContractFilters,
 )
 from date_romania.api.schemas import (
     PnrrContract,
@@ -30,10 +35,9 @@ from date_romania.api.schemas import (
     PnrrPayment,
     PnrrPayments,
     PnrrSibling,
-    PnrrStatus,
     Source,
 )
-from date_romania.models import Entity, SourceDocument, search_text
+from date_romania.models import Entity, SourceDocument
 from date_romania.models import PnrrContract as Contract
 from date_romania.models import PnrrContractLine as Line
 from date_romania.models import PnrrMeasure as Measure
@@ -46,52 +50,26 @@ router = APIRouter(prefix="/programmes/pnrr", tags=["programmes"])
 @router.get("/contracts")
 def contracts(
     session: Db,
-    measure: Annotated[str | None, Query(description="A measure code, e.g. 'C10.I3'.")] = None,
-    county: Annotated[str | None, Query(description="As the dashboard writes it.")] = None,
-    status_: Annotated[PnrrStatus | None, Query(alias="status")] = None,
-    beneficiary: Annotated[int | None, Query(description="The beneficiary's CUI.")] = None,
-    q: Annotated[
-        str | None,
-        Query(min_length=2, max_length=100, description="Part of the title or beneficiary."),
-    ] = None,
+    filters: PnrrContractFilters,
+    sort: Annotated[
+        Literal["value", "progress"],
+        Query(description="The value, or the physical progress its measures agree on."),
+    ] = "value",
+    order: Order = "desc",
     limit: Limit = 20,
     offset: Offset = 0,
 ) -> PnrrContractPage:
-    """Financing contracts, the largest first. Natural persons' are counted, never listed."""
-    filters = []
-    if measure:
-        filters.append(on_measure(find_measure(session, measure).code))
-    if county:
-        filters.append(Contract.county == county)
-    if beneficiary is not None:
-        filters.append(Contract.beneficiary_cui == beneficiary)
-    if status_:
-        filters.append(
-            Contract.id.in_(
-                select(Line.contract_id).where(
-                    func.upper(func.trim(Line.status)) == RAW_STATUS[status_]
-                )
-            )
-        )
-    if q:
-        like = containing(q)
-        filters.append(
-            search_text(Contract.title).like(like)
-            | search_text(Contract.beneficiary_name).like(like)
-        )
+    """Financing contracts under the filters given, the largest first, or in any column's
+    order. Natural persons' are counted, never listed."""
+    conditions = filters.all()
     total, natural = session.execute(
-        select(
-            func.count().filter(~Contract.natural_person),
-            func.count().filter(Contract.natural_person),
-        )
-        .select_from(Contract)
-        .where(*filters)
+        select(func.count().filter(LISTED), func.count().filter(Contract.natural_person))
+        .select_from(CONTRACTS)
+        .where(*conditions)
     ).one()
-    sums = per_contract()
+    column = SUMS.c.physical if sort == "progress" else SUMS.c.total
     rows = session.execute(
-        _rows(sums)
-        .where(*filters, ~Contract.natural_person)
-        .order_by(sums.c.total.desc().nulls_last(), Contract.id)
+        ordered(_rows().where(LISTED, *conditions), column, order, Contract.id)
         .limit(limit)
         .offset(offset)
     )
@@ -117,20 +95,16 @@ def contracts(
     )
 
 
-def _rows(sums) -> Select:
-    return (
-        select(
-            Contract,
-            Entity,
-            sums.c.total,
-            sums.c.statuses,
-            sums.c.status,
-            sums.c.physicals,
-            sums.c.physical,
-        )
-        .join(sums, sums.c.contract_id == Contract.id)
-        .outerjoin(Entity, Entity.cui == Contract.beneficiary_cui)
-    )
+def _rows() -> Select:
+    return select(
+        Contract,
+        Entity,
+        SUMS.c.total,
+        SUMS.c.statuses,
+        SUMS.c.status,
+        SUMS.c.physicals,
+        SUMS.c.physical,
+    ).select_from(CONTRACTS.outerjoin(Entity, Entity.cui == Contract.beneficiary_cui))
 
 
 @router.get("/contracts/{contract_id}")
