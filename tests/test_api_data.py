@@ -643,6 +643,94 @@ def test_contract_lists_count_only_what_was_signed_in_the_period(client):
     assert [row["id"] for row in together["items"]] == [101]
 
 
+def test_a_contract_list_filters_and_sorts_over_the_whole_list(client):
+    def ids(**params):
+        page = client.get("/v1/award-contracts", params={"buyer": TOWN_HALL, **params}).json()
+        return [row["id"] for row in page["items"]]
+
+    assert ids() == [103, 101]
+    assert ids(sort="value", order="asc") == [103, 101]
+    # Both first won by ALFA: the tie goes by id, the same way.
+    assert ids(sort="supplier", order="asc") == [101, 103]
+    assert ids(q="contract 103") == [103]
+    # A winner's name, as SEAP writes it, is searched too.
+    assert ids(q="atu1 lab", buyer=HOSPITAL) == [105]
+    assert ids(kind=3) == [103]
+    assert ids(won="association") == [101]
+    assert ids(value_max=1_000_000) == [103]
+    assert ids(date_from="2026-10-06") == [103]
+    assert ids(eu_funded="true") == [103, 101]
+    assert ids(eu_funded="false") == []
+
+    lines = client.get(
+        "/v1/award-contracts", params={"buyer": TOWN_HALL, "kind": 3, "format": "csv"}
+    ).text.splitlines()
+    assert len(lines) == 2 and lines[1].startswith("CAN0000001")
+
+
+def test_a_contract_list_says_what_its_filters_keep(client):
+    def overview(**params):
+        return client.get("/v1/award-contracts/overview", params=params).json()
+
+    town = overview(buyer=TOWN_HALL, scope="buyer")
+    assert town["summary"] == {
+        "contracts": 2,
+        "value": 6330000,
+        "without_value": 0,
+        "first_day": "2026-10-05",
+        "last_day": "2026-10-06",
+    }
+    assert (town["whole"], town["step"], town["party"]) == (2, "day", "supplier")
+    assert [(p["start"], p["count"], p["value"]) for p in town["points"]] == [
+        ("2026-10-05", 1, 6120000),
+        ("2026-10-06", 1, 210000),
+    ]
+    # Winners are ranked by what they won alone; the association is kept apart.
+    assert [(p["cui"], p["contracts"], p["value"]) for p in town["parties"]] == [
+        (BUILDER, 1, 210000)
+    ]
+    assert town["others"] == {"parties": 0, "value": 0}
+    assert town["associations"] == {"contracts": 1, "value": 6120000}
+    assert town["won"] == [
+        {"value": "alone", "count": 1},
+        {"value": "association", "count": 1},
+    ]
+    assert [(o["value"], o["count"]) for o in town["kinds"]] == [(1, 1), (3, 1)]
+    assert town["eu_funded"] == [{"value": 1, "count": 2}, {"value": 0, "count": 0}]
+    assert [(b["start"], b["count"]) for b in town["bands"] if b["count"]] == [
+        (100000, 1),
+        (5000000, 1),
+    ]
+
+    # A company's contracts are one kind at a time: here those it won alone.
+    builder = overview(supplier=BUILDER, won="alone", scope="supplier")
+    assert (builder["summary"]["contracts"], builder["whole"]) == (1, 1)
+    assert [(p["cui"], p["value"]) for p in builder["parties"]] == [(TOWN_HALL, 210000)]
+    assert builder["associations"] is None
+
+    empty = overview(buyer=TOWN_HALL, kind=3, value_min=1_000_000, scope="buyer")
+    assert empty["summary"]["contracts"] == 0
+    assert empty["without"] == [
+        {"param": "kind", "count": 1},
+        {"param": "value_min", "count": 1},
+    ]
+
+
+def test_a_contract_list_offers_the_parties_and_codes_it_holds(client):
+    found = client.get(
+        "/v1/award-contracts/parties", params={"buyer": TOWN_HALL, "side": "supplier"}
+    ).json()
+    # A member of an association is one of the winners.
+    assert [(p["cui"], p["count"]) for p in found] == [(BUILDER, 2), (STATIONER, 1)]
+    named = client.get(
+        "/v1/award-contracts/parties",
+        params={"buyer": TOWN_HALL, "side": "supplier", "find": "beta"},
+    ).json()
+    assert [p["cui"] for p in named] == [STATIONER]
+    codes = client.get("/v1/award-contracts/cpv-codes", params={"buyer": TOWN_HALL}).json()
+    assert codes == [{"code": "45233140-2", "name": "Lucrari de drumuri", "count": 2}]
+
+
 def test_a_supplier_has_two_figures_that_are_never_added(client):
     builder = client.get(f"/v1/suppliers/{BUILDER}/contracts").json()
     assert builder["alone"] == {"contracts": 1, "value": 210000}
@@ -1278,7 +1366,8 @@ SITE_CALLS = (
     f"/v1/institutions/{HOSPITAL}?partners=10",
     f"/v1/institutions/{HOSPITAL}/contracts",
     f"/v1/institutions/{HOSPITAL}/budget",
-    f"/v1/award-contracts?buyer={HOSPITAL}&sort=newest&limit=20&offset=0",
+    f"/v1/award-contracts?buyer={HOSPITAL}&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?buyer={HOSPITAL}&scope=buyer",
     f"/v1/direct-purchases?buyer={HOSPITAL}&sort=date&order=desc&limit=25&offset=0",
     f"/v1/direct-purchases/overview?buyer={HOSPITAL}&scope=buyer",
     # Places: the counties, one county, one commune, a search by name and by village.
@@ -1291,9 +1380,24 @@ SITE_CALLS = (
     "/v1/places/search?q=floresti&limit=20",
     "/v1/search?q=floresti&limit=30",
     "/v1/places/search?q=zzzz&limit=20",
-    f"/v1/award-contracts?buyer={TOWN_HALL}&sort=newest&limit=20&offset=0",
+    # The contracts of an entity page: as it opens, sorted, filtered, emptied, and one
+    # filter removed; a company's, won alone or in association; a typeahead.
+    f"/v1/award-contracts?buyer={TOWN_HALL}&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?buyer={TOWN_HALL}&scope=buyer",
+    f"/v1/award-contracts?buyer={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts?buyer={TOWN_HALL}&sort=value&order=asc&limit=25&offset=0",
+    f"/v1/award-contracts?buyer={TOWN_HALL}&kind=3&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?buyer={TOWN_HALL}&kind=3&scope=buyer",
+    f"/v1/award-contracts?buyer={TOWN_HALL}&kind=3&value_min=1000000&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?buyer={TOWN_HALL}&kind=3&value_min=1000000&scope=buyer",
+    f"/v1/award-contracts?buyer={TOWN_HALL}&value_min=1000000&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?buyer={TOWN_HALL}&value_min=1000000&scope=buyer",
+    f"/v1/award-contracts/parties?buyer={TOWN_HALL}&side=supplier",
     f"/v1/suppliers/{BUILDER}/contracts",
-    f"/v1/award-contracts?supplier={BUILDER}&sort=newest&limit=20&offset=0",
+    f"/v1/award-contracts?supplier={BUILDER}&won=alone&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?supplier={BUILDER}&won=alone&scope=supplier",
+    f"/v1/award-contracts?supplier={BUILDER}&won=association&sort=date&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?supplier={BUILDER}&won=association&scope=supplier",
     "/v1/institutions/12345674/contracts",
     "/v1/award-contracts?sort=value&limit=20&offset=0",
     "/v1/rankings/contract-suppliers?won=alone&limit=20",

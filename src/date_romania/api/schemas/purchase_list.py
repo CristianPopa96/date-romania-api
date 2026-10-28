@@ -6,7 +6,7 @@ from typing import Literal
 
 from pydantic import Field
 
-from date_romania.api.schemas.common import Answer, EntityRef
+from date_romania.api.schemas.common import Answer
 from date_romania.api.schemas.lists import Band, Option, Others, Point, Without
 from date_romania.api.schemas.purchases import Partner, Summary
 
@@ -41,13 +41,3 @@ class PurchaseOverview(Answer):
         description="Only when no purchase is found: what each filter given would leave out "
         "if it alone were removed, in the order of the parameters."
     )
-
-
-class PartyOption(EntityRef):
-    count: int = Field(description="Purchases under the other filters.")
-
-
-class CpvOption(Answer):
-    code: str
-    name: str | None
-    count: int = Field(description="Purchases under the other filters.")

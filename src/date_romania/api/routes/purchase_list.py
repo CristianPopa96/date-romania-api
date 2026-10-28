@@ -16,7 +16,8 @@ from date_romania import money
 from date_romania.api.routes import list_common as lists
 from date_romania.api.routes.common import Cpv, Day, Db, containing, in_period, ref, summary, top
 from date_romania.api.routes.list_common import OPTIONS, NamedFilters
-from date_romania.api.schemas.purchase_list import CpvOption, PartyOption, PurchaseOverview
+from date_romania.api.schemas.lists import CpvOption, PartyOption
+from date_romania.api.schemas.purchase_list import PurchaseOverview
 from date_romania.dates import BUCHAREST
 from date_romania.models import DirectPurchase, Entity, search_text
 

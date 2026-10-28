@@ -1792,6 +1792,824 @@
     }
    }
   },
+  "/v1/award-contracts/overview": {
+   "get": {
+    "tags": [
+     "award notices"
+    ],
+    "summary": "Award Contracts Overview",
+    "description": "The contracts of the list under the filters given, in figures: the summary, the value\nper month (or per day), the largest parties, the options of each choice filter and the\ncontracts by value band.",
+    "operationId": "award_contracts_overview_v1_award_contracts_overview_get",
+    "parameters": [
+     {
+      "name": "scope",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "buyer",
+          "supplier"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The party whose list this is: the figures say what part of it the filters keep, and the chart of parties names the other side.",
+       "title": "Scope"
+      },
+      "description": "The party whose list this is: the figures say what part of it the filters keep, and the chart of parties names the other side."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of a winner.",
+       "title": "Supplier"
+      },
+      "description": "CUI of a winner."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the contract's or notice's title, its numbers, or a party.",
+       "title": "Q"
+      },
+      "description": "Words of the contract's or notice's title, its numbers, or a party."
+     },
+     {
+      "name": "won",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "alone",
+          "association"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "By one company, or by an association of several.",
+       "title": "Won"
+      },
+      "description": "By one company, or by an association of several."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 ordinary, 3 subsequent; any of them.",
+       "title": "Kind"
+      },
+      "description": "1 ordinary, 3 subsequent; any of them."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ContractOverview"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/award-contracts/parties": {
+   "get": {
+    "tags": [
+     "award notices"
+    ],
+    "summary": "Award Contract Parties",
+    "description": "The parties on one side of the contracts the other filters give, most contracts\nfirst: the options of a typeahead filter. A member of an association is one of them.",
+    "operationId": "award_contract_parties_v1_award_contracts_parties_get",
+    "parameters": [
+     {
+      "name": "side",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "enum": [
+        "buyer",
+        "supplier"
+       ],
+       "type": "string",
+       "description": "The side to list.",
+       "title": "Side"
+      },
+      "description": "The side to list."
+     },
+     {
+      "name": "find",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the name, or the CUI.",
+       "title": "Find"
+      },
+      "description": "Words of the name, or the CUI."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of a winner.",
+       "title": "Supplier"
+      },
+      "description": "CUI of a winner."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the contract's or notice's title, its numbers, or a party.",
+       "title": "Q"
+      },
+      "description": "Words of the contract's or notice's title, its numbers, or a party."
+     },
+     {
+      "name": "won",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "alone",
+          "association"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "By one company, or by an association of several.",
+       "title": "Won"
+      },
+      "description": "By one company, or by an association of several."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 ordinary, 3 subsequent; any of them.",
+       "title": "Kind"
+      },
+      "description": "1 ordinary, 3 subsequent; any of them."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/PartyOption"
+         },
+         "title": "Response Award Contract Parties V1 Award Contracts Parties Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/award-contracts/cpv-codes": {
+   "get": {
+    "tags": [
+     "award notices"
+    ],
+    "summary": "Award Contract Cpv Codes",
+    "description": "The CPV codes of the notices of the contracts the other filters give, most contracts\nfirst: the options of the CPV filter.",
+    "operationId": "award_contract_cpv_codes_v1_award_contracts_cpv_codes_get",
+    "parameters": [
+     {
+      "name": "find",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The start of a code, or words of its name.",
+       "title": "Find"
+      },
+      "description": "The start of a code, or words of its name."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of a winner.",
+       "title": "Supplier"
+      },
+      "description": "CUI of a winner."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the contract's or notice's title, its numbers, or a party.",
+       "title": "Q"
+      },
+      "description": "Words of the contract's or notice's title, its numbers, or a party."
+     },
+     {
+      "name": "won",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "alone",
+          "association"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "By one company, or by an association of several.",
+       "title": "Won"
+      },
+      "description": "By one company, or by an association of several."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 ordinary, 3 subsequent; any of them.",
+       "title": "Kind"
+      },
+      "description": "1 ordinary, 3 subsequent; any of them."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "$ref": "#/components/schemas/CpvOption"
+         },
+         "title": "Response Award Contract Cpv Codes V1 Award Contracts Cpv Codes Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/award-notices/{notice_id}": {
    "get": {
     "tags": [
@@ -1907,116 +2725,40 @@
      "award notices"
     ],
     "summary": "Award Contracts",
-    "description": "Contracts signed in the period we hold, newest or largest first.\n\nFramework agreements are left out: their value is a ceiling, and what is committed\nunder them are their subsequent contracts, which are listed. The list is not complete:\nSEAP publishes many contracts weeks after they are signed.",
+    "description": "Contracts signed in the period we hold, under the filters given, in any column's order.\n\nFramework agreements are left out: their value is a ceiling, and what is committed\nunder them are their subsequent contracts, which are listed. The list is not complete:\nSEAP publishes many contracts weeks after they are signed.",
     "operationId": "award_contracts_v1_award_contracts_get",
     "parameters": [
-     {
-      "name": "buyer",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "integer"
-        },
-        {
-         "type": "null"
-        }
-       ],
-       "description": "CUI of the buying institution.",
-       "title": "Buyer"
-      },
-      "description": "CUI of the buying institution."
-     },
-     {
-      "name": "supplier",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "integer"
-        },
-        {
-         "type": "null"
-        }
-       ],
-       "description": "CUI of a winner.",
-       "title": "Supplier"
-      },
-      "description": "CUI of a winner."
-     },
-     {
-      "name": "won",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "enum": [
-          "alone",
-          "association"
-         ],
-         "type": "string"
-        },
-        {
-         "type": "null"
-        }
-       ],
-       "description": "By one company, or by an association of several.",
-       "title": "Won"
-      },
-      "description": "By one company, or by an association of several."
-     },
-     {
-      "name": "cpv",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "string",
-         "pattern": "^\\d{2,8}$"
-        },
-        {
-         "type": "null"
-        }
-       ],
-       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
-       "title": "Cpv"
-      },
-      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
-     },
-     {
-      "name": "eu_funded",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "boolean"
-        },
-        {
-         "type": "null"
-        }
-       ],
-       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter.",
-       "title": "Eu Funded"
-      },
-      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
-     },
      {
       "name": "sort",
       "in": "query",
       "required": false,
       "schema": {
        "enum": [
-        "newest",
-        "value"
+        "date",
+        "value",
+        "supplier",
+        "buyer",
+        "newest"
        ],
        "type": "string",
-       "default": "newest",
+       "description": "The day signed, the value in lei, the first winner's or the buyer's name; `newest` is the day, as before.",
+       "default": "date",
        "title": "Sort"
+      },
+      "description": "The day signed, the value in lei, the first winner's or the buyer's name; `newest` is the day, as before."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
       }
      },
      {
@@ -2057,6 +2799,217 @@
        "title": "Format"
       },
       "description": "csv gives the whole list as a file."
+     },
+     {
+      "name": "buyer",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of the buying institution.",
+       "title": "Buyer"
+      },
+      "description": "CUI of the buying institution."
+     },
+     {
+      "name": "supplier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "CUI of a winner.",
+       "title": "Supplier"
+      },
+      "description": "CUI of a winner."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the contract's or notice's title, its numbers, or a party.",
+       "title": "Q"
+      },
+      "description": "Words of the contract's or notice's title, its numbers, or a party."
+     },
+     {
+      "name": "won",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "alone",
+          "association"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "By one company, or by an association of several.",
+       "title": "Won"
+      },
+      "description": "By one company, or by an association of several."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "integer"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "1 ordinary, 3 subsequent; any of them.",
+       "title": "Kind"
+      },
+      "description": "1 ordinary, 3 subsequent; any of them."
+     },
+     {
+      "name": "eu_funded",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "boolean"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it.",
+       "title": "Eu Funded"
+      },
+      "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not say is only in the list without it."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     },
+     {
+      "name": "cpv",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^\\d{2,8}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
+       "title": "Cpv"
+      },
+      "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "date_from",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date From"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
+     },
+     {
+      "name": "date_to",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A day in Romanian time, YYYY-MM-DD.",
+       "title": "Date To"
+      },
+      "description": "A day in Romanian time, YYYY-MM-DD."
      }
     ],
     "responses": {
@@ -3945,6 +4898,128 @@
     "title": "Contract",
     "description": "One contract of an award notice. `value` is in lei without VAT."
    },
+   "ContractOverview": {
+    "properties": {
+     "summary": {
+      "$ref": "#/components/schemas/ContractSummary"
+     },
+     "whole": {
+      "type": "integer",
+      "title": "Whole",
+      "description": "Contracts of the same institution, or of the same company won the same way, with no other filter."
+     },
+     "period": {
+      "$ref": "#/components/schemas/Period"
+     },
+     "step": {
+      "type": "string",
+      "enum": [
+       "month",
+       "day"
+      ],
+      "title": "Step",
+      "description": "Months, or days when the contracts found span under two months."
+     },
+     "points": {
+      "items": {
+       "$ref": "#/components/schemas/Point"
+      },
+      "type": "array",
+      "title": "Points",
+      "description": "Contracts signed, and their value, per step."
+     },
+     "party": {
+      "type": "string",
+      "enum": [
+       "supplier",
+       "buyer"
+      ],
+      "title": "Party",
+      "description": "The side `parties` lists: the other side of the buyer or supplier asked."
+     },
+     "parties": {
+      "items": {
+       "$ref": "#/components/schemas/ContractParty"
+      },
+      "type": "array",
+      "title": "Parties",
+      "description": "The largest by value, at most five. Winners are ranked by the contracts they won alone: a contract won by an association is never given to one member."
+     },
+     "others": {
+      "$ref": "#/components/schemas/Others"
+     },
+     "associations": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/ContractTotals"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "For the winners of a buyer's contracts: those won by associations, kept out of `parties` and `others`. Null for the buyers of a company's contracts."
+     },
+     "won": {
+      "items": {
+       "$ref": "#/components/schemas/WonOption"
+      },
+      "type": "array",
+      "title": "Won",
+      "description": "Contracts won alone, and by associations."
+     },
+     "kinds": {
+      "items": {
+       "$ref": "#/components/schemas/Option"
+      },
+      "type": "array",
+      "title": "Kinds",
+      "description": "1 ordinary contracts, 3 subsequent contracts."
+     },
+     "eu_funded": {
+      "items": {
+       "$ref": "#/components/schemas/Option"
+      },
+      "type": "array",
+      "title": "Eu Funded",
+      "description": "1: notices with a lot paid from EU funds; 0: notices that say no lot is. Notices that do not say are in neither."
+     },
+     "bands": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Bands",
+      "description": "Contracts by value in lei."
+     },
+     "without": {
+      "items": {
+       "$ref": "#/components/schemas/Without"
+      },
+      "type": "array",
+      "title": "Without",
+      "description": "Only when no contract is found: what each filter given would leave out if it alone were removed, in the order of the parameters."
+     }
+    },
+    "type": "object",
+    "required": [
+     "summary",
+     "whole",
+     "period",
+     "step",
+     "points",
+     "party",
+     "parties",
+     "others",
+     "associations",
+     "won",
+     "kinds",
+     "eu_funded",
+     "bands",
+     "without"
+    ],
+    "title": "ContractOverview",
+    "description": "The contracts of an institution or a company under the filters chosen, in figures.\n\nThe list holds only what totals may count: contracts signed in the period held, of a\ncounted kind (never a framework agreement), in a notice still in force. It is never\ncomplete: SEAP publishes many contracts weeks after they are signed."
+   },
    "ContractPage": {
     "properties": {
      "total": {
@@ -3977,6 +5052,40 @@
      "items"
     ],
     "title": "ContractPage"
+   },
+   "ContractParty": {
+    "properties": {
+     "cui": {
+      "type": "integer",
+      "title": "Cui"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "kind": {
+      "type": "string",
+      "title": "Kind",
+      "description": "authority, company or other"
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value"
+     }
+    },
+    "type": "object",
+    "required": [
+     "cui",
+     "name",
+     "kind",
+     "contracts",
+     "value"
+    ],
+    "title": "ContractParty"
    },
    "ContractRanking": {
     "properties": {
@@ -4057,6 +5166,58 @@
      "value"
     ],
     "title": "ContractRankingRow"
+   },
+   "ContractSummary": {
+    "properties": {
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value",
+      "description": "Lei without VAT; a contract with no value adds nothing."
+     },
+     "without_value": {
+      "type": "integer",
+      "title": "Without Value",
+      "description": "Contracts SEAP gives no value in lei for."
+     },
+     "first_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "First Day",
+      "description": "The first day a contract found was signed."
+     },
+     "last_day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Day"
+     }
+    },
+    "type": "object",
+    "required": [
+     "contracts",
+     "value",
+     "without_value",
+     "first_day",
+     "last_day"
+    ],
+    "title": "ContractSummary"
    },
    "ContractTotals": {
     "properties": {
@@ -4312,8 +5473,7 @@
      },
      "count": {
       "type": "integer",
-      "title": "Count",
-      "description": "Purchases under the other filters."
+      "title": "Count"
      }
     },
     "type": "object",
@@ -4322,7 +5482,8 @@
      "name",
      "count"
     ],
-    "title": "CpvOption"
+    "title": "CpvOption",
+    "description": "A CPV code of a typeahead filter, with its rows under the other filters."
    },
    "Dataset": {
     "properties": {
@@ -6237,8 +7398,7 @@
      },
      "count": {
       "type": "integer",
-      "title": "Count",
-      "description": "Purchases under the other filters."
+      "title": "Count"
      }
     },
     "type": "object",
@@ -6248,7 +7408,8 @@
      "kind",
      "count"
     ],
-    "title": "PartyOption"
+    "title": "PartyOption",
+    "description": "An institution or company of a typeahead filter, with its rows under the other filters."
    },
    "Period": {
     "properties": {
@@ -10048,6 +11209,28 @@
     ],
     "title": "Without",
     "description": "How many rows one filter alone keeps out, for a list it leaves empty."
+   },
+   "WonOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "alone",
+       "association"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "WonOption"
    }
   }
  }

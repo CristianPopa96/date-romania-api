@@ -142,6 +142,8 @@ near_limit = and_(
 _COUNTED_KINDS = (AWARD_CONTRACT, AWARD_SUBSEQUENT)
 contract_counted = AwardContract.kind.in_(_COUNTED_KINDS)
 contract_value = func.coalesce(func.sum(AwardContract.value_ron), 0)
+# The Romanian calendar day a contract was signed.
+contract_day = cast(func.timezone(BUCHAREST.key, AwardContract.contract_date), Date)
 
 # SEAP publishes a changed notice under a new id, with every contract again under new
 # contract ids, and withdraws the one before. When both were collected, the contracts of
