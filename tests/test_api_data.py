@@ -1454,7 +1454,13 @@ SITE_CALLS = (
     f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&programme=PEO&sort=value&order=desc&limit=25&offset=0",
     f"/v1/programmes/eu-funds/projects/overview?beneficiary={HOSPITAL}&programme=PEO"
     "&scope=beneficiary",
-    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&limit=20&offset=0",
+    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&scope=beneficiary",
+    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&sort=progress&order=desc"
+    "&limit=25&offset=0",
+    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&progress_min=0.5&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&progress_min=0.5"
+    "&scope=beneficiary",
     # One project per kind of beneficiary tie and payments, and one not held.
     f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}",
     f"/v1/programmes/eu-funds/projects/{eu_seed.POR}",

@@ -111,6 +111,12 @@ from date_romania.api.schemas.pnrr import (
     PnrrStatus,
     PnrrTopRecipient,
 )
+from date_romania.api.schemas.pnrr_contract_list import (
+    MeasureOption,
+    PnrrContractOverview,
+    PnrrContractSummary,
+    PnrrStatusOption,
+)
 from date_romania.api.schemas.programmes import (
     Confidence,
     Match,
@@ -199,6 +205,7 @@ __all__ = [
     "Locality",
     "Match",
     "MatchCount",
+    "MeasureOption",
     "NearLimitPair",
     "NearLimitPattern",
     "NearLimitPurchase",
@@ -216,8 +223,10 @@ __all__ = [
     "PlaceRef",
     "PlaceResults",
     "PnrrContract",
+    "PnrrContractOverview",
     "PnrrContractPage",
     "PnrrContractRow",
+    "PnrrContractSummary",
     "PnrrLine",
     "PnrrMeasure",
     "PnrrMeasureRow",
@@ -226,6 +235,7 @@ __all__ = [
     "PnrrProgramme",
     "PnrrSibling",
     "PnrrStatus",
+    "PnrrStatusOption",
     "PnrrTopRecipient",
     "Point",
     "Population",

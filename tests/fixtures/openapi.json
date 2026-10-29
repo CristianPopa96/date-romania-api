@@ -3569,15 +3569,34 @@
     }
    }
   },
-  "/v1/programmes/pnrr/contracts": {
+  "/v1/programmes/pnrr/contracts/overview": {
    "get": {
     "tags": [
      "programmes"
     ],
-    "summary": "Contracts",
-    "description": "Financing contracts, the largest first. Natural persons' are counted, never listed.",
-    "operationId": "contracts_v1_programmes_pnrr_contracts_get",
+    "summary": "Pnrr Contracts Overview",
+    "description": "The contracts under the filters given, in figures: how many and their value, the\nmeasures and statuses with their counts, and the contracts by value and progress.",
+    "operationId": "pnrr_contracts_overview_v1_programmes_pnrr_contracts_overview_get",
     "parameters": [
+     {
+      "name": "scope",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "const": "beneficiary",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary whose list this is: `whole` counts all of its.",
+       "title": "Scope"
+      },
+      "description": "The beneficiary whose list this is: `whole` counts all of its."
+     },
      {
       "name": "measure",
       "in": "query",
@@ -3585,16 +3604,19 @@
       "schema": {
        "anyOf": [
         {
-         "type": "string"
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
         },
         {
          "type": "null"
         }
        ],
-       "description": "A measure code, e.g. 'C10.I3'.",
+       "description": "Measure codes, e.g. 'C10.I3'; any of them.",
        "title": "Measure"
       },
-      "description": "A measure code, e.g. 'C10.I3'."
+      "description": "Measure codes, e.g. 'C10.I3'; any of them."
      },
      {
       "name": "county",
@@ -3621,19 +3643,24 @@
       "schema": {
        "anyOf": [
         {
-         "enum": [
-          "in_progress",
-          "under_30",
-          "finished"
-         ],
-         "type": "string"
+         "type": "array",
+         "items": {
+          "enum": [
+           "in_progress",
+           "under_30",
+           "finished"
+          ],
+          "type": "string"
+         }
         },
         {
          "type": "null"
         }
        ],
+       "description": "Any of these statuses, as all of a contract's measures give it.",
        "title": "Status"
-      }
+      },
+      "description": "Any of these statuses, as all of a contract's measures give it."
      },
      {
       "name": "beneficiary",
@@ -3668,10 +3695,152 @@
          "type": "null"
         }
        ],
-       "description": "Part of the title or beneficiary.",
+       "description": "Words of the title or beneficiary.",
        "title": "Q"
       },
-      "description": "Part of the title or beneficiary."
+      "description": "Words of the title or beneficiary."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     },
+     {
+      "name": "progress_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 1,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Physical progress, 0 to 1, included.",
+       "title": "Progress Min"
+      },
+      "description": "Physical progress, 0 to 1, included."
+     },
+     {
+      "name": "progress_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 1,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Physical progress, 0 to 1, excluded.",
+       "title": "Progress Max"
+      },
+      "description": "Physical progress, 0 to 1, excluded."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PnrrContractOverview"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/pnrr/contracts": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Contracts",
+    "description": "Financing contracts under the filters given, the largest first, or in any column's\norder. Natural persons' are counted, never listed.",
+    "operationId": "contracts_v1_programmes_pnrr_contracts_get",
+    "parameters": [
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "progress"
+       ],
+       "type": "string",
+       "description": "The value, or the physical progress its measures agree on.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value, or the physical progress its measures agree on."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
      },
      {
       "name": "limit",
@@ -3695,6 +3864,187 @@
        "default": 0,
        "title": "Offset"
       }
+     },
+     {
+      "name": "measure",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Measure codes, e.g. 'C10.I3'; any of them.",
+       "title": "Measure"
+      },
+      "description": "Measure codes, e.g. 'C10.I3'; any of them."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "As the dashboard writes it.",
+       "title": "County"
+      },
+      "description": "As the dashboard writes it."
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "in_progress",
+           "under_30",
+           "finished"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these statuses, as all of a contract's measures give it.",
+       "title": "Status"
+      },
+      "description": "Any of these statuses, as all of a contract's measures give it."
+     },
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the title or beneficiary.",
+       "title": "Q"
+      },
+      "description": "Words of the title or beneficiary."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     },
+     {
+      "name": "progress_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 1,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Physical progress, 0 to 1, included.",
+       "title": "Progress Min"
+      },
+      "description": "Physical progress, 0 to 1, included."
+     },
+     {
+      "name": "progress_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "maximum": 1,
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Physical progress, 0 to 1, excluded.",
+       "title": "Progress Max"
+      },
+      "description": "Physical progress, 0 to 1, excluded."
      }
     ],
     "responses": {
@@ -7348,6 +7698,25 @@
     ],
     "title": "MatchCount"
    },
+   "MeasureOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The measure's code, e.g. 'C10.I3'."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "MeasureOption"
+   },
    "NearLimitPair": {
     "properties": {
      "buyer": {
@@ -8214,6 +8583,75 @@
     ],
     "title": "PnrrContract"
    },
+   "PnrrContractOverview": {
+    "properties": {
+     "summary": {
+      "$ref": "#/components/schemas/PnrrContractSummary"
+     },
+     "whole": {
+      "type": "integer",
+      "title": "Whole",
+      "description": "Contracts of the same beneficiary, with no other filter."
+     },
+     "measures": {
+      "items": {
+       "$ref": "#/components/schemas/MeasureOption"
+      },
+      "type": "array",
+      "title": "Measures",
+      "description": "Under every filter but the measure."
+     },
+     "statuses": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrStatusOption"
+      },
+      "type": "array",
+      "title": "Statuses"
+     },
+     "measures_differ": {
+      "type": "integer",
+      "title": "Measures Differ",
+      "description": "Contracts whose measures give different statuses: under no status."
+     },
+     "bands": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Bands",
+      "description": "Contracts by value in lei."
+     },
+     "progress": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Progress",
+      "description": "Contracts by physical progress, 0 to 1, where their measures agree on it; the last band is 1, finished."
+     },
+     "without": {
+      "items": {
+       "$ref": "#/components/schemas/Without"
+      },
+      "type": "array",
+      "title": "Without",
+      "description": "Only when no contract is found: what each filter given would leave out if it alone were removed, in the order of the parameters."
+     }
+    },
+    "type": "object",
+    "required": [
+     "summary",
+     "whole",
+     "measures",
+     "statuses",
+     "measures_differ",
+     "bands",
+     "progress",
+     "without"
+    ],
+    "title": "PnrrContractOverview",
+    "description": "The contracts under the filters chosen, in figures."
+   },
    "PnrrContractPage": {
     "properties": {
      "total": {
@@ -8352,6 +8790,39 @@
      "measures_differ"
     ],
     "title": "PnrrContractRow"
+   },
+   "PnrrContractSummary": {
+    "properties": {
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts",
+      "description": "Contracts listed: never a natural person's."
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "Lei, every measure of each contract added up."
+     },
+     "natural_persons": {
+      "type": "integer",
+      "title": "Natural Persons",
+      "description": "Natural persons' contracts the filters also give: counted, never named."
+     }
+    },
+    "type": "object",
+    "required": [
+     "contracts",
+     "value",
+     "natural_persons"
+    ],
+    "title": "PnrrContractSummary"
    },
    "PnrrLine": {
     "properties": {
@@ -9019,6 +9490,30 @@
      "total"
     ],
     "title": "PnrrSibling"
+   },
+   "PnrrStatusOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "in_progress",
+       "under_30",
+       "finished"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count",
+      "description": "Contracts whose measures all give this status."
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "PnrrStatusOption"
    },
    "PnrrTopRecipient": {
     "properties": {
