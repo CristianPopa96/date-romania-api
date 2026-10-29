@@ -1447,8 +1447,13 @@ SITE_CALLS = (
     f"/v1/programmes/eu-beneficiaries/{BUILDER}",
     # Asked beside the entity, so asked for a CUI not held too.
     "/v1/programmes/eu-beneficiaries/12345674",
-    f"/v1/programmes/eu-funds/projects?beneficiary={TOWN_HALL}&limit=20&offset=0",
-    f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&limit=20&offset=0",
+    f"/v1/programmes/eu-funds/projects?beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/eu-funds/projects/overview?beneficiary={TOWN_HALL}&scope=beneficiary",
+    f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/eu-funds/projects/overview?beneficiary={HOSPITAL}&scope=beneficiary",
+    f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&programme=PEO&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/eu-funds/projects/overview?beneficiary={HOSPITAL}&programme=PEO"
+    "&scope=beneficiary",
     f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&limit=20&offset=0",
     # One project per kind of beneficiary tie and payments, and one not held.
     f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}",

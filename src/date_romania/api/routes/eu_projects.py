@@ -5,13 +5,15 @@ Text is served with valid personal codes masked. A programme's figures describe 
 its own list: they are never added to another programme's.
 """
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from date_romania.api.routes.common import Db, Limit, Offset, containing, last_fetched, ref
+from date_romania.api.routes.common import Db, Limit, Offset, last_fetched, ref
+from date_romania.api.routes.eu_project_list import EuProjectFilters, status
+from date_romania.api.routes.list_common import Order, ordered
 from date_romania.api.schemas import (
     EuBeneficiary,
     EuFunds,
@@ -20,33 +22,16 @@ from date_romania.api.schemas import (
     EuProject,
     EuProjectPage,
     EuProjectRow,
-    EuStatus,
     Source,
 )
 from date_romania.eu_programmes import BY_CODE, PROGRAMMES
-from date_romania.models import Entity, SourceDocument, search_text
+from date_romania.models import Entity, SourceDocument
 from date_romania.models import EuProject as Project
 from date_romania.models import EuProjectPayment as Payment
 from date_romania.personal_id import mask_cnp
 from date_romania.sources import EU_PROJECTS
-from date_romania.text import plain
 
 router = APIRouter(prefix="/programmes/eu-funds", tags=["programmes"])
-
-# The lists' words for a project's state, in `plain` form, and ours. Any other ('etapizat',
-# 'nefinalizat', 'in curs de reziliere'...) is served as written, with no status of ours.
-_STATUS: dict[str, EuStatus] = {
-    "IN IMPLEMENTARE": "in_progress",
-    "IN CURS DE IMPLEMENTARE": "in_progress",
-    "FINALIZAT": "finished",
-    "PROIECT FINALIZAT": "finished",
-    "REZILIAT": "terminated",
-    "PROIECT REZILIAT INCETAT CU ACORDUL PARTILOR REVOCAT": "terminated",
-}
-
-
-def status(written: str | None) -> EuStatus | None:
-    return _STATUS.get(plain(written))
 
 
 def _text(value: str | None) -> str | None:
@@ -102,47 +87,21 @@ def lists_source(session: Session, *filters) -> Source:
 @router.get("/projects")
 def projects(
     session: Db,
-    programme: Annotated[str | None, Query(description="A programme code, e.g. 'POR'.")] = None,
-    beneficiary: Annotated[int | None, Query(description="The beneficiary's CUI.")] = None,
-    status_: Annotated[EuStatus | None, Query(alias="status")] = None,
-    q: Annotated[
-        str | None,
-        Query(
-            min_length=2,
-            max_length=100,
-            description="Part of the title or the beneficiary's name, or a SMIS code.",
-        ),
-    ] = None,
+    filters: EuProjectFilters,
+    sort: Annotated[
+        Literal["value", "paid"], Query(description="The total value, or the amount paid.")
+    ] = "value",
+    order: Order = "desc",
     limit: Limit = 20,
     offset: Offset = 0,
 ) -> EuProjectPage:
-    """Projects, the largest first."""
-    filters = []
-    if programme:
-        filters.append(Project.programme == programme)
-    if beneficiary is not None:
-        filters.append(Project.entity_cui == beneficiary)
-    if status_:
-        spellings = session.scalars(select(Project.status).distinct()).all()
-        filters.append(Project.status.in_([each for each in spellings if status(each) == status_]))
-    if q:
-        like = containing(q)
-        found = search_text(Project.title).like(like) | search_text(Project.beneficiary_name).like(
-            like
-        )
-        # A SMIS code typed alone finds its project too.
-        code = q.strip()
-        if code.isdecimal() and len(code) <= 9:
-            found = found | (Project.smis == int(code))
-        filters.append(found)
-    total = session.scalar(select(func.count()).select_from(Project).where(*filters))
+    """Projects under the filters given, the largest first, or in any column's order."""
+    conditions = filters.all()
+    column = Project.paid if sort == "paid" else Project.total_value
+    total = session.scalar(select(func.count()).select_from(Project).where(*conditions))
+    query = select(Project, Entity).outerjoin(Entity, Entity.cui == Project.entity_cui)
     rows = session.execute(
-        select(Project, Entity)
-        .outerjoin(Entity, Entity.cui == Project.entity_cui)
-        .where(*filters)
-        .order_by(Project.total_value.desc().nulls_last(), Project.smis)
-        .limit(limit)
-        .offset(offset)
+        ordered(query.where(*conditions), column, order, Project.smis).limit(limit).offset(offset)
     )
     return EuProjectPage(
         total=total or 0,

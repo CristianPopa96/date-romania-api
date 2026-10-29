@@ -10,6 +10,7 @@ from date_romania.api.routes import (
     contract_list,
     entities,
     eu_beneficiaries,
+    eu_project_list,
     eu_projects,
     eu_seap,
     patterns,
@@ -42,6 +43,8 @@ for module in (
     programme_project,
     pnrr,
     pnrr_contracts,
+    # Before `eu_projects`, whose /projects/{smis} would take /projects/overview.
+    eu_project_list,
     eu_projects,
     eu_seap,
     eu_beneficiaries,

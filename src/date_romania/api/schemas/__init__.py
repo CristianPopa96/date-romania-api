@@ -38,6 +38,12 @@ from date_romania.api.schemas.contract_list import (
     ContractSummary,
     WonOption,
 )
+from date_romania.api.schemas.eu_project_list import (
+    EuProjectOverview,
+    EuProjectSummary,
+    ProgrammeOption,
+    StatusOption,
+)
 from date_romania.api.schemas.eu_projects import (
     EuBeneficiary,
     EuBeneficiaryFunds,
@@ -175,8 +181,10 @@ __all__ = [
     "EuPayment",
     "EuProgramme",
     "EuProject",
+    "EuProjectOverview",
     "EuProjectPage",
     "EuProjectRow",
+    "EuProjectSummary",
     "EuSeapContract",
     "EuSeapLinks",
     "EuSeapPurchase",
@@ -225,6 +233,7 @@ __all__ = [
     "ProgrammeFile",
     "ProgrammeGroup",
     "ProgrammeMatch",
+    "ProgrammeOption",
     "ProgrammePayments",
     "Project",
     "ProjectPage",
@@ -247,6 +256,7 @@ __all__ = [
     "SearchResults",
     "Source",
     "Stats",
+    "StatusOption",
     "Summary",
     "SupplierContracts",
     "SupplierCounties",
