@@ -3575,7 +3575,7 @@
      "programmes"
     ],
     "summary": "Pnrr Contracts Overview",
-    "description": "The contracts under the filters given, in figures: how many and their value, the\nmeasures and statuses with their counts, and the contracts by value and progress.",
+    "description": "The contracts under the filters given, in figures: how many and their value, the\nmeasures, counties and statuses with their counts, the contracts by value and progress,\nand the largest beneficiaries.",
     "operationId": "pnrr_contracts_overview_v1_programmes_pnrr_contracts_overview_get",
     "parameters": [
      {
@@ -3585,17 +3585,20 @@
       "schema": {
        "anyOf": [
         {
-         "const": "beneficiary",
+         "enum": [
+          "beneficiary",
+          "measure"
+         ],
          "type": "string"
         },
         {
          "type": "null"
         }
        ],
-       "description": "The beneficiary whose list this is: `whole` counts all of its.",
+       "description": "The beneficiary or the measure whose list this is: `whole` counts all of its.",
        "title": "Scope"
       },
-      "description": "The beneficiary whose list this is: `whole` counts all of its."
+      "description": "The beneficiary or the measure whose list this is: `whole` counts all of its."
      },
      {
       "name": "measure",
@@ -5952,6 +5955,25 @@
     ],
     "title": "County",
     "description": "A county, its figures added up over its UATs and its council."
+   },
+   "CountyOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The county as the dashboard writes it."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "CountyOption"
    },
    "CountyRow": {
     "properties": {
@@ -8348,6 +8370,51 @@
     ],
     "title": "PlaceResults"
    },
+   "PnrrBeneficiaryBar": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name",
+      "description": "As the dashboard writes it."
+     },
+     "entity": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The entity of its CUI, where it is held."
+     },
+     "contracts": {
+      "type": "integer",
+      "title": "Contracts"
+     },
+     "value": {
+      "type": "number",
+      "title": "Value",
+      "description": "Lei, every measure of each contract added up."
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "entity",
+     "contracts",
+     "value"
+    ],
+    "title": "PnrrBeneficiaryBar",
+    "description": "One of the beneficiaries with the largest value under the filters: never a natural\nperson."
+   },
    "PnrrContract": {
     "properties": {
      "id": {
@@ -8591,7 +8658,7 @@
      "whole": {
       "type": "integer",
       "title": "Whole",
-      "description": "Contracts of the same beneficiary, with no other filter."
+      "description": "Contracts of the list's own beneficiary or measure (`scope`), with no other filter; with no scope, every contract listed."
      },
      "measures": {
       "items": {
@@ -8600,6 +8667,14 @@
       "type": "array",
       "title": "Measures",
       "description": "Under every filter but the measure."
+     },
+     "counties": {
+      "items": {
+       "$ref": "#/components/schemas/CountyOption"
+      },
+      "type": "array",
+      "title": "Counties",
+      "description": "Under every filter but the county."
      },
      "statuses": {
       "items": {
@@ -8629,6 +8704,18 @@
       "title": "Progress",
       "description": "Contracts by physical progress, 0 to 1, where their measures agree on it; the last band is 1, finished."
      },
+     "beneficiaries": {
+      "items": {
+       "$ref": "#/components/schemas/PnrrBeneficiaryBar"
+      },
+      "type": "array",
+      "title": "Beneficiaries",
+      "description": "The beneficiaries with the largest value under every filter but the beneficiary, told apart by CUI or by name."
+     },
+     "others": {
+      "$ref": "#/components/schemas/Others",
+      "description": "The beneficiaries after those, and their value."
+     },
      "without": {
       "items": {
        "$ref": "#/components/schemas/Without"
@@ -8643,10 +8730,13 @@
      "summary",
      "whole",
      "measures",
+     "counties",
      "statuses",
      "measures_differ",
      "bands",
      "progress",
+     "beneficiaries",
+     "others",
      "without"
     ],
     "title": "PnrrContractOverview",
@@ -8719,6 +8809,18 @@
        }
       ]
      },
+     "beneficiary_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Beneficiary Name",
+      "description": "As the dashboard writes it."
+     },
      "county": {
       "anyOf": [
        {
@@ -8783,6 +8885,7 @@
      "number",
      "title",
      "beneficiary",
+     "beneficiary_name",
      "county",
      "total",
      "status",

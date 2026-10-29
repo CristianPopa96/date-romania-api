@@ -60,6 +60,7 @@ class PnrrContractRow(Answer):
     number: str | None = Field(description="The contract's own number; not unique.")
     title: str | None
     beneficiary: EntityRef | None
+    beneficiary_name: str | None = Field(description="As the dashboard writes it.")
     county: str | None
     total: float | None = Field(description="Lei, every measure of the contract added up.")
     status: PnrrStatus | None = Field(

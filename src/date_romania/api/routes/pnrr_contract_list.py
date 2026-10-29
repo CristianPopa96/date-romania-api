@@ -10,22 +10,24 @@ counted apart. Natural persons' contracts are counted, never listed or named.
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import ColumnElement, and_, func, join, or_, select
+from sqlalchemy import ColumnElement, String, and_, cast, func, join, or_, select
 
 from date_romania.api.routes import list_common as lists
-from date_romania.api.routes.common import Db, containing
+from date_romania.api.routes.common import Db, containing, ref
 from date_romania.api.routes.list_common import NamedFilters
-from date_romania.api.routes.pnrr_common import RAW_STATUS, find_measure, per_contract
+from date_romania.api.routes.pnrr_common import RAW_STATUS, find_measure, masked, per_contract
 from date_romania.api.schemas import PnrrStatus
 from date_romania.api.schemas.pnrr_contract_list import (
+    CountyOption,
     MeasureOption,
+    PnrrBeneficiaryBar,
     PnrrContractOverview,
     PnrrContractSummary,
     PnrrStatusOption,
 )
+from date_romania.models import Entity, search_text
 from date_romania.models import PnrrContract as Contract
 from date_romania.models import PnrrContractLine as Line
-from date_romania.models import search_text
 
 router = APIRouter(prefix="/programmes/pnrr", tags=["programmes"])
 
@@ -36,6 +38,8 @@ CONTRACTS = join(Contract, SUMS, SUMS.c.contract_id == Contract.id)
 # The edges of the value bands, in lei, and of the physical progress bands (0 to 1).
 BAND_EDGES = (0, 100_000, 500_000, 1_000_000, 5_000_000, 25_000_000, 100_000_000)
 PROGRESS_EDGES = (0, 0.25, 0.5, 0.75, 1)
+# How many beneficiaries the chart names.
+TOP_BENEFICIARIES = 5
 
 _agreed = SUMS.c.statuses == 1
 _progress = and_(SUMS.c.physicals == 1, SUMS.c.physical.is_not(None))
@@ -119,13 +123,17 @@ def pnrr_contracts_overview(
     session: Db,
     filters: PnrrContractFilters,
     scope: Annotated[
-        Literal["beneficiary"] | None,
-        Query(description="The beneficiary whose list this is: `whole` counts all of its."),
+        Literal["beneficiary", "measure"] | None,
+        Query(
+            description="The beneficiary or the measure whose list this is: `whole` counts "
+            "all of its."
+        ),
     ] = None,
 ) -> PnrrContractOverview:
     """The contracts under the filters given, in figures: how many and their value, the
-    measures and statuses with their counts, and the contracts by value and progress."""
-    keep = ["beneficiary"] if scope and "beneficiary" in filters.named else []
+    measures, counties and statuses with their counts, the contracts by value and progress,
+    and the largest beneficiaries."""
+    keep = [scope] if scope and scope in filters.named else []
     n, total, natural = session.execute(
         select(
             func.count().filter(LISTED),
@@ -143,6 +151,17 @@ def pnrr_contracts_overview(
         .group_by(Line.measure_code)
         .order_by(func.count(Contract.id.distinct()).desc(), Line.measure_code)
     ).all()
+    counties = session.execute(
+        select(Contract.county, func.count())
+        .select_from(CONTRACTS)
+        .where(LISTED, Contract.county.is_not(None), *filters.all("county"))
+        .group_by(Contract.county)
+        .order_by(func.count().desc(), Contract.county)
+    ).all()
+    # The largest beneficiaries are the options of the beneficiary filter: counted under
+    # every other filter.
+    by_beneficiary = [LISTED, *filters.all("beneficiary")]
+    beneficiaries = _largest(session, by_beneficiary)
     by_status = [LISTED, *filters.all("status")]
     statuses = [
         PnrrStatusOption(
@@ -154,6 +173,7 @@ def pnrr_contracts_overview(
         summary=PnrrContractSummary(contracts=n, value=total, natural_persons=natural),
         whole=lists.count(session, CONTRACTS, [LISTED, *(filters.named[k] for k in keep)]),
         measures=[MeasureOption(value=code, count=count) for code, count in measures],
+        counties=[CountyOption(value=county, count=count) for county, count in counties],
         statuses=statuses,
         measures_differ=lists.count(session, CONTRACTS, [*by_status, SUMS.c.statuses > 1]),
         bands=lists.bands(
@@ -170,5 +190,43 @@ def pnrr_contracts_overview(
             [LISTED, _progress, *filters.all("progress_min", "progress_max")],
             CONTRACTS,
         ),
+        beneficiaries=beneficiaries,
+        others=lists.others(
+            session,
+            Contract.beneficiary_cui,
+            Contract.beneficiary_name,
+            func.sum(SUMS.c.total),
+            by_beneficiary,
+            [each.value for each in beneficiaries],
+            CONTRACTS,
+        ),
         without=lists.without(session, CONTRACTS, filters, keep, [LISTED]) if n == 0 else [],
     )
+
+
+def _largest(session: Db, conditions: list[ColumnElement[bool]]) -> list[PnrrBeneficiaryBar]:
+    """The beneficiaries with the largest value, told apart by CUI, or by name where the
+    dashboard gives none."""
+    key = func.coalesce(cast(Contract.beneficiary_cui, String), Contract.beneficiary_name)
+    value = func.sum(SUMS.c.total)
+    rows = session.execute(
+        select(
+            func.max(Contract.beneficiary_cui),
+            func.min(Contract.beneficiary_name),
+            func.count(),
+            value,
+        )
+        .select_from(CONTRACTS)
+        .where(key.is_not(None), *conditions)
+        .group_by(key)
+        .order_by(value.desc().nulls_last(), key)
+        .limit(TOP_BENEFICIARIES)
+    ).all()
+    cuis = [cui for cui, *_ in rows if cui is not None]
+    entities = {e.cui: e for e in session.scalars(select(Entity).where(Entity.cui.in_(cuis)))}
+    return [
+        PnrrBeneficiaryBar(
+            name=masked(name), entity=ref(entities.get(cui)), contracts=n, value=total or 0
+        )
+        for cui, name, n, total in rows
+    ]

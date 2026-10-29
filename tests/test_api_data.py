@@ -1428,19 +1428,33 @@ SITE_CALLS = (
     "/v1/programmes/pnrr/measures/C10.I3",
     "/v1/programmes/pnrr/measures/C2.I1",
     "/v1/programmes/pnrr/measures/C99.I9",
-    "/v1/programmes/pnrr/contracts?measure=C10.I3&limit=20&offset=0",
-    "/v1/programmes/pnrr/contracts?measure=C10.I3&status=finished&limit=20&offset=0",
-    "/v1/programmes/pnrr/contracts?measure=C2.I1&limit=20&offset=0",
+    # A measure's contracts as a list: all, by status, by county, and a measure with a
+    # natural person's contract.
+    "/v1/programmes/pnrr/contracts?measure=C10.I3&sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/pnrr/contracts/overview?measure=C10.I3&scope=measure",
+    "/v1/programmes/pnrr/contracts?measure=C10.I3&status=finished"
+    "&sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/pnrr/contracts/overview?measure=C10.I3&status=finished&scope=measure",
+    "/v1/programmes/pnrr/contracts?measure=C10.I3&county=GORJ"
+    "&sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/pnrr/contracts/overview?measure=C10.I3&county=GORJ&scope=measure",
+    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&measure=C10.I3"
+    "&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&measure=C10.I3&scope=measure",
+    "/v1/programmes/pnrr/contracts?measure=C2.I1&sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/pnrr/contracts/overview?measure=C2.I1&scope=measure",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.MANY_MEASURES}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}",
     "/v1/programmes/eu-funds",
-    "/v1/programmes/eu-funds/projects?limit=20&offset=0",
-    "/v1/programmes/eu-funds/projects?programme=POR&limit=20&offset=0",
-    "/v1/programmes/eu-funds/projects?status=finished&limit=20&offset=0",
-    "/v1/programmes/eu-funds/projects?q=zzzz&limit=20&offset=0",
-    f"/v1/programmes/eu-funds/projects?q={eu_seed.POR}&limit=20&offset=0",
+    # Every project as a list: all, of one programme, a SMIS code typed in its search.
+    "/v1/programmes/eu-funds/projects?sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/eu-funds/projects/overview",
+    "/v1/programmes/eu-funds/projects?programme=POR&sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/eu-funds/projects/overview?programme=POR",
+    f"/v1/programmes/eu-funds/projects?q={eu_seed.POR}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/programmes/eu-funds/projects/overview?q={eu_seed.POR}",
     # The EU money of a beneficiary, on its institution, supplier and place pages.
     f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}",
     f"/v1/programmes/eu-beneficiaries/{HOSPITAL}",

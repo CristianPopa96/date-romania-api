@@ -82,6 +82,7 @@ def contracts(
                 number=contract.number,
                 title=masked(contract.title),
                 beneficiary=ref(entity),
+                beneficiary_name=masked(contract.beneficiary_name),
                 county=contract.county,
                 total=row.total,
                 status=status(row.status) if row.statuses == 1 else None,

@@ -201,3 +201,32 @@ def test_a_beneficiarys_contracts_say_what_their_filters_keep(client):
         {"param": "beneficiary", "count": 0},
         {"param": "value_min", "count": 1},
     ]
+
+
+def test_a_measures_contracts_name_their_counties_and_largest_beneficiaries(client):
+    def overview(**params):
+        return client.get(f"{ROOT}/contracts/overview", params=params).json()
+
+    measure = overview(measure="C10.I3", scope="measure")
+    assert measure["whole"] == 3
+    assert measure["counties"] == [{"value": "CLUJ", "count": 2}, {"value": "GORJ", "count": 1}]
+    assert [(b["entity"]["cui"], b["contracts"], b["value"]) for b in measure["beneficiaries"]] == [
+        (pnrr_seed.TOWN_HALL, 1, 6_200_000),
+        (pnrr_seed.HOSPITAL, 2, 4_350_000),
+    ]
+    assert measure["others"] == {"parties": 0, "value": 0}
+
+    # A county chosen: the measure's whole stays, its counties are counted without it.
+    cluj = overview(measure="C10.I3", scope="measure", county="CLUJ")
+    assert (cluj["whole"], cluj["summary"]["contracts"]) == (3, 2)
+    assert cluj["counties"] == measure["counties"]
+
+    # A beneficiary chosen: the chart still ranks the others, under the other filters.
+    hospital = overview(measure="C10.I3", scope="measure", beneficiary=pnrr_seed.HOSPITAL)
+    assert hospital["summary"]["contracts"] == 2
+    assert hospital["beneficiaries"] == measure["beneficiaries"]
+
+    # A natural person is never a bar, nor among the others.
+    forests = overview(measure="C2.I1")
+    assert [b["entity"]["cui"] for b in forests["beneficiaries"]] == [pnrr_seed.TOWN_HALL]
+    assert forests["others"] == {"parties": 0, "value": 0}

@@ -112,7 +112,9 @@ from date_romania.api.schemas.pnrr import (
     PnrrTopRecipient,
 )
 from date_romania.api.schemas.pnrr_contract_list import (
+    CountyOption,
     MeasureOption,
+    PnrrBeneficiaryBar,
     PnrrContractOverview,
     PnrrContractSummary,
     PnrrStatusOption,
@@ -205,7 +207,9 @@ __all__ = [
     "Locality",
     "Match",
     "MatchCount",
+    "CountyOption",
     "MeasureOption",
+    "PnrrBeneficiaryBar",
     "NearLimitPair",
     "NearLimitPattern",
     "NearLimitPurchase",
