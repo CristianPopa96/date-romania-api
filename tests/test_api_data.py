@@ -536,6 +536,8 @@ def test_rankings_order_by_accepted_value(client):
     ).json()
     assert page["total"] == 2
     assert [(r["rank"], r["cui"]) for r in page["items"]] == [(2, BUILDER)]
+    # The whole ranking's value, beyond the page: what the chart's "Alții" is cut from.
+    assert page["value"] == 3500.0
     by_count = client.get("/v1/rankings/institutions", params={"sort": "count"}).json()
     assert [r["accepted"] for r in by_count["items"]] == sorted(
         (r["accepted"] for r in by_count["items"]), reverse=True

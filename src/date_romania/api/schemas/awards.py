@@ -126,6 +126,10 @@ class ContractRanking(Answer):
     period: Period
     won: Won | None = Field(description="alone or association, for a ranking of winners.")
     total: int = Field(description="Every party ranked under the filters, beyond the page.")
+    value: float = Field(
+        description="Lei, every party's value added up. Won in association, a contract is "
+        "in the value of each member, so it is counted once per member."
+    )
     items: list[ContractRankingRow] = Field(
         description="`rank` is the place in the order asked for, counted from the first page."
     )

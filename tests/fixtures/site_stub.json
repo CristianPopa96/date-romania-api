@@ -4943,6 +4943,7 @@
    },
    "won": "alone",
    "total": 1,
+   "value": 210000.0,
    "items": [
     {
      "cui": 17886786,
@@ -4974,6 +4975,7 @@
    },
    "won": "alone",
    "total": 1,
+   "value": 210000.0,
    "items": [
     {
      "cui": 17886786,
@@ -5005,6 +5007,7 @@
    },
    "won": "association",
    "total": 2,
+   "value": 12240000.0,
    "items": [
     {
      "cui": 17886786,
@@ -5044,6 +5047,7 @@
    },
    "won": "association",
    "total": 2,
+   "value": 12240000.0,
    "items": [
     {
      "cui": 17886786,
@@ -5083,6 +5087,7 @@
    },
    "won": null,
    "total": 2,
+   "value": 6380000.0,
    "items": [
     {
      "cui": 4981310,
@@ -5122,6 +5127,7 @@
    },
    "won": null,
    "total": 2,
+   "value": 6380000.0,
    "items": [
     {
      "cui": 4981310,
@@ -5161,6 +5167,7 @@
    },
    "won": null,
    "total": 2,
+   "value": 6380000.0,
    "items": [
     {
      "cui": 4981310,
@@ -5200,6 +5207,7 @@
    },
    "won": null,
    "total": 1,
+   "value": 50000.0,
    "items": [
     {
      "cui": 4491342,
@@ -5231,6 +5239,7 @@
    },
    "won": null,
    "total": 1,
+   "value": 50000.0,
    "items": [
     {
      "cui": 4491342,
@@ -5262,6 +5271,7 @@
    },
    "won": null,
    "total": 2,
+   "value": 6380000.0,
    "items": [],
    "source": {
     "publisher": "SEAP",
@@ -5281,6 +5291,7 @@
    "date_from": null,
    "date_to": null,
    "total": 2,
+   "value": 3500.0,
    "items": [
     {
      "cui": 17886786,
@@ -5317,6 +5328,7 @@
    "date_from": null,
    "date_to": null,
    "total": 2,
+   "value": 3500.0,
    "items": [
     {
      "cui": 17886786,
@@ -5353,6 +5365,7 @@
    "date_from": null,
    "date_to": null,
    "total": 2,
+   "value": 4200.0,
    "items": [
     {
      "cui": 4981310,
@@ -5389,6 +5402,7 @@
    "date_from": null,
    "date_to": null,
    "total": 2,
+   "value": 4200.0,
    "items": [
     {
      "cui": 4981310,
@@ -5697,6 +5711,7 @@
    },
    "won": "alone",
    "total": 1,
+   "value": 210000.0,
    "items": [
     {
      "cui": 17886786,
@@ -5728,6 +5743,7 @@
    },
    "won": "alone",
    "total": 1,
+   "value": 210000.0,
    "items": [
     {
      "cui": 17886786,
@@ -5759,6 +5775,7 @@
    },
    "won": null,
    "total": 0,
+   "value": 0.0,
    "items": [],
    "source": {
     "publisher": "SEAP",
@@ -5781,6 +5798,7 @@
    },
    "won": null,
    "total": 0,
+   "value": 0.0,
    "items": [],
    "source": {
     "publisher": "SEAP",
@@ -5800,6 +5818,7 @@
    "date_from": null,
    "date_to": null,
    "total": 1,
+   "value": 500.0,
    "items": [
     {
      "cui": 18288250,
@@ -5828,6 +5847,7 @@
    "date_from": null,
    "date_to": null,
    "total": 1,
+   "value": 500.0,
    "items": [
     {
      "cui": 18288250,
