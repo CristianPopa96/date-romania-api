@@ -1441,6 +1441,9 @@ SITE_CALLS = (
     "/v1/rankings/contract-institutions?sort=value&order=desc&limit=10&offset=0",
     "/v1/rankings/contract-institutions?sort=count&order=desc&limit=25&offset=0",
     "/v1/rankings/contract-institutions?q=spital&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-institutions?q=spital&sort=value&order=desc&limit=10&offset=0",
+    # Page 9, past the end: the site sends it to the last page.
+    "/v1/rankings/contract-institutions?sort=value&order=desc&limit=25&offset=200",
     "/v1/rankings/suppliers?sort=value&order=desc&limit=25&offset=0",
     "/v1/rankings/suppliers?sort=value&order=desc&limit=10&offset=0",
     "/v1/rankings/institutions?sort=value&order=desc&limit=25&offset=0",
@@ -1532,6 +1535,7 @@ SITE_CALLS_NEAR_LIMIT = (
     "/v1/patterns/near-limit?cpv=45&sort=purchases&order=desc&limit=25&offset=0",
     "/v1/patterns/near-limit?cpv=30&sort=purchases&order=desc&limit=25&offset=0",
     "/v1/patterns/near-limit?contract_type=3&sort=purchases&order=desc&limit=25&offset=0",
+    "/v1/patterns/near-limit?sort=purchases&order=desc&limit=25&offset=200",
 )
 
 

@@ -5222,6 +5222,59 @@
    }
   }
  },
+ "/v1/rankings/contract-institutions?q=spital&sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "total": 1,
+   "items": [
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "rank": 2,
+     "contracts": 1,
+     "value": 50000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?sort=value&order=desc&limit=25&offset=200": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "total": 2,
+   "items": [],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
  "/v1/rankings/suppliers?sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
@@ -8913,6 +8966,38 @@
    "checked": 2,
    "accepted_total": 2,
    "unknown_type": 0,
+   "annex_2": 0,
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/patterns/near-limit?sort=purchases&order=desc&limit=25&offset=200": {
+  "status": 200,
+  "body": {
+   "rule": {
+    "share": 0.9,
+    "repeats": 2,
+    "limits": {
+     "1": 270120.0,
+     "2": 270120.0,
+     "3": 900400.0
+    }
+   },
+   "first_day": "2026-10-05",
+   "last_day": "2026-10-07",
+   "pairs": 2,
+   "items": [],
+   "checked": 7,
+   "accepted_total": 13,
+   "unknown_type": 6,
    "annex_2": 0,
    "source": {
     "publisher": "SEAP",
