@@ -1,13 +1,25 @@
 """Patterns: measured facts worth asking documents for, never a finding of wrongdoing."""
 
 from decimal import ROUND_FLOOR, Decimal
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Query, Response
 from sqlalchemy import and_, func, select, tuple_
 from sqlalchemy.orm import aliased
 
 from date_romania import money
-from date_romania.api.routes.common import Cpv, Db, Format, Limit, cell, csv_file, list_source, ref
+from date_romania.api.routes.common import (
+    Cpv,
+    Db,
+    Format,
+    Limit,
+    Offset,
+    cell,
+    csv_file,
+    list_source,
+    ref,
+)
+from date_romania.api.routes.list_common import Order
 from date_romania.api.schemas import (
     NearLimitPair,
     NearLimitPattern,
@@ -24,14 +36,27 @@ Buyer, Supplier = aliased(Entity), aliased(Entity)
 
 @router.get("/patterns/near-limit")
 def near_limit(
-    session: Db, cpv: Cpv = None, limit: Limit = 50, format: Format = "json"
+    session: Db,
+    cpv: Cpv = None,
+    contract_type: Annotated[
+        int | None,
+        Query(ge=1, le=3, description="SEAP's contract type: 1 goods, 2 services, 3 works."),
+    ] = None,
+    sort: Annotated[
+        Literal["purchases", "value"],
+        Query(description="How many purchases near the limit, or their value added up."),
+    ] = "purchases",
+    order: Order = "desc",
+    limit: Limit = 50,
+    offset: Offset = 0,
+    format: Format = "json",
 ) -> NearLimitPattern:
     """Pairs of a buyer and a supplier with repeated accepted direct purchases just under the
     legal limit of their contract type, most purchases first.
 
     A purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is
     not known cannot be checked: `checked` of `accepted_total` were, and `first_day` and
-    `last_day` bound those. As csv: every pair, one line per purchase.
+    `last_day` bound those. As csv: every pair in the order asked for, one line per purchase.
     """
     filters = [
         money.near_limit,
@@ -40,6 +65,8 @@ def near_limit(
     ]
     if cpv:
         filters.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
+    if contract_type:
+        filters.append(DirectPurchase.contract_type_id == contract_type)
     pair = (DirectPurchase.buyer_cui, DirectPurchase.supplier_cui, DirectPurchase.contract_type_id)
     value = func.sum(DirectPurchase.closing_value)
     grouped = (
@@ -49,8 +76,13 @@ def near_limit(
         .having(func.count() >= money.NEAR_LIMIT_REPEATS)
     )
     pairs = session.scalar(select(func.count()).select_from(grouped.subquery()))
-    ordered = grouped.order_by(func.count().desc(), value.desc(), *pair)
-    found = session.execute(ordered if format == "csv" else ordered.limit(limit)).all()
+    keys = [func.count(), value] if sort == "purchases" else [value, func.count()]
+    ordered = grouped.order_by(
+        *(key.asc() if order == "asc" else key.desc() for key in keys), *pair
+    )
+    found = session.execute(
+        ordered if format == "csv" else ordered.limit(limit).offset(offset)
+    ).all()
 
     rows: dict[tuple, list[NearLimitPurchase]] = {}
     fetched: dict[int, object] = {}
@@ -86,6 +118,8 @@ def near_limit(
     scope = [money.accepted]
     if cpv:
         scope.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
+    if contract_type:
+        scope.append(DirectPurchase.contract_type_id == contract_type)
     untyped = DirectPurchase.contract_type_id.is_(None)
     checkable = and_(~untyped, ~money.annex_2)
     checked, accepted_total, unknown_type, annex_2, first_day, last_day = session.execute(

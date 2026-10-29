@@ -125,5 +125,8 @@ class ContractRankingRow(EntityRef):
 class ContractRanking(Answer):
     period: Period
     won: Won | None = Field(description="alone or association, for a ranking of winners.")
-    items: list[ContractRankingRow]
+    total: int = Field(description="Every party ranked under the filters, beyond the page.")
+    items: list[ContractRankingRow] = Field(
+        description="`rank` is the place in the order asked for, counted from the first page."
+    )
     source: Source
