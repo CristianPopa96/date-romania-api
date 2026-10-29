@@ -5316,6 +5316,528 @@
     }
    }
   },
+  "/v1/projects": {
+   "get": {
+    "tags": [
+     "projects"
+    ],
+    "summary": "Project List",
+    "description": "Every project of every programme under the filters, the largest first. Sorting\nacross programmes orders them; it never adds their values.",
+    "operationId": "project_list_v1_projects_get",
+    "parameters": [
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "const": "value",
+       "type": "string",
+       "description": "The project's value.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The project's value."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 25,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     },
+     {
+      "name": "format",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "json",
+        "csv"
+       ],
+       "type": "string",
+       "description": "csv gives the whole list as a file.",
+       "default": "json",
+       "title": "Format"
+      },
+      "description": "csv gives the whole list as a file."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "anghel_saligny",
+           "pnrr",
+           "cohesion"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these kinds of programme.",
+       "title": "Kind"
+      },
+      "description": "Any of these kinds of programme."
+     },
+     {
+      "name": "programme",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these programmes: 'AS', 'PNRR', or a cohesion code 'POR'.",
+       "title": "Programme"
+      },
+      "description": "Any of these programmes: 'AS', 'PNRR', or a cohesion code 'POR'."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's code, as in `counties`.",
+       "title": "County"
+      },
+      "description": "A county's code, as in `counties`."
+     },
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "in_progress",
+           "finished",
+           "terminated"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these.",
+       "title": "Status"
+      },
+      "description": "Any of these."
+     },
+     {
+      "name": "reach",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "beneficiary",
+           "payments",
+           "purchases",
+           "companies"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these last steps followed.",
+       "title": "Reach"
+      },
+      "description": "Any of these last steps followed."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the title or the beneficiary's name, a SMIS code or a financing contract number.",
+       "title": "Q"
+      },
+      "description": "Words of the title or the beneficiary's name, a SMIS code or a financing contract number."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectList"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/projects/overview": {
+   "get": {
+    "tags": [
+     "projects"
+    ],
+    "summary": "Projects Overview",
+    "description": "The projects under the filters in figures: how many, how many are followed to the\ncompanies, the natural persons' left out, and each choice's options with their counts.",
+    "operationId": "projects_overview_v1_projects_overview_get",
+    "parameters": [
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "anghel_saligny",
+           "pnrr",
+           "cohesion"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these kinds of programme.",
+       "title": "Kind"
+      },
+      "description": "Any of these kinds of programme."
+     },
+     {
+      "name": "programme",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these programmes: 'AS', 'PNRR', or a cohesion code 'POR'.",
+       "title": "Programme"
+      },
+      "description": "Any of these programmes: 'AS', 'PNRR', or a cohesion code 'POR'."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's code, as in `counties`.",
+       "title": "County"
+      },
+      "description": "A county's code, as in `counties`."
+     },
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "in_progress",
+           "finished",
+           "terminated"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these.",
+       "title": "Status"
+      },
+      "description": "Any of these."
+     },
+     {
+      "name": "reach",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "beneficiary",
+           "payments",
+           "purchases",
+           "companies"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these last steps followed.",
+       "title": "Reach"
+      },
+      "description": "Any of these last steps followed."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the title or the beneficiary's name, a SMIS code or a financing contract number.",
+       "title": "Q"
+      },
+      "description": "Words of the title or the beneficiary's name, a SMIS code or a financing contract number."
+     },
+     {
+      "name": "value_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, included.",
+       "title": "Value Min"
+      },
+      "description": "Lei, included."
+     },
+     {
+      "name": "value_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei, excluded.",
+       "title": "Value Max"
+      },
+      "description": "Lei, excluded."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectsOverview"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/places": {
    "get": {
     "tags": [
@@ -6555,6 +7077,25 @@
     ],
     "title": "CountyOption"
    },
+   "CountyRef": {
+    "properties": {
+     "code": {
+      "type": "string",
+      "title": "Code",
+      "description": "The two-letter code: 'CJ', 'B'."
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     }
+    },
+    "type": "object",
+    "required": [
+     "code",
+     "name"
+    ],
+    "title": "CountyRef"
+   },
    "CountyRow": {
     "properties": {
      "place": {
@@ -7591,7 +8132,7 @@
      },
      "programmes": {
       "items": {
-       "$ref": "#/components/schemas/ProgrammeOption"
+       "$ref": "#/components/schemas/date_romania__api__schemas__eu_project_list__ProgrammeOption"
       },
       "type": "array",
       "title": "Programmes",
@@ -8034,6 +8575,29 @@
      "source"
     ],
     "title": "InstitutionContracts"
+   },
+   "KindOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "anghel_saligny",
+       "pnrr",
+       "cohesion"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "KindOption"
    },
    "LocalBudgetOut": {
     "properties": {
@@ -10624,65 +11188,6 @@
     "title": "ProgrammeMatch",
     "description": "Payments or projects by whether a SEAP contract was found for them."
    },
-   "ProgrammeOption": {
-    "properties": {
-     "value": {
-      "type": "string",
-      "title": "Value",
-      "description": "The programme's code, e.g. 'POR'."
-     },
-     "count": {
-      "type": "integer",
-      "title": "Count"
-     },
-     "total": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Total",
-      "description": "Lei; never add it to another programme's."
-     },
-     "paid": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Paid"
-     },
-     "cut_off": {
-      "anyOf": [
-       {
-        "type": "string",
-        "format": "date"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Cut Off",
-      "description": "The day its list counts `paid` up to."
-     }
-    },
-    "type": "object",
-    "required": [
-     "value",
-     "count",
-     "total",
-     "paid",
-     "cut_off"
-    ],
-    "title": "ProgrammeOption",
-    "description": "One programme of the list under the other filters, with its own figures."
-   },
    "ProgrammePayments": {
     "properties": {
      "county": {
@@ -10890,6 +11395,18 @@
       ],
       "title": "Poim"
      },
+     "state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "State",
+      "description": "The project's state as the latest payment file writes it: 'Finalizată'."
+     },
      "progress": {
       "anyOf": [
        {
@@ -10976,6 +11493,7 @@
      "ministry_contract_no",
      "ministry_contract_date",
      "poim",
+     "state",
      "progress",
      "estimated_end",
      "items",
@@ -10986,6 +11504,228 @@
      "contracts_source"
     ],
     "title": "Project"
+   },
+   "ProjectCountyOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The county's code, as in `county`."
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "name",
+     "count"
+    ],
+    "title": "ProjectCountyOption"
+   },
+   "ProjectItem": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "anghel_saligny",
+       "pnrr",
+       "cohesion"
+      ],
+      "title": "Kind"
+     },
+     "key": {
+      "type": "integer",
+      "title": "Key",
+      "description": "The programme's own key: the ministry's project id (Anghel Saligny), the commitment id (PNRR, `id_angajament`), the SMIS code (cohesion)."
+     },
+     "programme": {
+      "type": "string",
+      "title": "Programme",
+      "description": "'AS', 'PNRR', or the cohesion programme's code."
+     },
+     "programme_name": {
+      "type": "string",
+      "title": "Programme Name"
+     },
+     "period": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period",
+      "description": "A cohesion programme's period: '2014-2020'."
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     },
+     "number": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Number",
+      "description": "The financing contract's number, where given."
+     },
+     "beneficiary_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Beneficiary Name",
+      "description": "As the programme writes it."
+     },
+     "beneficiary": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The beneficiary's entity, where tied."
+     },
+     "counties": {
+      "items": {
+       "$ref": "#/components/schemas/CountyRef"
+      },
+      "type": "array",
+      "title": "Counties",
+      "description": "None for a national project."
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "Lei, as the programme gives it."
+     },
+     "status": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "in_progress",
+         "finished",
+         "terminated"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status",
+      "description": "Ours, where the programme's words map."
+     },
+     "status_written": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status Written",
+      "description": "As the programme writes it."
+     },
+     "reach": {
+      "type": "string",
+      "enum": [
+       "beneficiary",
+       "payments",
+       "purchases",
+       "companies"
+      ],
+      "title": "Reach",
+      "description": "The last step of the money's road followed."
+     },
+     "gap": {
+      "anyOf": [
+       {
+        "type": "string",
+        "const": "payments"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gap",
+      "description": "A step we cannot follow: the payments, when they are on a measure the beneficiary has several contracts on, or not published while a later step is."
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "key",
+     "programme",
+     "programme_name",
+     "period",
+     "title",
+     "number",
+     "beneficiary_name",
+     "beneficiary",
+     "counties",
+     "value",
+     "status",
+     "status_written",
+     "reach",
+     "gap"
+    ],
+    "title": "ProjectItem"
+   },
+   "ProjectList": {
+    "properties": {
+     "total": {
+      "type": "integer",
+      "title": "Total"
+     },
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectItem"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "total",
+     "items"
+    ],
+    "title": "ProjectList"
    },
    "ProjectOverview": {
     "properties": {
@@ -11274,6 +12014,29 @@
     ],
     "title": "ProjectRow"
    },
+   "ProjectStatusOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "in_progress",
+       "finished",
+       "terminated"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "ProjectStatusOption"
+   },
    "ProjectSummary": {
     "properties": {
      "projects": {
@@ -11297,6 +12060,144 @@
      "paid"
     ],
     "title": "ProjectSummary"
+   },
+   "ProjectsOverview": {
+    "properties": {
+     "summary": {
+      "$ref": "#/components/schemas/ProjectsSummary"
+     },
+     "whole": {
+      "type": "integer",
+      "title": "Whole",
+      "description": "Every project held, natural persons' left out."
+     },
+     "beneficiary": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The beneficiary filtered by."
+     },
+     "kinds": {
+      "items": {
+       "$ref": "#/components/schemas/KindOption"
+      },
+      "type": "array",
+      "title": "Kinds"
+     },
+     "programmes": {
+      "items": {
+       "$ref": "#/components/schemas/date_romania__api__schemas__projects__ProgrammeOption"
+      },
+      "type": "array",
+      "title": "Programmes"
+     },
+     "counties": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectCountyOption"
+      },
+      "type": "array",
+      "title": "Counties"
+     },
+     "statuses": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectStatusOption"
+      },
+      "type": "array",
+      "title": "Statuses"
+     },
+     "reaches": {
+      "items": {
+       "$ref": "#/components/schemas/ReachOption"
+      },
+      "type": "array",
+      "title": "Reaches",
+      "description": "How far the road is followed."
+     },
+     "bands": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Bands",
+      "description": "Projects by value, in lei."
+     },
+     "without": {
+      "items": {
+       "$ref": "#/components/schemas/Without"
+      },
+      "type": "array",
+      "title": "Without",
+      "description": "Only when no project is found: what each filter given would leave out if it alone were removed, in the order of the parameters."
+     },
+     "sources": {
+      "items": {
+       "$ref": "#/components/schemas/Source"
+      },
+      "type": "array",
+      "title": "Sources",
+      "description": "One per programme's source."
+     }
+    },
+    "type": "object",
+    "required": [
+     "summary",
+     "whole",
+     "beneficiary",
+     "kinds",
+     "programmes",
+     "counties",
+     "statuses",
+     "reaches",
+     "bands",
+     "without",
+     "sources"
+    ],
+    "title": "ProjectsOverview",
+    "description": "The projects under the filters chosen, in figures; each option counted under every\nfilter but its own."
+   },
+   "ProjectsSummary": {
+    "properties": {
+     "projects": {
+      "type": "integer",
+      "title": "Projects",
+      "description": "Natural persons' projects left out."
+     },
+     "companies": {
+      "type": "integer",
+      "title": "Companies",
+      "description": "Of them, followed to the companies that delivered."
+     },
+     "natural_persons": {
+      "type": "integer",
+      "title": "Natural Persons",
+      "description": "Projects of natural persons under the filters, never listed by name."
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "Lei: only when one kind of programme is chosen, since programmes are never added together."
+     }
+    },
+    "type": "object",
+    "required": [
+     "projects",
+     "companies",
+     "natural_persons",
+     "value"
+    ],
+    "title": "ProjectsSummary"
    },
    "Purchase": {
     "properties": {
@@ -12129,6 +13030,30 @@
      "rank"
     ],
     "title": "RankingRow"
+   },
+   "ReachOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "beneficiary",
+       "payments",
+       "purchases",
+       "companies"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "ReachOption"
    },
    "ReportIn": {
     "properties": {
@@ -13032,6 +13957,111 @@
      "count"
     ],
     "title": "WorksOption"
+   },
+   "date_romania__api__schemas__eu_project_list__ProgrammeOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The programme's code, e.g. 'POR'."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     },
+     "total": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Total",
+      "description": "Lei; never add it to another programme's."
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid"
+     },
+     "cut_off": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cut Off",
+      "description": "The day its list counts `paid` up to."
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count",
+     "total",
+     "paid",
+     "cut_off"
+    ],
+    "title": "ProgrammeOption",
+    "description": "One programme of the list under the other filters, with its own figures."
+   },
+   "date_romania__api__schemas__projects__ProgrammeOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "As in `programme`."
+     },
+     "kind": {
+      "type": "string",
+      "enum": [
+       "anghel_saligny",
+       "pnrr",
+       "cohesion"
+      ],
+      "title": "Kind"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "period": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "kind",
+     "name",
+     "period",
+     "count"
+    ],
+    "title": "ProgrammeOption"
    }
   }
  }

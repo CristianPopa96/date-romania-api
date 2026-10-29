@@ -12,7 +12,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy.orm import Session
 
-from date_romania import eu_links, eu_seap_links, places, pnias_links, reports
+from date_romania import eu_links, eu_seap_links, places, pnias_links, projects, reports
 from date_romania.collectors import (
     anaf,
     eu_projects,
@@ -280,6 +280,16 @@ def link_eu_seap() -> None:
         count = eu_seap_links.link(session)
         session.commit()
         typer.echo(f"{count} links")
+
+
+@link_app.command("projects")
+def link_projects() -> None:
+    """Write the list of projects of every programme again, with how far each road is
+    followed. The two link commands above end with it; this runs it alone."""
+    with Session(get_engine()) as session:
+        count = projects.build(session)
+        session.commit()
+        typer.echo(f"{count} projects")
 
 
 @link_app.command("pnias")

@@ -197,6 +197,10 @@ def link(session: Session) -> int:
     if links:
         session.execute(insert(PniasLink), links)
     session.flush()
+    # A payment tied to a contract or not changes how far its project's road is followed.
+    from date_romania import projects  # projects reads this module's projects()
+
+    projects.build(session)
     return len(links)
 
 

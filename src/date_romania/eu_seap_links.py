@@ -20,7 +20,7 @@ from collections.abc import Iterable
 from sqlalchemy import delete, func, insert, literal_column, or_, select
 from sqlalchemy.orm import Session
 
-from date_romania import money
+from date_romania import money, projects
 from date_romania.models import (
     AwardContract,
     AwardNotice,
@@ -191,4 +191,6 @@ def link(session: Session) -> int:
     if rows:
         session.execute(insert(EuSeapLink), rows)
     session.flush()
+    # A record tied to a project or not changes how far the project's road is followed.
+    projects.build(session)
     return len(rows)
