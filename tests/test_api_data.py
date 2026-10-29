@@ -1425,6 +1425,8 @@ SITE_CALLS = (
     "/v1/programmes/anghel-saligny/projects/overview?q=zzzz",
     f"/v1/programmes/anghel-saligny/projects?builder={BUILDER}&sort=paid&order=desc&limit=25&offset=0",
     f"/v1/programmes/anghel-saligny/projects/overview?builder={BUILDER}",
+    # Page 9, past the end: the site sends it to the last page.
+    "/v1/programmes/anghel-saligny/projects?sort=paid&order=desc&limit=25&offset=200",
     # One project per match state, and one the programme does not have.
     "/v1/programmes/anghel-saligny/projects/101",
     "/v1/programmes/anghel-saligny/projects/102",
