@@ -5899,6 +5899,11 @@
      "projects": 1
     }
    ],
+   "categories": [
+    "Drumurile publice",
+    "Sisteme de canalizare și stații de epurare a apelor uzate",
+    "Sisteme de distribuție gaze naturale"
+   ],
    "files": [
     {
      "published_on": "2026-05-18",
@@ -5991,7 +5996,7 @@
    }
   }
  },
- "/v1/programmes/anghel-saligny/projects?limit=20&offset=0": {
+ "/v1/programmes/anghel-saligny/projects?sort=paid&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 4,
@@ -6055,7 +6060,104 @@
    ]
   }
  },
- "/v1/programmes/anghel-saligny/projects?county=GORJ&limit=20&offset=0": {
+ "/v1/programmes/anghel-saligny/projects/overview": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 4,
+    "payments": 6,
+    "paid": 7160000.0
+   },
+   "whole": 4,
+   "builder": null,
+   "counties": [
+    {
+     "value": "GORJ",
+     "name": "Gorj",
+     "count": 2,
+     "paid": 5710000.0
+    },
+    {
+     "value": "CLUJ",
+     "name": "Cluj",
+     "count": 1,
+     "paid": 950000.0
+    },
+    {
+     "value": "TIMIS",
+     "name": "Timiș",
+     "count": 1,
+     "paid": 500000.0
+    }
+   ],
+   "matches": [
+    {
+     "value": "none",
+     "count": 1
+    },
+    {
+     "value": "one",
+     "count": 1
+    },
+    {
+     "value": "several",
+     "count": 1
+    },
+    {
+     "value": "unnamed",
+     "count": 1
+    }
+   ],
+   "categories": [
+    {
+     "value": "Drumurile publice",
+     "count": 2
+    },
+    {
+     "value": "Sisteme de canalizare și stații de epurare a apelor uzate",
+     "count": 1
+    },
+    {
+     "value": "Sisteme de distribuție gaze naturale",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 2
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?county=GORJ&sort=paid&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 2,
@@ -6091,7 +6193,92 @@
    ]
   }
  },
- "/v1/programmes/anghel-saligny/projects?match=several&limit=20&offset=0": {
+ "/v1/programmes/anghel-saligny/projects/overview?county=GORJ": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 2,
+    "payments": 4,
+    "paid": 5710000.0
+   },
+   "whole": 4,
+   "builder": null,
+   "counties": [
+    {
+     "value": "GORJ",
+     "name": "Gorj",
+     "count": 2,
+     "paid": 5710000.0
+    },
+    {
+     "value": "CLUJ",
+     "name": "Cluj",
+     "count": 1,
+     "paid": 950000.0
+    },
+    {
+     "value": "TIMIS",
+     "name": "Timiș",
+     "count": 1,
+     "paid": 500000.0
+    }
+   ],
+   "matches": [
+    {
+     "value": "none",
+     "count": 1
+    },
+    {
+     "value": "one",
+     "count": 1
+    }
+   ],
+   "categories": [
+    {
+     "value": "Drumurile publice",
+     "count": 1
+    },
+    {
+     "value": "Sisteme de distribuție gaze naturale",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?match=several&sort=paid&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 1,
@@ -6113,7 +6300,84 @@
    ]
   }
  },
- "/v1/programmes/anghel-saligny/projects?q=turceni&limit=20&offset=0": {
+ "/v1/programmes/anghel-saligny/projects/overview?match=several": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 1,
+    "payments": 1,
+    "paid": 950000.0
+   },
+   "whole": 4,
+   "builder": null,
+   "counties": [
+    {
+     "value": "CLUJ",
+     "name": "Cluj",
+     "count": 1,
+     "paid": 950000.0
+    }
+   ],
+   "matches": [
+    {
+     "value": "none",
+     "count": 1
+    },
+    {
+     "value": "one",
+     "count": 1
+    },
+    {
+     "value": "several",
+     "count": 1
+    },
+    {
+     "value": "unnamed",
+     "count": 1
+    }
+   ],
+   "categories": [
+    {
+     "value": "Drumurile publice",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 1
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 0
+    },
+    {
+     "start": 25000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?q=turceni&sort=paid&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 1,
@@ -6135,14 +6399,132 @@
    ]
   }
  },
- "/v1/programmes/anghel-saligny/projects?q=zzzz&limit=20&offset=0": {
+ "/v1/programmes/anghel-saligny/projects/overview?q=turceni": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 1,
+    "payments": 1,
+    "paid": 310000.0
+   },
+   "whole": 4,
+   "builder": null,
+   "counties": [
+    {
+     "value": "GORJ",
+     "name": "Gorj",
+     "count": 1,
+     "paid": 310000.0
+    }
+   ],
+   "matches": [
+    {
+     "value": "none",
+     "count": 1
+    }
+   ],
+   "categories": [
+    {
+     "value": "Sisteme de distribuție gaze naturale",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 0
+    },
+    {
+     "start": 25000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?q=zzzz&sort=paid&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 0,
    "items": []
   }
  },
- "/v1/programmes/anghel-saligny/projects?builder=17886786&limit=20&offset=0": {
+ "/v1/programmes/anghel-saligny/projects/overview?q=zzzz": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 0,
+    "payments": 0,
+    "paid": 0.0
+   },
+   "whole": 4,
+   "builder": null,
+   "counties": [],
+   "matches": [],
+   "categories": [],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 0
+    },
+    {
+     "start": 25000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [
+    {
+     "param": "q",
+     "count": 4
+    }
+   ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?builder=17886786&sort=paid&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 1,
@@ -6162,6 +6544,82 @@
      "match": "one"
     }
    ]
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects/overview?builder=17886786": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 1,
+    "payments": 3,
+    "paid": 5400000.0
+   },
+   "whole": 4,
+   "builder": {
+    "cui": 17886786,
+    "name": "ALFA CONSTRUCT S.R.L.",
+    "kind": "company"
+   },
+   "counties": [
+    {
+     "value": "GORJ",
+     "name": "Gorj",
+     "count": 1,
+     "paid": 5400000.0
+    }
+   ],
+   "matches": [
+    {
+     "value": "one",
+     "count": 1
+    }
+   ],
+   "categories": [
+    {
+     "value": "Drumurile publice",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/programmes/anghel-saligny/projects?sort=paid&order=desc&limit=25&offset=200": {
+  "status": 200,
+  "body": {
+   "total": 4,
+   "items": []
   }
  },
  "/v1/programmes/anghel-saligny/projects/101": {
