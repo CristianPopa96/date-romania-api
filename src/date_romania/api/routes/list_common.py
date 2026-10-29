@@ -49,10 +49,13 @@ def count(session: Session, table, conditions: list[ColumnElement[bool]]) -> int
     return session.scalar(select(func.count()).select_from(table).where(*conditions))
 
 
-def options(session: Session, column, conditions: list[ColumnElement[bool]]) -> list[Option]:
-    """The values of a choice filter, most rows first, each with the rows it would give."""
+def options(
+    session: Session, column, conditions: list[ColumnElement[bool]], table=None
+) -> list[Option]:
+    """The values of a choice filter, most rows first, each with the rows it would give.
+    `table` is the list's FROM when its conditions span several tables."""
     rows = session.execute(
-        select(column.label("value"), func.count().label("count"))
+        _from(select(column.label("value"), func.count().label("count")), table)
         .where(*conditions)
         .group_by(column)
         .order_by(func.count().desc(), column)
@@ -65,6 +68,7 @@ def bands(
     value: ColumnElement,
     edges: Sequence[float],
     conditions: list[ColumnElement[bool]],
+    table=None,
 ) -> list[Band]:
     """Rows by value, from each edge up to the next (excluded); the last band has no end."""
     band = case(
@@ -73,7 +77,9 @@ def bands(
     )
     counted = dict(
         session.execute(
-            select(band, func.count()).where(value.is_not(None), *conditions).group_by(band)
+            _from(select(band, func.count()), table)
+            .where(value.is_not(None), *conditions)
+            .group_by(band)
         ).all()
     )
     ends = [*edges[1:], None]
@@ -96,11 +102,15 @@ def points(
     value: ColumnElement,
     conditions: list[ColumnElement[bool]],
     by: Literal["month", "day"],
+    table=None,
 ) -> list[Point]:
     """The rows given and their value per month or per day; `value` is a sum."""
     start = cast(func.date_trunc(by, day), Date) if by == "month" else day
     rows = session.execute(
-        select(start.label("start"), func.count().label("count"), value.label("value"))
+        _from(
+            select(start.label("start"), func.count().label("count"), value.label("value")),
+            table,
+        )
         .where(*conditions)
         .group_by(start)
         .order_by(start)
@@ -115,24 +125,36 @@ def others(
     value: ColumnElement,
     conditions: list[ColumnElement[bool]],
     largest: Sequence[float],
+    table=None,
 ) -> Others:
     """The parties after the largest: how many (told apart by CUI, or by name where there is
     none) and their value. `largest` are the values of the parties shown."""
     key = func.coalesce(cast(cui, String), text)
-    n, total = session.execute(select(func.count(key.distinct()), value).where(*conditions)).one()
+    n, total = session.execute(
+        _from(select(func.count(key.distinct()), value), table).where(*conditions)
+    ).one()
     return Others(
         parties=max(n - len(largest), 0),
         value=round(float(total or 0) - sum(largest), 2),
     )
 
 
+def _from(query: Select, table) -> Select:
+    return query if table is None else query.select_from(table)
+
+
 def without(
-    session: Session, table, filters: NamedFilters, keep: Sequence[str] = ()
+    session: Session,
+    table,
+    filters: NamedFilters,
+    keep: Sequence[str] = (),
+    base: Sequence[ColumnElement[bool]] = (),
 ) -> list[Without]:
     """For a list its filters leave empty: what each one alone keeps out, in the order of the
-    parameters. Filters in `keep` (whose list it is) are never offered."""
+    parameters. Filters in `keep` (whose list it is) are never offered; `base` holds what
+    every row of the list must be anyway."""
     return [
-        Without(param=name, count=count(session, table, filters.all(name)))
+        Without(param=name, count=count(session, table, [*base, *filters.all(name)]))
         for name in filters.named
         if name not in keep
     ]

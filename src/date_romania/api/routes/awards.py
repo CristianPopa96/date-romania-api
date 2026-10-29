@@ -8,18 +8,16 @@ from sqlalchemy import func, select
 from date_romania import money
 from date_romania.api.routes.award_common import (
     Buyer,
-    EuFunded,
-    Won,
     contracts,
     in_period,
-    notice_filters,
     notice_url,
     period,
     rows,
-    won_filters,
 )
 from date_romania.api.routes.award_csv import contracts_csv
-from date_romania.api.routes.common import Cpv, Db, Format, Limit, Offset, record_source, ref
+from date_romania.api.routes.common import Db, Format, Limit, Offset, record_source, ref
+from date_romania.api.routes.contract_filters import CONTRACTS, ContractFilters
+from date_romania.api.routes.list_common import Order, ordered
 from date_romania.api.schemas import AwardNoticeOut, ContractPage, NoticeDetail
 from date_romania.models import (
     AwardContract,
@@ -27,6 +25,7 @@ from date_romania.models import (
     AwardNoticeDetail,
     AwardNoticeVersion,
     AwardWinner,
+    Entity,
     SourceDocument,
 )
 from date_romania.sources import SEAP_AWARDS
@@ -128,47 +127,33 @@ def award_notice_contracts(
 @router.get("/award-contracts")
 def award_contracts(
     session: Db,
-    buyer: Annotated[int | None, Query(description="CUI of the buying institution.")] = None,
-    supplier: Annotated[int | None, Query(description="CUI of a winner.")] = None,
-    won: Annotated[
-        Won | None, Query(description="By one company, or by an association of several.")
-    ] = None,
-    cpv: Cpv = None,
-    eu_funded: EuFunded = None,
-    sort: Literal["newest", "value"] = "newest",
+    filters: ContractFilters,
+    sort: Annotated[
+        Literal["date", "value", "supplier", "buyer", "newest"],
+        Query(
+            description="The day signed, the value in lei, the first winner's or the buyer's "
+            "name; `newest` is the day, as before."
+        ),
+    ] = "date",
+    order: Order = "desc",
     limit: Limit = 20,
     offset: Offset = 0,
     format: Format = "json",
 ) -> ContractPage:
-    """Contracts signed in the period we hold, newest or largest first.
+    """Contracts signed in the period we hold, under the filters given, in any column's order.
 
     Framework agreements are left out: their value is a ceiling, and what is committed
     under them are their subsequent contracts, which are listed. The list is not complete:
     SEAP publishes many contracts weeks after they are signed.
     """
-    filters = [*in_period(session), *won_filters(won), *notice_filters(cpv, eu_funded)]
-    if buyer is not None:
-        filters.append(AwardNotice.buyer_cui == buyer)
-    if supplier is not None:
-        filters.append(
-            select(AwardWinner.contract_id)
-            .where(
-                AwardWinner.contract_id == AwardContract.id, AwardWinner.supplier_cui == supplier
-            )
-            .exists()
-        )
-    order = (
-        AwardContract.value_ron.desc().nulls_last()
-        if sort == "value"
-        else AwardContract.contract_date.desc().nulls_last()
-    )
-    total = session.scalar(
-        select(func.count())
-        .select_from(AwardContract)
-        .join(AwardNotice, AwardContract.notice_id == AwardNotice.id)
-        .where(*filters)
-    )
-    query = contracts().where(*filters).order_by(order, AwardContract.id.desc())
+    conditions = [*in_period(session), *filters.all()]
+    column = {
+        "value": AwardContract.value_ron,
+        "supplier": func.lower(_first_winner),
+        "buyer": func.lower(func.coalesce(Buyer.name, AwardNotice.buyer_text)),
+    }.get(sort, AwardContract.contract_date)
+    total = session.scalar(select(func.count()).select_from(CONTRACTS).where(*conditions))
+    query = ordered(contracts().where(*conditions), column, order, AwardContract.id)
     if format == "csv":
         # Read a batch at a time as the file is sent, never the whole list at once.
         return contracts_csv(
@@ -178,3 +163,16 @@ def award_contracts(
         )
     page = rows(session, query.limit(limit).offset(offset))
     return ContractPage(total=total, period=period(session), items=page)
+
+
+# The name of a contract's first winner, as SEAP lists them, for sorting by it.
+_first_winner = (
+    select(func.coalesce(Entity.name, AwardWinner.supplier_text))
+    .select_from(AwardWinner)
+    .outerjoin(Entity, Entity.cui == AwardWinner.supplier_cui)
+    .where(AwardWinner.contract_id == AwardContract.id)
+    .order_by(AwardWinner.position)
+    .limit(1)
+    .correlate(AwardContract)
+    .scalar_subquery()
+)

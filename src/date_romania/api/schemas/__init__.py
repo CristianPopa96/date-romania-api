@@ -32,6 +32,12 @@ from date_romania.api.schemas.common import (
     SearchResults,
     Source,
 )
+from date_romania.api.schemas.contract_list import (
+    ContractOverview,
+    ContractParty,
+    ContractSummary,
+    WonOption,
+)
 from date_romania.api.schemas.eu_projects import (
     EuBeneficiary,
     EuBeneficiaryFunds,
@@ -52,7 +58,15 @@ from date_romania.api.schemas.eu_projects import (
     SeapLink,
     SeapLinkMethod,
 )
-from date_romania.api.schemas.lists import Band, Option, Others, Point, Without
+from date_romania.api.schemas.lists import (
+    Band,
+    CpvOption,
+    Option,
+    Others,
+    PartyOption,
+    Point,
+    Without,
+)
 from date_romania.api.schemas.patterns import (
     ContractType,
     NearLimitPair,
@@ -107,7 +121,7 @@ from date_romania.api.schemas.programmes import (
     TraceContract,
     TraceParty,
 )
-from date_romania.api.schemas.purchase_list import CpvOption, PartyOption, PurchaseOverview
+from date_romania.api.schemas.purchase_list import PurchaseOverview
 from date_romania.api.schemas.purchases import (
     CpvDivision,
     EntityPage,
@@ -132,9 +146,12 @@ __all__ = [
     "ChapterAmount",
     "Confidence",
     "Contract",
+    "ContractOverview",
     "ContractPage",
+    "ContractParty",
     "ContractRanking",
     "ContractRankingRow",
+    "ContractSummary",
     "ContractTotals",
     "ContractType",
     "Correction",
@@ -240,4 +257,5 @@ __all__ = [
     "Winner",
     "Without",
     "Won",
+    "WonOption",
 ]

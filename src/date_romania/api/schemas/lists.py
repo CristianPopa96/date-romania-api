@@ -7,7 +7,7 @@ from datetime import date
 
 from pydantic import Field
 
-from date_romania.api.schemas.common import Answer
+from date_romania.api.schemas.common import Answer, EntityRef
 
 
 class Option(Answer):
@@ -44,4 +44,18 @@ class Without(Answer):
     """How many rows one filter alone keeps out, for a list it leaves empty."""
 
     param: str
+    count: int
+
+
+class PartyOption(EntityRef):
+    """An institution or company of a typeahead filter, with its rows under the other filters."""
+
+    count: int
+
+
+class CpvOption(Answer):
+    """A CPV code of a typeahead filter, with its rows under the other filters."""
+
+    code: str
+    name: str | None
     count: int
