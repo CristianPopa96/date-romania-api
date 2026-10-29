@@ -135,6 +135,46 @@ def test_projects_are_listed_by_what_was_paid_and_can_be_narrowed(client):
     assert (row["payments"], row["paid"], row["total_value"]) == (3, 5400000, 8500000)
     assert row["match"] == "one"
 
+    # In any column's order, and by several states at once.
+    assert ids("?sort=paid&order=asc") == [103, 104, 102, 101]
+    assert ids("?match=several&match=unnamed") == [102, 104]
+
+
+def test_the_projects_say_what_their_filters_keep(client):
+    def overview(query: str = "") -> dict:
+        return client.get(f"{ROOT}/projects/overview{query}").json()
+
+    whole = overview()
+    assert whole["summary"] == {"projects": 4, "payments": 6, "paid": 7_160_000}
+    assert whole["whole"] == 4
+    assert [(c["value"], c["name"], c["count"], c["paid"]) for c in whole["counties"]] == [
+        ("GORJ", "Gorj", 2, 5_710_000),
+        ("CLUJ", "Cluj", 1, 950_000),
+        ("TIMIS", "Timiș", 1, 500_000),
+    ]
+    assert {m["value"]: m["count"] for m in whole["matches"]} == {
+        "none": 1,
+        "one": 1,
+        "several": 1,
+        "unnamed": 1,
+    }
+    assert whole["categories"][0] == {"value": "Drumurile publice", "count": 2}
+    # The programme names the same kinds of works, for an address to name one.
+    assert client.get(ROOT).json()["categories"] == [c["value"] for c in whole["categories"]]
+
+    # A builder named: its entity, and each option counted under the other filters.
+    built = overview(f"?county=GORJ&builder={BUILDER}")
+    assert built["summary"] == {"projects": 1, "payments": 3, "paid": 5_400_000}
+    assert built["builder"]["cui"] == BUILDER
+    assert built["counties"] == [{"value": "GORJ", "name": "Gorj", "count": 1, "paid": 5_400_000}]
+
+    empty = overview("?county=GORJ&match=several")
+    assert empty["summary"]["projects"] == 0
+    assert empty["without"] == [
+        {"param": "county", "count": 1},
+        {"param": "match", "count": 2},
+    ]
+
 
 def test_a_project_traced_to_one_contract(client):
     project = client.get(f"{ROOT}/projects/101").json()

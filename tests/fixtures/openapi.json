@@ -1485,7 +1485,7 @@
      "rankings"
     ],
     "summary": "Ranking Suppliers",
-    "description": "Suppliers by the value of their accepted direct purchases.",
+    "description": "Suppliers by the value of their accepted direct purchases, or by how many.",
     "operationId": "ranking_suppliers_v1_rankings_suppliers_get",
     "parameters": [
      {
@@ -1546,6 +1546,56 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -1555,6 +1605,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -1588,7 +1649,7 @@
      "rankings"
     ],
     "summary": "Ranking Institutions",
-    "description": "Institutions by the value of the direct purchases they accepted.",
+    "description": "Institutions by the value of the direct purchases they accepted, or by how many.",
     "operationId": "ranking_institutions_v1_rankings_institutions_get",
     "parameters": [
      {
@@ -1649,6 +1710,56 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -1658,6 +1769,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -1717,7 +1839,7 @@
      "patterns"
     ],
     "summary": "Near Limit",
-    "description": "Pairs of a buyer and a supplier with repeated accepted direct purchases just under the\nlegal limit of their contract type, most purchases first.\n\nA purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is\nnot known cannot be checked: `checked` of `accepted_total` were, and `first_day` and\n`last_day` bound those. As csv: every pair, one line per purchase.",
+    "description": "Pairs of a buyer and a supplier with repeated accepted direct purchases just under the\nlegal limit of their contract type, most purchases first.\n\nA purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is\nnot known cannot be checked: `checked` of `accepted_total` were, and `first_day` and\n`last_day` bound those. As csv: every pair in the order asked for, one line per purchase.",
     "operationId": "near_limit_v1_patterns_near_limit_get",
     "parameters": [
      {
@@ -1740,6 +1862,56 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "contract_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 3,
+         "minimum": 1
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "SEAP's contract type: 1 goods, 2 services, 3 works.",
+       "title": "Contract Type"
+      },
+      "description": "SEAP's contract type: 1 goods, 2 services, 3 works."
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "purchases",
+        "value"
+       ],
+       "type": "string",
+       "description": "How many purchases near the limit, or their value added up.",
+       "default": "purchases",
+       "title": "Sort"
+      },
+      "description": "How many purchases near the limit, or their value added up."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -1749,6 +1921,17 @@
        "minimum": 1,
        "default": 50,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      },
      {
@@ -3183,6 +3366,56 @@
       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -3192,6 +3425,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -3225,7 +3469,7 @@
      "rankings"
     ],
     "summary": "Ranking Contract Institutions",
-    "description": "Institutions by the value of the contracts they awarded; each contract counted once.",
+    "description": "Institutions by the value of the contracts they awarded, or by how many; each\ncontract counted once.",
     "operationId": "ranking_contract_institutions_v1_rankings_contract_institutions_get",
     "parameters": [
      {
@@ -3266,6 +3510,56 @@
       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -3276,6 +3570,17 @@
        "default": 20,
        "title": "Limit"
       }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
      }
     ],
     "responses": {
@@ -3285,6 +3590,182 @@
        "application/json": {
         "schema": {
          "$ref": "#/components/schemas/ContractRanking"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/v1/programmes/anghel-saligny/projects/overview": {
+   "get": {
+    "tags": [
+     "programmes"
+    ],
+    "summary": "Projects Overview",
+    "description": "The projects under the filters given, in figures: how many, their payments and what\nwas paid, the options of each choice filter with their counts, and the projects by the\namount paid.",
+    "operationId": "projects_overview_v1_programmes_anghel_saligny_projects_overview_get",
+    "parameters": [
+     {
+      "name": "builder",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The builder's CUI.",
+       "title": "Builder"
+      },
+      "description": "The builder's CUI."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "As in `counties[].value`.",
+       "title": "County"
+      },
+      "description": "As in `counties[].value`."
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Part of the town hall or the investment.",
+       "title": "Q"
+      },
+      "description": "Part of the town hall or the investment."
+     },
+     {
+      "name": "match",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "enum": [
+           "one",
+           "several",
+           "none",
+           "unnamed"
+          ],
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Any of these match states of the project.",
+       "title": "Match"
+      },
+      "description": "Any of these match states of the project."
+     },
+     {
+      "name": "category",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Kinds of works as the ministry writes them.",
+       "title": "Category"
+      },
+      "description": "Kinds of works as the ministry writes them."
+     },
+     {
+      "name": "paid_min",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei paid, included.",
+       "title": "Paid Min"
+      },
+      "description": "Lei paid, included."
+     },
+     {
+      "name": "paid_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei paid, excluded.",
+       "title": "Paid Max"
+      },
+      "description": "Lei paid, excluded."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectOverview"
         }
        }
       }
@@ -3330,9 +3811,62 @@
      "programmes"
     ],
     "summary": "Projects",
-    "description": "The projects of the programme, the most paid first.",
+    "description": "The projects of the programme under the filters given, the most paid first, or in\nany column's order.",
     "operationId": "projects_v1_programmes_anghel_saligny_projects_get",
     "parameters": [
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "paid",
+        "value"
+       ],
+       "type": "string",
+       "description": "The amount paid, or the project's value as the ministry gives it.",
+       "default": "paid",
+       "title": "Sort"
+      },
+      "description": "The amount paid, or the project's value as the ministry gives it."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 100,
+       "minimum": 1,
+       "default": 20,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     },
      {
       "name": "county",
       "in": "query",
@@ -3346,10 +3880,10 @@
          "type": "null"
         }
        ],
-       "description": "As in `counties[].key`.",
+       "description": "As in `counties[].value`.",
        "title": "County"
       },
-      "description": "As in `counties[].key`."
+      "description": "As in `counties[].value`."
      },
      {
       "name": "q",
@@ -3396,45 +3930,84 @@
       "schema": {
        "anyOf": [
         {
-         "enum": [
-          "one",
-          "several",
-          "none",
-          "unnamed"
-         ],
-         "type": "string"
+         "type": "array",
+         "items": {
+          "enum": [
+           "one",
+           "several",
+           "none",
+           "unnamed"
+          ],
+          "type": "string"
+         }
         },
         {
          "type": "null"
         }
        ],
-       "description": "The match state of the project.",
+       "description": "Any of these match states of the project.",
        "title": "Match"
       },
-      "description": "The match state of the project."
+      "description": "Any of these match states of the project."
      },
      {
-      "name": "limit",
+      "name": "category",
       "in": "query",
       "required": false,
       "schema": {
-       "type": "integer",
-       "maximum": 100,
-       "minimum": 1,
-       "default": 20,
-       "title": "Limit"
-      }
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Kinds of works as the ministry writes them.",
+       "title": "Category"
+      },
+      "description": "Kinds of works as the ministry writes them."
      },
      {
-      "name": "offset",
+      "name": "paid_min",
       "in": "query",
       "required": false,
       "schema": {
-       "type": "integer",
-       "minimum": 0,
-       "default": 0,
-       "title": "Offset"
-      }
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei paid, included.",
+       "title": "Paid Min"
+      },
+      "description": "Lei paid, included."
+     },
+     {
+      "name": "paid_max",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "number",
+         "minimum": 0
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Lei paid, excluded.",
+       "title": "Paid Max"
+      },
+      "description": "Lei paid, excluded."
      }
     ],
     "responses": {
@@ -5713,12 +6286,18 @@
       "title": "Won",
       "description": "alone or association, for a ranking of winners."
      },
+     "total": {
+      "type": "integer",
+      "title": "Total",
+      "description": "Every party ranked under the filters, beyond the page."
+     },
      "items": {
       "items": {
        "$ref": "#/components/schemas/ContractRankingRow"
       },
       "type": "array",
-      "title": "Items"
+      "title": "Items",
+      "description": "`rank` is the place in the order asked for, counted from the first page."
      },
      "source": {
       "$ref": "#/components/schemas/Source"
@@ -5728,6 +6307,7 @@
     "required": [
      "period",
      "won",
+     "total",
      "items",
      "source"
     ],
@@ -7719,6 +8299,30 @@
      "amount"
     ],
     "title": "MatchCount"
+   },
+   "MatchOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "enum": [
+       "one",
+       "several",
+       "none",
+       "unnamed"
+      ],
+      "title": "Value"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "MatchOption"
    },
    "MeasureOption": {
     "properties": {
@@ -9793,6 +10397,14 @@
       "type": "array",
       "title": "Counties"
      },
+     "categories": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Categories",
+      "description": "The kinds of works of the projects, as the ministry writes them, the most projects first: the values `category` filters the projects by."
+     },
      "files": {
       "items": {
        "$ref": "#/components/schemas/ProgrammeFile"
@@ -9853,6 +10465,7 @@
      "last_day",
      "networks",
      "counties",
+     "categories",
      "files",
      "payments_match",
      "projects_match",
@@ -9864,6 +10477,36 @@
     ],
     "title": "Programme",
     "description": "The Anghel Saligny programme, from the ministry's payment files."
+   },
+   "ProgrammeCountyOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The county's key, as in `county`."
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid",
+      "description": "Lei paid for its projects, under the other filters."
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "name",
+     "count",
+     "paid"
+    ],
+    "title": "ProgrammeCountyOption"
    },
    "ProgrammeFile": {
     "properties": {
@@ -10344,6 +10987,82 @@
     ],
     "title": "Project"
    },
+   "ProjectOverview": {
+    "properties": {
+     "summary": {
+      "$ref": "#/components/schemas/ProjectSummary"
+     },
+     "whole": {
+      "type": "integer",
+      "title": "Whole",
+      "description": "Every project of the programme held."
+     },
+     "builder": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/EntityRef"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "The builder filtered by, where it is held."
+     },
+     "counties": {
+      "items": {
+       "$ref": "#/components/schemas/ProgrammeCountyOption"
+      },
+      "type": "array",
+      "title": "Counties",
+      "description": "Under every filter but the county, the most paid first."
+     },
+     "matches": {
+      "items": {
+       "$ref": "#/components/schemas/MatchOption"
+      },
+      "type": "array",
+      "title": "Matches",
+      "description": "Under every filter but the match."
+     },
+     "categories": {
+      "items": {
+       "$ref": "#/components/schemas/WorksOption"
+      },
+      "type": "array",
+      "title": "Categories",
+      "description": "Under every filter but the category."
+     },
+     "bands": {
+      "items": {
+       "$ref": "#/components/schemas/Band"
+      },
+      "type": "array",
+      "title": "Bands",
+      "description": "Projects by the amount paid, in lei."
+     },
+     "without": {
+      "items": {
+       "$ref": "#/components/schemas/Without"
+      },
+      "type": "array",
+      "title": "Without",
+      "description": "Only when no project is found: what each filter given would leave out if it alone were removed, in the order of the parameters."
+     }
+    },
+    "type": "object",
+    "required": [
+     "summary",
+     "whole",
+     "builder",
+     "counties",
+     "matches",
+     "categories",
+     "bands",
+     "without"
+    ],
+    "title": "ProjectOverview",
+    "description": "The projects under the filters chosen, in figures."
+   },
    "ProjectPage": {
     "properties": {
      "total": {
@@ -10554,6 +11273,30 @@
      "match"
     ],
     "title": "ProjectRow"
+   },
+   "ProjectSummary": {
+    "properties": {
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "payments": {
+      "type": "integer",
+      "title": "Payments"
+     },
+     "paid": {
+      "type": "number",
+      "title": "Paid",
+      "description": "Lei, every payment held for these projects."
+     }
+    },
+    "type": "object",
+    "required": [
+     "projects",
+     "payments",
+     "paid"
+    ],
+    "title": "ProjectSummary"
    },
    "Purchase": {
     "properties": {
@@ -11321,12 +12064,18 @@
       ],
       "title": "Date To"
      },
+     "total": {
+      "type": "integer",
+      "title": "Total",
+      "description": "Every party ranked under the filters, beyond the page."
+     },
      "items": {
       "items": {
        "$ref": "#/components/schemas/RankingRow"
       },
       "type": "array",
-      "title": "Items"
+      "title": "Items",
+      "description": "`rank` is the place in the order asked for, counted from the first page."
      },
      "source": {
       "$ref": "#/components/schemas/Source"
@@ -11336,6 +12085,7 @@
     "required": [
      "date_from",
      "date_to",
+     "total",
      "items",
      "source"
     ],
@@ -12263,6 +13013,25 @@
      "count"
     ],
     "title": "WonOption"
+   },
+   "WorksOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The kind of works as the ministry writes it."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "WorksOption"
    }
   }
  }
