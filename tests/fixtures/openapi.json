@@ -1485,7 +1485,7 @@
      "rankings"
     ],
     "summary": "Ranking Suppliers",
-    "description": "Suppliers by the value of their accepted direct purchases.",
+    "description": "Suppliers by the value of their accepted direct purchases, or by how many.",
     "operationId": "ranking_suppliers_v1_rankings_suppliers_get",
     "parameters": [
      {
@@ -1546,6 +1546,56 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -1555,6 +1605,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -1588,7 +1649,7 @@
      "rankings"
     ],
     "summary": "Ranking Institutions",
-    "description": "Institutions by the value of the direct purchases they accepted.",
+    "description": "Institutions by the value of the direct purchases they accepted, or by how many.",
     "operationId": "ranking_institutions_v1_rankings_institutions_get",
     "parameters": [
      {
@@ -1649,6 +1710,56 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -1658,6 +1769,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -1717,7 +1839,7 @@
      "patterns"
     ],
     "summary": "Near Limit",
-    "description": "Pairs of a buyer and a supplier with repeated accepted direct purchases just under the\nlegal limit of their contract type, most purchases first.\n\nA purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is\nnot known cannot be checked: `checked` of `accepted_total` were, and `first_day` and\n`last_day` bound those. As csv: every pair, one line per purchase.",
+    "description": "Pairs of a buyer and a supplier with repeated accepted direct purchases just under the\nlegal limit of their contract type, most purchases first.\n\nA purchase is near the limit from `rule.share` of it to just under it. A purchase whose type is\nnot known cannot be checked: `checked` of `accepted_total` were, and `first_day` and\n`last_day` bound those. As csv: every pair in the order asked for, one line per purchase.",
     "operationId": "near_limit_v1_patterns_near_limit_get",
     "parameters": [
      {
@@ -1740,6 +1862,56 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "contract_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer",
+         "maximum": 3,
+         "minimum": 1
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "SEAP's contract type: 1 goods, 2 services, 3 works.",
+       "title": "Contract Type"
+      },
+      "description": "SEAP's contract type: 1 goods, 2 services, 3 works."
+     },
+     {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "purchases",
+        "value"
+       ],
+       "type": "string",
+       "description": "How many purchases near the limit, or their value added up.",
+       "default": "purchases",
+       "title": "Sort"
+      },
+      "description": "How many purchases near the limit, or their value added up."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -1749,6 +1921,17 @@
        "minimum": 1,
        "default": 50,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      },
      {
@@ -3183,6 +3366,56 @@
       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -3192,6 +3425,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -3225,7 +3469,7 @@
      "rankings"
     ],
     "summary": "Ranking Contract Institutions",
-    "description": "Institutions by the value of the contracts they awarded; each contract counted once.",
+    "description": "Institutions by the value of the contracts they awarded, or by how many; each\ncontract counted once.",
     "operationId": "ranking_contract_institutions_v1_rankings_contract_institutions_get",
     "parameters": [
      {
@@ -3266,6 +3510,56 @@
       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
      },
      {
+      "name": "sort",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "value",
+        "count"
+       ],
+       "type": "string",
+       "description": "The value added up, or how many rows it is added up from.",
+       "default": "value",
+       "title": "Sort"
+      },
+      "description": "The value added up, or how many rows it is added up from."
+     },
+     {
+      "name": "order",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "type": "string",
+       "default": "desc",
+       "title": "Order"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "minLength": 2,
+         "maxLength": 100
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking.",
+       "title": "Q"
+      },
+      "description": "Words of the party's name, or its CUI: the parties found keep their place in the ranking."
+     },
+     {
       "name": "limit",
       "in": "query",
       "required": false,
@@ -3275,6 +3569,17 @@
        "minimum": 1,
        "default": 20,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      }
     ],
@@ -5978,12 +6283,18 @@
       "title": "Won",
       "description": "alone or association, for a ranking of winners."
      },
+     "total": {
+      "type": "integer",
+      "title": "Total",
+      "description": "Every party ranked under the filters, beyond the page."
+     },
      "items": {
       "items": {
        "$ref": "#/components/schemas/ContractRankingRow"
       },
       "type": "array",
-      "title": "Items"
+      "title": "Items",
+      "description": "`rank` is the place in the order asked for, counted from the first page."
      },
      "source": {
       "$ref": "#/components/schemas/Source"
@@ -5993,6 +6304,7 @@
     "required": [
      "period",
      "won",
+     "total",
      "items",
      "source"
     ],
@@ -11649,12 +11961,18 @@
       ],
       "title": "Date To"
      },
+     "total": {
+      "type": "integer",
+      "title": "Total",
+      "description": "Every party ranked under the filters, beyond the page."
+     },
      "items": {
       "items": {
        "$ref": "#/components/schemas/RankingRow"
       },
       "type": "array",
-      "title": "Items"
+      "title": "Items",
+      "description": "`rank` is the place in the order asked for, counted from the first page."
      },
      "source": {
       "$ref": "#/components/schemas/Source"
@@ -11664,6 +11982,7 @@
     "required": [
      "date_from",
      "date_to",
+     "total",
      "items",
      "source"
     ],

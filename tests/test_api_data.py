@@ -530,6 +530,17 @@ def test_rankings_order_by_accepted_value(client):
     assert [(r["cui"], r["value"]) for r in one_day["items"]] == [(BUILDER, 1000.0)]
     assert one_day["date_from"] == "2026-10-05"
 
+    # A page of it, in any order: the rank is the place in that order, the total all of it.
+    page = client.get(
+        "/v1/rankings/suppliers", params={"sort": "value", "order": "asc", "limit": 1, "offset": 1}
+    ).json()
+    assert page["total"] == 2
+    assert [(r["rank"], r["cui"]) for r in page["items"]] == [(2, BUILDER)]
+    by_count = client.get("/v1/rankings/institutions", params={"sort": "count"}).json()
+    assert [r["accepted"] for r in by_count["items"]] == sorted(
+        (r["accepted"] for r in by_count["items"]), reverse=True
+    )
+
 
 def test_search_forgives_diacritics_word_order_and_typos(client):
     def found(q, **params):
@@ -765,6 +776,19 @@ def test_contract_rankings_keep_alone_and_association_apart(client):
         (TOWN_HALL, 2, 6330000),
         (HOSPITAL, 1, 50000),
     ]
+    assert buyers["total"] == 2
+    fewest = client.get("/v1/rankings/contract-institutions?sort=count&order=asc&limit=1").json()
+    assert (fewest["total"], [(r["rank"], r["cui"]) for r in fewest["items"]]) == (
+        2,
+        [(1, HOSPITAL)],
+    )
+    # A party searched for keeps its place in the ranking, by name or by CUI.
+    for q in ("spitalul", str(HOSPITAL)):
+        found = client.get("/v1/rankings/contract-institutions", params={"q": q}).json()
+        assert (found["total"], [(r["rank"], r["cui"]) for r in found["items"]]) == (
+            1,
+            [(2, HOSPITAL)],
+        )
 
 
 def test_a_withdrawn_notice_does_not_count_its_contracts_again(client, session):
@@ -1149,6 +1173,16 @@ def test_near_limit_can_be_narrowed_by_cpv_and_cut_short(client, session):
     assert (short["pairs"], len(short["items"])) == (2, 1)
     assert client.get("/v1/patterns/near-limit?cpv=4x").status_code == 422
 
+    # By contract type, which narrows what was checked too.
+    goods = client.get(f"/v1/patterns/near-limit?contract_type={GOODS}").json()
+    assert [(p["supplier"]["cui"], p["contract_type"]) for p in goods["items"]] == [
+        (STATIONER, GOODS)
+    ]
+    assert goods["pairs"] == 1
+    # A page of it, in any order.
+    second = client.get("/v1/patterns/near-limit?sort=value&order=asc&limit=1&offset=1").json()
+    assert (second["pairs"], [p["supplier"]["cui"] for p in second["items"]]) == (2, [BUILDER])
+
 
 def test_rankings_can_be_filtered_by_cpv_and_eu_funds(client):
     def cuis(path):
@@ -1340,8 +1374,6 @@ SITE_CALLS = (
     "/v1/institutions/12345674?partners=10",
     "/v1/direct-purchases?buyer=12345674&sort=date&order=desc&limit=25&offset=0",
     "/v1/direct-purchases/overview?buyer=12345674&scope=buyer",
-    "/v1/rankings/suppliers?limit=20",
-    "/v1/rankings/institutions?limit=20",
     "/v1/datasets",
     "/v1/corrections",
     f"/v1/award-notices/{ROAD}",
@@ -1400,17 +1432,32 @@ SITE_CALLS = (
     f"/v1/award-contracts/overview?supplier={BUILDER}&won=association&scope=supplier",
     "/v1/institutions/12345674/contracts",
     "/v1/award-contracts?sort=value&limit=20&offset=0",
-    "/v1/rankings/contract-suppliers?won=alone&limit=20",
-    "/v1/rankings/contract-suppliers?won=association&limit=20",
-    "/v1/rankings/contract-institutions?limit=20",
+    # The rankings as lists: a page, and the ten largest for the chart.
+    "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/contract-suppliers?won=association&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-suppliers?won=association&sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/contract-institutions?sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-institutions?sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/contract-institutions?sort=count&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-institutions?q=spital&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-institutions?q=spital&sort=value&order=desc&limit=10&offset=0",
+    # Page 9, past the end: the site sends it to the last page.
+    "/v1/rankings/contract-institutions?sort=value&order=desc&limit=25&offset=200",
+    "/v1/rankings/suppliers?sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/suppliers?sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/institutions?sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/institutions?sort=value&order=desc&limit=10&offset=0",
     # The rankings with their filters.
     "/v1/award-contracts?sort=value&cpv=45&limit=20&offset=0",
     "/v1/award-contracts?sort=value&cpv=45&eu_funded=true&limit=20&offset=0",
     "/v1/award-contracts?sort=value&cpv=30&limit=20&offset=0",
-    "/v1/rankings/contract-suppliers?won=alone&cpv=45&limit=20",
-    "/v1/rankings/contract-institutions?eu_funded=false&limit=20",
-    "/v1/rankings/suppliers?cpv=45&limit=20",
-    "/v1/rankings/institutions?cpv=45&limit=20",
+    "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/contract-institutions?eu_funded=false&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-institutions?eu_funded=false&sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/suppliers?cpv=45&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/suppliers?cpv=45&sort=value&order=desc&limit=10&offset=0",
     "/v1/programmes/anghel-saligny",
     # The projects as a list: all, by county, by match, by words, none, by builder.
     "/v1/programmes/anghel-saligny/projects?sort=paid&order=desc&limit=25&offset=0",
@@ -1493,9 +1540,11 @@ SITE_CALLS = (
 # pages that use them expect.
 SITE_CALLS_NEAR_LIMIT = (
     "/v1/cpv-divisions",
-    "/v1/patterns/near-limit?limit=50",
-    "/v1/patterns/near-limit?cpv=45&limit=50",
-    "/v1/patterns/near-limit?cpv=30&limit=50",
+    "/v1/patterns/near-limit?sort=purchases&order=desc&limit=25&offset=0",
+    "/v1/patterns/near-limit?cpv=45&sort=purchases&order=desc&limit=25&offset=0",
+    "/v1/patterns/near-limit?cpv=30&sort=purchases&order=desc&limit=25&offset=0",
+    "/v1/patterns/near-limit?contract_type=3&sort=purchases&order=desc&limit=25&offset=0",
+    "/v1/patterns/near-limit?sort=purchases&order=desc&limit=25&offset=200",
 )
 
 
