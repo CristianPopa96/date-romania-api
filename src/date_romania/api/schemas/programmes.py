@@ -62,6 +62,10 @@ class Programme(Answer):
     last_day: date | None
     networks: list[ProgrammeGroup] = Field(description="`infra` (roads, water, sewage), `gas`.")
     counties: list[ProgrammeGroup]
+    categories: list[str] = Field(
+        description="The kinds of works of the projects, as the ministry writes them, the "
+        "most projects first: the values `category` filters the projects by."
+    )
     files: list[ProgrammeFile]
     payments_match: ProgrammeMatch
     projects_match: ProgrammeMatch

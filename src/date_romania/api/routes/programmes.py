@@ -1,16 +1,17 @@
 """The Anghel Saligny programme: what the ministry paid, for which project, to which
 builder, and the SEAP contracts a payment could be tied to."""
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Query
 from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 
 from date_romania import pnias_links
-from date_romania.api.routes.common import Db, Limit, Offset, containing, last_fetched
+from date_romania.api.routes.common import Db, Limit, Offset, last_fetched
+from date_romania.api.routes.list_common import Order, ordered
+from date_romania.api.routes.programme_list import PROJECT, ProjectFilters
 from date_romania.api.schemas import (
-    Match,
     Programme,
     ProgrammeFile,
     ProgrammeGroup,
@@ -23,7 +24,6 @@ from date_romania.counties import county_name
 from date_romania.models import (
     ExportContract,
     PniasPayment,
-    search_text,
 )
 from date_romania.sources import PNIAS_PAYMENTS, SEAP_EXPORTS, PublicSource
 
@@ -103,6 +103,12 @@ def programme(session: Db) -> Programme:
         last_day=last_day,
         networks=_groups(session, PniasPayment.network),
         counties=_groups(session, PniasPayment.county, county_name),
+        categories=session.scalars(
+            select(PROJECT.c.category)
+            .where(PROJECT.c.category.is_not(None))
+            .group_by(PROJECT.c.category)
+            .order_by(func.count().desc(), PROJECT.c.category)
+        ).all(),
         files=[
             ProgrammeFile(published_on=day, payments=count, amount=total, with_tax_id=named)
             for day, count, total, named in files
@@ -132,41 +138,22 @@ def programme(session: Db) -> Programme:
 @router.get("/projects")
 def projects(
     session: Db,
-    county: Annotated[str | None, Query(description="As in `counties[].key`.")] = None,
-    q: Annotated[
-        str | None,
-        Query(min_length=2, max_length=100, description="Part of the town hall or the investment."),
-    ] = None,
-    builder: Annotated[int | None, Query(description="The builder's CUI.")] = None,
-    match: Annotated[Match | None, Query(description="The match state of the project.")] = None,
+    filters: ProjectFilters,
+    sort: Annotated[
+        Literal["paid", "value"],
+        Query(description="The amount paid, or the project's value as the ministry gives it."),
+    ] = "paid",
+    order: Order = "desc",
     limit: Limit = 20,
     offset: Offset = 0,
 ) -> ProjectPage:
-    """The projects of the programme, the most paid first."""
-    project = pnias_links.projects()
-    filters = []
-    if county:
-        filters.append(project.c.county == county)
-    if q:
-        # The words are searched as typed: `%` and `_` are not wildcards.
-        like = containing(q)
-        filters.append(
-            search_text(project.c.town_hall).like(like)
-            | search_text(project.c.investment).like(like)
-        )
-    if builder:
-        filters.append(
-            project.c.project_id.in_(
-                select(PniasPayment.project_id).where(PniasPayment.builder_cui == builder)
-            )
-        )
-    if match:
-        filters.append(project.c.match == match)
-    total = session.scalar(select(func.count()).select_from(project).where(*filters))
+    """The projects of the programme under the filters given, the most paid first, or in
+    any column's order."""
+    conditions = filters.all()
+    column = PROJECT.c.total_value if sort == "value" else PROJECT.c.paid
+    total = session.scalar(select(func.count()).select_from(PROJECT).where(*conditions))
     rows = session.execute(
-        select(project)
-        .where(*filters)
-        .order_by(project.c.paid.desc(), project.c.project_id)
+        ordered(select(PROJECT).where(*conditions), column, order, PROJECT.c.project_id)
         .limit(limit)
         .offset(offset)
     )
