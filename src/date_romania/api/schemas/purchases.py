@@ -122,7 +122,10 @@ class RankingRow(Partner):
 class Ranking(Answer):
     date_from: date | None
     date_to: date | None
-    items: list[RankingRow]
+    total: int = Field(description="Every party ranked under the filters, beyond the page.")
+    items: list[RankingRow] = Field(
+        description="`rank` is the place in the order asked for, counted from the first page."
+    )
     source: Source
 
 

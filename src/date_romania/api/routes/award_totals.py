@@ -14,7 +14,8 @@ from date_romania.api.routes.award_common import (
     period,
     won_filters,
 )
-from date_romania.api.routes.common import Cpv, Db, Limit, ref
+from date_romania.api.routes.common import Cpv, Db
+from date_romania.api.routes.rankings import Page, RankingPage, ranked
 from date_romania.api.schemas import (
     ContractRanking,
     ContractRankingRow,
@@ -81,30 +82,39 @@ def _ranking(
     side: ColumnElement,
     won: Won | None,
     filters: list[ColumnElement[bool]],
-    limit: int,
+    page: Page,
     *joins,
 ) -> ContractRanking:
-    query = select(Entity, func.count().label("contracts"), money.contract_value.label("value"))
+    contracts = func.count()
+    query = select(Entity.cui, Entity.name, Entity.kind).add_columns(
+        contracts.label("contracts"), money.contract_value.label("value")
+    )
     query = query.select_from(AwardContract).join(
         AwardNotice, AwardContract.notice_id == AwardNotice.id
     )
     for target, on in joins:
         query = query.join(target, on)
-    rows = session.execute(
+    query = (
         query.join(Entity, Entity.cui == side)
         .where(*in_period(session), *won_filters(won), *filters)
         .group_by(Entity.cui)
-        .order_by(money.contract_value.desc(), Entity.cui)
-        .limit(limit)
     )
+    column = contracts if page.sort == "count" else money.contract_value
+    total, rows = ranked(session, query, column, page)
     return ContractRanking(
         period=period(session),
         won=won,
+        total=total,
         items=[
             ContractRankingRow(
-                rank=rank, **ref(entity).model_dump(), contracts=contracts, value=value
+                rank=row.place,
+                cui=row.cui,
+                name=row.name,
+                kind=row.kind,
+                contracts=row.contracts,
+                value=row.value,
             )
-            for rank, (entity, contracts, value) in enumerate(rows, 1)
+            for row in rows
         ],
         source=awards_source(session, *won_filters(won), *filters),
     )
@@ -113,10 +123,10 @@ def _ranking(
 @router.get("/rankings/contract-suppliers", tags=["rankings"])
 def ranking_contract_suppliers(
     session: Db,
+    page: RankingPage,
     won: Won = "alone",
     cpv: Cpv = None,
     eu_funded: EuFunded = None,
-    limit: Limit = 20,
 ) -> ContractRanking:
     """Companies by the value of the contracts they won, alone or in associations.
 
@@ -126,13 +136,17 @@ def ranking_contract_suppliers(
     members = select(AwardWinner.contract_id, AwardWinner.supplier_cui).distinct().subquery()
     winners = (members, members.c.contract_id == AwardContract.id)
     filters = notice_filters(cpv, eu_funded)
-    return _ranking(session, members.c.supplier_cui, won, filters, limit, winners)
+    return _ranking(session, members.c.supplier_cui, won, filters, page, winners)
 
 
 @router.get("/rankings/contract-institutions", tags=["rankings"])
 def ranking_contract_institutions(
-    session: Db, cpv: Cpv = None, eu_funded: EuFunded = None, limit: Limit = 20
+    session: Db,
+    page: RankingPage,
+    cpv: Cpv = None,
+    eu_funded: EuFunded = None,
 ) -> ContractRanking:
-    """Institutions by the value of the contracts they awarded; each contract counted once."""
+    """Institutions by the value of the contracts they awarded, or by how many; each
+    contract counted once."""
     filters = notice_filters(cpv, eu_funded)
-    return _ranking(session, AwardNotice.buyer_cui, None, filters, limit)
+    return _ranking(session, AwardNotice.buyer_cui, None, filters, page)

@@ -1845,76 +1845,6 @@
    "without": []
   }
  },
- "/v1/rankings/suppliers?limit=20": {
-  "status": 200,
-  "body": {
-   "date_from": null,
-   "date_to": null,
-   "items": [
-    {
-     "cui": 17886786,
-     "name": "ALFA CONSTRUCT S.R.L.",
-     "kind": "company",
-     "accepted": 2,
-     "value": 3000.0,
-     "rank": 1
-    },
-    {
-     "cui": 18288250,
-     "name": "Beta Birotică SRL",
-     "kind": "company",
-     "accepted": 1,
-     "value": 500.0,
-     "rank": 2
-    }
-   ],
-   "source": {
-    "publisher": "SEAP",
-    "record": null,
-    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
-    "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null,
-    "sha256": null,
-    "parser_version": null,
-    "documents": 1
-   }
-  }
- },
- "/v1/rankings/institutions?limit=20": {
-  "status": 200,
-  "body": {
-   "date_from": null,
-   "date_to": null,
-   "items": [
-    {
-     "cui": 4981310,
-     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-     "kind": "authority",
-     "accepted": 3,
-     "value": 3500.0,
-     "rank": 1
-    },
-    {
-     "cui": 4491342,
-     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-     "kind": "authority",
-     "accepted": 1,
-     "value": 700.0,
-     "rank": 2
-    }
-   ],
-   "source": {
-    "publisher": "SEAP",
-    "record": null,
-    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
-    "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null,
-    "sha256": null,
-    "parser_version": null,
-    "documents": 1
-   }
-  }
- },
  "/v1/datasets": {
   "status": 200,
   "body": {
@@ -5004,7 +4934,7 @@
    ]
   }
  },
- "/v1/rankings/contract-suppliers?won=alone&limit=20": {
+ "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "period": {
@@ -5012,6 +4942,7 @@
     "last_day": "2026-10-07"
    },
    "won": "alone",
+   "total": 1,
    "items": [
     {
      "cui": 17886786,
@@ -5034,7 +4965,38 @@
    }
   }
  },
- "/v1/rankings/contract-suppliers?won=association&limit=20": {
+ "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": "alone",
+   "total": 1,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "rank": 1,
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-suppliers?won=association&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "period": {
@@ -5042,6 +5004,7 @@
     "last_day": "2026-10-07"
    },
    "won": "association",
+   "total": 2,
    "items": [
     {
      "cui": 17886786,
@@ -5072,7 +5035,46 @@
    }
   }
  },
- "/v1/rankings/contract-institutions?limit=20": {
+ "/v1/rankings/contract-suppliers?won=association&sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": "association",
+   "total": 2,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "rank": 1,
+     "contracts": 1,
+     "value": 6120000.0
+    },
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
+     "rank": 2,
+     "contracts": 1,
+     "value": 6120000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "period": {
@@ -5080,6 +5082,7 @@
     "last_day": "2026-10-07"
    },
    "won": null,
+   "total": 2,
    "items": [
     {
      "cui": 4981310,
@@ -5102,6 +5105,259 @@
     "publisher": "SEAP",
     "record": null,
     "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "total": 2,
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "rank": 1,
+     "contracts": 2,
+     "value": 6330000.0
+    },
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "rank": 2,
+     "contracts": 1,
+     "value": 50000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?sort=count&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "total": 2,
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "rank": 1,
+     "contracts": 2,
+     "value": 6330000.0
+    },
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "rank": 2,
+     "contracts": 1,
+     "value": 50000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?q=spital&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "total": 1,
+   "items": [
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "rank": 2,
+     "contracts": 1,
+     "value": 50000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/suppliers?sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "date_from": null,
+   "date_to": null,
+   "total": 2,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "accepted": 2,
+     "value": 3000.0,
+     "rank": 1
+    },
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
+     "accepted": 1,
+     "value": 500.0,
+     "rank": 2
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/suppliers?sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "date_from": null,
+   "date_to": null,
+   "total": 2,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "accepted": 2,
+     "value": 3000.0,
+     "rank": 1
+    },
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
+     "accepted": 1,
+     "value": 500.0,
+     "rank": 2
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/institutions?sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "date_from": null,
+   "date_to": null,
+   "total": 2,
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "accepted": 3,
+     "value": 3500.0,
+     "rank": 1
+    },
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "accepted": 1,
+     "value": 700.0,
+     "rank": 2
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/institutions?sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "date_from": null,
+   "date_to": null,
+   "total": 2,
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "accepted": 3,
+     "value": 3500.0,
+     "rank": 1
+    },
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "accepted": 1,
+     "value": 700.0,
+     "rank": 2
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
     "fetched_at": "2026-10-07T04:30:00Z",
     "document_id": null,
     "sha256": null,
@@ -5379,7 +5635,7 @@
    "items": []
   }
  },
- "/v1/rankings/contract-suppliers?won=alone&cpv=45&limit=20": {
+ "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "period": {
@@ -5387,6 +5643,7 @@
     "last_day": "2026-10-07"
    },
    "won": "alone",
+   "total": 1,
    "items": [
     {
      "cui": 17886786,
@@ -5409,7 +5666,38 @@
    }
   }
  },
- "/v1/rankings/contract-institutions?eu_funded=false&limit=20": {
+ "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": "alone",
+   "total": 1,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "rank": 1,
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?eu_funded=false&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "period": {
@@ -5417,6 +5705,7 @@
     "last_day": "2026-10-07"
    },
    "won": null,
+   "total": 0,
    "items": [],
    "source": {
     "publisher": "SEAP",
@@ -5430,11 +5719,34 @@
    }
   }
  },
- "/v1/rankings/suppliers?cpv=45&limit=20": {
+ "/v1/rankings/contract-institutions?eu_funded=false&sort=value&order=desc&limit=10&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
+   "total": 0,
+   "items": [],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 0
+   }
+  }
+ },
+ "/v1/rankings/suppliers?cpv=45&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "date_from": null,
    "date_to": null,
+   "total": 1,
    "items": [
     {
      "cui": 18288250,
@@ -5457,16 +5769,17 @@
    }
   }
  },
- "/v1/rankings/institutions?cpv=45&limit=20": {
+ "/v1/rankings/suppliers?cpv=45&sort=value&order=desc&limit=10&offset=0": {
   "status": 200,
   "body": {
    "date_from": null,
    "date_to": null,
+   "total": 1,
    "items": [
     {
-     "cui": 4981310,
-     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-     "kind": "authority",
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
      "accepted": 1,
      "value": 500.0,
      "rank": 1
@@ -8321,7 +8634,7 @@
    }
   ]
  },
- "/v1/patterns/near-limit?limit=50": {
+ "/v1/patterns/near-limit?sort=purchases&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "rule": {
@@ -8418,7 +8731,7 @@
    }
   }
  },
- "/v1/patterns/near-limit?cpv=45&limit=50": {
+ "/v1/patterns/near-limit?cpv=45&sort=purchases&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "rule": {
@@ -8483,7 +8796,7 @@
    }
   }
  },
- "/v1/patterns/near-limit?cpv=30&limit=50": {
+ "/v1/patterns/near-limit?cpv=30&sort=purchases&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "rule": {
@@ -8535,6 +8848,71 @@
    "checked": 5,
    "accepted_total": 10,
    "unknown_type": 5,
+   "annex_2": 0,
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/patterns/near-limit?contract_type=3&sort=purchases&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "rule": {
+    "share": 0.9,
+    "repeats": 2,
+    "limits": {
+     "1": 270120.0,
+     "2": 270120.0,
+     "3": 900400.0
+    }
+   },
+   "first_day": "2026-10-05",
+   "last_day": "2026-10-07",
+   "pairs": 1,
+   "items": [
+    {
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "contract_type": 3,
+     "limit": 900400.0,
+     "purchases": 2,
+     "value": 1730000.0,
+     "items": [
+      {
+       "id": 24,
+       "code": "DA00000024",
+       "name": "Purchase 24",
+       "finalized_at": "2026-10-05T08:00:00Z",
+       "value": 850000.0
+      },
+      {
+       "id": 25,
+       "code": "DA00000025",
+       "name": "Purchase 25",
+       "finalized_at": "2026-10-07T08:00:00Z",
+       "value": 880000.0
+      }
+     ]
+    }
+   ],
+   "checked": 2,
+   "accepted_total": 2,
+   "unknown_type": 0,
    "annex_2": 0,
    "source": {
     "publisher": "SEAP",
