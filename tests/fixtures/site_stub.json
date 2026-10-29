@@ -7173,6 +7173,21 @@
    "without": []
   }
  },
+ "/v1/programmes/pnrr/contracts?measure=C10.I3&sort=value&order=desc&limit=25&offset=200": {
+  "status": 200,
+  "body": {
+   "total": 3,
+   "items": [],
+   "natural_persons": 0
+  }
+ },
+ "/v1/programmes/eu-funds/projects?sort=value&order=desc&limit=25&offset=200": {
+  "status": 200,
+  "body": {
+   "total": 5,
+   "items": []
+  }
+ },
  "/v1/programmes/pnrr/contracts/701": {
   "status": 200,
   "body": {

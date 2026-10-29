@@ -1443,6 +1443,9 @@ SITE_CALLS = (
     f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&measure=C10.I3&scope=measure",
     "/v1/programmes/pnrr/contracts?measure=C2.I1&sort=value&order=desc&limit=25&offset=0",
     "/v1/programmes/pnrr/contracts/overview?measure=C2.I1&scope=measure",
+    # Page 9 of a measure and of every EU project, past the end: sent to the last page.
+    "/v1/programmes/pnrr/contracts?measure=C10.I3&sort=value&order=desc&limit=25&offset=200",
+    "/v1/programmes/eu-funds/projects?sort=value&order=desc&limit=25&offset=200",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.MANY_MEASURES}",
