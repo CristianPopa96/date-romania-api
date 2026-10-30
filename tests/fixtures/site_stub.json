@@ -6800,6 +6800,305 @@
    ]
   }
  },
+ "/v1/projects?kind=cohesion&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 5,
+   "items": [
+    {
+     "kind": "cohesion",
+     "key": 118003,
+     "programme": "POIM",
+     "programme_name": "Programul Operațional Infrastructură Mare",
+     "period": "2014-2020",
+     "title": "Extinderea rețelei de apă",
+     "number": null,
+     "beneficiary_name": "APAREGIO GORJ SA",
+     "beneficiary": null,
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 9000000.0,
+     "status": "terminated",
+     "status_written": "REZILIAT",
+     "reach": "beneficiary",
+     "gap": null
+    },
+    {
+     "kind": "cohesion",
+     "key": 118001,
+     "programme": "POR",
+     "programme_name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "title": "Modernizarea drumului comunal DC 12",
+     "number": null,
+     "beneficiary_name": "UAT Comuna Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat",
+     "reach": "companies",
+     "gap": null
+    },
+    {
+     "kind": "cohesion",
+     "key": 324809,
+     "programme": "PS",
+     "programme_name": "Programul Sănătate",
+     "period": "2021-2027",
+     "title": "Echipamente pentru secția de terapie intensivă",
+     "number": null,
+     "beneficiary_name": "SPITALUL JUDETEAN DE URGENTA",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 3000000.0,
+     "status": "in_progress",
+     "status_written": "in implementare",
+     "reach": "payments",
+     "gap": null
+    },
+    {
+     "kind": "cohesion",
+     "key": 312456,
+     "programme": "PEO",
+     "programme_name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "title": "Dotarea laboratoarelor spitalului",
+     "number": null,
+     "beneficiary_name": "SPITALUL JUDETEAN DE URGENTA",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 2100000.0,
+     "status": "in_progress",
+     "status_written": "în implementare",
+     "reach": "payments",
+     "gap": null
+    },
+    {
+     "kind": "cohesion",
+     "key": 118002,
+     "programme": "POCU",
+     "programme_name": "Programul Operațional Capital Uman",
+     "period": "2014-2020",
+     "title": "Competențe digitale pentru adulți",
+     "number": null,
+     "beneficiary_name": "ASOCIATIA PENTRU EDUCATIE DIGITALA",
+     "beneficiary": null,
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": null,
+     "status": null,
+     "status_written": "etapizat",
+     "reach": "payments",
+     "gap": null
+    }
+   ]
+  }
+ },
+ "/v1/projects/overview?kind=cohesion": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 5,
+    "companies": 1,
+    "natural_persons": 0,
+    "value": null
+   },
+   "whole": 14,
+   "beneficiary": null,
+   "kinds": [
+    {
+     "value": "cohesion",
+     "count": 5
+    },
+    {
+     "value": "pnrr",
+     "count": 5
+    },
+    {
+     "value": "anghel_saligny",
+     "count": 4
+    }
+   ],
+   "programmes": [
+    {
+     "value": "PEO",
+     "kind": "cohesion",
+     "name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "count": 1
+    },
+    {
+     "value": "POCU",
+     "kind": "cohesion",
+     "name": "Programul Operațional Capital Uman",
+     "period": "2014-2020",
+     "count": 1
+    },
+    {
+     "value": "POIM",
+     "kind": "cohesion",
+     "name": "Programul Operațional Infrastructură Mare",
+     "period": "2014-2020",
+     "count": 1
+    },
+    {
+     "value": "POR",
+     "kind": "cohesion",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "count": 1
+    },
+    {
+     "value": "PS",
+     "kind": "cohesion",
+     "name": "Programul Sănătate",
+     "period": "2021-2027",
+     "count": 1
+    }
+   ],
+   "counties": [
+    {
+     "value": "GJ",
+     "name": "Gorj",
+     "count": 5
+    }
+   ],
+   "statuses": [
+    {
+     "value": "in_progress",
+     "count": 2
+    },
+    {
+     "value": "finished",
+     "count": 1
+    },
+    {
+     "value": "terminated",
+     "count": 1
+    }
+   ],
+   "reaches": [
+    {
+     "value": "payments",
+     "count": 3
+    },
+    {
+     "value": "beneficiary",
+     "count": 1
+    },
+    {
+     "value": "companies",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 2
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 2
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [],
+   "sources": [
+    {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
+    }
+   ]
+  }
+ },
  "/v1/projects?county=GJ&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {

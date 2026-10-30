@@ -1423,6 +1423,13 @@ def test_the_projects_overview_never_adds_programmes_together(client):
     assert pnrr["summary"]["natural_persons"] == 1
     # The options of a choice are counted under every other filter.
     assert len(pnrr["kinds"]) == 3
+    # Cohesion is several programmes, each list at its own day: no value until one is.
+    cohesion = client.get("/v1/projects/overview", params={"kind": "cohesion"}).json()
+    assert cohesion["summary"]["value"] is None
+    two = client.get("/v1/projects/overview", params={"programme": ["POR", "POCU"]}).json()
+    assert two["summary"]["value"] is None
+    por = client.get("/v1/projects/overview", params={"programme": "POR"}).json()
+    assert por["summary"]["value"] == 6200000.0
 
 
 def test_the_projects_list_takes_every_filter(client):
@@ -1602,6 +1609,9 @@ SITE_CALLS = (
     "/v1/projects/overview",
     "/v1/projects?kind=anghel_saligny&sort=value&order=desc&limit=25&offset=0",
     "/v1/projects/overview?kind=anghel_saligny",
+    # Cohesion alone: several programmes, so still no value.
+    "/v1/projects?kind=cohesion&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?kind=cohesion",
     "/v1/projects?county=GJ&sort=value&order=desc&limit=25&offset=0",
     "/v1/projects/overview?county=GJ",
     "/v1/projects?reach=companies&sort=value&order=desc&limit=25&offset=0",

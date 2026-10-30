@@ -4,8 +4,8 @@
 The rows are the `project` table that `projects.build()` writes after the links change. A
 natural person's project is never listed (Crispy, 22.10.2026): the summary counts them.
 Text is served with valid personal codes masked, as on every page of a programme.
-Figures of different programmes are never added: the value total comes only once one kind
-of programme is chosen.
+Figures of different programmes are never added: the value total comes only once one
+programme is chosen and every project filtered is of it (one cohesion programme, not all).
 """
 
 import re
@@ -147,15 +147,17 @@ def _search(q: str) -> ColumnElement[bool]:
     return or_(words, by_number)
 
 
-def _one_kind(session: Session, filters: NamedFilters) -> bool:
-    """Whether a programme is chosen and the projects filtered are all of one kind, so their
-    values may be added."""
+def _one_programme(session: Session, filters: NamedFilters) -> bool:
+    """Whether a programme is chosen and the projects filtered are all of one programme, so
+    their values may be added. Cohesion is a kind of several programmes, each list at its
+    own cut-off: its projects add up only one programme at a time. Anghel Saligny and PNRR
+    are one programme each."""
     if "kind" not in filters.named and "programme" not in filters.named:
         return False
-    kinds = session.scalar(
-        select(func.count(Project.kind.distinct())).where(LISTED, *filters.all())
+    programmes = session.scalar(
+        select(func.count(Project.programme.distinct())).where(LISTED, *filters.all())
     )
-    return kinds <= 1
+    return programmes <= 1
 
 
 @router.get("")
@@ -262,7 +264,7 @@ def projects_overview(
     ).one()
     natural = lists.count(session, Project, [Project.natural_person, *filters.all()])
     value = None
-    if _one_kind(session, filters):
+    if _one_programme(session, filters):
         value = session.scalar(select(func.coalesce(func.sum(Project.value), 0)).where(*conditions))
     counties = func.unnest(Project.counties).label("value")
     county_rows = session.execute(

@@ -2,7 +2,7 @@
 what the list says about itself under the filters chosen.
 
 Programmes publish their figures each at its own day and in its own way, so no sum is
-given across them: a value total only once one kind of programme is chosen.
+given across them: a value total only once one programme is chosen.
 """
 
 from typing import Literal
@@ -58,8 +58,9 @@ class ProjectsSummary(Answer):
         description="Projects of natural persons under the filters, never listed by name."
     )
     value: float | None = Field(
-        description="Lei: only when one kind of programme is chosen, since programmes are "
-        "never added together."
+        description="Lei: only when a programme is chosen and every project filtered is of "
+        "that one programme (cohesion is several, each at its own cut-off), since programmes "
+        "are never added together."
     )
 
 
