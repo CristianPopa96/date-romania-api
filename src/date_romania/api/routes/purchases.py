@@ -83,6 +83,10 @@ def purchase_row(row) -> Purchase:
     )
 
 
+# The most rows a file of direct purchases holds; the whole country is 1.8 million.
+CSV_ROWS = 100_000
+
+
 @router.get("/direct-purchases")
 def direct_purchases(
     session: Db,
@@ -101,7 +105,8 @@ def direct_purchases(
 ) -> PurchasePage:
     """Direct purchases under the filters given, by finalization day, value or party.
 
-    As csv, the whole list in the same order; a file needs a buyer or a supplier."""
+    As csv, the whole list in the same order, up to `CSV_ROWS` rows: a longer list needs
+    narrower filters."""
     conditions = filters.all()
     column = {
         "value": DirectPurchase.closing_value,
@@ -109,13 +114,15 @@ def direct_purchases(
         "buyer": func.lower(func.coalesce(Buyer.name, DirectPurchase.buyer_text)),
     }.get(sort, DirectPurchase.finalized_at)
     query = ordered(purchases_query().where(*conditions), column, order, DirectPurchase.id)
+    total = session.scalar(select(func.count()).select_from(DirectPurchase).where(*conditions))
     if format == "csv":
-        if not {"buyer", "supplier"} & filters.named.keys():
-            raise HTTPException(400, "A file of direct purchases needs a buyer or a supplier.")
+        if total > CSV_ROWS:
+            raise HTTPException(
+                400, f"A file of direct purchases holds at most {CSV_ROWS} rows: narrow the list."
+            )
         # Read as the file is sent, a chunk at a time.
         found = session.execute(query.execution_options(yield_per=CSV_CHUNK))
         return purchases_csv(purchase_row(row) for row in found)
-    total = session.scalar(select(func.count()).select_from(DirectPurchase).where(*conditions))
     rows = session.execute(query.limit(limit).offset(offset))
     return PurchasePage(total=total, items=[purchase_row(row) for row in rows])
 

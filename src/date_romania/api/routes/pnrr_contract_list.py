@@ -18,6 +18,7 @@ from date_romania.api.routes.list_common import NamedFilters
 from date_romania.api.routes.pnrr_common import RAW_STATUS, find_measure, masked, per_contract
 from date_romania.api.schemas import PnrrStatus
 from date_romania.api.schemas.pnrr_contract_list import (
+    BeneficiaryTypeOption,
     CountyOption,
     MeasureOption,
     PnrrBeneficiaryBar,
@@ -66,6 +67,10 @@ def pnrr_contract_filters(
         ),
     ] = None,
     beneficiary: Annotated[int | None, Query(description="The beneficiary's CUI.")] = None,
+    beneficiary_type: Annotated[
+        list[str] | None,
+        Query(max_length=200, description="The kind of beneficiary as written; any of them."),
+    ] = None,
     q: Annotated[
         str | None,
         Query(min_length=2, max_length=100, description="Words of the title or beneficiary."),
@@ -91,6 +96,8 @@ def pnrr_contract_filters(
         named["status"] = has_status(status_)
     if beneficiary is not None:
         named["beneficiary"] = Contract.beneficiary_cui == beneficiary
+    if beneficiary_type:
+        named["beneficiary_type"] = Contract.beneficiary_type.in_(beneficiary_type)
     if q:
         named["q"] = and_(
             *(
@@ -158,6 +165,13 @@ def pnrr_contracts_overview(
         .group_by(Contract.county)
         .order_by(func.count().desc(), Contract.county)
     ).all()
+    types = session.execute(
+        select(Contract.beneficiary_type, func.count())
+        .select_from(CONTRACTS)
+        .where(LISTED, Contract.beneficiary_type.is_not(None), *filters.all("beneficiary_type"))
+        .group_by(Contract.beneficiary_type)
+        .order_by(func.count().desc(), Contract.beneficiary_type)
+    ).all()
     # The largest beneficiaries are the options of the beneficiary filter: counted under
     # every other filter.
     by_beneficiary = [LISTED, *filters.all("beneficiary")]
@@ -174,6 +188,9 @@ def pnrr_contracts_overview(
         whole=lists.count(session, CONTRACTS, [LISTED, *(filters.named[k] for k in keep)]),
         measures=[MeasureOption(value=code, count=count) for code, count in measures],
         counties=[CountyOption(value=county, count=count) for county, count in counties],
+        beneficiary_types=[
+            BeneficiaryTypeOption(value=kind, count=count) for kind, count in types if kind.strip()
+        ],
         statuses=statuses,
         measures_differ=lists.count(session, CONTRACTS, [*by_status, SUMS.c.statuses > 1]),
         bands=lists.bands(

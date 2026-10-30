@@ -56,7 +56,7 @@ from date_romania.api.schemas.projects import (
     ReachOption,
 )
 from date_romania.counties import CODES, county_name
-from date_romania.models import Entity, PniasPayment, PnrrEdition, Project, search_text
+from date_romania.models import Entity, Place, PniasPayment, PnrrEdition, Project, search_text
 from date_romania.personal_id import mask_cnp
 from date_romania.projects import KINDS, REACHES
 from date_romania.sources import PNIAS_PAYMENTS
@@ -87,6 +87,14 @@ def project_filters(
     ] = None,
     county: Annotated[str | None, Query(description="A county's code, as in `counties`.")] = None,
     beneficiary: Annotated[int | None, Query(description="The beneficiary's CUI.")] = None,
+    place: Annotated[
+        int | None,
+        Query(
+            description="A UAT's SIRUTA code: the projects landing there, where an Anghel "
+            "Saligny payment is for or where ANAF records the beneficiary. Bucharest takes its "
+            "sectors."
+        ),
+    ] = None,
     company: Annotated[
         int | None,
         Query(
@@ -120,6 +128,10 @@ def project_filters(
         named["county"] = literal(county).op("=")(any_(Project.counties))
     if beneficiary is not None:
         named["beneficiary"] = Project.beneficiary_cui == beneficiary
+    if place is not None:
+        named["place"] = Project.siruta.in_(
+            select(Place.siruta).where(or_(Place.siruta == place, Place.parent == place))
+        )
     if company is not None:
         named["company"] = company_condition(company)
     if status:

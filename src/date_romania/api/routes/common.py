@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from date_romania import money
 from date_romania.api.schemas import EntityRef, Partner, Source, Summary
+from date_romania.counties import CODES, county_name
 from date_romania.dates import day_bounds
 from date_romania.db import get_session
 from date_romania.models import DirectPurchase, Entity, SourceDocument, search_text
@@ -30,6 +31,21 @@ Cpv = Annotated[
         description="Start of a CPV code: 45 for the division of works, 4523 for a narrower class.",
     ),
 ]
+
+County = Annotated[
+    str | None,
+    Query(
+        pattern="^(" + "|".join(CODES) + ")$",
+        description="A county's two-letter code ('CJ'; București is 'B'), by where ANAF "
+        "records the institution or company.",
+    ),
+]
+
+
+def located_in(cui: ColumnElement, code: str) -> ColumnElement[bool]:
+    """An institution or company that ANAF records in this county: one place only, so an
+    association is never placed by one of its members."""
+    return cui.in_(select(Entity.cui).where(Entity.county == county_name(CODES[code])))
 
 
 Format = Annotated[Literal["json", "csv"], Query(description="csv gives the whole list as a file.")]

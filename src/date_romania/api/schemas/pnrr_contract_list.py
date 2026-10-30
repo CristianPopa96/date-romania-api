@@ -21,6 +21,11 @@ class MeasureOption(Answer):
     count: int
 
 
+class BeneficiaryTypeOption(Answer):
+    value: str = Field(description="The kind of beneficiary, as the dashboard writes it.")
+    count: int
+
+
 class CountyOption(Answer):
     value: str = Field(description="The county as the dashboard writes it.")
     count: int
@@ -51,6 +56,10 @@ class PnrrContractOverview(Answer):
     )
     measures: list[MeasureOption] = Field(description="Under every filter but the measure.")
     counties: list[CountyOption] = Field(description="Under every filter but the county.")
+    beneficiary_types: list[BeneficiaryTypeOption] = Field(
+        description="The dashboard's own words for the kind of beneficiary, as written, under "
+        "every filter but this one."
+    )
     statuses: list[PnrrStatusOption]
     measures_differ: int = Field(
         description="Contracts whose measures give different statuses: under no status."

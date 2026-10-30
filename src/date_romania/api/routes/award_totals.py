@@ -14,7 +14,7 @@ from date_romania.api.routes.award_common import (
     period,
     won_filters,
 )
-from date_romania.api.routes.common import Cpv, Db
+from date_romania.api.routes.common import County, Cpv, Db, located_in
 from date_romania.api.routes.rankings import Page, RankingPage, ranked
 from date_romania.api.schemas import (
     ContractRanking,
@@ -84,7 +84,10 @@ def _ranking(
     filters: list[ColumnElement[bool]],
     page: Page,
     *joins,
+    sourced: list[ColumnElement[bool]] | None = None,
 ) -> ContractRanking:
+    """`sourced`: the filters the source's count reads, over contracts alone, when
+    `filters` name a table of `joins` (a winner's county)."""
     contracts = func.count()
     query = select(Entity.cui, Entity.name, Entity.kind).add_columns(
         contracts.label("contracts"), money.contract_value.label("value")
@@ -117,7 +120,9 @@ def _ranking(
             )
             for row in rows
         ],
-        source=awards_source(session, *won_filters(won), *filters),
+        source=awards_source(
+            session, *won_filters(won), *(filters if sourced is None else sourced)
+        ),
     )
 
 
@@ -128,6 +133,7 @@ def ranking_contract_suppliers(
     won: Won = "alone",
     cpv: Cpv = None,
     eu_funded: EuFunded = None,
+    county: County = None,
 ) -> ContractRanking:
     """Companies by the value of the contracts they won, alone or in associations.
 
@@ -137,7 +143,19 @@ def ranking_contract_suppliers(
     members = select(AwardWinner.contract_id, AwardWinner.supplier_cui).distinct().subquery()
     winners = (members, members.c.contract_id == AwardContract.id)
     filters = notice_filters(cpv, eu_funded)
-    return _ranking(session, members.c.supplier_cui, won, filters, page, winners)
+    sourced = list(filters)
+    if county:
+        filters.append(located_in(members.c.supplier_cui, county))
+        # The source counts contracts: those with a winner in the county.
+        sourced.append(
+            select(AwardWinner.contract_id)
+            .where(
+                AwardWinner.contract_id == AwardContract.id,
+                located_in(AwardWinner.supplier_cui, county),
+            )
+            .exists()
+        )
+    return _ranking(session, members.c.supplier_cui, won, filters, page, winners, sourced=sourced)
 
 
 @router.get("/rankings/contract-institutions", tags=["rankings"])
@@ -146,8 +164,11 @@ def ranking_contract_institutions(
     page: RankingPage,
     cpv: Cpv = None,
     eu_funded: EuFunded = None,
+    county: County = None,
 ) -> ContractRanking:
     """Institutions by the value of the contracts they awarded, or by how many; each
     contract counted once."""
     filters = notice_filters(cpv, eu_funded)
+    if county:
+        filters.append(located_in(AwardNotice.buyer_cui, county))
     return _ranking(session, AwardNotice.buyer_cui, None, filters, page)
