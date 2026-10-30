@@ -1362,6 +1362,8 @@ def test_every_project_of_every_programme_is_one_list_the_largest_first(client):
         "status_written": "Finalizată",
         "reach": "companies",
         "gap": None,
+        # Said only on a company's list.
+        "via": None,
     }
     values = [each["value"] for each in answer["items"] if each["value"] is not None]
     assert values == sorted(values, reverse=True)
@@ -1465,6 +1467,46 @@ def test_the_projects_list_takes_every_filter(client):
     assert keys(q="1800101123450") == []
     empty = client.get("/v1/projects/overview", params={"q": "zzzz", "kind": "pnrr"}).json()
     assert empty["without"] == [{"param": "kind", "count": 0}, {"param": "q", "count": 5}]
+
+
+def test_a_company_lists_the_projects_it_was_paid_through_and_says_how(client):
+    def via(cui):
+        answer = client.get("/v1/projects", params={"company": cui, "limit": 100}).json()
+        return {(each["kind"], each["key"]): each["via"] for each in answer["items"]}
+
+    # The builder named by the payment files of two Anghel Saligny projects, and the winner
+    # of the notice that cites a cohesion project's SMIS code.
+    assert via(BUILDER) == {
+        ("anghel_saligny", 101): "builder",
+        ("cohesion", 118001): "notice",
+    }
+    # A company that sold a purchase citing a PNRR contract, won the cohesion notice as a
+    # member of the association, and is itself a beneficiary.
+    assert via(STATIONER) == {
+        ("pnrr", pnrr_seed.ONE): "purchase",
+        ("cohesion", 118001): "notice",
+        ("pnrr", pnrr_seed.MANY_MEASURES): "beneficiary",
+    }
+    # Without `company`, no row says how.
+    assert {each["via"] for each in client.get("/v1/projects").json()["items"]} == {None}
+    overview = client.get("/v1/projects/overview", params={"company": BUILDER}).json()
+    assert overview["summary"]["projects"] == 2
+
+
+def test_a_beneficiary_has_its_projects_by_programme_each_at_its_own_day(client):
+    answer = client.get("/v1/projects/programmes", params={"beneficiary": TOWN_HALL}).json()
+    by_programme = {each["programme"]: each for each in answer["items"]}
+    assert set(by_programme) == {"AS", "PNRR", "POR"}
+    assert (by_programme["AS"]["paid_as"], by_programme["AS"]["day"]) == ("files", "2026-08-27")
+    # PNRR: every payment to the beneficiary, over its measures, never one contract's.
+    assert by_programme["PNRR"]["paid_as"] == "beneficiary"
+    assert by_programme["PNRR"]["projects"] == 2
+    assert (by_programme["POR"]["paid_as"], by_programme["POR"]["day"]) == (
+        "cumulative",
+        "2025-08-31",
+    )
+    none = client.get("/v1/projects/programmes", params={"beneficiary": BUILDER}).json()
+    assert none["items"] == []
 
 
 def test_the_projects_as_a_file_carry_the_filters(client):
@@ -1662,26 +1704,25 @@ SITE_CALLS = (
     "/v1/projects/overview?kind=cohesion&programme=POR",
     f"/v1/projects?kind=cohesion&q={eu_seed.POR}&sort=value&order=desc&limit=25&offset=0",
     f"/v1/projects/overview?kind=cohesion&q={eu_seed.POR}",
-    # The EU money of a beneficiary, on its institution, supplier and place pages.
+    # The EU money of a town hall, on its place page.
     f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}",
-    f"/v1/programmes/eu-beneficiaries/{HOSPITAL}",
-    f"/v1/programmes/eu-beneficiaries/{BUILDER}",
-    # Asked beside the entity, so asked for a CUI not held too.
-    "/v1/programmes/eu-beneficiaries/12345674",
-    f"/v1/programmes/eu-funds/projects?beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
-    f"/v1/programmes/eu-funds/projects/overview?beneficiary={TOWN_HALL}&scope=beneficiary",
-    f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&sort=value&order=desc&limit=25&offset=0",
-    f"/v1/programmes/eu-funds/projects/overview?beneficiary={HOSPITAL}&scope=beneficiary",
-    f"/v1/programmes/eu-funds/projects?beneficiary={HOSPITAL}&programme=PEO&sort=value&order=desc&limit=25&offset=0",
-    f"/v1/programmes/eu-funds/projects/overview?beneficiary={HOSPITAL}&programme=PEO"
-    "&scope=beneficiary",
-    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
-    f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&scope=beneficiary",
-    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&sort=progress&order=desc"
-    "&limit=25&offset=0",
-    f"/v1/programmes/pnrr/contracts?beneficiary={TOWN_HALL}&progress_min=0.5&sort=value&order=desc&limit=25&offset=0",
-    f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&progress_min=0.5"
-    "&scope=beneficiary",
+    # The projects tab of an entity page (D22): every entity page asks for its count; an
+    # institution's as the beneficiary, a company's also those it was paid through; by
+    # programme above the list; and with one programme chosen.
+    f"/v1/projects?beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?beneficiary={TOWN_HALL}",
+    f"/v1/projects/programmes?beneficiary={TOWN_HALL}",
+    f"/v1/projects?kind=pnrr&beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?kind=pnrr&beneficiary={TOWN_HALL}",
+    f"/v1/projects?kind=cohesion&beneficiary={TOWN_HALL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?kind=cohesion&beneficiary={TOWN_HALL}",
+    f"/v1/projects?beneficiary={HOSPITAL}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?beneficiary={HOSPITAL}",
+    f"/v1/projects/programmes?beneficiary={HOSPITAL}",
+    f"/v1/projects?company={BUILDER}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?company={BUILDER}",
+    f"/v1/projects/programmes?beneficiary={BUILDER}",
+    "/v1/projects?beneficiary=12345674&sort=value&order=desc&limit=25&offset=0",
     # One project per kind of beneficiary tie and payments, and one not held.
     f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}",
     f"/v1/programmes/eu-funds/projects/{eu_seed.POR}",
