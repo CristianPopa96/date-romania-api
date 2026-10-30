@@ -169,6 +169,7 @@ uv run dr collect eu-projects                     # the newest list of each EU p
 uv run dr collect seap-exports                    # quarterly contract exports not held yet (1.6 GB, ~10 min the first time)
 uv run dr reparse seap-exports                    # read the stored exports again, for the builders now named
 uv run dr link pnias                              # tie payments to contracts again, from what is held
+uv run dr link projects                           # write the list of every project again (also ends `link pnias` and `link eu-seap`)
 uv run dr collect siruta                          # the national list of places (INS), newest edition
 uv run dr collect public-entities                 # the Finance Ministry's list of public entities
 uv run dr collect local-budgets                   # town hall and county council budgets, population
@@ -225,6 +226,9 @@ one record).
   period wanted.
 - Reparse after deploying a parser change. After deploying api #17 on a new host, run
   `dr reparse` once for every source, so the rejected-row counts are filled.
+- After deploying api #49, run `dr link projects` once: its migration creates the
+  `project` table empty, and it fills only at the next `link eu-seap` (09:45 UTC) or
+  payments load.
 
 ### The schedule
 
@@ -346,6 +350,14 @@ check. Each payment and project ends in one match state: `one` (counted as tied)
 without CUI, so nothing is searched). Only the file of 27 August 2026 and later ones name
 builders by CUI; inside a project an older payment goes with the payments that name the
 same builder with its CUI.
+
+### Projects
+
+`src/date_romania/projects.py` writes `project`, one row per project of every programme,
+with how far its money's road is followed: `beneficiary`, `payments`, `purchases` (a SEAP
+record tied to it) or `companies` (a tied record names its winner), and `gap = payments`
+for the step that cannot be followed. It runs at the end of `pnias_links.link()` and
+`eu_seap_links.link()`; `dr link projects` runs it alone.
 
 ### Places
 
@@ -483,6 +495,8 @@ Under `/v1/`, documented at http://localhost:8000/docs (OpenAPI schema at
 | `/v1/programmes/eu-funds/projects`                                      | EU cohesion projects, the largest first or by `sort` (`value`, `paid`) and `order`, filtered by `programme`, `status`, `beneficiary`, `q`, `value_min`, `value_max` |
 | `/v1/programmes/eu-funds/projects/overview`                             | The same filters in figures: count, each programme with its value, amount paid and the day of its list (never added across programmes), the statuses, value bands, and `without` |
 | `/v1/programmes/pnrr/contracts/{id}`                                    | One contract (MIPE's commitment id): its measures with their own status and progress, and per measure the payments to the beneficiary, which are the contract's own only when it is the beneficiary's one contract there. A natural person's has no page (404)                                                                                                       |
+| `/v1/projects`                                                          | Every project of every programme (Anghel Saligny projects, PNRR financing contracts, cohesion projects), the largest first, filtered by `kind`, `programme`, `county`, `beneficiary`, `status`, `reach` (how far its money's road is followed), `q` (words, a SMIS code or a financing contract number), `value_min`, `value_max`; `format=csv`. Natural persons' projects are never listed |
+| `/v1/projects/overview`                                                 | The same filters in figures: count, how many are followed to the companies, natural persons' projects counted, every option, value bands, `without`, the three sources; a value only once one programme is chosen (never added across programmes) |
 | `/v1/places`                                                            | The 42 counties, with how many UATs and people each has                                                                                                                                                                                                                                                                                                              |
 | `/v1/places/{county}`                                                   | A county (`/v1/places/alba`): its figures over its UATs and council, and every UAT                                                                                                                                                                                                                                                                                   |
 | `/v1/places/{county}/{uat}`                                             | One UAT (`/v1/places/alba/comuna-albac`): population, the Anghel Saligny payments to its town hall, capital spending, the contracts of every buyer located there and how much went to suppliers of the county (an association counts as local only when all its members are), who won them, its projects, institutions and localities; Bucharest adds up its sectors |

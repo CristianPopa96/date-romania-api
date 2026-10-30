@@ -164,6 +164,9 @@ class Project(ProjectRow):
     ministry_contract_no: str | None
     ministry_contract_date: date | None
     poim: bool | None
+    state: str | None = Field(
+        description="The project's state as the latest payment file writes it: 'Finalizată'."
+    )
     progress: str | None = Field(description="From the latest payment that gives one.")
     estimated_end: date | None
     items: list[ProjectPayment]

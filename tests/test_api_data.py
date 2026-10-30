@@ -536,6 +536,8 @@ def test_rankings_order_by_accepted_value(client):
     ).json()
     assert page["total"] == 2
     assert [(r["rank"], r["cui"]) for r in page["items"]] == [(2, BUILDER)]
+    # The whole ranking's value, beyond the page: what the chart's "Alții" is cut from.
+    assert page["value"] == 3500.0
     by_count = client.get("/v1/rankings/institutions", params={"sort": "count"}).json()
     assert [r["accepted"] for r in by_count["items"]] == sorted(
         (r["accepted"] for r in by_count["items"]), reverse=True
@@ -1335,6 +1337,147 @@ def test_cpv_divisions_are_those_held_with_seap_names(client, session):
     ]
 
 
+def _keys(answer: dict) -> list[tuple[str, int]]:
+    return [(each["kind"], each["key"]) for each in answer["items"]]
+
+
+def test_every_project_of_every_programme_is_one_list_the_largest_first(client):
+    answer = client.get("/v1/projects").json()
+    # Four Anghel Saligny projects, five cohesion, five PNRR: the natural person's left out.
+    assert answer["total"] == 14
+    assert ("pnrr", pnrr_seed.PERSON) not in _keys(answer)
+    assert answer["items"][0] == {
+        "kind": "anghel_saligny",
+        "key": 102,
+        "programme": "AS",
+        "programme_name": "Anghel Saligny",
+        "period": None,
+        "title": "Modernizare drum județean DJ 109, km 0+000 - km 12+400",
+        "number": None,
+        "beneficiary_name": "Județul CLUJ prin Consiliul Județean",
+        "beneficiary": None,
+        "counties": [{"code": "CJ", "name": "Cluj"}],
+        "value": 40000000.0,
+        "status": "finished",
+        "status_written": "Finalizată",
+        "reach": "companies",
+        "gap": None,
+    }
+    values = [each["value"] for each in answer["items"] if each["value"] is not None]
+    assert values == sorted(values, reverse=True)
+    # A cohesion project names its programme and period; a personal code is never shown.
+    by_key = {(each["kind"], each["key"]): each for each in answer["items"]}
+    assert (by_key["cohesion", 118001]["programme_name"], by_key["cohesion", 118001]["period"]) == (
+        "Programul Operațional Regional",
+        "2014-2020",
+    )
+    assert "[CNP]" in by_key["pnrr", pnrr_seed.MANY_MEASURES]["title"]
+
+
+def test_a_projects_road_is_followed_as_far_as_the_data_goes(client):
+    road = {
+        key: (each["reach"], each["gap"])
+        for each in client.get("/v1/projects", params={"limit": 100}).json()["items"]
+        for key in [(each["kind"], each["key"])]
+    }
+    # Anghel Saligny: paid; to the builder's contract when one was found.
+    assert road["anghel_saligny", 101] == ("companies", None)
+    assert road["anghel_saligny", 103] == ("payments", None)
+    # PNRR: the only contract on its measure, paid and cited in a notice that names a winner.
+    assert road["pnrr", pnrr_seed.ONE] == ("companies", None)
+    # Two contracts on one measure: the payments are the step we cannot follow.
+    assert road["pnrr", pnrr_seed.SEVERAL] == ("beneficiary", "payments")
+    # Cohesion: paid up to its list's day; one never paid and never cited stops at its
+    # beneficiary.
+    assert road["cohesion", 312456] == ("payments", None)
+    assert road["cohesion", 118003] == ("beneficiary", None)
+
+
+def test_the_projects_overview_never_adds_programmes_together(client):
+    overview = client.get("/v1/projects/overview").json()
+    assert overview["summary"] == {
+        "projects": 14,
+        "companies": 4,
+        "natural_persons": 1,
+        "value": None,
+    }
+    assert overview["whole"] == 14
+    assert overview["kinds"] == [
+        {"value": "cohesion", "count": 5},
+        {"value": "pnrr", "count": 5},
+        {"value": "anghel_saligny", "count": 4},
+    ]
+    assert {each["value"]: each["count"] for each in overview["reaches"]} == {
+        "companies": 4,
+        "payments": 6,
+        "beneficiary": 4,
+    }
+    assert [source["publisher"] for source in overview["sources"]] == [
+        "data.gov.ro",
+        "MIPE",
+        "MIPE",
+    ]
+    # One kind chosen: its values add up.
+    pnrr = client.get("/v1/projects/overview", params={"kind": "pnrr"}).json()
+    assert pnrr["summary"]["value"] == 12266076.55
+    assert pnrr["summary"]["natural_persons"] == 1
+    # The options of a choice are counted under every other filter.
+    assert len(pnrr["kinds"]) == 3
+    # Cohesion is several programmes, each list at its own day: no value until one is.
+    cohesion = client.get("/v1/projects/overview", params={"kind": "cohesion"}).json()
+    assert cohesion["summary"]["value"] is None
+    two = client.get("/v1/projects/overview", params={"programme": ["POR", "POCU"]}).json()
+    assert two["summary"]["value"] is None
+    por = client.get("/v1/projects/overview", params={"programme": "POR"}).json()
+    assert por["summary"]["value"] == 6200000.0
+
+
+def test_the_projects_list_takes_every_filter(client):
+    def keys(**params):
+        return _keys(client.get("/v1/projects", params={"limit": 100, **params}).json())
+
+    assert set(keys(kind="anghel_saligny")) == {("anghel_saligny", n) for n in (101, 102, 103, 104)}
+    assert keys(programme="POCU") == [("cohesion", 118002)]
+    assert set(keys(county="CJ")) == {
+        ("anghel_saligny", 102),
+        ("pnrr", pnrr_seed.SEVERAL),
+        ("pnrr", 703),
+    }
+    assert set(keys(beneficiary=HOSPITAL)) == {
+        ("cohesion", 312456),
+        ("cohesion", 324809),
+        ("pnrr", pnrr_seed.SEVERAL),
+        ("pnrr", 703),
+    }
+    assert keys(status="terminated") == [("cohesion", 118003)]
+    assert set(keys(reach="companies")) == {
+        ("anghel_saligny", 101),
+        ("anghel_saligny", 102),
+        ("cohesion", 118001),
+        ("pnrr", pnrr_seed.ONE),
+    }
+    assert keys(value_min=10_000_000) == [("anghel_saligny", 102), ("anghel_saligny", 103)]
+    # Words, a SMIS code, a financing contract number.
+    assert keys(q="canalizare sandra") == [("anghel_saligny", 104)]
+    assert keys(q="118002") == [("cohesion", 118002)]
+    assert keys(q="12345") == [("pnrr", pnrr_seed.SEVERAL)]
+    # A personal code finds nothing, though a contract number is one.
+    assert keys(q="1800101123450") == []
+    empty = client.get("/v1/projects/overview", params={"q": "zzzz", "kind": "pnrr"}).json()
+    assert empty["without"] == [{"param": "kind", "count": 0}, {"param": "q", "count": 5}]
+
+
+def test_the_projects_as_a_file_carry_the_filters(client):
+    response = client.get("/v1/projects", params={"format": "csv", "kind": "anghel_saligny"})
+    lines = response.text.lstrip("﻿").splitlines()
+    assert lines[0] == (
+        "programme,key,title,financing_contract,beneficiary_cui,beneficiary,counties,"
+        "value_ron,status,followed_to,step_not_followed"
+    )
+    assert len(lines) == 5
+    assert lines[1].startswith("Anghel Saligny,102,")
+
+
 SITE_CALLS = (
     "/v1/health",
     "/v1/stats",
@@ -1459,21 +1602,27 @@ SITE_CALLS = (
     "/v1/rankings/suppliers?cpv=45&sort=value&order=desc&limit=25&offset=0",
     "/v1/rankings/suppliers?cpv=45&sort=value&order=desc&limit=10&offset=0",
     "/v1/programmes/anghel-saligny",
-    # The projects as a list: all, by county, by match, by words, none, by builder.
-    "/v1/programmes/anghel-saligny/projects?sort=paid&order=desc&limit=25&offset=0",
-    "/v1/programmes/anghel-saligny/projects/overview",
-    "/v1/programmes/anghel-saligny/projects?county=GORJ&sort=paid&order=desc&limit=25&offset=0",
-    "/v1/programmes/anghel-saligny/projects/overview?county=GORJ",
-    "/v1/programmes/anghel-saligny/projects?match=several&sort=paid&order=desc&limit=25&offset=0",
-    "/v1/programmes/anghel-saligny/projects/overview?match=several",
-    "/v1/programmes/anghel-saligny/projects?q=turceni&sort=paid&order=desc&limit=25&offset=0",
-    "/v1/programmes/anghel-saligny/projects/overview?q=turceni",
-    "/v1/programmes/anghel-saligny/projects?q=zzzz&sort=paid&order=desc&limit=25&offset=0",
-    "/v1/programmes/anghel-saligny/projects/overview?q=zzzz",
-    f"/v1/programmes/anghel-saligny/projects?builder={BUILDER}&sort=paid&order=desc&limit=25&offset=0",
-    f"/v1/programmes/anghel-saligny/projects/overview?builder={BUILDER}",
+    # Every project of every programme as a list (/proiecte): all, of one programme, by
+    # county, followed to the companies, by words, none; and fixed to Anghel Saligny on
+    # the programme's page, with words.
+    "/v1/projects?sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview",
+    "/v1/projects?kind=anghel_saligny&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?kind=anghel_saligny",
+    # Cohesion alone: several programmes, so still no value.
+    "/v1/projects?kind=cohesion&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?kind=cohesion",
+    "/v1/projects?county=GJ&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?county=GJ",
+    "/v1/projects?reach=companies&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?reach=companies",
+    "/v1/projects?q=zzzz&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?q=zzzz",
+    "/v1/projects?kind=anghel_saligny&q=turceni&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?kind=anghel_saligny&q=turceni",
     # Page 9, past the end: the site sends it to the last page.
-    "/v1/programmes/anghel-saligny/projects?sort=paid&order=desc&limit=25&offset=200",
+    "/v1/projects?sort=value&order=desc&limit=25&offset=200",
+    "/v1/projects?kind=anghel_saligny&sort=value&order=desc&limit=25&offset=200",
     # One project per match state, and one the programme does not have.
     "/v1/programmes/anghel-saligny/projects/101",
     "/v1/programmes/anghel-saligny/projects/102",

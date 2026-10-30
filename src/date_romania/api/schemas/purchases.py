@@ -123,6 +123,7 @@ class Ranking(Answer):
     date_from: date | None
     date_to: date | None
     total: int = Field(description="Every party ranked under the filters, beyond the page.")
+    value: float = Field(description="Lei, every party's value added up.")
     items: list[RankingRow] = Field(
         description="`rank` is the place in the order asked for, counted from the first page."
     )

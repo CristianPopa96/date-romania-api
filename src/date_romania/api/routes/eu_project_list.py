@@ -22,28 +22,14 @@ from date_romania.api.schemas.eu_project_list import (
     ProgrammeOption,
     StatusOption,
 )
+from date_romania.eu_programmes import status
 from date_romania.models import EuProject as Project
 from date_romania.models import search_text
-from date_romania.text import plain
 
 router = APIRouter(prefix="/programmes/eu-funds", tags=["programmes"])
 
 # The edges of the value bands, in lei.
 BAND_EDGES = (0, 100_000, 500_000, 1_000_000, 5_000_000, 25_000_000, 100_000_000, 500_000_000)
-# The lists' words for a project's state, in `plain` form, and ours. Any other ('etapizat',
-# 'nefinalizat', 'in curs de reziliere'...) is served as written, with no status of ours.
-STATUS: dict[str, EuStatus] = {
-    "IN IMPLEMENTARE": "in_progress",
-    "IN CURS DE IMPLEMENTARE": "in_progress",
-    "FINALIZAT": "finished",
-    "PROIECT FINALIZAT": "finished",
-    "REZILIAT": "terminated",
-    "PROIECT REZILIAT INCETAT CU ACORDUL PARTILOR REVOCAT": "terminated",
-}
-
-
-def status(written: str | None) -> EuStatus | None:
-    return STATUS.get(plain(written))
 
 
 def _spelled(session: Db, wanted: list[EuStatus]) -> ColumnElement[bool]:

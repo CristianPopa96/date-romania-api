@@ -100,11 +100,12 @@ def _ranking(
         .group_by(Entity.cui)
     )
     column = contracts if page.sort == "count" else money.contract_value
-    total, rows = ranked(session, query, column, page)
+    total, value, rows = ranked(session, query, column, page)
     return ContractRanking(
         period=period(session),
         won=won,
         total=total,
+        value=value,
         items=[
             ContractRankingRow(
                 rank=row.place,

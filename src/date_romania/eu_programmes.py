@@ -1,10 +1,13 @@
 """The EU programmes whose lists of contracted projects are collected: their codes, names
 and periods, and where each one's list is published. The collector finds the files by it;
-the API names a project's programme by it.
+the API names a project's programme by it, and its status by `status()`.
 """
 
 from dataclasses import dataclass
 from datetime import date
+from typing import Literal
+
+from date_romania.text import plain
 
 
 @dataclass(frozen=True)
@@ -67,3 +70,21 @@ PROGRAMMES = (
     Programme("PS", "2021-2027", "Programul Sănătate", health_page=True),
 )
 BY_CODE = {each.code: each for each in PROGRAMMES}
+
+
+Status = Literal["in_progress", "finished", "terminated"]
+
+# The lists' words for a project's state, in `plain` form, and ours. Any other ('etapizat',
+# 'nefinalizat', 'in curs de reziliere'...) is served as written, with no status of ours.
+STATUS: dict[str, Status] = {
+    "IN IMPLEMENTARE": "in_progress",
+    "IN CURS DE IMPLEMENTARE": "in_progress",
+    "FINALIZAT": "finished",
+    "PROIECT FINALIZAT": "finished",
+    "REZILIAT": "terminated",
+    "PROIECT REZILIAT INCETAT CU ACORDUL PARTILOR REVOCAT": "terminated",
+}
+
+
+def status(written: str | None) -> Status | None:
+    return STATUS.get(plain(written))

@@ -182,6 +182,7 @@ def project(session: Db, project_id: int) -> Project:
         ministry_contract_no=row.ministry_contract_no,
         ministry_contract_date=row.ministry_contract_date,
         poim=row.poim,
+        state=row.state,
         progress=next((payment.progress for payment in payments if payment.progress), None),
         estimated_end=row.estimated_end,
         items=[ProjectPayment.model_validate(payment) for payment in payments],

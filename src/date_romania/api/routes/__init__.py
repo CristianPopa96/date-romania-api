@@ -21,6 +21,7 @@ from date_romania.api.routes import (
     programme_list,
     programme_project,
     programmes,
+    projects,
     purchase_list,
     purchases,
     rankings,
@@ -55,6 +56,7 @@ for module in (
     eu_projects,
     eu_seap,
     eu_beneficiaries,
+    projects,
     places,
     reports,
 ):

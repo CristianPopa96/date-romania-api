@@ -63,11 +63,11 @@ RankingPage = Annotated[Page, Depends(ranking_page)]
 
 def ranked(
     session: Session, query: Select, column: ColumnElement, page: Page
-) -> tuple[int, list[Row]]:
+) -> tuple[int, float, list[Row]]:
     """A page of a ranking: `query` gives a party's CUI, name and kind and its figures, one
-    row per party; `column` is the figure it is ranked by. Each row carries its `place` in
-    the whole ranking, in the order asked for, ties in the order of their CUI; a search
-    keeps it."""
+    row per party, its value as `value`; `column` is the figure it is ranked by. Each row
+    carries its `place` in the whole ranking, in the order asked for, ties in the order of
+    their CUI; a search keeps it. Also every party's count and their values added up."""
     place = func.row_number().over(
         order_by=[column.asc() if page.order == "asc" else column.desc(), Entity.cui]
     )
@@ -77,7 +77,11 @@ def ranked(
         words = and_(*(search_text(parties.c.name).like(containing(w)) for w in page.q.split()))
         code = page.q.strip()
         found.append(or_(words, parties.c.cui == int(code)) if code.isdecimal() else words)
-    total = session.scalar(select(func.count()).select_from(parties).where(*found))
+    total, value = session.execute(
+        select(func.count(), func.coalesce(func.sum(parties.c.value), 0))
+        .select_from(parties)
+        .where(*found)
+    ).one()
     rows = session.execute(
         select(parties)
         .where(*found)
@@ -85,7 +89,7 @@ def ranked(
         .limit(page.limit)
         .offset(page.offset)
     ).all()
-    return total, rows
+    return total, value, rows
 
 
 def _ranking(
@@ -108,11 +112,12 @@ def _ranking(
         .group_by(Entity.cui)
     )
     column = accepted if page.sort == "count" else money.value
-    total, rows = ranked(session, query, column, page)
+    total, value, rows = ranked(session, query, column, page)
     return Ranking(
         date_from=date_from,
         date_to=date_to,
         total=total,
+        value=value,
         items=[
             RankingRow(
                 rank=row.place,
