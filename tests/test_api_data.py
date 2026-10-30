@@ -1,6 +1,8 @@
 """The data endpoints, over a handful of purchases and award notices in a throwaway schema
 (see conftest.py)."""
 
+import csv
+import io
 import json
 import os
 from datetime import date, datetime
@@ -13,7 +15,7 @@ import pnrr_seed
 import programme_seed
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 
 from date_romania import eu_seap_links
 from date_romania.api import main
@@ -31,6 +33,7 @@ from date_romania.models import (
     DirectPurchaseDetail,
     DirectPurchaseItem,
     Entity,
+    EuProject,
     JobRun,
     PnrrPayment,
     Report,
@@ -1509,15 +1512,28 @@ def test_a_beneficiary_has_its_projects_by_programme_each_at_its_own_day(client)
     assert none["items"] == []
 
 
+def test_a_programme_paid_figure_is_unknown_when_one_project_has_none(client, session):
+    session.execute(update(EuProject).where(EuProject.smis == eu_seed.POR).values(paid=None))
+    session.flush()
+    answer = client.get("/v1/projects/programmes", params={"beneficiary": TOWN_HALL}).json()
+    por = next(each for each in answer["items"] if each["programme"] == "POR")
+    # Never a partial sum shown as the whole.
+    assert por["paid"] is None
+
+
 def test_the_projects_as_a_file_carry_the_filters(client):
     response = client.get("/v1/projects", params={"format": "csv", "kind": "anghel_saligny"})
     lines = response.text.lstrip("﻿").splitlines()
     assert lines[0] == (
         "programme,key,title,financing_contract,beneficiary_cui,beneficiary,counties,"
-        "value_ron,status,followed_to,step_not_followed"
+        "value_ron,status,followed_to,step_not_followed,tied_as"
     )
     assert len(lines) == 5
     assert lines[1].startswith("Anghel Saligny,102,")
+    # A company's file says how each row is tied, as its page does.
+    company = client.get("/v1/projects", params={"format": "csv", "company": STATIONER})
+    rows = list(csv.DictReader(io.StringIO(company.text.lstrip("﻿"))))
+    assert sorted(row["tied_as"] for row in rows) == ["beneficiary", "notice", "purchase"]
 
 
 SITE_CALLS = (

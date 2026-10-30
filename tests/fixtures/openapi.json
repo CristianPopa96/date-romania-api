@@ -5437,24 +5437,6 @@
       "description": "csv gives the whole list as a file."
      },
      {
-      "name": "company",
-      "in": "query",
-      "required": false,
-      "schema": {
-       "anyOf": [
-        {
-         "type": "integer"
-        },
-        {
-         "type": "null"
-        }
-       ],
-       "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`).",
-       "title": "Company"
-      },
-      "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`)."
-     },
-     {
       "name": "kind",
       "in": "query",
       "required": false,
@@ -5536,6 +5518,24 @@
        "title": "Beneficiary"
       },
       "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "company",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`).",
+       "title": "Company"
+      },
+      "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`)."
      },
      {
       "name": "status",

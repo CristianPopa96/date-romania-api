@@ -91,29 +91,38 @@ def company_condition(cui: int) -> ColumnElement[bool]:
     )
 
 
-def vias(session: Session, cui: int, rows: list[Project]) -> dict[int, Via]:
-    """How the company is tied to each project of a page, by the project's row id: the
-    beneficiary first, then the payment file, then a notice won, then a purchase sold."""
-    built = set(session.scalars(_built(cui)))
-    won = {
-        COHESION: set(session.scalars(_won(EuSeapLink.smis, cui))),
-        PNRR: set(session.scalars(_won(EuSeapLink.pnrr_contract_id, cui))),
-    }
-    sold = {
-        COHESION: set(session.scalars(_sold(EuSeapLink.smis, cui))),
-        PNRR: set(session.scalars(_sold(EuSeapLink.pnrr_contract_id, cui))),
-    }
-    found: dict[int, Via] = {}
-    for row in rows:
-        if row.beneficiary_cui == cui:
-            found[row.id] = "beneficiary"
-        elif row.kind == AS and row.key in built:
-            found[row.id] = "builder"
-        elif row.key in won.get(row.kind, ()):
-            found[row.id] = "notice"
-        elif row.key in sold.get(row.kind, ()):
-            found[row.id] = "purchase"
-    return found
+class Ties:
+    """How a company is tied to its projects, read once: the beneficiary first, then the
+    payment file, then a notice won, then a purchase sold."""
+
+    def __init__(self, session: Session, cui: int):
+        self.cui = cui
+        self.built = set(session.scalars(_built(cui)))
+        self.won = {
+            COHESION: set(session.scalars(_won(EuSeapLink.smis, cui))),
+            PNRR: set(session.scalars(_won(EuSeapLink.pnrr_contract_id, cui))),
+        }
+        self.sold = {
+            COHESION: set(session.scalars(_sold(EuSeapLink.smis, cui))),
+            PNRR: set(session.scalars(_sold(EuSeapLink.pnrr_contract_id, cui))),
+        }
+
+    def via(self, row: Project) -> Via | None:
+        if row.beneficiary_cui == self.cui:
+            return "beneficiary"
+        if row.kind == AS and row.key in self.built:
+            return "builder"
+        if row.key in self.won.get(row.kind, ()):
+            return "notice"
+        if row.key in self.sold.get(row.kind, ()):
+            return "purchase"
+        return None
+
+
+def vias(session: Session, cui: int, rows) -> dict[int, Via | None]:
+    """How the company is tied to each project of a page, by the project's row id."""
+    ties = Ties(session, cui)
+    return {row.id: ties.via(row) for row in rows}
 
 
 @router.get("/programmes")
@@ -168,9 +177,12 @@ def _paid(session: Session, kind: str, programme: str, cui: int):
         )
         day = session.scalar(select(func.max(PnrrEdition.day)))
         return paid or Decimal(0), day, "beneficiary"
-    paid, day = session.execute(
-        select(func.sum(EuProject.paid), func.max(EuProject.cut_off)).where(
-            EuProject.entity_cui == cui, EuProject.programme == programme
-        )
+    # A project whose list gives no paid figure leaves the sum unknown, never partial.
+    paid, missing, day = session.execute(
+        select(
+            func.sum(EuProject.paid),
+            func.count().filter(EuProject.paid.is_(None)),
+            func.max(EuProject.cut_off),
+        ).where(EuProject.entity_cui == cui, EuProject.programme == programme)
     ).one()
-    return paid, day, "cumulative"
+    return (None if missing else paid), day, "cumulative"

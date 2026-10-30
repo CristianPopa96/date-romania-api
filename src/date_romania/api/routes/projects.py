@@ -9,6 +9,7 @@ programme is chosen and every project filtered is of it (one cohesion programme,
 """
 
 import re
+from dataclasses import dataclass
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query
@@ -32,6 +33,7 @@ from date_romania.api.routes.pnrr_common import edition_source, masked, newest_e
 from date_romania.api.routes.programmes import source as payments_source
 from date_romania.api.routes.project_parties import (
     LISTED,
+    Ties,
     Via,
     company_condition,
     programme_name,
@@ -68,6 +70,13 @@ STATUSES: tuple[ProjectStatus, ...] = ("in_progress", "finished", "terminated")
 _NUMBER = re.compile(r"\d")
 
 
+@dataclass
+class ProjectNamedFilters(NamedFilters):
+    """The filters, and the company whose list it is: its rows say how it is tied."""
+
+    company: int | None = None
+
+
 def project_filters(
     kind: Annotated[
         list[ProjectKind] | None, Query(description="Any of these kinds of programme.")
@@ -101,7 +110,7 @@ def project_filters(
     ] = None,
     value_min: Annotated[float | None, Query(ge=0, description="Lei, included.")] = None,
     value_max: Annotated[float | None, Query(ge=0, description="Lei, excluded.")] = None,
-) -> NamedFilters:
+) -> ProjectNamedFilters:
     named: dict[str, ColumnElement[bool]] = {}
     if kind:
         named["kind"] = Project.kind.in_(kind)
@@ -123,10 +132,10 @@ def project_filters(
         named["value_min"] = Project.value >= value_min
     if value_max is not None:
         named["value_max"] = Project.value < value_max
-    return NamedFilters(named)
+    return ProjectNamedFilters(named, company)
 
 
-ProjectFilters = Annotated[NamedFilters, Depends(project_filters)]
+ProjectFilters = Annotated[ProjectNamedFilters, Depends(project_filters)]
 
 
 def _search(q: str) -> ColumnElement[bool]:
@@ -173,18 +182,19 @@ def project_list(
     limit: Limit = 25,
     offset: Offset = 0,
     format: Format = "json",
-    company: Annotated[int | None, Query(description="As in the filters.")] = None,
 ) -> ProjectList:
     """Every project of every programme under the filters, the largest first. Sorting
     across programmes orders them; it never adds their values."""
     conditions = [LISTED, *filters.all()]
     query = ordered(select(Project).where(*conditions), Project.value, order, Project.id)
     entities = _entities(session)
+    company = filters.company
     if format == "csv":
-        return _csv(session.scalars(query.execution_options(yield_per=1_000)), entities)
+        rows = session.scalars(query.execution_options(yield_per=1_000))
+        return _csv(rows, entities, _ties(session, company))
     total = lists.count(session, Project, conditions)
     rows = session.scalars(query.limit(limit).offset(offset)).all()
-    tied = vias(session, company, list(rows)) if company is not None else {}
+    tied = vias(session, company, rows) if company is not None else {}
     return ProjectList(
         total=total, items=[_item(row, entities(row), tied.get(row.id)) for row in rows]
     )
@@ -226,7 +236,14 @@ def _item(row: Project, entity: Entity | None, via: Via | None = None) -> Projec
     )
 
 
-def _csv(rows, entities):
+def _ties(session: Session, company: int | None):
+    """How a company's list ties each row, read once for the file; none on another list."""
+    if company is None:
+        return lambda row: None
+    return Ties(session, company).via
+
+
+def _csv(rows, entities, via):
     header = [
         "programme",
         "key",
@@ -239,6 +256,9 @@ def _csv(rows, entities):
         "status",
         "followed_to",
         "step_not_followed",
+        # A company's file only: beneficiary, builder (published), notice or purchase
+        # (tied by us from the buyer's text).
+        "tied_as",
     ]
     lines = (
         [
@@ -253,6 +273,7 @@ def _csv(rows, entities):
             row.status_written,
             row.reach,
             row.gap,
+            via(row),
         ]
         for row in rows
     )
