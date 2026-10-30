@@ -98,6 +98,11 @@ class SeapLink(Answer):
     confidence: LinkConfidence = Field(description="Always probable: the buyer's own text.")
 
 
+class SeapCompany(Answer):
+    name: str
+    entity: EntityRef | None = Field(description="Set when the company has a page.")
+
+
 class EuSeapContract(SeapLink):
     contract: Contract
 
@@ -115,6 +120,17 @@ class EuSeapLinks(Answer):
         description="The contracts of the award notices tied, in a notice still in force, "
         "the newest first, one page of them. A framework agreement is a ceiling, never a sum "
         "spent."
+    )
+    notices: int = Field(description="The award notices tied, still in force.")
+    companies: int = Field(
+        description="Every company that won a tied contract or sold a tied purchase, told "
+        "apart by CUI, or by name where SEAP gives none."
+    )
+    largest: SeapCompany | None = Field(
+        description="The company with the most value across the tied records: contracts "
+        "counted (never a framework agreement) and accepted purchases, added together. A "
+        "member of an association is counted with the whole contract's value. Null when no "
+        "tied record counts any value."
     )
     purchases: list[EuSeapPurchase] = Field(
         description="The accepted direct purchases tied, the newest first, all of them."
