@@ -1849,6 +1849,31 @@ def test_a_project_lists_the_seap_records_that_cite_it(client):
     assert client.get("/v1/programmes/eu-funds/projects/999999/seap").status_code == 404
 
 
+def test_the_largest_company_of_a_project_counts_each_contract_once(client, session):
+    # SEAP lists the partner of the association twice more on the road contract: still
+    # one winner, with the contract's value once, so the builder stays the largest.
+    winner = session.scalars(select(AwardWinner).where(AwardWinner.contract_id == 101)).first()
+    session.add_all(
+        AwardWinner(
+            contract_id=101,
+            position=position,
+            supplier_cui=STATIONER,
+            supplier_text="Beta Birotică SRL",
+            source_document_id=winner.source_document_id,
+        )
+        for position in (8, 9)
+    )
+    session.flush()
+    tied = client.get(f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap").json()
+    assert (tied["companies"], tied["largest"]["name"]) == (2, "ALFA CONSTRUCT S.R.L.")
+    # Only a framework agreement tied: no company has any value, so none is the largest.
+    session.execute(delete(AwardContract).where(AwardContract.id.in_([101, 103, 104])))
+    session.flush()
+    framework = client.get(f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap").json()
+    assert framework["companies"] >= 1
+    assert framework["largest"] is None
+
+
 def test_a_pnrr_contract_lists_the_purchases_of_its_beneficiary_that_cite_it(client):
     tied = client.get(f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}/seap").json()
     assert tied["contracts"] == []

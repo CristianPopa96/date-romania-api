@@ -8418,7 +8418,7 @@
         "type": "null"
        }
       ],
-      "description": "The company with the most value across the tied records: contracts counted (never a framework agreement) and accepted purchases."
+      "description": "The company with the most value across the tied records: contracts counted (never a framework agreement) and accepted purchases, added together. A member of an association is counted with the whole contract's value. Null when no tied record counts any value."
      },
      "purchases": {
       "items": {

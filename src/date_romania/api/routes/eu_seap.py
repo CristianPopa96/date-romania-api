@@ -57,7 +57,7 @@ def _links(session: Session, project: ColumnElement[bool], limit: int, offset: i
         notices=session.scalar(select(func.count(AwardContract.notice_id.distinct())).where(*tied))
         or 0,
         companies=len(companies),
-        largest=max(companies.values(), key=lambda each: each[1])[0] if companies else None,
+        largest=_largest(companies),
         contracts_total=session.scalar(select(func.count()).select_from(AwardContract).where(*tied))
         or 0,
         contracts=[
@@ -70,6 +70,15 @@ def _links(session: Session, project: ColumnElement[bool], limit: int, offset: i
     )
 
 
+def _largest(companies: dict[object, tuple[SeapCompany, Decimal]]) -> SeapCompany | None:
+    """The company with the most value; none when no tied record counts any (only framework
+    agreements, say), since then no company is the largest."""
+    if not companies:
+        return None
+    company, value = max(companies.values(), key=lambda each: each[1])
+    return company if value > 0 else None
+
+
 def _companies(session: Session, tied, bought) -> dict[object, tuple[SeapCompany, Decimal]]:
     """Every company of the tied records, by CUI or by name where SEAP gives none, with the
     value of what it won and sold: contracts counted (never a framework agreement, a
@@ -79,6 +88,7 @@ def _companies(session: Session, tied, bought) -> dict[object, tuple[SeapCompany
     values: dict[object, Decimal] = defaultdict(Decimal)
     rows = session.execute(
         select(
+            AwardContract.id,
             AwardWinner.supplier_cui,
             AwardWinner.supplier_text,
             Entity.name,
@@ -89,10 +99,16 @@ def _companies(session: Session, tied, bought) -> dict[object, tuple[SeapCompany
         .outerjoin(Entity, Entity.cui == AwardWinner.supplier_cui)
         .where(*tied)
     )
-    for cui, text, name, value, counted in rows:
+    # SEAP can list one company twice on a contract: it is still one winner, with the value
+    # once.
+    seen: set[tuple[int, object]] = set()
+    for contract, cui, text, name, value, counted in rows:
         key = cui or plain(text)
         names.setdefault(key, name or text or "")
         cuis[key] = cui
+        if (contract, key) in seen:
+            continue
+        seen.add((contract, key))
         if counted and value is not None:
             values[key] += value
     for purchase in bought:

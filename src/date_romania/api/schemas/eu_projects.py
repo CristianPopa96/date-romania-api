@@ -128,7 +128,9 @@ class EuSeapLinks(Answer):
     )
     largest: SeapCompany | None = Field(
         description="The company with the most value across the tied records: contracts "
-        "counted (never a framework agreement) and accepted purchases."
+        "counted (never a framework agreement) and accepted purchases, added together. A "
+        "member of an association is counted with the whole contract's value. Null when no "
+        "tied record counts any value."
     )
     purchases: list[EuSeapPurchase] = Field(
         description="The accepted direct purchases tied, the newest first, all of them."
