@@ -1744,6 +1744,8 @@ SITE_CALLS = (
     # The projects landing in a commune (a county's are those of its county).
     f"/v1/projects?place={places_seed.TANTARENI}&sort=value&order=desc&limit=25&offset=0",
     f"/v1/projects/overview?place={places_seed.TANTARENI}",
+    # Page 9, past the end: the site sends it to the last page.
+    f"/v1/projects?place={places_seed.TANTARENI}&sort=value&order=desc&limit=25&offset=200",
     # A measure's contracts of one kind of beneficiary.
     "/v1/programmes/pnrr/contracts?beneficiary_type=UAT&measure=C10.I3"
     "&sort=value&order=desc&limit=25&offset=0",
@@ -2034,7 +2036,8 @@ def test_the_lists_and_rankings_take_the_county_where_anaf_records_a_party(clien
     assert ranked("/v1/rankings/contract-suppliers", county="GJ") == [BUILDER]
     assert ranked("/v1/rankings/contract-institutions", county="GJ") == [TOWN_HALL]
     # Not a county's code.
-    assert client.get("/v1/award-contracts", params={"county": "gorj"}).status_code == 422
+    for code in ("gorj", "ZZ"):
+        assert client.get("/v1/award-contracts", params={"county": code}).status_code == 422
 
 
 def test_a_measure_lists_the_kinds_of_beneficiary_as_the_dashboard_writes_them(client):

@@ -35,7 +35,7 @@ Cpv = Annotated[
 County = Annotated[
     str | None,
     Query(
-        pattern=r"^[A-Z]{1,2}$",
+        pattern="^(" + "|".join(CODES) + ")$",
         description="A county's two-letter code ('CJ'; București is 'B'), by where ANAF "
         "records the institution or company.",
     ),
@@ -45,8 +45,7 @@ County = Annotated[
 def located_in(cui: ColumnElement, code: str) -> ColumnElement[bool]:
     """An institution or company that ANAF records in this county: one place only, so an
     association is never placed by one of its members."""
-    name = county_name(CODES[code]) if code in CODES else None
-    return cui.in_(select(Entity.cui).where(Entity.county == name))
+    return cui.in_(select(Entity.cui).where(Entity.county == county_name(CODES[code])))
 
 
 Format = Annotated[Literal["json", "csv"], Query(description="csv gives the whole list as a file.")]
