@@ -1648,21 +1648,20 @@ SITE_CALLS = (
     f"/v1/programmes/pnrr/contracts/overview?beneficiary={TOWN_HALL}&measure=C10.I3&scope=measure",
     "/v1/programmes/pnrr/contracts?measure=C2.I1&sort=value&order=desc&limit=25&offset=0",
     "/v1/programmes/pnrr/contracts/overview?measure=C2.I1&scope=measure",
-    # Page 9 of a measure and of every EU project, past the end: sent to the last page.
+    # Page 9 of a measure and of every cohesion project, past the end: sent to the last page.
     "/v1/programmes/pnrr/contracts?measure=C10.I3&sort=value&order=desc&limit=25&offset=200",
-    "/v1/programmes/eu-funds/projects?sort=value&order=desc&limit=25&offset=200",
+    "/v1/projects?kind=cohesion&sort=value&order=desc&limit=25&offset=200",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.ONE}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.SEVERAL}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.MANY_MEASURES}",
     f"/v1/programmes/pnrr/contracts/{pnrr_seed.PERSON}",
     "/v1/programmes/eu-funds",
-    # Every project as a list: all, of one programme, a SMIS code typed in its search.
-    "/v1/programmes/eu-funds/projects?sort=value&order=desc&limit=25&offset=0",
-    "/v1/programmes/eu-funds/projects/overview",
-    "/v1/programmes/eu-funds/projects?programme=POR&sort=value&order=desc&limit=25&offset=0",
-    "/v1/programmes/eu-funds/projects/overview?programme=POR",
-    f"/v1/programmes/eu-funds/projects?q={eu_seed.POR}&sort=value&order=desc&limit=25&offset=0",
-    f"/v1/programmes/eu-funds/projects/overview?q={eu_seed.POR}",
+    # The funds page's list, the list of every project fixed to cohesion (D22): of one
+    # programme, a SMIS code typed in its search (the whole of it is with /v1/projects).
+    "/v1/projects?kind=cohesion&programme=POR&sort=value&order=desc&limit=25&offset=0",
+    "/v1/projects/overview?kind=cohesion&programme=POR",
+    f"/v1/projects?kind=cohesion&q={eu_seed.POR}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?kind=cohesion&q={eu_seed.POR}",
     # The EU money of a beneficiary, on its institution, supplier and place pages.
     f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}",
     f"/v1/programmes/eu-beneficiaries/{HOSPITAL}",
@@ -1830,12 +1829,23 @@ def test_a_project_lists_the_seap_records_that_cite_it(client):
     assert {row["confidence"] for row in tied["contracts"]} == {"probable"}
     assert [row["contract"]["counted"] for row in tied["contracts"]] == [True, True, False, True]
     assert tied["purchases"] == []
+    # Beyond the page: the notices and the companies of every tied record, the one with the
+    # most value first (the framework agreement, a ceiling, adds nothing).
+    assert (tied["notices"], tied["companies"]) == (1, 2)
+    assert tied["largest"]["name"] == "ALFA CONSTRUCT S.R.L."
     page = client.get(
         f"/v1/programmes/eu-funds/projects/{eu_seed.POR}/seap", params={"limit": 2, "offset": 2}
     ).json()
     assert [row["contract"]["id"] for row in page["contracts"]] == [102, 104]
     none = client.get(f"/v1/programmes/eu-funds/projects/{eu_seed.PEO}/seap").json()
-    assert none == {"contracts_total": 0, "contracts": [], "purchases": []}
+    assert none == {
+        "contracts_total": 0,
+        "contracts": [],
+        "notices": 0,
+        "companies": 0,
+        "largest": None,
+        "purchases": [],
+    }
     assert client.get("/v1/programmes/eu-funds/projects/999999/seap").status_code == 404
 
 
