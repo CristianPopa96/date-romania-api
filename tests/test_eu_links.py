@@ -49,6 +49,10 @@ def test_every_kind_of_tie(session):
         5: (None, "Comuna Tantareni", "Dolj", None),
         6: (None, "Scoala Gimnaziala Nr 1", "Gorj", None),
         7: (None, "Asociatia Nimeni", "Gorj", None),
+        # The department that runs the project, after a '/', is left out of the name.
+        8: (None, "COMUNA ȚÂNȚĂRENI/primarie", "Gorj", None),
+        9: (None, "Drumuri Gorj SRL / Departament Fonduri Externe", "Gorj", None),
+        10: (None, "Asociatia Nimeni/Proiecte", "Gorj", None),
     }
     session.add_all(
         EuProject(
@@ -66,7 +70,7 @@ def test_every_kind_of_tie(session):
     )
     session.flush()
 
-    assert eu_links.link(session) == 4
+    assert eu_links.link(session) == 6
     session.expire_all()
     ties = {
         p.smis: (p.entity_cui, p.entity_method, p.entity_confidence)
@@ -80,4 +84,7 @@ def test_every_kind_of_tie(session):
         5: (None, None, None),
         6: (None, None, None),
         7: (None, None, None),
+        8: (TOWN_HALL, eu_links.BY_ADMINISTRATION, eu_links.PROBABLE),
+        9: (BUILDER, eu_links.BY_NAME, eu_links.PROBABLE),
+        10: (None, None, None),
     }

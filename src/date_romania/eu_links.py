@@ -22,6 +22,9 @@ from date_romania.text import plain
 #             name is that of one entity in the project's county (or, when the county has
 #             several, one in the UAT the list names); or the name is a company's, which
 #             the trade register keeps unique in the country, and one entity carries it
+# A name that ties nothing whole is tried again without what follows a '/', where some
+# lists add the department that runs the project: 'MUNICIPIUL ZALĂU/Entitate de drept
+# public', 'COMUNA HOLBOCA/primarie'. The tie keeps the method of the part that matched.
 BY_CUI = "cui-in-list"
 BY_ADMINISTRATION = "administration-name+place"
 BY_NAME = "name+place"
@@ -88,6 +91,13 @@ def link(session: Session) -> int:
 def _tie(index, places, named, cui, name, county, locality) -> tuple[int, str, str] | None:
     if cui is not None:
         return cui, BY_CUI, SURE
+    found = _by_name(index, places, named, name, county, locality)
+    if found is None and name and "/" in name:
+        found = _by_name(index, places, named, name.split("/")[0], county, locality)
+    return found
+
+
+def _by_name(index, places, named, name, county, locality) -> tuple[int, str, str] | None:
     governs = administration(index, county, name)
     if governs is not None:
         town_hall = places[governs].town_hall_cui
