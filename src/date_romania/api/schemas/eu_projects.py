@@ -18,7 +18,7 @@ LinkConfidence = Literal["sure", "probable"]
 # How it was tied (see eu_links.py).
 LinkMethod = Literal["cui-in-list", "administration-name+place", "name+place", "company-name"]
 # How a SEAP record was tied to a project (see eu_seap_links.py).
-SeapLinkMethod = Literal["smis-in-text", "financing-number+buyer"]
+SeapLinkMethod = Literal["smis-in-text", "financing-number+buyer", "pnrr-measure+buyer"]
 
 
 class EuProgramme(Answer):
@@ -92,7 +92,9 @@ class EuProject(EuProjectRow):
 
 class SeapLink(Answer):
     cited: str = Field(
-        description="What SEAP's text cites, as written: '341497', '12321/26.08.2024'."
+        description="What SEAP's text cites, as written: '341497', '12321/26.08.2024'; for "
+        "pnrr-measure+buyer, the contract's measure it fits ('C10.I3'), or 'PNRR' when the "
+        "buyer's only PNRR contract is tied with no measure cited."
     )
     method: SeapLinkMethod
     confidence: LinkConfidence = Field(description="Always probable: the buyer's own text.")

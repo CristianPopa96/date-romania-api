@@ -47,6 +47,11 @@ def test_split_buyer_reads_both_forms():
     )
     assert split_buyer("RO 2684940 - APA  CANAL  SIBIU SA") == (2684940, "APA  CANAL  SIBIU SA")
     assert split_buyer("RO11178217 - S.N. AEROPORTUL") == (11178217, "S.N. AEROPORTUL")
+    assert split_buyer("R 361684 - Banca Nationala a Romaniei") == (
+        361684,
+        "Banca Nationala a Romaniei",
+    )
+    assert split_buyer("r1890420 - RAJA S.A CONSTANTA") == (1890420, "RAJA S.A CONSTANTA")
     assert split_buyer("A name with no number") == (None, "A name with no number")
     assert split_buyer(None) == (None, None)
 
@@ -54,6 +59,9 @@ def test_split_buyer_reads_both_forms():
 def test_winner_cui_is_only_for_romanian_tax_ids():
     assert winner_cui("RO 15425816", "RO") == 15425816
     assert winner_cui("15148952", None) == 15148952
+    assert winner_cui("R1718417", "RO") == 1718417
+    assert winner_cui("RO16728583,", "RO") == 16728583
+    assert winner_cui("CUIRO49594720", "RO") == 49594720
     # A valid CUI by its digits, but the company is abroad.
     assert winner_cui("15148952", "HU") is None
     assert winner_cui("23049996241", "HU") is None

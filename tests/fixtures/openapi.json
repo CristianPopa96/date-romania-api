@@ -8761,13 +8761,14 @@
      "cited": {
       "type": "string",
       "title": "Cited",
-      "description": "What SEAP's text cites, as written: '341497', '12321/26.08.2024'."
+      "description": "What SEAP's text cites, as written: '341497', '12321/26.08.2024'; for pnrr-measure+buyer, the contract's measure it fits ('C10.I3'), or 'PNRR' when the buyer's only PNRR contract is tied with no measure cited."
      },
      "method": {
       "type": "string",
       "enum": [
        "smis-in-text",
-       "financing-number+buyer"
+       "financing-number+buyer",
+       "pnrr-measure+buyer"
       ],
       "title": "Method"
      },
@@ -8854,13 +8855,14 @@
      "cited": {
       "type": "string",
       "title": "Cited",
-      "description": "What SEAP's text cites, as written: '341497', '12321/26.08.2024'."
+      "description": "What SEAP's text cites, as written: '341497', '12321/26.08.2024'; for pnrr-measure+buyer, the contract's measure it fits ('C10.I3'), or 'PNRR' when the buyer's only PNRR contract is tied with no measure cited."
      },
      "method": {
       "type": "string",
       "enum": [
        "smis-in-text",
-       "financing-number+buyer"
+       "financing-number+buyer",
+       "pnrr-measure+buyer"
       ],
       "title": "Method"
      },
