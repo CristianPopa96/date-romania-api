@@ -9,13 +9,13 @@ programme is chosen and every project filtered is of it (one cohesion programme,
 """
 
 import re
+from dataclasses import dataclass
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import ColumnElement, and_, any_, func, literal, or_, select
 from sqlalchemy.orm import Session
 
-from date_romania import eu_programmes
 from date_romania.api.routes import list_common as lists
 from date_romania.api.routes.common import (
     Db,
@@ -31,6 +31,14 @@ from date_romania.api.routes.eu_projects import lists_source
 from date_romania.api.routes.list_common import NamedFilters, Order, ordered
 from date_romania.api.routes.pnrr_common import edition_source, masked, newest_edition
 from date_romania.api.routes.programmes import source as payments_source
+from date_romania.api.routes.project_parties import (
+    LISTED,
+    Ties,
+    Via,
+    company_condition,
+    programme_name,
+    vias,
+)
 from date_romania.api.schemas.common import Source
 from date_romania.api.schemas.projects import (
     CountyRef,
@@ -58,20 +66,15 @@ router = APIRouter(prefix="/projects", tags=["projects"])
 # The edges of the value bands, in lei.
 BAND_EDGES = (0, 100_000, 500_000, 1_000_000, 5_000_000, 25_000_000, 100_000_000)
 STATUSES: tuple[ProjectStatus, ...] = ("in_progress", "finished", "terminated")
-# Natural persons are never listed by name.
-LISTED = ~Project.natural_person
 # A financing contract number, as typed: digits with letters, slashes or dots ('1850DOT').
 _NUMBER = re.compile(r"\d")
 
 
-def programme_name(programme: str) -> tuple[str, str | None]:
-    """A programme's name and period, from its code in the `project` table."""
-    if programme == "AS":
-        return "Anghel Saligny", None
-    if programme == "PNRR":
-        return "PNRR", None
-    held = eu_programmes.BY_CODE.get(programme)
-    return (held.name, held.period) if held else (programme, None)
+@dataclass
+class ProjectNamedFilters(NamedFilters):
+    """The filters, and the company whose list it is: its rows say how it is tied."""
+
+    company: int | None = None
 
 
 def project_filters(
@@ -84,6 +87,14 @@ def project_filters(
     ] = None,
     county: Annotated[str | None, Query(description="A county's code, as in `counties`.")] = None,
     beneficiary: Annotated[int | None, Query(description="The beneficiary's CUI.")] = None,
+    company: Annotated[
+        int | None,
+        Query(
+            description="A company's CUI: the projects it is the beneficiary of, or was paid "
+            "through as the builder of an Anghel Saligny payment file or as the winner or "
+            "supplier of a SEAP record that cites the project. Each row says which (`via`)."
+        ),
+    ] = None,
     status: Annotated[list[ProjectStatus] | None, Query(description="Any of these.")] = None,
     reach: Annotated[
         list[Reach] | None, Query(description="Any of these last steps followed.")
@@ -99,7 +110,7 @@ def project_filters(
     ] = None,
     value_min: Annotated[float | None, Query(ge=0, description="Lei, included.")] = None,
     value_max: Annotated[float | None, Query(ge=0, description="Lei, excluded.")] = None,
-) -> NamedFilters:
+) -> ProjectNamedFilters:
     named: dict[str, ColumnElement[bool]] = {}
     if kind:
         named["kind"] = Project.kind.in_(kind)
@@ -109,6 +120,8 @@ def project_filters(
         named["county"] = literal(county).op("=")(any_(Project.counties))
     if beneficiary is not None:
         named["beneficiary"] = Project.beneficiary_cui == beneficiary
+    if company is not None:
+        named["company"] = company_condition(company)
     if status:
         named["status"] = Project.status.in_(status)
     if reach:
@@ -119,10 +132,10 @@ def project_filters(
         named["value_min"] = Project.value >= value_min
     if value_max is not None:
         named["value_max"] = Project.value < value_max
-    return NamedFilters(named)
+    return ProjectNamedFilters(named, company)
 
 
-ProjectFilters = Annotated[NamedFilters, Depends(project_filters)]
+ProjectFilters = Annotated[ProjectNamedFilters, Depends(project_filters)]
 
 
 def _search(q: str) -> ColumnElement[bool]:
@@ -175,11 +188,16 @@ def project_list(
     conditions = [LISTED, *filters.all()]
     query = ordered(select(Project).where(*conditions), Project.value, order, Project.id)
     entities = _entities(session)
+    company = filters.company
     if format == "csv":
-        return _csv(session.scalars(query.execution_options(yield_per=1_000)), entities)
+        rows = session.scalars(query.execution_options(yield_per=1_000))
+        return _csv(rows, entities, _ties(session, company))
     total = lists.count(session, Project, conditions)
     rows = session.scalars(query.limit(limit).offset(offset)).all()
-    return ProjectList(total=total, items=[_item(row, entities(row)) for row in rows])
+    tied = vias(session, company, rows) if company is not None else {}
+    return ProjectList(
+        total=total, items=[_item(row, entities(row), tied.get(row.id)) for row in rows]
+    )
 
 
 def _entities(session: Session):
@@ -196,7 +214,7 @@ def _entities(session: Session):
     return entity
 
 
-def _item(row: Project, entity: Entity | None) -> ProjectItem:
+def _item(row: Project, entity: Entity | None, via: Via | None = None) -> ProjectItem:
     name, period = programme_name(row.programme)
     return ProjectItem(
         kind=row.kind,
@@ -214,10 +232,18 @@ def _item(row: Project, entity: Entity | None) -> ProjectItem:
         status_written=row.status_written,
         reach=row.reach,
         gap=row.gap,
+        via=via,
     )
 
 
-def _csv(rows, entities):
+def _ties(session: Session, company: int | None):
+    """How a company's list ties each row, read once for the file; none on another list."""
+    if company is None:
+        return lambda row: None
+    return Ties(session, company).via
+
+
+def _csv(rows, entities, via):
     header = [
         "programme",
         "key",
@@ -230,6 +256,9 @@ def _csv(rows, entities):
         "status",
         "followed_to",
         "step_not_followed",
+        # A company's file only: beneficiary, builder (published), notice or purchase
+        # (tied by us from the buyer's text).
+        "tied_as",
     ]
     lines = (
         [
@@ -244,6 +273,7 @@ def _csv(rows, entities):
             row.status_written,
             row.reach,
             row.gap,
+            via(row),
         ]
         for row in rows
     )

@@ -5316,6 +5316,51 @@
     }
    }
   },
+  "/v1/projects/programmes": {
+   "get": {
+    "tags": [
+     "projects"
+    ],
+    "summary": "Project Programmes",
+    "description": "A beneficiary's projects by programme, each with its count, its value and what was\npaid as the programme publishes it, at its own day: never added across programmes.\nPNRR payments name the beneficiary and the measure, so their sum is the beneficiary's,\nover every measure, never a contract's.",
+    "operationId": "project_programmes_v1_projects_programmes_get",
+    "parameters": [
+     {
+      "name": "beneficiary",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "description": "The beneficiary's CUI.",
+       "title": "Beneficiary"
+      },
+      "description": "The beneficiary's CUI."
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectProgrammes"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/projects": {
    "get": {
     "tags": [
@@ -5473,6 +5518,24 @@
        "title": "Beneficiary"
       },
       "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "company",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`).",
+       "title": "Company"
+      },
+      "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`)."
      },
      {
       "name": "status",
@@ -5701,6 +5764,24 @@
        "title": "County"
       },
       "description": "A county's code, as in `counties`."
+     },
+     {
+      "name": "company",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`).",
+       "title": "Company"
+      },
+      "description": "A company's CUI: the projects it is the beneficiary of, or was paid through as the builder of an Anghel Saligny payment file or as the winner or supplier of a SEAP record that cites the project. Each row says which (`via`)."
      },
      {
       "name": "status",
@@ -11102,6 +11183,103 @@
     ],
     "title": "ProgrammeCountyOption"
    },
+   "ProgrammeFigures": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "enum": [
+       "anghel_saligny",
+       "pnrr",
+       "cohesion"
+      ],
+      "title": "Kind"
+     },
+     "programme": {
+      "type": "string",
+      "title": "Programme",
+      "description": "'AS', 'PNRR', or the cohesion programme's code."
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "period": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period"
+     },
+     "projects": {
+      "type": "integer",
+      "title": "Projects"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value",
+      "description": "Lei, the projects' values added up."
+     },
+     "paid": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid",
+      "description": "Lei, as `paid_as` says; null where not published."
+     },
+     "paid_as": {
+      "type": "string",
+      "enum": [
+       "files",
+       "beneficiary",
+       "cumulative"
+      ],
+      "title": "Paid As",
+      "description": "files: the Anghel Saligny payment files' sums for these projects; beneficiary: every PNRR payment to the beneficiary, over all its measures; cumulative: the cohesion list's paid figure up to its cut-off."
+     },
+     "day": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Day",
+      "description": "The last payment file's day, the PNRR edition, or the list's cut-off."
+     }
+    },
+    "type": "object",
+    "required": [
+     "kind",
+     "programme",
+     "name",
+     "period",
+     "projects",
+     "value",
+     "paid",
+     "paid_as",
+     "day"
+    ],
+    "title": "ProgrammeFigures"
+   },
    "ProgrammeFile": {
     "properties": {
      "published_on": {
@@ -11702,6 +11880,24 @@
       "title": "Reach",
       "description": "The last step of the money's road followed."
      },
+     "via": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "beneficiary",
+         "builder",
+         "notice",
+         "purchase"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Via",
+      "description": "With `company` only: how the company is tied to the project, as its beneficiary, as the builder an Anghel Saligny payment file names, or as the winner of a notice or the supplier of a direct purchase that cites the project (probable)."
+     },
      "gap": {
       "anyOf": [
        {
@@ -11732,6 +11928,7 @@
      "status",
      "status_written",
      "reach",
+     "via",
      "gap"
     ],
     "title": "ProjectItem"
@@ -11937,6 +12134,23 @@
      "builder_text"
     ],
     "title": "ProjectPayment"
+   },
+   "ProjectProgrammes": {
+    "properties": {
+     "items": {
+      "items": {
+       "$ref": "#/components/schemas/ProgrammeFigures"
+      },
+      "type": "array",
+      "title": "Items"
+     }
+    },
+    "type": "object",
+    "required": [
+     "items"
+    ],
+    "title": "ProjectProgrammes",
+    "description": "A beneficiary's projects by programme: never added across programmes."
    },
    "ProjectRow": {
     "properties": {

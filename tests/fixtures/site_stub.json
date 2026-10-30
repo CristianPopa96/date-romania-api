@@ -6041,6 +6041,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6063,6 +6064,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6085,6 +6087,7 @@
      "status": "terminated",
      "status_written": "REZILIAT",
      "reach": "beneficiary",
+     "via": null,
      "gap": null
     },
     {
@@ -6111,6 +6114,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6133,6 +6137,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6159,6 +6164,7 @@
      "status": "finished",
      "status_written": "Proiect finalizat",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6185,6 +6191,7 @@
      "status": "in_progress",
      "status_written": "ÎN IMPLEMENTARE",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6211,6 +6218,7 @@
      "status": "in_progress",
      "status_written": "in implementare",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6237,6 +6245,7 @@
      "status": "in_progress",
      "status_written": "ÎN IMPLEMENTARE",
      "reach": "beneficiary",
+     "via": null,
      "gap": "payments"
     },
     {
@@ -6263,6 +6272,7 @@
      "status": "in_progress",
      "status_written": "în implementare",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6289,6 +6299,7 @@
      "status": "finished",
      "status_written": "FINALIZAT",
      "reach": "beneficiary",
+     "via": null,
      "gap": "payments"
     },
     {
@@ -6315,6 +6326,7 @@
      "status": null,
      "status_written": null,
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6341,6 +6353,7 @@
      "status": "in_progress",
      "status_written": "ÎN IMPLEMENTARE",
      "reach": "beneficiary",
+     "via": null,
      "gap": null
     },
     {
@@ -6363,6 +6376,7 @@
      "status": null,
      "status_written": "etapizat",
      "reach": "payments",
+     "via": null,
      "gap": null
     }
    ]
@@ -6586,6 +6600,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6608,6 +6623,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6634,6 +6650,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6656,6 +6673,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "payments",
+     "via": null,
      "gap": null
     }
    ]
@@ -6825,6 +6843,7 @@
      "status": "terminated",
      "status_written": "REZILIAT",
      "reach": "beneficiary",
+     "via": null,
      "gap": null
     },
     {
@@ -6851,6 +6870,7 @@
      "status": "finished",
      "status_written": "Proiect finalizat",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -6877,6 +6897,7 @@
      "status": "in_progress",
      "status_written": "in implementare",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6903,6 +6924,7 @@
      "status": "in_progress",
      "status_written": "în implementare",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -6925,6 +6947,7 @@
      "status": null,
      "status_written": "etapizat",
      "reach": "payments",
+     "via": null,
      "gap": null
     }
    ]
@@ -7124,6 +7147,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -7146,6 +7170,7 @@
      "status": "terminated",
      "status_written": "REZILIAT",
      "reach": "beneficiary",
+     "via": null,
      "gap": null
     },
     {
@@ -7172,6 +7197,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -7198,6 +7224,7 @@
      "status": "finished",
      "status_written": "Proiect finalizat",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -7224,6 +7251,7 @@
      "status": "in_progress",
      "status_written": "ÎN IMPLEMENTARE",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -7250,6 +7278,7 @@
      "status": "in_progress",
      "status_written": "in implementare",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -7276,6 +7305,7 @@
      "status": "in_progress",
      "status_written": "în implementare",
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -7302,6 +7332,7 @@
      "status": null,
      "status_written": null,
      "reach": "payments",
+     "via": null,
      "gap": null
     },
     {
@@ -7328,6 +7359,7 @@
      "status": "in_progress",
      "status_written": "ÎN IMPLEMENTARE",
      "reach": "beneficiary",
+     "via": null,
      "gap": null
     },
     {
@@ -7350,6 +7382,7 @@
      "status": null,
      "status_written": "etapizat",
      "reach": "payments",
+     "via": null,
      "gap": null
     }
    ]
@@ -7573,6 +7606,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -7599,6 +7633,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -7625,6 +7660,7 @@
      "status": "finished",
      "status_written": "Proiect finalizat",
      "reach": "companies",
+     "via": null,
      "gap": null
     },
     {
@@ -7651,6 +7687,7 @@
      "status": "in_progress",
      "status_written": "ÎN IMPLEMENTARE",
      "reach": "companies",
+     "via": null,
      "gap": null
     }
    ]
@@ -7937,6 +7974,7 @@
      "status": "finished",
      "status_written": "Finalizată",
      "reach": "payments",
+     "via": null,
      "gap": null
     }
    ]
@@ -9811,6 +9849,7 @@
      "status": "finished",
      "status_written": "Proiect finalizat",
      "reach": "companies",
+     "via": null,
      "gap": null
     }
    ]
@@ -9990,6 +10029,7 @@
      "status": "finished",
      "status_written": "Proiect finalizat",
      "reach": "companies",
+     "via": null,
      "gap": null
     }
    ]
@@ -10163,55 +10203,251 @@
    }
   }
  },
- "/v1/programmes/eu-beneficiaries/4491342": {
+ "/v1/projects?beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
-   "entity": {
-    "cui": 4491342,
-    "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-    "kind": "authority"
-   },
-   "cohesion": [
+   "total": 4,
+   "items": [
     {
-     "code": "PEO",
-     "name": "Programul Educație și Ocupare",
-     "period": "2021-2027",
-     "projects": 1,
-     "total": 2100000.0,
-     "paid": 600000.0,
-     "cut_off": "2026-09-30",
-     "by_name": 0
+     "kind": "anghel_saligny",
+     "key": 101,
+     "programme": "AS",
+     "programme_name": "Anghel Saligny",
+     "period": null,
+     "title": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "number": "1872",
+     "beneficiary_name": "ȚÂNȚĂRENI",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 8500000.0,
+     "status": "finished",
+     "status_written": "Finalizată",
+     "reach": "companies",
+     "via": null,
+     "gap": null
     },
     {
-     "code": "PS",
-     "name": "Programul Sănătate",
-     "period": "2021-2027",
-     "projects": 1,
-     "total": 3000000.0,
-     "paid": 900000.0,
-     "cut_off": "2026-08-31",
-     "by_name": 0
+     "kind": "cohesion",
+     "key": 118001,
+     "programme": "POR",
+     "programme_name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "title": "Modernizarea drumului comunal DC 12",
+     "number": null,
+     "beneficiary_name": "UAT Comuna Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat",
+     "reach": "companies",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "pnrr",
+     "key": 701,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "number": "12321",
+     "beneficiary_name": "COMUNA TANTARENI",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "in_progress",
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "companies",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "pnrr",
+     "key": 706,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Împădurire teren comunal",
+     "number": "992",
+     "beneficiary_name": "COMUNA TANTARENI",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 300000.0,
+     "status": "in_progress",
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "beneficiary",
+     "via": null,
+     "gap": null
+    }
+   ]
+  }
+ },
+ "/v1/projects/overview?beneficiary=4981310": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 4,
+    "companies": 3,
+    "natural_persons": 0,
+    "value": null
+   },
+   "whole": 14,
+   "beneficiary": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "kinds": [
+    {
+     "value": "pnrr",
+     "count": 2
+    },
+    {
+     "value": "anghel_saligny",
+     "count": 1
+    },
+    {
+     "value": "cohesion",
+     "count": 1
     }
    ],
-   "cohesion_source": {
-    "publisher": "MIPE",
-    "record": "Liste de proiecte contractate",
-    "url": "https://mfe.gov.ro/programe/",
-    "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null,
-    "sha256": null,
-    "parser_version": null,
-    "documents": 2
-   },
-   "pnrr": {
-    "contracts": 2,
-    "total": 4350000.0,
-    "paid": 1850000.0,
-    "payments": 3,
-    "first_day": "2026-02-02",
-    "last_day": "2026-07-08",
-    "edition": "2026-10-15",
-    "source": {
+   "programmes": [
+    {
+     "value": "PNRR",
+     "kind": "pnrr",
+     "name": "PNRR",
+     "period": null,
+     "count": 2
+    },
+    {
+     "value": "AS",
+     "kind": "anghel_saligny",
+     "name": "Anghel Saligny",
+     "period": null,
+     "count": 1
+    },
+    {
+     "value": "POR",
+     "kind": "cohesion",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "count": 1
+    }
+   ],
+   "counties": [
+    {
+     "value": "GJ",
+     "name": "Gorj",
+     "count": 4
+    }
+   ],
+   "statuses": [
+    {
+     "value": "finished",
+     "count": 2
+    },
+    {
+     "value": "in_progress",
+     "count": 2
+    }
+   ],
+   "reaches": [
+    {
+     "value": "companies",
+     "count": 3
+    },
+    {
+     "value": "beneficiary",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 3
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [],
+   "sources": [
+    {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    },
+    {
      "publisher": "MIPE",
      "record": "Tabloul de bord PNRR",
      "url": "https://mfe.gov.ro/pnrr-dashboard/",
@@ -10220,223 +10456,183 @@
      "sha256": null,
      "parser_version": null,
      "documents": 5
-    }
-   }
-  }
- },
- "/v1/programmes/eu-beneficiaries/17886786": {
-  "status": 200,
-  "body": {
-   "entity": {
-    "cui": 17886786,
-    "name": "ALFA CONSTRUCT S.R.L.",
-    "kind": "company"
-   },
-   "cohesion": [],
-   "cohesion_source": null,
-   "pnrr": null
-  }
- },
- "/v1/programmes/eu-beneficiaries/12345674": {
-  "status": 404,
-  "body": {
-   "detail": "Entity not found"
-  }
- },
- "/v1/programmes/eu-funds/projects?beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {
-  "status": 200,
-  "body": {
-   "total": 1,
-   "items": [
+    },
     {
-     "smis": 118001,
-     "programme": "POR",
-     "title": "Modernizarea drumului comunal DC 12",
-     "beneficiary": {
-      "name": "UAT Comuna Țânțăreni",
-      "entity": {
-       "cui": 4981310,
-       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-       "kind": "authority"
-      },
-      "confidence": "probable",
-      "method": "administration-name+place"
-     },
-     "county": "Gorj",
-     "total": 6200000.0,
-     "paid": 6100000.0,
-     "status": "finished",
-     "status_written": "Proiect finalizat"
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
     }
    ]
   }
  },
- "/v1/programmes/eu-funds/projects/overview?beneficiary=4981310&scope=beneficiary": {
+ "/v1/projects/programmes?beneficiary=4981310": {
   "status": 200,
   "body": {
-   "summary": {
-    "projects": 1,
-    "first_start": null,
-    "last_start": null
-   },
-   "whole": 1,
-   "programmes": [
+   "items": [
     {
-     "value": "POR",
-     "count": 1,
-     "total": 6200000.0,
+     "kind": "pnrr",
+     "programme": "PNRR",
+     "name": "PNRR",
+     "period": null,
+     "projects": 2,
+     "value": 6500000.0,
+     "paid": 2300000.0,
+     "paid_as": "beneficiary",
+     "day": "2026-10-15"
+    },
+    {
+     "kind": "anghel_saligny",
+     "programme": "AS",
+     "name": "Anghel Saligny",
+     "period": null,
+     "projects": 1,
+     "value": 8500000.0,
+     "paid": 5400000.0,
+     "paid_as": "files",
+     "day": "2026-08-27"
+    },
+    {
+     "kind": "cohesion",
+     "programme": "POR",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "projects": 1,
+     "value": 6200000.0,
      "paid": 6100000.0,
-     "cut_off": "2025-08-31"
+     "paid_as": "cumulative",
+     "day": "2025-08-31"
     }
-   ],
-   "statuses": [
-    {
-     "value": "in_progress",
-     "count": 0
-    },
-    {
-     "value": "finished",
-     "count": 1
-    },
-    {
-     "value": "terminated",
-     "count": 0
-    }
-   ],
-   "other_statuses": 0,
-   "bands": [
-    {
-     "start": 0.0,
-     "end": 100000.0,
-     "count": 0
-    },
-    {
-     "start": 100000.0,
-     "end": 500000.0,
-     "count": 0
-    },
-    {
-     "start": 500000.0,
-     "end": 1000000.0,
-     "count": 0
-    },
-    {
-     "start": 1000000.0,
-     "end": 5000000.0,
-     "count": 0
-    },
-    {
-     "start": 5000000.0,
-     "end": 25000000.0,
-     "count": 1
-    },
-    {
-     "start": 25000000.0,
-     "end": 100000000.0,
-     "count": 0
-    },
-    {
-     "start": 100000000.0,
-     "end": 500000000.0,
-     "count": 0
-    },
-    {
-     "start": 500000000.0,
-     "end": null,
-     "count": 0
-    }
-   ],
-   "without": []
+   ]
   }
  },
- "/v1/programmes/eu-funds/projects?beneficiary=4491342&sort=value&order=desc&limit=25&offset=0": {
+ "/v1/projects?kind=pnrr&beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 2,
    "items": [
     {
-     "smis": 324809,
-     "programme": "PS",
-     "title": "Echipamente pentru secția de terapie intensivă",
+     "kind": "pnrr",
+     "key": 701,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "number": "12321",
+     "beneficiary_name": "COMUNA TANTARENI",
      "beneficiary": {
-      "name": "SPITALUL JUDETEAN DE URGENTA",
-      "entity": {
-       "cui": 4491342,
-       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-       "kind": "authority"
-      },
-      "confidence": "sure",
-      "method": "cui-in-list"
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
      },
-     "county": "GJ",
-     "total": 3000000.0,
-     "paid": 900000.0,
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
      "status": "in_progress",
-     "status_written": "in implementare"
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "companies",
+     "via": null,
+     "gap": null
     },
     {
-     "smis": 312456,
-     "programme": "PEO",
-     "title": "Dotarea laboratoarelor spitalului",
+     "kind": "pnrr",
+     "key": 706,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Împădurire teren comunal",
+     "number": "992",
+     "beneficiary_name": "COMUNA TANTARENI",
      "beneficiary": {
-      "name": "SPITALUL JUDETEAN DE URGENTA",
-      "entity": {
-       "cui": 4491342,
-       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-       "kind": "authority"
-      },
-      "confidence": "sure",
-      "method": "cui-in-list"
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
      },
-     "county": "GJ",
-     "total": 2100000.0,
-     "paid": 600000.0,
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 300000.0,
      "status": "in_progress",
-     "status_written": "în implementare"
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "beneficiary",
+     "via": null,
+     "gap": null
     }
    ]
   }
  },
- "/v1/programmes/eu-funds/projects/overview?beneficiary=4491342&scope=beneficiary": {
+ "/v1/projects/overview?kind=pnrr&beneficiary=4981310": {
   "status": 200,
   "body": {
    "summary": {
     "projects": 2,
-    "first_start": "2024-03-01",
-    "last_start": "2024-03-01"
+    "companies": 1,
+    "natural_persons": 0,
+    "value": 6500000.0
    },
-   "whole": 2,
-   "programmes": [
+   "whole": 14,
+   "beneficiary": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "kinds": [
     {
-     "value": "PEO",
-     "count": 1,
-     "total": 2100000.0,
-     "paid": 600000.0,
-     "cut_off": "2026-09-30"
+     "value": "pnrr",
+     "count": 2
     },
     {
-     "value": "PS",
-     "count": 1,
-     "total": 3000000.0,
-     "paid": 900000.0,
-     "cut_off": "2026-08-31"
+     "value": "anghel_saligny",
+     "count": 1
+    },
+    {
+     "value": "cohesion",
+     "count": 1
+    }
+   ],
+   "programmes": [
+    {
+     "value": "PNRR",
+     "kind": "pnrr",
+     "name": "PNRR",
+     "period": null,
+     "count": 2
+    }
+   ],
+   "counties": [
+    {
+     "value": "GJ",
+     "name": "Gorj",
+     "count": 2
     }
    ],
    "statuses": [
     {
      "value": "in_progress",
      "count": 2
-    },
-    {
-     "value": "finished",
-     "count": 0
-    },
-    {
-     "value": "terminated",
-     "count": 0
     }
    ],
-   "other_statuses": 0,
+   "reaches": [
+    {
+     "value": "beneficiary",
+     "count": 1
+    },
+    {
+     "value": "companies",
+     "count": 1
+    }
+   ],
    "bands": [
     {
      "start": 0.0,
@@ -10446,7 +10642,7 @@
     {
      "start": 100000.0,
      "end": 500000.0,
-     "count": 0
+     "count": 1
     },
     {
      "start": 500000.0,
@@ -10456,12 +10652,12 @@
     {
      "start": 1000000.0,
      "end": 5000000.0,
-     "count": 2
+     "count": 0
     },
     {
      "start": 5000000.0,
      "end": 25000000.0,
-     "count": 0
+     "count": 1
     },
     {
      "start": 25000000.0,
@@ -10470,417 +10666,137 @@
     },
     {
      "start": 100000000.0,
-     "end": 500000000.0,
-     "count": 0
-    },
-    {
-     "start": 500000000.0,
      "end": null,
      "count": 0
     }
    ],
-   "without": []
-  }
- },
- "/v1/programmes/eu-funds/projects?beneficiary=4491342&programme=PEO&sort=value&order=desc&limit=25&offset=0": {
-  "status": 200,
-  "body": {
-   "total": 1,
-   "items": [
+   "without": [],
+   "sources": [
     {
-     "smis": 312456,
-     "programme": "PEO",
-     "title": "Dotarea laboratoarelor spitalului",
-     "beneficiary": {
-      "name": "SPITALUL JUDETEAN DE URGENTA",
-      "entity": {
-       "cui": 4491342,
-       "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-       "kind": "authority"
-      },
-      "confidence": "sure",
-      "method": "cui-in-list"
-     },
-     "county": "GJ",
-     "total": 2100000.0,
-     "paid": 600000.0,
-     "status": "in_progress",
-     "status_written": "în implementare"
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
     }
    ]
   }
  },
- "/v1/programmes/eu-funds/projects/overview?beneficiary=4491342&programme=PEO&scope=beneficiary": {
-  "status": 200,
-  "body": {
-   "summary": {
-    "projects": 1,
-    "first_start": "2024-03-01",
-    "last_start": "2024-03-01"
-   },
-   "whole": 2,
-   "programmes": [
-    {
-     "value": "PEO",
-     "count": 1,
-     "total": 2100000.0,
-     "paid": 600000.0,
-     "cut_off": "2026-09-30"
-    },
-    {
-     "value": "PS",
-     "count": 1,
-     "total": 3000000.0,
-     "paid": 900000.0,
-     "cut_off": "2026-08-31"
-    }
-   ],
-   "statuses": [
-    {
-     "value": "in_progress",
-     "count": 1
-    },
-    {
-     "value": "finished",
-     "count": 0
-    },
-    {
-     "value": "terminated",
-     "count": 0
-    }
-   ],
-   "other_statuses": 0,
-   "bands": [
-    {
-     "start": 0.0,
-     "end": 100000.0,
-     "count": 0
-    },
-    {
-     "start": 100000.0,
-     "end": 500000.0,
-     "count": 0
-    },
-    {
-     "start": 500000.0,
-     "end": 1000000.0,
-     "count": 0
-    },
-    {
-     "start": 1000000.0,
-     "end": 5000000.0,
-     "count": 1
-    },
-    {
-     "start": 5000000.0,
-     "end": 25000000.0,
-     "count": 0
-    },
-    {
-     "start": 25000000.0,
-     "end": 100000000.0,
-     "count": 0
-    },
-    {
-     "start": 100000000.0,
-     "end": 500000000.0,
-     "count": 0
-    },
-    {
-     "start": 500000000.0,
-     "end": null,
-     "count": 0
-    }
-   ],
-   "without": []
-  }
- },
- "/v1/programmes/pnrr/contracts?beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {
-  "status": 200,
-  "body": {
-   "total": 2,
-   "items": [
-    {
-     "id": 701,
-     "number": "12321",
-     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
-     "beneficiary": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "beneficiary_name": "COMUNA TANTARENI",
-     "county": "GORJ",
-     "total": 6200000.0,
-     "status": "in_progress",
-     "physical_progress": 0.4,
-     "measures_differ": false
-    },
-    {
-     "id": 706,
-     "number": "992",
-     "title": "Împădurire teren comunal",
-     "beneficiary": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "beneficiary_name": "COMUNA TANTARENI",
-     "county": "GORJ",
-     "total": 300000.0,
-     "status": "in_progress",
-     "physical_progress": 0.5,
-     "measures_differ": false
-    }
-   ],
-   "natural_persons": 0
-  }
- },
- "/v1/programmes/pnrr/contracts/overview?beneficiary=4981310&scope=beneficiary": {
-  "status": 200,
-  "body": {
-   "summary": {
-    "contracts": 2,
-    "value": 6500000.0,
-    "natural_persons": 0
-   },
-   "whole": 2,
-   "measures": [
-    {
-     "value": "C10.I3",
-     "count": 1
-    },
-    {
-     "value": "C2.I1",
-     "count": 1
-    }
-   ],
-   "counties": [
-    {
-     "value": "GORJ",
-     "count": 2
-    }
-   ],
-   "statuses": [
-    {
-     "value": "in_progress",
-     "count": 2
-    },
-    {
-     "value": "under_30",
-     "count": 0
-    },
-    {
-     "value": "finished",
-     "count": 0
-    }
-   ],
-   "measures_differ": 0,
-   "bands": [
-    {
-     "start": 0.0,
-     "end": 100000.0,
-     "count": 0
-    },
-    {
-     "start": 100000.0,
-     "end": 500000.0,
-     "count": 1
-    },
-    {
-     "start": 500000.0,
-     "end": 1000000.0,
-     "count": 0
-    },
-    {
-     "start": 1000000.0,
-     "end": 5000000.0,
-     "count": 0
-    },
-    {
-     "start": 5000000.0,
-     "end": 25000000.0,
-     "count": 1
-    },
-    {
-     "start": 25000000.0,
-     "end": 100000000.0,
-     "count": 0
-    },
-    {
-     "start": 100000000.0,
-     "end": null,
-     "count": 0
-    }
-   ],
-   "progress": [
-    {
-     "start": 0.0,
-     "end": 0.25,
-     "count": 0
-    },
-    {
-     "start": 0.25,
-     "end": 0.5,
-     "count": 1
-    },
-    {
-     "start": 0.5,
-     "end": 0.75,
-     "count": 1
-    },
-    {
-     "start": 0.75,
-     "end": 1.0,
-     "count": 0
-    },
-    {
-     "start": 1.0,
-     "end": null,
-     "count": 0
-    }
-   ],
-   "beneficiaries": [
-    {
-     "name": "COMUNA TANTARENI",
-     "entity": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "contracts": 2,
-     "value": 6500000.0
-    },
-    {
-     "name": "SPITALUL JUDETEAN",
-     "entity": {
-      "cui": 4491342,
-      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-      "kind": "authority"
-     },
-     "contracts": 2,
-     "value": 4350000.0
-    },
-    {
-     "name": "BETA BIROTICA SRL",
-     "entity": {
-      "cui": 18288250,
-      "name": "Beta Birotică SRL",
-      "kind": "company"
-     },
-     "contracts": 1,
-     "value": 1416076.55
-    }
-   ],
-   "others": {
-    "parties": 0,
-    "value": 0.0
-   },
-   "without": []
-  }
- },
- "/v1/programmes/pnrr/contracts?beneficiary=4981310&sort=progress&order=desc&limit=25&offset=0": {
-  "status": 200,
-  "body": {
-   "total": 2,
-   "items": [
-    {
-     "id": 706,
-     "number": "992",
-     "title": "Împădurire teren comunal",
-     "beneficiary": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "beneficiary_name": "COMUNA TANTARENI",
-     "county": "GORJ",
-     "total": 300000.0,
-     "status": "in_progress",
-     "physical_progress": 0.5,
-     "measures_differ": false
-    },
-    {
-     "id": 701,
-     "number": "12321",
-     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
-     "beneficiary": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "beneficiary_name": "COMUNA TANTARENI",
-     "county": "GORJ",
-     "total": 6200000.0,
-     "status": "in_progress",
-     "physical_progress": 0.4,
-     "measures_differ": false
-    }
-   ],
-   "natural_persons": 0
-  }
- },
- "/v1/programmes/pnrr/contracts?beneficiary=4981310&progress_min=0.5&sort=value&order=desc&limit=25&offset=0": {
+ "/v1/projects?kind=cohesion&beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 1,
    "items": [
     {
-     "id": 706,
-     "number": "992",
-     "title": "Împădurire teren comunal",
+     "kind": "cohesion",
+     "key": 118001,
+     "programme": "POR",
+     "programme_name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "title": "Modernizarea drumului comunal DC 12",
+     "number": null,
+     "beneficiary_name": "UAT Comuna Țânțăreni",
      "beneficiary": {
       "cui": 4981310,
       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
       "kind": "authority"
      },
-     "beneficiary_name": "COMUNA TANTARENI",
-     "county": "GORJ",
-     "total": 300000.0,
-     "status": "in_progress",
-     "physical_progress": 0.5,
-     "measures_differ": false
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat",
+     "reach": "companies",
+     "via": null,
+     "gap": null
     }
-   ],
-   "natural_persons": 0
+   ]
   }
  },
- "/v1/programmes/pnrr/contracts/overview?beneficiary=4981310&progress_min=0.5&scope=beneficiary": {
+ "/v1/projects/overview?kind=cohesion&beneficiary=4981310": {
   "status": 200,
   "body": {
    "summary": {
-    "contracts": 1,
-    "value": 300000.0,
-    "natural_persons": 0
+    "projects": 1,
+    "companies": 1,
+    "natural_persons": 0,
+    "value": 6200000.0
    },
-   "whole": 2,
-   "measures": [
+   "whole": 14,
+   "beneficiary": {
+    "cui": 4981310,
+    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+    "kind": "authority"
+   },
+   "kinds": [
     {
-     "value": "C2.I1",
+     "value": "pnrr",
+     "count": 2
+    },
+    {
+     "value": "anghel_saligny",
+     "count": 1
+    },
+    {
+     "value": "cohesion",
+     "count": 1
+    }
+   ],
+   "programmes": [
+    {
+     "value": "POR",
+     "kind": "cohesion",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
      "count": 1
     }
    ],
    "counties": [
     {
-     "value": "GORJ",
+     "value": "GJ",
+     "name": "Gorj",
      "count": 1
     }
    ],
    "statuses": [
     {
-     "value": "in_progress",
-     "count": 1
-    },
-    {
-     "value": "under_30",
-     "count": 0
-    },
-    {
      "value": "finished",
-     "count": 0
+     "count": 1
     }
    ],
-   "measures_differ": 0,
+   "reaches": [
+    {
+     "value": "companies",
+     "count": 1
+    }
+   ],
    "bands": [
     {
      "start": 0.0,
@@ -10890,7 +10806,7 @@
     {
      "start": 100000.0,
      "end": 500000.0,
-     "count": 1
+     "count": 0
     },
     {
      "start": 500000.0,
@@ -10901,6 +10817,274 @@
      "start": 1000000.0,
      "end": 5000000.0,
      "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [],
+   "sources": [
+    {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
+    }
+   ]
+  }
+ },
+ "/v1/projects?beneficiary=4491342&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 4,
+   "items": [
+    {
+     "kind": "cohesion",
+     "key": 324809,
+     "programme": "PS",
+     "programme_name": "Programul Sănătate",
+     "period": "2021-2027",
+     "title": "Echipamente pentru secția de terapie intensivă",
+     "number": null,
+     "beneficiary_name": "SPITALUL JUDETEAN DE URGENTA",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 3000000.0,
+     "status": "in_progress",
+     "status_written": "in implementare",
+     "reach": "payments",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "pnrr",
+     "key": 702,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Renovare energetică Spitalul Județean",
+     "number": "12345",
+     "beneficiary_name": "SPITALUL JUDETEAN",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "CJ",
+       "name": "Cluj"
+      }
+     ],
+     "value": 2450000.0,
+     "status": "in_progress",
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "beneficiary",
+     "via": null,
+     "gap": "payments"
+    },
+    {
+     "kind": "cohesion",
+     "key": 312456,
+     "programme": "PEO",
+     "programme_name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "title": "Dotarea laboratoarelor spitalului",
+     "number": null,
+     "beneficiary_name": "SPITALUL JUDETEAN DE URGENTA",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 2100000.0,
+     "status": "in_progress",
+     "status_written": "în implementare",
+     "reach": "payments",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "pnrr",
+     "key": 703,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Renovare energetică ambulatoriu",
+     "number": "12346",
+     "beneficiary_name": "SPITALUL JUDETEAN",
+     "beneficiary": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "CJ",
+       "name": "Cluj"
+      }
+     ],
+     "value": 1900000.0,
+     "status": "finished",
+     "status_written": "FINALIZAT",
+     "reach": "beneficiary",
+     "via": null,
+     "gap": "payments"
+    }
+   ]
+  }
+ },
+ "/v1/projects/overview?beneficiary=4491342": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 4,
+    "companies": 0,
+    "natural_persons": 0,
+    "value": null
+   },
+   "whole": 14,
+   "beneficiary": {
+    "cui": 4491342,
+    "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+    "kind": "authority"
+   },
+   "kinds": [
+    {
+     "value": "cohesion",
+     "count": 2
+    },
+    {
+     "value": "pnrr",
+     "count": 2
+    }
+   ],
+   "programmes": [
+    {
+     "value": "PNRR",
+     "kind": "pnrr",
+     "name": "PNRR",
+     "period": null,
+     "count": 2
+    },
+    {
+     "value": "PEO",
+     "kind": "cohesion",
+     "name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "count": 1
+    },
+    {
+     "value": "PS",
+     "kind": "cohesion",
+     "name": "Programul Sănătate",
+     "period": "2021-2027",
+     "count": 1
+    }
+   ],
+   "counties": [
+    {
+     "value": "CJ",
+     "name": "Cluj",
+     "count": 2
+    },
+    {
+     "value": "GJ",
+     "name": "Gorj",
+     "count": 2
+    }
+   ],
+   "statuses": [
+    {
+     "value": "in_progress",
+     "count": 3
+    },
+    {
+     "value": "finished",
+     "count": 1
+    }
+   ],
+   "reaches": [
+    {
+     "value": "beneficiary",
+     "count": 2
+    },
+    {
+     "value": "payments",
+     "count": 2
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 4
     },
     {
      "start": 5000000.0,
@@ -10918,60 +11102,282 @@
      "count": 0
     }
    ],
-   "progress": [
+   "without": [],
+   "sources": [
     {
-     "start": 0.0,
-     "end": 0.25,
-     "count": 0
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
     },
     {
-     "start": 0.25,
-     "end": 0.5,
-     "count": 1
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
     },
     {
-     "start": 0.5,
-     "end": 0.75,
-     "count": 1
-    },
-    {
-     "start": 0.75,
-     "end": 1.0,
-     "count": 0
-    },
-    {
-     "start": 1.0,
-     "end": null,
-     "count": 0
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
     }
-   ],
-   "beneficiaries": [
+   ]
+  }
+ },
+ "/v1/projects/programmes?beneficiary=4491342": {
+  "status": 200,
+  "body": {
+   "items": [
     {
-     "name": "SPITALUL JUDETEAN",
-     "entity": {
-      "cui": 4491342,
-      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-      "kind": "authority"
-     },
-     "contracts": 2,
-     "value": 4350000.0
+     "kind": "pnrr",
+     "programme": "PNRR",
+     "name": "PNRR",
+     "period": null,
+     "projects": 2,
+     "value": 4350000.0,
+     "paid": 1850000.0,
+     "paid_as": "beneficiary",
+     "day": "2026-10-15"
     },
     {
-     "name": "COMUNA TANTARENI",
-     "entity": {
+     "kind": "cohesion",
+     "programme": "PEO",
+     "name": "Programul Educație și Ocupare",
+     "period": "2021-2027",
+     "projects": 1,
+     "value": 2100000.0,
+     "paid": 600000.0,
+     "paid_as": "cumulative",
+     "day": "2026-09-30"
+    },
+    {
+     "kind": "cohesion",
+     "programme": "PS",
+     "name": "Programul Sănătate",
+     "period": "2021-2027",
+     "projects": 1,
+     "value": 3000000.0,
+     "paid": 900000.0,
+     "paid_as": "cumulative",
+     "day": "2026-08-31"
+    }
+   ]
+  }
+ },
+ "/v1/projects?company=17886786&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "items": [
+    {
+     "kind": "anghel_saligny",
+     "key": 101,
+     "programme": "AS",
+     "programme_name": "Anghel Saligny",
+     "period": null,
+     "title": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "number": "1872",
+     "beneficiary_name": "ȚÂNȚĂRENI",
+     "beneficiary": {
       "cui": 4981310,
       "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
       "kind": "authority"
      },
-     "contracts": 1,
-     "value": 300000.0
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 8500000.0,
+     "status": "finished",
+     "status_written": "Finalizată",
+     "reach": "companies",
+     "via": "builder",
+     "gap": null
+    },
+    {
+     "kind": "cohesion",
+     "key": 118001,
+     "programme": "POR",
+     "programme_name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "title": "Modernizarea drumului comunal DC 12",
+     "number": null,
+     "beneficiary_name": "UAT Comuna Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat",
+     "reach": "companies",
+     "via": "notice",
+     "gap": null
+    }
+   ]
+  }
+ },
+ "/v1/projects/overview?company=17886786": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 2,
+    "companies": 2,
+    "natural_persons": 0,
+    "value": null
+   },
+   "whole": 14,
+   "beneficiary": null,
+   "kinds": [
+    {
+     "value": "anghel_saligny",
+     "count": 1
+    },
+    {
+     "value": "cohesion",
+     "count": 1
     }
    ],
-   "others": {
-    "parties": 0,
-    "value": 0.0
-   },
-   "without": []
+   "programmes": [
+    {
+     "value": "AS",
+     "kind": "anghel_saligny",
+     "name": "Anghel Saligny",
+     "period": null,
+     "count": 1
+    },
+    {
+     "value": "POR",
+     "kind": "cohesion",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "count": 1
+    }
+   ],
+   "counties": [
+    {
+     "value": "GJ",
+     "name": "Gorj",
+     "count": 2
+    }
+   ],
+   "statuses": [
+    {
+     "value": "finished",
+     "count": 2
+    }
+   ],
+   "reaches": [
+    {
+     "value": "companies",
+     "count": 2
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 2
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [],
+   "sources": [
+    {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Tabloul de bord PNRR",
+     "url": "https://mfe.gov.ro/pnrr-dashboard/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 5
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
+    }
+   ]
+  }
+ },
+ "/v1/projects/programmes?beneficiary=17886786": {
+  "status": 200,
+  "body": {
+   "items": []
+  }
+ },
+ "/v1/projects?beneficiary=12345674&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 0,
+   "items": []
   }
  },
  "/v1/programmes/eu-funds/projects/312456": {

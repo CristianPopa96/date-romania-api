@@ -5,6 +5,7 @@ Programmes publish their figures each at its own day and in its own way, so no s
 given across them: a value total only once one programme is chosen.
 """
 
+from datetime import date
 from typing import Literal
 
 from pydantic import Field
@@ -40,6 +41,12 @@ class ProjectItem(Answer):
     status: ProjectStatus | None = Field(description="Ours, where the programme's words map.")
     status_written: str | None = Field(description="As the programme writes it.")
     reach: Reach = Field(description="The last step of the money's road followed.")
+    via: Literal["beneficiary", "builder", "notice", "purchase"] | None = Field(
+        default=None,
+        description="With `company` only: how the company is tied to the project, as its "
+        "beneficiary, as the builder an Anghel Saligny payment file names, or as the winner "
+        "of a notice or the supplier of a direct purchase that cites the project (probable).",
+    )
     gap: Literal["payments"] | None = Field(
         description="A step we cannot follow: the payments, when they are on a measure the "
         "beneficiary has several contracts on, or not published while a later step is."
@@ -111,3 +118,27 @@ class ProjectsOverview(Answer):
         "if it alone were removed, in the order of the parameters."
     )
     sources: list[Source] = Field(description="One per programme's source.")
+
+
+class ProgrammeFigures(Answer):
+    kind: ProjectKind
+    programme: str = Field(description="'AS', 'PNRR', or the cohesion programme's code.")
+    name: str
+    period: str | None
+    projects: int
+    value: float | None = Field(description="Lei, the projects' values added up.")
+    paid: float | None = Field(description="Lei, as `paid_as` says; null where not published.")
+    paid_as: Literal["files", "beneficiary", "cumulative"] = Field(
+        description="files: the Anghel Saligny payment files' sums for these projects; "
+        "beneficiary: every PNRR payment to the beneficiary, over all its measures; "
+        "cumulative: the cohesion list's paid figure up to its cut-off."
+    )
+    day: date | None = Field(
+        description="The last payment file's day, the PNRR edition, or the list's cut-off."
+    )
+
+
+class ProjectProgrammes(Answer):
+    """A beneficiary's projects by programme: never added across programmes."""
+
+    items: list[ProgrammeFigures]
