@@ -4785,7 +4785,7 @@
    "detail": "No institution or company with CUI 12345674"
   }
  },
- "/v1/award-contracts?sort=value&limit=20&offset=0": {
+ "/v1/award-contracts?sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
    "total": 3,
@@ -4932,6 +4932,1286 @@
      }
     }
    ]
+  }
+ },
+ "/v1/award-contracts/overview": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 3,
+    "value": 6380000.0,
+    "without_value": 0,
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "whole": 3,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "step": "day",
+   "points": [
+    {
+     "start": "2026-10-05",
+     "count": 1,
+     "value": 6120000.0
+    },
+    {
+     "start": "2026-10-06",
+     "count": 1,
+     "value": 210000.0
+    },
+    {
+     "start": "2026-10-07",
+     "count": 1,
+     "value": 50000.0
+    }
+   ],
+   "party": "supplier",
+   "parties": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "others": {
+    "parties": 1,
+    "value": 50000.0
+   },
+   "associations": {
+    "contracts": 1,
+    "value": 6120000.0
+   },
+   "won": [
+    {
+     "value": "alone",
+     "count": 2
+    },
+    {
+     "value": "association",
+     "count": 1
+    }
+   ],
+   "kinds": [
+    {
+     "value": 1,
+     "count": 2
+    },
+    {
+     "value": 3,
+     "count": 1
+    }
+   ],
+   "eu_funded": [
+    {
+     "value": 1,
+     "count": 2
+    },
+    {
+     "value": 0,
+     "count": 0
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 100000.0,
+     "count": 1
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/award-contracts?supplier=17886786&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": [
+    {
+     "id": 101,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "101",
+     "title": "Contract 101",
+     "signed_at": "2026-10-05T09:00:00Z",
+     "kind": 1,
+     "counted": true,
+     "lots": null,
+     "value": 6120000.0,
+     "original_value": 6120000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      },
+      {
+       "supplier": {
+        "cui": 18288250,
+        "name": "Beta Birotică SRL",
+        "kind": "company"
+       },
+       "text": "18288250",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 3,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2,
+      "documents": null
+     }
+    },
+    {
+     "id": 103,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "103",
+     "title": "Contract 103",
+     "signed_at": "2026-10-06T09:00:00Z",
+     "kind": 3,
+     "counted": true,
+     "lots": null,
+     "value": 210000.0,
+     "original_value": 210000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 3,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2,
+      "documents": null
+     }
+    }
+   ]
+  }
+ },
+ "/v1/award-contracts/overview?supplier=17886786": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 2,
+    "value": 6330000.0,
+    "without_value": 0,
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-06"
+   },
+   "whole": 2,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "step": "day",
+   "points": [
+    {
+     "start": "2026-10-05",
+     "count": 1,
+     "value": 6120000.0
+    },
+    {
+     "start": "2026-10-06",
+     "count": 1,
+     "value": 210000.0
+    }
+   ],
+   "party": "supplier",
+   "parties": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "others": {
+    "parties": 0,
+    "value": 0.0
+   },
+   "associations": {
+    "contracts": 1,
+    "value": 6120000.0
+   },
+   "won": [
+    {
+     "value": "alone",
+     "count": 1
+    },
+    {
+     "value": "association",
+     "count": 1
+    }
+   ],
+   "kinds": [
+    {
+     "value": 1,
+     "count": 1
+    },
+    {
+     "value": 3,
+     "count": 1
+    }
+   ],
+   "eu_funded": [
+    {
+     "value": 1,
+     "count": 2
+    },
+    {
+     "value": 0,
+     "count": 0
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/award-contracts?supplier=17886786&won=alone&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": [
+    {
+     "id": 103,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "103",
+     "title": "Contract 103",
+     "signed_at": "2026-10-06T09:00:00Z",
+     "kind": 3,
+     "counted": true,
+     "lots": null,
+     "value": 210000.0,
+     "original_value": 210000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 3,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2,
+      "documents": null
+     }
+    }
+   ]
+  }
+ },
+ "/v1/award-contracts/overview?supplier=17886786&won=alone": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 1,
+    "value": 210000.0,
+    "without_value": 0,
+    "first_day": "2026-10-06",
+    "last_day": "2026-10-06"
+   },
+   "whole": 2,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "step": "day",
+   "points": [
+    {
+     "start": "2026-10-06",
+     "count": 1,
+     "value": 210000.0
+    }
+   ],
+   "party": "supplier",
+   "parties": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "others": {
+    "parties": 0,
+    "value": 0.0
+   },
+   "associations": {
+    "contracts": 0,
+    "value": 0.0
+   },
+   "won": [
+    {
+     "value": "alone",
+     "count": 1
+    },
+    {
+     "value": "association",
+     "count": 1
+    }
+   ],
+   "kinds": [
+    {
+     "value": 3,
+     "count": 1
+    }
+   ],
+   "eu_funded": [
+    {
+     "value": 1,
+     "count": 1
+    },
+    {
+     "value": 0,
+     "count": 0
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 0
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/award-contracts?eu_funded=true&cpv=45&county=GJ&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 2,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": [
+    {
+     "id": 101,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "101",
+     "title": "Contract 101",
+     "signed_at": "2026-10-05T09:00:00Z",
+     "kind": 1,
+     "counted": true,
+     "lots": null,
+     "value": 6120000.0,
+     "original_value": 6120000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      },
+      {
+       "supplier": {
+        "cui": 18288250,
+        "name": "Beta Birotică SRL",
+        "kind": "company"
+       },
+       "text": "18288250",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 3,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2,
+      "documents": null
+     }
+    },
+    {
+     "id": 103,
+     "notice_id": 9001,
+     "notice_no": "CAN0000001",
+     "notice_title": "Modernizare drum comunal",
+     "contract_no": "103",
+     "title": "Contract 103",
+     "signed_at": "2026-10-06T09:00:00Z",
+     "kind": 3,
+     "counted": true,
+     "lots": null,
+     "value": 210000.0,
+     "original_value": 210000.0,
+     "currency": "RON",
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "procedure_type": "Procedura simplificata",
+     "cpv_code": "45233140-2",
+     "winners": [
+      {
+       "supplier": {
+        "cui": 17886786,
+        "name": "ALFA CONSTRUCT S.R.L.",
+        "kind": "company"
+       },
+       "text": "17886786",
+       "country": "Romania"
+      }
+     ],
+     "source": {
+      "publisher": "SEAP",
+      "record": "CAN0000001",
+      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 3,
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "parser_version": 2,
+      "documents": null
+     }
+    }
+   ]
+  }
+ },
+ "/v1/award-contracts/overview?eu_funded=true&cpv=45&county=GJ": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 2,
+    "value": 6330000.0,
+    "without_value": 0,
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-06"
+   },
+   "whole": 3,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "step": "day",
+   "points": [
+    {
+     "start": "2026-10-05",
+     "count": 1,
+     "value": 6120000.0
+    },
+    {
+     "start": "2026-10-06",
+     "count": 1,
+     "value": 210000.0
+    }
+   ],
+   "party": "supplier",
+   "parties": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "others": {
+    "parties": 0,
+    "value": 0.0
+   },
+   "associations": {
+    "contracts": 1,
+    "value": 6120000.0
+   },
+   "won": [
+    {
+     "value": "alone",
+     "count": 1
+    },
+    {
+     "value": "association",
+     "count": 1
+    }
+   ],
+   "kinds": [
+    {
+     "value": 1,
+     "count": 1
+    },
+    {
+     "value": 3,
+     "count": 1
+    }
+   ],
+   "eu_funded": [
+    {
+     "value": 1,
+     "count": 2
+    },
+    {
+     "value": 0,
+     "count": 0
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/award-contracts?cpv=30&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 0,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "items": []
+  }
+ },
+ "/v1/award-contracts/overview?cpv=30": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 0,
+    "value": 0.0,
+    "without_value": 0,
+    "first_day": null,
+    "last_day": null
+   },
+   "whole": 3,
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "step": "month",
+   "points": [],
+   "party": "supplier",
+   "parties": [],
+   "others": {
+    "parties": 0,
+    "value": 0.0
+   },
+   "associations": {
+    "contracts": 0,
+    "value": 0.0
+   },
+   "won": [
+    {
+     "value": "alone",
+     "count": 0
+    },
+    {
+     "value": "association",
+     "count": 0
+    }
+   ],
+   "kinds": [],
+   "eu_funded": [
+    {
+     "value": 1,
+     "count": 0
+    },
+    {
+     "value": 0,
+     "count": 0
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 0
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [
+    {
+     "param": "cpv",
+     "count": 3
+    }
+   ]
+  }
+ },
+ "/v1/direct-purchases?state=7&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 5,
+   "items": [
+    {
+     "id": 5,
+     "code": "DA00000005",
+     "name": "Purchase 5",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "buyer_text": "4491342 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-06T13:00:00+03:00",
+     "estimated_value": 5000000.0,
+     "value": 5000000.0,
+     "contract_type_id": null,
+     "limit": 900400.0,
+     "above_limit": true,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000005",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/5",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    {
+     "id": 2,
+     "code": "DA00000002",
+     "name": "Purchase 2",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-06T10:00:00+03:00",
+     "estimated_value": 2000.0,
+     "value": 2000.0,
+     "contract_type_id": null,
+     "limit": 900400.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000002",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/2",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    {
+     "id": 1,
+     "code": "DA00000001",
+     "name": "Purchase 1",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 17886786,
+      "name": "ALFA CONSTRUCT S.R.L.",
+      "kind": "company"
+     },
+     "supplier_text": "RO 17886786 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-05T10:00:00+03:00",
+     "estimated_value": 1000.0,
+     "value": 1000.0,
+     "contract_type_id": null,
+     "limit": 900400.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000001",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/1",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    {
+     "id": 6,
+     "code": "DA00000006",
+     "name": "Purchase 6",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "30192000-1",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4491342,
+      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+      "kind": "authority"
+     },
+     "buyer_text": "4491342 buyer",
+     "supplier": null,
+     "supplier_text": "ATU1 Lab GmbH",
+     "published_at": null,
+     "finalized_at": "2026-10-06T21:30:00Z",
+     "estimated_value": 700.0,
+     "value": 700.0,
+     "contract_type_id": null,
+     "limit": 900400.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000006",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/6",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    {
+     "id": 3,
+     "code": "DA00000003",
+     "name": "Purchase 3",
+     "state_id": 7,
+     "state": "Oferta acceptata",
+     "cpv_code": "45233140-2",
+     "cpv_name": null,
+     "buyer": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "buyer_text": "4981310 buyer",
+     "supplier": {
+      "cui": 18288250,
+      "name": "Beta Birotică SRL",
+      "kind": "company"
+     },
+     "supplier_text": "RO 18288250 supplier",
+     "published_at": null,
+     "finalized_at": "2026-10-06T11:00:00+03:00",
+     "estimated_value": 500.0,
+     "value": 500.0,
+     "contract_type_id": null,
+     "limit": 900400.0,
+     "above_limit": false,
+     "source": {
+      "publisher": "SEAP",
+      "record": "DA00000003",
+      "url": "https://e-licitatie.ro/pub/direct-acquisition/view/3",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 1,
+      "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "parser_version": 1,
+      "documents": null
+     }
+    }
+   ]
+  }
+ },
+ "/v1/direct-purchases/overview?state=7": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "purchases": 5,
+    "accepted": 5,
+    "value": 4200.0,
+    "above_limit": 1,
+    "above_limit_value": 5000000.0,
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "whole": 6,
+   "last_day_held": "2026-10-07",
+   "step": "day",
+   "points": [
+    {
+     "start": "2026-10-05",
+     "count": 1,
+     "value": 1000.0
+    },
+    {
+     "start": "2026-10-06",
+     "count": 2,
+     "value": 2500.0
+    },
+    {
+     "start": "2026-10-07",
+     "count": 1,
+     "value": 700.0
+    }
+   ],
+   "party": "supplier",
+   "parties": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "accepted": 2,
+     "value": 3000.0
+    },
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
+     "accepted": 1,
+     "value": 500.0
+    }
+   ],
+   "others": {
+    "parties": 1,
+    "value": 700.0
+   },
+   "states": [
+    {
+     "value": 7,
+     "count": 5
+    },
+    {
+     "value": 3,
+     "count": 1
+    }
+   ],
+   "contract_types": [
+    {
+     "value": 0,
+     "count": 5
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 1000.0,
+     "count": 2
+    },
+    {
+     "start": 1000.0,
+     "end": 5000.0,
+     "count": 2
+    },
+    {
+     "start": 5000.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 50000.0,
+     "count": 0
+    },
+    {
+     "start": 50000.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 270120.0,
+     "count": 0
+    },
+    {
+     "start": 270120.0,
+     "end": 900400.0,
+     "count": 0
+    },
+    {
+     "start": 900400.0,
+     "end": null,
+     "count": 1
+    }
+   ],
+   "without": []
+  }
+ },
+ "/v1/direct-purchases/overview?buyer=4981310&state=7": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "purchases": 3,
+    "accepted": 3,
+    "value": 3500.0,
+    "above_limit": 0,
+    "above_limit_value": 0.0,
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-06"
+   },
+   "whole": 6,
+   "last_day_held": "2026-10-07",
+   "step": "day",
+   "points": [
+    {
+     "start": "2026-10-05",
+     "count": 1,
+     "value": 1000.0
+    },
+    {
+     "start": "2026-10-06",
+     "count": 2,
+     "value": 2500.0
+    }
+   ],
+   "party": "supplier",
+   "parties": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "accepted": 2,
+     "value": 3000.0
+    },
+    {
+     "cui": 18288250,
+     "name": "Beta Birotică SRL",
+     "kind": "company",
+     "accepted": 1,
+     "value": 500.0
+    }
+   ],
+   "others": {
+    "parties": 0,
+    "value": 0.0
+   },
+   "states": [
+    {
+     "value": 7,
+     "count": 3
+    },
+    {
+     "value": 3,
+     "count": 1
+    }
+   ],
+   "contract_types": [
+    {
+     "value": 0,
+     "count": 3
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 1000.0,
+     "count": 1
+    },
+    {
+     "start": 1000.0,
+     "end": 5000.0,
+     "count": 2
+    },
+    {
+     "start": 5000.0,
+     "end": 10000.0,
+     "count": 0
+    },
+    {
+     "start": 10000.0,
+     "end": 50000.0,
+     "count": 0
+    },
+    {
+     "start": 50000.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 270120.0,
+     "count": 0
+    },
+    {
+     "start": 270120.0,
+     "end": 900400.0,
+     "count": 0
+    },
+    {
+     "start": 900400.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": []
   }
  },
  "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=25&offset=0": {
@@ -5433,273 +6713,148 @@
    }
   }
  },
- "/v1/award-contracts?sort=value&cpv=45&limit=20&offset=0": {
+ "/v1/rankings/contract-suppliers?won=alone&county=GJ&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
-   "total": 3,
    "period": {
     "first_day": "2026-10-05",
     "last_day": "2026-10-07"
    },
+   "won": "alone",
+   "total": 1,
+   "value": 210000.0,
    "items": [
     {
-     "id": 101,
-     "notice_id": 9001,
-     "notice_no": "CAN0000001",
-     "notice_title": "Modernizare drum comunal",
-     "contract_no": "101",
-     "title": "Contract 101",
-     "signed_at": "2026-10-05T09:00:00Z",
-     "kind": 1,
-     "counted": true,
-     "lots": null,
-     "value": 6120000.0,
-     "original_value": 6120000.0,
-     "currency": "RON",
-     "buyer": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "buyer_text": "4981310 buyer",
-     "procedure_type": "Procedura simplificata",
-     "cpv_code": "45233140-2",
-     "winners": [
-      {
-       "supplier": {
-        "cui": 17886786,
-        "name": "ALFA CONSTRUCT S.R.L.",
-        "kind": "company"
-       },
-       "text": "17886786",
-       "country": "Romania"
-      },
-      {
-       "supplier": {
-        "cui": 18288250,
-        "name": "Beta Birotică SRL",
-        "kind": "company"
-       },
-       "text": "18288250",
-       "country": "Romania"
-      }
-     ],
-     "source": {
-      "publisher": "SEAP",
-      "record": "CAN0000001",
-      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
-      "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 3,
-      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "parser_version": 2,
-      "documents": null
-     }
-    },
-    {
-     "id": 103,
-     "notice_id": 9001,
-     "notice_no": "CAN0000001",
-     "notice_title": "Modernizare drum comunal",
-     "contract_no": "103",
-     "title": "Contract 103",
-     "signed_at": "2026-10-06T09:00:00Z",
-     "kind": 3,
-     "counted": true,
-     "lots": null,
-     "value": 210000.0,
-     "original_value": 210000.0,
-     "currency": "RON",
-     "buyer": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "buyer_text": "4981310 buyer",
-     "procedure_type": "Procedura simplificata",
-     "cpv_code": "45233140-2",
-     "winners": [
-      {
-       "supplier": {
-        "cui": 17886786,
-        "name": "ALFA CONSTRUCT S.R.L.",
-        "kind": "company"
-       },
-       "text": "17886786",
-       "country": "Romania"
-      }
-     ],
-     "source": {
-      "publisher": "SEAP",
-      "record": "CAN0000001",
-      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
-      "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 3,
-      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "parser_version": 2,
-      "documents": null
-     }
-    },
-    {
-     "id": 105,
-     "notice_id": 9002,
-     "notice_no": "SCNA0000002",
-     "notice_title": "Analize de laborator",
-     "contract_no": "105",
-     "title": "Contract 105",
-     "signed_at": "2026-10-07T09:00:00Z",
-     "kind": 1,
-     "counted": true,
-     "lots": null,
-     "value": 50000.0,
-     "original_value": 50000.0,
-     "currency": "RON",
-     "buyer": {
-      "cui": 4491342,
-      "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
-      "kind": "authority"
-     },
-     "buyer_text": "4491342 buyer",
-     "procedure_type": "Procedura simplificata",
-     "cpv_code": "45233140-2",
-     "winners": [
-      {
-       "supplier": null,
-       "text": "ATU1 Lab GmbH",
-       "country": "Austria"
-      }
-     ],
-     "source": {
-      "publisher": "SEAP",
-      "record": "SCNA0000002",
-      "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
-      "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 3,
-      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "parser_version": 2,
-      "documents": null
-     }
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "rank": 1,
+     "contracts": 1,
+     "value": 210000.0
     }
-   ]
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
   }
  },
- "/v1/award-contracts?sort=value&cpv=45&eu_funded=true&limit=20&offset=0": {
+ "/v1/rankings/contract-suppliers?won=alone&county=GJ&sort=value&order=desc&limit=10&offset=0": {
   "status": 200,
   "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": "alone",
+   "total": 1,
+   "value": 210000.0,
+   "items": [
+    {
+     "cui": 17886786,
+     "name": "ALFA CONSTRUCT S.R.L.",
+     "kind": "company",
+     "rank": 1,
+     "contracts": 1,
+     "value": 210000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
+  }
+ },
+ "/v1/rankings/contract-institutions?cpv=45&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "period": {
+    "first_day": "2026-10-05",
+    "last_day": "2026-10-07"
+   },
+   "won": null,
    "total": 2,
-   "period": {
-    "first_day": "2026-10-05",
-    "last_day": "2026-10-07"
-   },
+   "value": 6380000.0,
    "items": [
     {
-     "id": 101,
-     "notice_id": 9001,
-     "notice_no": "CAN0000001",
-     "notice_title": "Modernizare drum comunal",
-     "contract_no": "101",
-     "title": "Contract 101",
-     "signed_at": "2026-10-05T09:00:00Z",
-     "kind": 1,
-     "counted": true,
-     "lots": null,
-     "value": 6120000.0,
-     "original_value": 6120000.0,
-     "currency": "RON",
-     "buyer": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "buyer_text": "4981310 buyer",
-     "procedure_type": "Procedura simplificata",
-     "cpv_code": "45233140-2",
-     "winners": [
-      {
-       "supplier": {
-        "cui": 17886786,
-        "name": "ALFA CONSTRUCT S.R.L.",
-        "kind": "company"
-       },
-       "text": "17886786",
-       "country": "Romania"
-      },
-      {
-       "supplier": {
-        "cui": 18288250,
-        "name": "Beta Birotică SRL",
-        "kind": "company"
-       },
-       "text": "18288250",
-       "country": "Romania"
-      }
-     ],
-     "source": {
-      "publisher": "SEAP",
-      "record": "CAN0000001",
-      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
-      "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 3,
-      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "parser_version": 2,
-      "documents": null
-     }
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "rank": 1,
+     "contracts": 2,
+     "value": 6330000.0
     },
     {
-     "id": 103,
-     "notice_id": 9001,
-     "notice_no": "CAN0000001",
-     "notice_title": "Modernizare drum comunal",
-     "contract_no": "103",
-     "title": "Contract 103",
-     "signed_at": "2026-10-06T09:00:00Z",
-     "kind": 3,
-     "counted": true,
-     "lots": null,
-     "value": 210000.0,
-     "original_value": 210000.0,
-     "currency": "RON",
-     "buyer": {
-      "cui": 4981310,
-      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-      "kind": "authority"
-     },
-     "buyer_text": "4981310 buyer",
-     "procedure_type": "Procedura simplificata",
-     "cpv_code": "45233140-2",
-     "winners": [
-      {
-       "supplier": {
-        "cui": 17886786,
-        "name": "ALFA CONSTRUCT S.R.L.",
-        "kind": "company"
-       },
-       "text": "17886786",
-       "country": "Romania"
-      }
-     ],
-     "source": {
-      "publisher": "SEAP",
-      "record": "CAN0000001",
-      "url": "https://e-licitatie.ro/pub/notices/ca-notices/view-c/9001",
-      "fetched_at": "2026-10-07T04:30:00Z",
-      "document_id": 3,
-      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "parser_version": 2,
-      "documents": null
-     }
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "rank": 2,
+     "contracts": 1,
+     "value": 50000.0
     }
-   ]
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
   }
  },
- "/v1/award-contracts?sort=value&cpv=30&limit=20&offset=0": {
+ "/v1/rankings/contract-institutions?cpv=45&sort=value&order=desc&limit=10&offset=0": {
   "status": 200,
   "body": {
-   "total": 0,
    "period": {
     "first_day": "2026-10-05",
     "last_day": "2026-10-07"
    },
-   "items": []
+   "won": null,
+   "total": 2,
+   "value": 6380000.0,
+   "items": [
+    {
+     "cui": 4981310,
+     "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+     "kind": "authority",
+     "rank": 1,
+     "contracts": 2,
+     "value": 6330000.0
+    },
+    {
+     "cui": 4491342,
+     "name": "SPITALUL JUDETEAN DE URGENTA CLUJ",
+     "kind": "authority",
+     "rank": 2,
+     "contracts": 1,
+     "value": 50000.0
+    }
+   ],
+   "source": {
+    "publisher": "SEAP",
+    "record": null,
+    "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+    "fetched_at": "2026-10-07T04:30:00Z",
+    "document_id": null,
+    "sha256": null,
+    "parser_version": null,
+    "documents": 1
+   }
   }
  },
  "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=25&offset=0": {
@@ -8764,6 +9919,16 @@
      "count": 1
     }
    ],
+   "beneficiary_types": [
+    {
+     "value": "SPITAL",
+     "count": 2
+    },
+    {
+     "value": "UAT",
+     "count": 1
+    }
+   ],
    "statuses": [
     {
      "value": "in_progress",
@@ -8915,6 +10080,12 @@
    "counties": [
     {
      "value": "CLUJ",
+     "count": 1
+    }
+   ],
+   "beneficiary_types": [
+    {
+     "value": "SPITAL",
      "count": 1
     }
    ],
@@ -9078,6 +10249,12 @@
      "count": 1
     }
    ],
+   "beneficiary_types": [
+    {
+     "value": "UAT",
+     "count": 1
+    }
+   ],
    "statuses": [
     {
      "value": "in_progress",
@@ -9223,6 +10400,12 @@
    "counties": [
     {
      "value": "GORJ",
+     "count": 1
+    }
+   ],
+   "beneficiary_types": [
+    {
+     "value": "UAT",
      "count": 1
     }
    ],
@@ -9389,6 +10572,12 @@
    "counties": [
     {
      "value": "GORJ",
+     "count": 1
+    }
+   ],
+   "beneficiary_types": [
+    {
+     "value": "UAT",
      "count": 1
     }
    ],
@@ -10152,45 +11341,247 @@
    ]
   }
  },
- "/v1/programmes/eu-beneficiaries/4981310": {
+ "/v1/projects?place=84914&sort=value&order=desc&limit=25&offset=0": {
   "status": 200,
   "body": {
-   "entity": {
-    "cui": 4981310,
-    "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
-    "kind": "authority"
-   },
-   "cohesion": [
+   "total": 4,
+   "items": [
     {
-     "code": "POR",
-     "name": "Programul Operațional Regional",
+     "kind": "anghel_saligny",
+     "key": 101,
+     "programme": "AS",
+     "programme_name": "Anghel Saligny",
+     "period": null,
+     "title": "Modernizare drumuri comunale în comuna Țânțăreni, județul Gorj",
+     "number": "1872",
+     "beneficiary_name": "ȚÂNȚĂRENI",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 8500000.0,
+     "status": "finished",
+     "status_written": "Finalizată",
+     "reach": "companies",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "cohesion",
+     "key": 118001,
+     "programme": "POR",
+     "programme_name": "Programul Operațional Regional",
      "period": "2014-2020",
-     "projects": 1,
-     "total": 6200000.0,
-     "paid": 6100000.0,
-     "cut_off": "2025-08-31",
-     "by_name": 1
+     "title": "Modernizarea drumului comunal DC 12",
+     "number": null,
+     "beneficiary_name": "UAT Comuna Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "finished",
+     "status_written": "Proiect finalizat",
+     "reach": "companies",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "pnrr",
+     "key": 701,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "number": "12321",
+     "beneficiary_name": "COMUNA TANTARENI",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 6200000.0,
+     "status": "in_progress",
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "companies",
+     "via": null,
+     "gap": null
+    },
+    {
+     "kind": "pnrr",
+     "key": 706,
+     "programme": "PNRR",
+     "programme_name": "PNRR",
+     "period": null,
+     "title": "Împădurire teren comunal",
+     "number": "992",
+     "beneficiary_name": "COMUNA TANTARENI",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "counties": [
+      {
+       "code": "GJ",
+       "name": "Gorj"
+      }
+     ],
+     "value": 300000.0,
+     "status": "in_progress",
+     "status_written": "ÎN IMPLEMENTARE",
+     "reach": "beneficiary",
+     "via": null,
+     "gap": null
+    }
+   ]
+  }
+ },
+ "/v1/projects/overview?place=84914": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "projects": 4,
+    "companies": 3,
+    "natural_persons": 0,
+    "value": null
+   },
+   "whole": 14,
+   "beneficiary": null,
+   "kinds": [
+    {
+     "value": "pnrr",
+     "count": 2
+    },
+    {
+     "value": "anghel_saligny",
+     "count": 1
+    },
+    {
+     "value": "cohesion",
+     "count": 1
     }
    ],
-   "cohesion_source": {
-    "publisher": "MIPE",
-    "record": "Liste de proiecte contractate",
-    "url": "https://mfe.gov.ro/programe/",
-    "fetched_at": "2026-10-07T04:30:00Z",
-    "document_id": null,
-    "sha256": null,
-    "parser_version": null,
-    "documents": 1
-   },
-   "pnrr": {
-    "contracts": 2,
-    "total": 6500000.0,
-    "paid": 2300000.0,
-    "payments": 3,
-    "first_day": "2025-12-19",
-    "last_day": "2026-10-02",
-    "edition": "2026-10-15",
-    "source": {
+   "programmes": [
+    {
+     "value": "PNRR",
+     "kind": "pnrr",
+     "name": "PNRR",
+     "period": null,
+     "count": 2
+    },
+    {
+     "value": "AS",
+     "kind": "anghel_saligny",
+     "name": "Anghel Saligny",
+     "period": null,
+     "count": 1
+    },
+    {
+     "value": "POR",
+     "kind": "cohesion",
+     "name": "Programul Operațional Regional",
+     "period": "2014-2020",
+     "count": 1
+    }
+   ],
+   "counties": [
+    {
+     "value": "GJ",
+     "name": "Gorj",
+     "count": 4
+    }
+   ],
+   "statuses": [
+    {
+     "value": "finished",
+     "count": 2
+    },
+    {
+     "value": "in_progress",
+     "count": 2
+    }
+   ],
+   "reaches": [
+    {
+     "value": "companies",
+     "count": 3
+    },
+    {
+     "value": "beneficiary",
+     "count": 1
+    }
+   ],
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 1
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 3
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "without": [],
+   "sources": [
+    {
+     "publisher": "data.gov.ro",
+     "record": "MDLPA · Plăți PNIAS 2026-prezent",
+     "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 2
+    },
+    {
      "publisher": "MIPE",
      "record": "Tabloul de bord PNRR",
      "url": "https://mfe.gov.ro/pnrr-dashboard/",
@@ -10199,8 +11590,176 @@
      "sha256": null,
      "parser_version": null,
      "documents": 5
+    },
+    {
+     "publisher": "MIPE",
+     "record": "Liste de proiecte contractate",
+     "url": "https://mfe.gov.ro/programe/",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 3
     }
-   }
+   ]
+  }
+ },
+ "/v1/programmes/pnrr/contracts?beneficiary_type=UAT&measure=C10.I3&sort=value&order=desc&limit=25&offset=0": {
+  "status": 200,
+  "body": {
+   "total": 1,
+   "items": [
+    {
+     "id": 701,
+     "number": "12321",
+     "title": "Renovarea energetică a Școlii Gimnaziale Țânțăreni",
+     "beneficiary": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "beneficiary_name": "COMUNA TANTARENI",
+     "county": "GORJ",
+     "total": 6200000.0,
+     "status": "in_progress",
+     "physical_progress": 0.4,
+     "measures_differ": false
+    }
+   ],
+   "natural_persons": 0
+  }
+ },
+ "/v1/programmes/pnrr/contracts/overview?beneficiary_type=UAT&measure=C10.I3&scope=measure": {
+  "status": 200,
+  "body": {
+   "summary": {
+    "contracts": 1,
+    "value": 6200000.0,
+    "natural_persons": 0
+   },
+   "whole": 3,
+   "measures": [
+    {
+     "value": "C10.I3",
+     "count": 1
+    },
+    {
+     "value": "C2.I1",
+     "count": 1
+    }
+   ],
+   "counties": [
+    {
+     "value": "GORJ",
+     "count": 1
+    }
+   ],
+   "beneficiary_types": [
+    {
+     "value": "SPITAL",
+     "count": 2
+    },
+    {
+     "value": "UAT",
+     "count": 1
+    }
+   ],
+   "statuses": [
+    {
+     "value": "in_progress",
+     "count": 1
+    },
+    {
+     "value": "under_30",
+     "count": 0
+    },
+    {
+     "value": "finished",
+     "count": 0
+    }
+   ],
+   "measures_differ": 0,
+   "bands": [
+    {
+     "start": 0.0,
+     "end": 100000.0,
+     "count": 0
+    },
+    {
+     "start": 100000.0,
+     "end": 500000.0,
+     "count": 0
+    },
+    {
+     "start": 500000.0,
+     "end": 1000000.0,
+     "count": 0
+    },
+    {
+     "start": 1000000.0,
+     "end": 5000000.0,
+     "count": 0
+    },
+    {
+     "start": 5000000.0,
+     "end": 25000000.0,
+     "count": 1
+    },
+    {
+     "start": 25000000.0,
+     "end": 100000000.0,
+     "count": 0
+    },
+    {
+     "start": 100000000.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "progress": [
+    {
+     "start": 0.0,
+     "end": 0.25,
+     "count": 0
+    },
+    {
+     "start": 0.25,
+     "end": 0.5,
+     "count": 1
+    },
+    {
+     "start": 0.5,
+     "end": 0.75,
+     "count": 0
+    },
+    {
+     "start": 0.75,
+     "end": 1.0,
+     "count": 0
+    },
+    {
+     "start": 1.0,
+     "end": null,
+     "count": 0
+    }
+   ],
+   "beneficiaries": [
+    {
+     "name": "COMUNA TANTARENI",
+     "entity": {
+      "cui": 4981310,
+      "name": "Comuna Țânțăreni (Primăria Țânțăreni)",
+      "kind": "authority"
+     },
+     "contracts": 1,
+     "value": 6200000.0
+    }
+   ],
+   "others": {
+    "parties": 0,
+    "value": 0.0
+   },
+   "without": []
   }
  },
  "/v1/projects?beneficiary=4981310&sort=value&order=desc&limit=25&offset=0": {

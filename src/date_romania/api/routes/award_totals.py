@@ -14,7 +14,7 @@ from date_romania.api.routes.award_common import (
     period,
     won_filters,
 )
-from date_romania.api.routes.common import Cpv, Db
+from date_romania.api.routes.common import County, Cpv, Db, located_in
 from date_romania.api.routes.rankings import Page, RankingPage, ranked
 from date_romania.api.schemas import (
     ContractRanking,
@@ -128,6 +128,7 @@ def ranking_contract_suppliers(
     won: Won = "alone",
     cpv: Cpv = None,
     eu_funded: EuFunded = None,
+    county: County = None,
 ) -> ContractRanking:
     """Companies by the value of the contracts they won, alone or in associations.
 
@@ -137,6 +138,8 @@ def ranking_contract_suppliers(
     members = select(AwardWinner.contract_id, AwardWinner.supplier_cui).distinct().subquery()
     winners = (members, members.c.contract_id == AwardContract.id)
     filters = notice_filters(cpv, eu_funded)
+    if county:
+        filters.append(located_in(members.c.supplier_cui, county))
     return _ranking(session, members.c.supplier_cui, won, filters, page, winners)
 
 
@@ -146,8 +149,11 @@ def ranking_contract_institutions(
     page: RankingPage,
     cpv: Cpv = None,
     eu_funded: EuFunded = None,
+    county: County = None,
 ) -> ContractRanking:
     """Institutions by the value of the contracts they awarded, or by how many; each
     contract counted once."""
     filters = notice_filters(cpv, eu_funded)
+    if county:
+        filters.append(located_in(AwardNotice.buyer_cui, county))
     return _ranking(session, AwardNotice.buyer_cui, None, filters, page)

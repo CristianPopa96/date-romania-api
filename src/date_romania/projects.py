@@ -39,6 +39,7 @@ from date_romania.models import (
     AwardContract,
     AwardWinner,
     DirectPurchase,
+    Entity,
     EuProject,
     EuProjectPayment,
     EuSeapLink,
@@ -146,6 +147,7 @@ def _anghel_saligny(session: Session) -> list[dict]:
             "beneficiary_name": each["town_hall"],
             "natural_person": False,
             "counties": county_codes(each["county"]),
+            "siruta": each["siruta"],
             "value": each["total_value"],
             "status": FINISHED if plain(each["state"]) == "FINALIZATA" else None,
             "status_written": each["state"],
@@ -259,10 +261,24 @@ def _masked(row: dict) -> dict:
     return row
 
 
+def _placed(session: Session, rows: list[dict]) -> list[dict]:
+    """A project lands where its programme puts it, else where its beneficiary is."""
+    located = dict(
+        session.execute(select(Entity.cui, Entity.siruta).where(Entity.siruta.is_not(None))).all()
+    )
+    for row in rows:
+        if row.get("siruta") is None:
+            row["siruta"] = located.get(row["beneficiary_cui"])
+    return rows
+
+
 def build(session: Session) -> int:
     """Write every project again from what is held; returns how many. The caller commits."""
     rows = [
-        _masked(row) for row in (*_anghel_saligny(session), *_pnrr(session), *_cohesion(session))
+        _masked(row)
+        for row in _placed(
+            session, [*_anghel_saligny(session), *_pnrr(session), *_cohesion(session)]
+        )
     ]
     session.execute(delete(Project))
     if rows:

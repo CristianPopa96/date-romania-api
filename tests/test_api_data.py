@@ -20,6 +20,7 @@ from sqlalchemy import delete, select, update
 from date_romania import eu_seap_links
 from date_romania.api import main
 from date_romania.api.main import app
+from date_romania.api.routes import purchases
 from date_romania.collectors.jobs import record_skipped
 from date_romania.dates import day_bounds
 from date_romania.db import get_session
@@ -1079,7 +1080,7 @@ def test_the_typeahead_filters_offer_what_the_list_holds(client):
     assert codes(buyer=TOWN_HALL, find="4523") == [("45233140-2", 1)]
 
 
-def test_the_list_of_one_party_downloads_in_its_order(client):
+def test_the_list_of_one_party_downloads_in_its_order(client, monkeypatch):
     answer = client.get(
         "/v1/direct-purchases",
         params={"buyer": TOWN_HALL, "sort": "value", "format": "csv"},
@@ -1092,7 +1093,10 @@ def test_the_list_of_one_party_downloads_in_its_order(client):
         "DA00000001",
         "DA00000003",
     ]
-    # The whole register is not a file.
+    # The whole list is a file while it is short enough; a longer one needs narrower filters.
+    whole = client.get("/v1/direct-purchases", params={"format": "csv"})
+    assert whole.status_code == 200
+    monkeypatch.setattr(purchases, "CSV_ROWS", 2)
     assert client.get("/v1/direct-purchases", params={"format": "csv"}).status_code == 400
 
 
@@ -1632,7 +1636,23 @@ SITE_CALLS = (
     f"/v1/award-contracts?supplier={BUILDER}&won=association&sort=date&order=desc&limit=25&offset=0",
     f"/v1/award-contracts/overview?supplier={BUILDER}&won=association&scope=supplier",
     "/v1/institutions/12345674/contracts",
-    "/v1/award-contracts?sort=value&limit=20&offset=0",
+    # Clasamente, "Contracte": every contract, the largest first; a company's both ways and
+    # one way; filtered by CPV, EU funds and county; none.
+    "/v1/award-contracts?sort=value&order=desc&limit=25&offset=0",
+    "/v1/award-contracts/overview",
+    f"/v1/award-contracts?supplier={BUILDER}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?supplier={BUILDER}",
+    f"/v1/award-contracts?supplier={BUILDER}&won=alone&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/award-contracts/overview?supplier={BUILDER}&won=alone",
+    "/v1/award-contracts?eu_funded=true&cpv=45&county=GJ&sort=value&order=desc&limit=25&offset=0",
+    "/v1/award-contracts/overview?eu_funded=true&cpv=45&county=GJ",
+    "/v1/award-contracts?cpv=30&sort=value&order=desc&limit=25&offset=0",
+    "/v1/award-contracts/overview?cpv=30",
+    # "Achiziții directe": every accepted purchase, the largest first; of one institution.
+    "/v1/direct-purchases?state=7&sort=value&order=desc&limit=25&offset=0",
+    "/v1/direct-purchases/overview?state=7",
+    f"/v1/direct-purchases?buyer={TOWN_HALL}&state=7&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/direct-purchases/overview?buyer={TOWN_HALL}&state=7",
     # The rankings as lists: a page, and the ten largest for the chart.
     "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=25&offset=0",
     "/v1/rankings/contract-suppliers?won=alone&sort=value&order=desc&limit=10&offset=0",
@@ -1649,10 +1669,11 @@ SITE_CALLS = (
     "/v1/rankings/suppliers?sort=value&order=desc&limit=10&offset=0",
     "/v1/rankings/institutions?sort=value&order=desc&limit=25&offset=0",
     "/v1/rankings/institutions?sort=value&order=desc&limit=10&offset=0",
-    # The rankings with their filters.
-    "/v1/award-contracts?sort=value&cpv=45&limit=20&offset=0",
-    "/v1/award-contracts?sort=value&cpv=45&eu_funded=true&limit=20&offset=0",
-    "/v1/award-contracts?sort=value&cpv=30&limit=20&offset=0",
+    # The rankings with their filters, the county one by the party ranked.
+    "/v1/rankings/contract-suppliers?won=alone&county=GJ&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-suppliers?won=alone&county=GJ&sort=value&order=desc&limit=10&offset=0",
+    "/v1/rankings/contract-institutions?cpv=45&sort=value&order=desc&limit=25&offset=0",
+    "/v1/rankings/contract-institutions?cpv=45&sort=value&order=desc&limit=10&offset=0",
     "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=25&offset=0",
     "/v1/rankings/contract-suppliers?won=alone&cpv=45&sort=value&order=desc&limit=10&offset=0",
     "/v1/rankings/contract-institutions?eu_funded=false&sort=value&order=desc&limit=25&offset=0",
@@ -1720,8 +1741,13 @@ SITE_CALLS = (
     "/v1/projects/overview?kind=cohesion&programme=POR",
     f"/v1/projects?kind=cohesion&q={eu_seed.POR}&sort=value&order=desc&limit=25&offset=0",
     f"/v1/projects/overview?kind=cohesion&q={eu_seed.POR}",
-    # The EU money of a town hall, on its place page.
-    f"/v1/programmes/eu-beneficiaries/{TOWN_HALL}",
+    # The projects landing in a commune (a county's are those of its county).
+    f"/v1/projects?place={places_seed.TANTARENI}&sort=value&order=desc&limit=25&offset=0",
+    f"/v1/projects/overview?place={places_seed.TANTARENI}",
+    # A measure's contracts of one kind of beneficiary.
+    "/v1/programmes/pnrr/contracts?beneficiary_type=UAT&measure=C10.I3"
+    "&sort=value&order=desc&limit=25&offset=0",
+    "/v1/programmes/pnrr/contracts/overview?beneficiary_type=UAT&measure=C10.I3&scope=measure",
     # The projects tab of an entity page (D22): every entity page asks for its count; an
     # institution's as the beneficiary, a company's also those it was paid through; by
     # programme above the list; and with one programme chosen.
@@ -1985,3 +2011,56 @@ def test_a_beneficiary_has_its_eu_money_of_both_kinds_apart(client, session):
     session.flush()
     paid = client.get(f"/v1/programmes/eu-beneficiaries/{BUILDER}").json()["pnrr"]
     assert (paid["contracts"], paid["total"], paid["paid"], paid["payments"]) == (0, None, 40000, 1)
+
+
+def test_the_lists_and_rankings_take_the_county_where_anaf_records_a_party(client):
+    def buyers(url, **params):
+        items = client.get(url, params={"limit": 100, **params}).json()["items"]
+        return {each["buyer"]["cui"] for each in items}
+
+    # Contracts and direct purchases: by the buyer's county.
+    assert buyers("/v1/award-contracts") == {TOWN_HALL, HOSPITAL}
+    assert buyers("/v1/award-contracts", county="GJ") == {TOWN_HALL}
+    assert buyers("/v1/direct-purchases", county="GJ") == {TOWN_HALL}
+    assert buyers("/v1/direct-purchases", county="CJ") == set()
+
+    # A ranking: by the county of the party ranked.
+    def ranked(url, **params):
+        return [each["cui"] for each in client.get(url, params=params).json()["items"]]
+
+    assert ranked("/v1/rankings/suppliers") == [BUILDER, STATIONER]
+    assert ranked("/v1/rankings/suppliers", county="DJ") == [STATIONER]
+    assert ranked("/v1/rankings/institutions", county="GJ") == [TOWN_HALL]
+    assert ranked("/v1/rankings/contract-suppliers", county="GJ") == [BUILDER]
+    assert ranked("/v1/rankings/contract-institutions", county="GJ") == [TOWN_HALL]
+    # Not a county's code.
+    assert client.get("/v1/award-contracts", params={"county": "gorj"}).status_code == 422
+
+
+def test_a_measure_lists_the_kinds_of_beneficiary_as_the_dashboard_writes_them(client):
+    overview = client.get(
+        "/v1/programmes/pnrr/contracts/overview", params={"measure": "C10.I3"}
+    ).json()
+    assert overview["beneficiary_types"] == [
+        {"value": "SPITAL", "count": 2},
+        {"value": "UAT", "count": 1},
+    ]
+    found = client.get(
+        "/v1/programmes/pnrr/contracts", params={"measure": "C10.I3", "beneficiary_type": "UAT"}
+    ).json()
+    assert found["total"] == 1
+
+
+def test_a_place_lists_the_projects_landing_in_it(client):
+    def keys(place):
+        items = client.get("/v1/projects", params={"place": place}).json()["items"]
+        return {(each["kind"], each["key"]) for each in items}
+
+    # Where an Anghel Saligny payment is for, and where ANAF records the beneficiary.
+    assert keys(places_seed.TANTARENI) == {
+        ("anghel_saligny", 101),
+        ("cohesion", 118001),
+        ("pnrr", pnrr_seed.ONE),
+        ("pnrr", pnrr_seed.FOREST),
+    }
+    assert keys(places_seed.FLORESTI) == set()

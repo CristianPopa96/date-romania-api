@@ -14,7 +14,18 @@ from sqlalchemy import ColumnElement, and_, func, literal, or_, select
 
 from date_romania import money
 from date_romania.api.routes import list_common as lists
-from date_romania.api.routes.common import Cpv, Day, Db, containing, in_period, ref, summary, top
+from date_romania.api.routes.common import (
+    County,
+    Cpv,
+    Day,
+    Db,
+    containing,
+    in_period,
+    located_in,
+    ref,
+    summary,
+    top,
+)
 from date_romania.api.routes.list_common import OPTIONS, NamedFilters
 from date_romania.api.schemas.lists import CpvOption, PartyOption
 from date_romania.api.schemas.purchase_list import PurchaseOverview
@@ -62,6 +73,7 @@ def purchase_filters(
     value_max: Annotated[
         float | None, Query(ge=0, description="Lei without VAT, excluded.")
     ] = None,
+    county: County = None,
     cpv: Cpv = None,
     date_from: Day = None,
     date_to: Day = None,
@@ -93,6 +105,8 @@ def purchase_filters(
         named["value_min"] = DirectPurchase.closing_value >= value_min
     if value_max is not None:
         named["value_max"] = DirectPurchase.closing_value < value_max
+    if county:
+        named["county"] = located_in(DirectPurchase.buyer_cui, county)
     if cpv:
         named["cpv"] = DirectPurchase.cpv_code.startswith(cpv, autoescape=True)
     if date_from:

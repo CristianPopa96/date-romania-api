@@ -46,6 +46,9 @@ class Project(Base):
     # Two-letter county codes ('CJ', 'B'); several for a project over several counties,
     # none for a national one or a county the programme does not name.
     counties: Mapped[list[str]] = mapped_column(ARRAY(String(2)))
+    # The UAT it lands in: the place an Anghel Saligny payment is for, else the place ANAF
+    # records its beneficiary in. Null when neither is known.
+    siruta: Mapped[int | None] = mapped_column(Integer, index=True)
     # The project's value in lei, as its programme gives it.
     value: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     # Ours ('in_progress', 'finished', 'terminated'), or null; and as the programme writes it.

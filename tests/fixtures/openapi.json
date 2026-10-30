@@ -474,6 +474,25 @@
       "description": "Lei without VAT, excluded."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "cpv",
       "in": "query",
       "required": false,
@@ -734,6 +753,25 @@
       "description": "Lei without VAT, excluded."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "cpv",
       "in": "query",
       "required": false,
@@ -983,6 +1021,25 @@
       "description": "Lei without VAT, excluded."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "cpv",
       "in": "query",
       "required": false,
@@ -1074,7 +1131,7 @@
      "direct purchases"
     ],
     "summary": "Direct Purchases",
-    "description": "Direct purchases under the filters given, by finalization day, value or party.\n\nAs csv, the whole list in the same order; a file needs a buyer or a supplier.",
+    "description": "Direct purchases under the filters given, by finalization day, value or party.\n\nAs csv, the whole list in the same order, up to `CSV_ROWS` rows: a longer list needs\nnarrower filters.",
     "operationId": "direct_purchases_v1_direct_purchases_get",
     "parameters": [
      {
@@ -1283,6 +1340,25 @@
        "title": "Value Max"
       },
       "description": "Lei without VAT, excluded."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
      },
      {
       "name": "cpv",
@@ -1546,6 +1622,25 @@
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "sort",
       "in": "query",
       "required": false,
@@ -1708,6 +1803,25 @@
        "title": "Cpv"
       },
       "description": "Start of a CPV code: 45 for the division of works, 4523 for a narrower class."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
      },
      {
       "name": "sort",
@@ -2161,6 +2275,25 @@
       "description": "Lei, excluded."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "cpv",
       "in": "query",
       "required": false,
@@ -2440,6 +2573,25 @@
       "description": "Lei, excluded."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "cpv",
       "in": "query",
       "required": false,
@@ -2706,6 +2858,25 @@
        "title": "Value Max"
       },
       "description": "Lei, excluded."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
      },
      {
       "name": "cpv",
@@ -3138,6 +3309,25 @@
       "description": "Lei, excluded."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "cpv",
       "in": "query",
       "required": false,
@@ -3366,6 +3556,25 @@
       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
      },
      {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
+     },
+     {
       "name": "sort",
       "in": "query",
       "required": false,
@@ -3508,6 +3717,25 @@
        "title": "Eu Funded"
       },
       "description": "true: notices with a lot paid from EU funds; false: notices that say no lot is. A notice whose form does not ask, or not read in detail, is only in the list without this filter."
+     },
+     {
+      "name": "county",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "pattern": "^[A-Z]{1,2}$"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company.",
+       "title": "County"
+      },
+      "description": "A county's two-letter code ('CJ'; București is 'B'), by where ANAF records the institution or company."
      },
      {
       "name": "sort",
@@ -4257,6 +4485,28 @@
       "description": "The beneficiary's CUI."
      },
      {
+      "name": "beneficiary_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "maxItems": 200
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The kind of beneficiary as written; any of them.",
+       "title": "Beneficiary Type"
+      },
+      "description": "The kind of beneficiary as written; any of them."
+     },
+     {
       "name": "q",
       "in": "query",
       "required": false,
@@ -4523,6 +4773,28 @@
        "title": "Beneficiary"
       },
       "description": "The beneficiary's CUI."
+     },
+     {
+      "name": "beneficiary_type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "maxItems": 200
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "The kind of beneficiary as written; any of them.",
+       "title": "Beneficiary Type"
+      },
+      "description": "The kind of beneficiary as written; any of them."
      },
      {
       "name": "q",
@@ -5520,6 +5792,24 @@
       "description": "The beneficiary's CUI."
      },
      {
+      "name": "place",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A UAT's SIRUTA code: the projects landing there, where an Anghel Saligny payment is for or where ANAF records the beneficiary. Bucharest takes its sectors.",
+       "title": "Place"
+      },
+      "description": "A UAT's SIRUTA code: the projects landing there, where an Anghel Saligny payment is for or where ANAF records the beneficiary. Bucharest takes its sectors."
+     },
+     {
       "name": "company",
       "in": "query",
       "required": false,
@@ -5764,6 +6054,24 @@
        "title": "County"
       },
       "description": "A county's code, as in `counties`."
+     },
+     {
+      "name": "place",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "A UAT's SIRUTA code: the projects landing there, where an Anghel Saligny payment is for or where ANAF records the beneficiary. Bucharest takes its sectors.",
+       "title": "Place"
+      },
+      "description": "A UAT's SIRUTA code: the projects landing there, where an Anghel Saligny payment is for or where ANAF records the beneficiary. Bucharest takes its sectors."
      },
      {
       "name": "company",
@@ -6408,6 +6716,25 @@
     ],
     "title": "Band",
     "description": "Rows whose value is from `start` up to `end` (excluded; null: no end)."
+   },
+   "BeneficiaryTypeOption": {
+    "properties": {
+     "value": {
+      "type": "string",
+      "title": "Value",
+      "description": "The kind of beneficiary, as the dashboard writes it."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "count"
+    ],
+    "title": "BeneficiaryTypeOption"
    },
    "Capital": {
     "properties": {
@@ -9955,6 +10282,14 @@
       "title": "Counties",
       "description": "Under every filter but the county."
      },
+     "beneficiary_types": {
+      "items": {
+       "$ref": "#/components/schemas/BeneficiaryTypeOption"
+      },
+      "type": "array",
+      "title": "Beneficiary Types",
+      "description": "The dashboard's own words for the kind of beneficiary, as written, under every filter but this one."
+     },
      "statuses": {
       "items": {
        "$ref": "#/components/schemas/PnrrStatusOption"
@@ -10010,6 +10345,7 @@
      "whole",
      "measures",
      "counties",
+     "beneficiary_types",
      "statuses",
      "measures_differ",
      "bands",

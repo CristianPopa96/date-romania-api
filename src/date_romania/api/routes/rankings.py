@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from date_romania import money
 from date_romania.api.routes.common import (
+    County,
     Cpv,
     Day,
     Db,
@@ -18,6 +19,7 @@ from date_romania.api.routes.common import (
     containing,
     in_period,
     list_source,
+    located_in,
 )
 from date_romania.api.routes.list_common import Order
 from date_romania.api.schemas import CpvDivision, Ranking, RankingRow
@@ -98,11 +100,14 @@ def _ranking(
     date_from: date | None,
     date_to: date | None,
     cpv: str | None,
+    county: str | None,
     page: Page,
 ) -> Ranking:
     filters = in_period(date_from, date_to)
     if cpv:
         filters.append(DirectPurchase.cpv_code.startswith(cpv, autoescape=True))
+    if county:
+        filters.append(located_in(side, county))
     accepted = func.count()
     query = (
         select(Entity.cui, Entity.name, Entity.kind)
@@ -140,9 +145,10 @@ def ranking_suppliers(
     date_from: Day = None,
     date_to: Day = None,
     cpv: Cpv = None,
+    county: County = None,
 ) -> Ranking:
     """Suppliers by the value of their accepted direct purchases, or by how many."""
-    return _ranking(session, DirectPurchase.supplier_cui, date_from, date_to, cpv, page)
+    return _ranking(session, DirectPurchase.supplier_cui, date_from, date_to, cpv, county, page)
 
 
 @router.get("/rankings/institutions")
@@ -152,9 +158,10 @@ def ranking_institutions(
     date_from: Day = None,
     date_to: Day = None,
     cpv: Cpv = None,
+    county: County = None,
 ) -> Ranking:
     """Institutions by the value of the direct purchases they accepted, or by how many."""
-    return _ranking(session, DirectPurchase.buyer_cui, date_from, date_to, cpv, page)
+    return _ranking(session, DirectPurchase.buyer_cui, date_from, date_to, cpv, county, page)
 
 
 @router.get("/cpv-divisions")

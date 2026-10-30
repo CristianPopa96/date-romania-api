@@ -13,7 +13,7 @@ from sqlalchemy import ColumnElement, and_, join, or_, select
 
 from date_romania import money
 from date_romania.api.routes.award_common import Won
-from date_romania.api.routes.common import Cpv, Day, containing
+from date_romania.api.routes.common import County, Cpv, Day, containing, located_in
 from date_romania.api.routes.list_common import NamedFilters
 from date_romania.dates import day_bounds
 from date_romania.models import (
@@ -71,6 +71,7 @@ def contract_filters(
     ] = None,
     value_min: Annotated[float | None, Query(ge=0, description="Lei, included.")] = None,
     value_max: Annotated[float | None, Query(ge=0, description="Lei, excluded.")] = None,
+    county: County = None,
     cpv: Cpv = None,
     date_from: Day = None,
     date_to: Day = None,
@@ -112,6 +113,8 @@ def contract_filters(
         named["value_min"] = AwardContract.value_ron >= value_min
     if value_max is not None:
         named["value_max"] = AwardContract.value_ron < value_max
+    if county:
+        named["county"] = located_in(AwardNotice.buyer_cui, county)
     if cpv:
         named["cpv"] = AwardNotice.cpv_code.startswith(cpv, autoescape=True)
     if date_from:
