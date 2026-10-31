@@ -108,7 +108,9 @@ class DirectPurchaseItem(Base):
     description: Mapped[str | None] = mapped_column(Text)
     cpv_code: Mapped[str | None] = mapped_column(String(16))
     quantity: Mapped[Decimal | None] = mapped_column(Numeric(18, 4))
-    unit: Mapped[str | None] = mapped_column(String(64))
+    # As the buyer writes it: 'bucata', or 'Cutie cu 10 pungi din poliolefine (freeflex) a
+    # 300 ml solutie perfuzabila'.
+    unit: Mapped[str | None] = mapped_column(Text)
     # Lei without VAT, for one unit: the line is worth `unit_price` times `quantity`.
     unit_price: Mapped[Decimal | None] = mapped_column(Numeric(18, 4))
     # The supplier turned this line down.
