@@ -1,7 +1,10 @@
 """EU cohesion projects, from the managing authorities' lists of contracted projects: the
-2014-2020 operational programmes and the 2021-2027 national programmes MIPE runs.
+2014-2020 operational programmes and the 2021-2027 national programmes MIPE runs; and from
+MIPE's map of the 2021-2027 projects, those no list holds (the regional programmes,
+Transport, and the projects a list leaves out).
 
-One row per project (its SMIS code), from the newest list of its programme. A list gives
+One row per project (its SMIS code), from the newest list of its programme, else from the
+newest edition of the map. A list gives
 what the project was worth and paid at its cut-off day, never the day of a payment; the
 Health programme also publishes its payments one by one (`eu_project_payment`).
 Text is stored as published (Crispy, 22.10.2026); a route masks personal codes when serving.
@@ -20,10 +23,12 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    select,
 )
 from sqlalchemy.orm import Mapped, mapped_column
 
-from date_romania.models.core import Base
+from date_romania.models.core import Base, SourceDocument
+from date_romania.sources import EU_MAP
 
 
 class EuProject(Base):
@@ -38,6 +43,9 @@ class EuProject(Base):
     # Given by the 2021-2027 lists of PEO, PoIDS and Health ('CUI LIDER'); null elsewhere,
     # where only the name is published.
     beneficiary_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
+    # The lead's tax ID as MIPE's map of the 2021-2027 projects gives it (`CUI_LIDER`), on
+    # the projects the map holds and on a list's project the map lists too.
+    map_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
     # The beneficiary's entity, tied by `eu_links.link()` after every load: by the tax ID
     # in the list (sure), or by name and place (probable). Null when nothing ties it.
     entity_cui: Mapped[int | None] = mapped_column(ForeignKey("entity.cui"), index=True)
@@ -54,6 +62,8 @@ class EuProject(Base):
     region: Mapped[str | None] = mapped_column(Text)
     county: Mapped[str | None] = mapped_column(Text)
     locality: Mapped[str | None] = mapped_column(Text)
+    # The UAT the project is in, where the map names one alone (the lists never do).
+    siruta: Mapped[int | None] = mapped_column(Integer, index=True)
     # Lei. The EU money in the eligible value, and the whole value of the project.
     eu_value: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     total_value: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
@@ -66,6 +76,13 @@ class EuProject(Base):
     cut_off: Mapped[date | None] = mapped_column(Date)
     source_document_id: Mapped[int] = mapped_column(ForeignKey("source_document.id"))
     parser_version: Mapped[int] = mapped_column(SmallInteger)
+
+
+def held_by_map():
+    """The projects the map holds, not a list: those loaded from one of its editions."""
+    return EuProject.source_document_id.in_(
+        select(SourceDocument.id).where(SourceDocument.source == EU_MAP.key)
+    )
 
 
 class EuProjectPayment(Base):

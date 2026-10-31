@@ -1,7 +1,8 @@
 """EU cohesion projects: tying a project to its beneficiary's entity.
 
 Every list names the beneficiary; only some give its tax ID (the 2021-2027 lists of PEO,
-PoIDS and Health, and POCU's). The others are tied by name and place, never surely. The
+PoIDS and Health, and POCU's), and MIPE's map gives it for every 2021-2027 project it
+lists. The others are tied by name and place, never surely. The
 rule is written once, here: the collector runs it after every load, `dr link eu-projects`
 runs it alone, and the API reads what it stored on `eu_project`.
 """
@@ -16,7 +17,7 @@ from date_romania.places import PlaceIndex, governed
 from date_romania.text import plain
 
 # How a project was tied to its beneficiary, and how sure the tie is.
-#   sure      the list gives the beneficiary's tax ID
+#   sure      the list gives the beneficiary's tax ID, or else the map does
 #   probable  the name is an administration's ('UAT Comuna Albac', 'Județul Alba'), and the
 #             place it names, in the project's county, has one town hall or council; or the
 #             name is that of one entity in the project's county (or, when the county has
@@ -26,6 +27,7 @@ from date_romania.text import plain
 # lists add the department that runs the project: 'MUNICIPIUL ZALĂU/Entitate de drept
 # public', 'COMUNA HOLBOCA/primarie'. The tie keeps the method of the part that matched.
 BY_CUI = "cui-in-list"
+BY_MAP_CUI = "cui-in-map"
 BY_ADMINISTRATION = "administration-name+place"
 BY_NAME = "name+place"
 BY_COMPANY_NAME = "company-name"
@@ -64,16 +66,17 @@ def link(session: Session) -> int:
         county = places[siruta].county if siruta in places else None
         named.setdefault(name_key(name), []).append((cui, siruta, county))
     rows = []
-    for smis, cui, name, county, locality in session.execute(
+    for smis, cui, map_cui, name, county, locality in session.execute(
         select(
             EuProject.smis,
             EuProject.beneficiary_cui,
+            EuProject.map_cui,
             EuProject.beneficiary_name,
             EuProject.county,
             EuProject.locality,
         )
     ):
-        found = _tie(index, places, named, cui, name, county, locality)
+        found = _tie(index, places, named, cui, map_cui, name, county, locality)
         entity, method, confidence = found or (None, None, None)
         rows.append(
             {
@@ -88,9 +91,11 @@ def link(session: Session) -> int:
     return sum(1 for row in rows if row["entity_cui"] is not None)
 
 
-def _tie(index, places, named, cui, name, county, locality) -> tuple[int, str, str] | None:
+def _tie(index, places, named, cui, map_cui, name, county, locality) -> tuple[int, str, str] | None:
     if cui is not None:
         return cui, BY_CUI, SURE
+    if map_cui is not None:
+        return map_cui, BY_MAP_CUI, SURE
     found = _by_name(index, places, named, name, county, locality)
     if found is None and name and "/" in name:
         found = _by_name(index, places, named, name.split("/")[0], county, locality)

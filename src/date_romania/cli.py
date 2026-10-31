@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from date_romania import eu_links, eu_seap_links, places, pnias_links, projects, reports
 from date_romania.collectors import (
     anaf,
+    eu_map,
     eu_projects,
     local_budgets,
     pnias,
@@ -151,6 +152,14 @@ def collect_eu_projects() -> None:
         typer.echo(f"{eu_projects.collect(session, client)} EU projects")
 
 
+@collect_app.command("eu-map")
+def collect_eu_map() -> None:
+    """The newest edition of MIPE's map of the 2021-2027 projects, if it is not held yet:
+    the projects no list holds (regional programmes, Transport)."""
+    with Session(get_engine()) as session, PoliteClient(timeout=300.0) as client:
+        typer.echo(f"{eu_map.collect(session, client)} EU projects from the map")
+
+
 @collect_app.command("pnrr")
 def collect_pnrr() -> None:
     """The newest edition of MIPE's PNRR dashboard data, if it is not loaded yet."""
@@ -217,6 +226,12 @@ def reparse_pnias_payments() -> None:
 def reparse_eu_projects() -> None:
     """Load the newest stored list of each EU programme again, without calling anyone."""
     _reparse(eu_projects)
+
+
+@reparse_app.command("eu-map")
+def reparse_eu_map() -> None:
+    """Load the newest stored edition of the map again, without calling anyone."""
+    _reparse(eu_map)
 
 
 @reparse_app.command("pnrr")

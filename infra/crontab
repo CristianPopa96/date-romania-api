@@ -36,6 +36,12 @@
 # not held yet. About ten small requests to find them; a list is fetched only when new.
 15 9 * * 1 dr collect eu-projects
 
+# Every Monday at 09:30 UTC, after the lists: the newest edition of MIPE's map of the
+# 2021-2027 projects, if not held yet (one small page, then about 47 MB when an edition
+# is new, about weekly). It adds the projects no list holds: the regional programmes and
+# Transport.
+30 9 * * 1 dr collect eu-map
+
 # Every day at 09:45 UTC, after the SEAP jobs and the PNRR edition: the notices and direct
 # purchases whose text cites an EU project held, tied again from what is held (no request,
 # a few seconds). The two collectors of EU projects also tie them after every load.

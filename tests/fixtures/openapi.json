@@ -7909,7 +7909,7 @@
        }
       ],
       "title": "Confidence",
-      "description": "sure: the list gives the tax ID; probable: tied by name and place."
+      "description": "sure: the list, or else MIPE's map, gives the tax ID; probable: tied by name and place."
      },
      "method": {
       "anyOf": [
@@ -7917,6 +7917,7 @@
         "type": "string",
         "enum": [
          "cui-in-list",
+         "cui-in-map",
          "administration-name+place",
          "name+place",
          "company-name"

@@ -6,10 +6,11 @@ import logging
 from datetime import date
 
 import httpx
-from sqlalchemy import delete, insert, select
+from sqlalchemy import and_, delete, insert, or_, select
 from sqlalchemy.orm import Session
 
 from date_romania import entities, eu_links, eu_seap_links, places
+from date_romania.collectors import eu_map
 from date_romania.collectors.eu_projects.discover import Found, discover
 from date_romania.collectors.eu_projects.parse import (
     PARSER_VERSION,
@@ -27,7 +28,13 @@ from date_romania.collectors.jobs import (
 )
 from date_romania.dates import today
 from date_romania.eu_programmes import BY_CODE
-from date_romania.models import PARTIAL, EuProject, EuProjectPayment, SourceDocument
+from date_romania.models import (
+    PARTIAL,
+    EuProject,
+    EuProjectPayment,
+    SourceDocument,
+    held_by_map,
+)
 from date_romania.sources import EU_PROJECTS
 from date_romania.storage import get_raw
 
@@ -92,11 +99,13 @@ def _load_programme(session: Session, code: str, docs: list[SourceDocument]) -> 
         if not parsed.projects:
             # Never empty a programme for a file that is not its list.
             raise ValueError(f"{code}: no projects in {about.get('label')!r}")
-        # A SMIS code another programme holds stays with it; one met in two parts of a
-        # list keeps the first.
-        taken = set(session.scalars(select(EuProject.smis).where(EuProject.programme != code))) | {
-            row["smis"] for row in rows
-        }
+        # A SMIS code another programme's list holds stays with it; one met in two parts
+        # of a list keeps the first. One the map holds is the list's from now on.
+        taken = set(
+            session.scalars(
+                select(EuProject.smis).where(EuProject.programme != code, ~held_by_map())
+            )
+        ) | {row["smis"] for row in rows}
         for row in parsed.projects:
             if row["smis"] in taken:
                 parsed.rejected.append((row, f"SMIS {row['smis']} is held by another list"))
@@ -107,7 +116,14 @@ def _load_programme(session: Session, code: str, docs: list[SourceDocument]) -> 
         rows += [
             {**row, "source_document_id": doc.id, "parser_version": PARSER_VERSION} for row in kept
         ]
-    session.execute(delete(EuProject).where(EuProject.programme == code))
+    session.execute(
+        delete(EuProject).where(
+            or_(
+                and_(EuProject.programme == code, ~held_by_map()),
+                and_(held_by_map(), EuProject.smis.in_([row["smis"] for row in rows])),
+            )
+        )
+    )
     if rows:
         session.execute(insert(EuProject), rows)
     session.commit()
@@ -181,6 +197,8 @@ def collect(session: Session, client: PoliteClient) -> int:
         if failed:
             run.status = PARTIAL
             run.error = f"not read: {', '.join(failed)}; run again to retry them"
+        # A list loaded again holds its projects alone: what the map adds, again.
+        eu_map.load(session)
         places.locate(session)
         eu_links.link(session)
         eu_seap_links.link(session)
@@ -209,6 +227,7 @@ def reparse(session: Session) -> int:
     for doc in docs:
         if _about(doc).get("kind") == "payments":
             _load_payments(session, doc)
+    eu_map.load(session)
     places.locate(session)
     eu_links.link(session)
     eu_seap_links.link(session)

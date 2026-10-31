@@ -16,7 +16,9 @@ from date_romania.api.schemas.purchases import Purchase
 EuStatus = Literal["in_progress", "finished", "terminated"]
 LinkConfidence = Literal["sure", "probable"]
 # How it was tied (see eu_links.py).
-LinkMethod = Literal["cui-in-list", "administration-name+place", "name+place", "company-name"]
+LinkMethod = Literal[
+    "cui-in-list", "cui-in-map", "administration-name+place", "name+place", "company-name"
+]
 # How a SEAP record was tied to a project (see eu_seap_links.py).
 SeapLinkMethod = Literal["smis-in-text", "financing-number+buyer", "pnrr-measure+buyer"]
 
@@ -42,7 +44,10 @@ class EuBeneficiary(Answer):
     name: str | None = Field(description="As the list writes it.")
     entity: EntityRef | None = Field(description="The entity it is tied to, when one is.")
     confidence: LinkConfidence | None = Field(
-        description="sure: the list gives the tax ID; probable: tied by name and place."
+        description=(
+            "sure: the list, or else MIPE's map, gives the tax ID; probable: tied by name "
+            "and place."
+        )
     )
     method: LinkMethod | None
 
