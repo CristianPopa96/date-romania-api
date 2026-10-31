@@ -78,7 +78,7 @@ def programme(session: Db) -> Programme:
             _PAID,
             func.count(PniasPayment.project_id.distinct()),
             func.count(func.distinct(PniasPayment.county, PniasPayment.town_hall)),
-            func.count(PniasPayment.builder_cui.distinct()),
+            func.count(PniasPayment.builder_found_cui.distinct()),
             func.min(PniasPayment.published_on),
             func.max(PniasPayment.published_on),
         )

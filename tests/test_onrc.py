@@ -7,6 +7,7 @@ register's own format (byte-order mark, '^', CRLF), with a natural person on two
 
 import shutil
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 
 import httpx
@@ -15,12 +16,21 @@ import pytest
 from places_seed import GORJ, TANTARENI
 from sqlalchemy import select
 
-from date_romania import eu_links
+from date_romania import eu_links, pnias_links
 from date_romania.api.routes.entities import supplier
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.onrc import parse, run
 from date_romania.collectors.onrc.load import load
-from date_romania.models import Entity, EuProject, RegisterCompany, SourceDocument
+from date_romania.models import (
+    Entity,
+    EuProject,
+    ExportBuyer,
+    ExportContract,
+    PniasLink,
+    PniasPayment,
+    RegisterCompany,
+    SourceDocument,
+)
 from date_romania.places import PlaceIndex
 from date_romania.storage import StoredObject
 
@@ -259,3 +269,60 @@ def test_an_edition_is_collected_and_ties_a_beneficiary(session, placed, monkeyp
     assert run.reparse(session) == 1
     assert session.get(RegisterCompany, ALFA).first_seen == date(2026, 10, 19)
     assert session.scalar(select(RegisterCompany).where(RegisterCompany.cui == PERSON)) is None
+
+
+def test_a_builder_named_without_a_tax_id_is_found_in_the_register(session, placed):
+    _load(session, placed, date(2026, 10, 19))
+    doc = session.scalar(select(SourceDocument.id))
+    common = {
+        "network": "infra",
+        "county": "GORJ",
+        "town_hall": "ȚÂNȚĂRENI",
+        "amount": Decimal("1000"),
+        "source_document_id": doc,
+        "parser_version": 1,
+    }
+    session.add_all(
+        [
+            # An older file: the builder by name alone, one company of the register.
+            PniasPayment(id=1, project_id=10, builder_text="SC Alfa Drum S.R.L.", **common),
+            # Two companies of the register carry this one: no tax ID is found.
+            PniasPayment(id=2, project_id=11, builder_text="GAMMA CONSTRUCT SRL", **common),
+            # The file's own tax ID comes first, whatever the register says.
+            PniasPayment(
+                id=3, project_id=12, builder_cui=BETA, builder_text="ALFA DRUM SRL", **common
+            ),
+            ExportBuyer(
+                cui=places_seed.TOWN_HALL,
+                name="COMUNA TANTARENI",
+                county="GORJ",
+                source_document_id=doc,
+            ),
+            ExportContract(
+                id=1,
+                notice_no="CAN1",
+                supplier_cui=ALFA,
+                buyer_cui=places_seed.TOWN_HALL,
+                buyer_text="COMUNA TANTARENI",
+                contract_type="Lucrari",
+                source_document_id=doc,
+                parser_version=1,
+            ),
+        ]
+    )
+    session.flush()
+    assert pnias_links.link(session) == 1
+    session.expire_all()
+    found = {
+        p.id: (p.builder_found_cui, p.builder_found_by)
+        for p in session.scalars(select(PniasPayment))
+    }
+    assert found == {1: (ALFA, "register"), 2: (None, None), 3: (BETA, "file")}
+    link = session.scalar(select(PniasLink))
+    assert (link.payment_id, link.method, link.confidence) == (
+        1,
+        "builder-name-in-register+town-hall-name+county",
+        "probable",
+    )
+    # The exports keep this builder's contracts from now on.
+    assert pnias_links.builders(session) == {ALFA, BETA}

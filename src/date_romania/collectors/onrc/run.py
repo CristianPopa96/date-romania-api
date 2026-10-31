@@ -18,7 +18,7 @@ from pathlib import Path
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
-from date_romania import eu_links, eu_seap_links, places
+from date_romania import eu_links, eu_seap_links, places, pnias_links
 from date_romania.collectors import datagov
 from date_romania.collectors.http import PoliteClient
 from date_romania.collectors.jobs import job_run, record_parse, store_file, stored_documents
@@ -136,8 +136,11 @@ def _load(
 
 
 def _tie(session: Session) -> None:
+    """The link rules that read the register. The builders found by name keep their
+    contracts once the exports are read again (`dr reparse seap-exports`, on the 1st)."""
     places.locate(session)
     eu_links.link(session)
+    pnias_links.link(session)
     eu_seap_links.link(session)
 
 

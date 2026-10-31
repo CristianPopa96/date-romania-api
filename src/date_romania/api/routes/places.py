@@ -194,7 +194,7 @@ def _projects(session: Session, sirutas: list[int]) -> list[LocalProject]:
     project = pnias_links.projects()
     found = session.execute(
         select(project, Entity)
-        .outerjoin(Entity, project.c.builder_cui == Entity.cui)
+        .outerjoin(Entity, project.c.builder_found_cui == Entity.cui)
         .where(project.c.siruta.in_(sirutas))
         .order_by(project.c.paid.desc(), project.c.project_id)
     ).all()

@@ -11422,7 +11422,7 @@
      "builders": {
       "type": "integer",
       "title": "Builders",
-      "description": "Builders named by tax ID."
+      "description": "Builders whose tax ID is found: given by a payment file, by a newer payment of the project for the same name, or by the trade register for the name."
      },
      "first_day": {
       "anyOf": [
@@ -14264,6 +14264,23 @@
       ],
       "description": "Set when the company has a page."
      },
+     "found_by": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "file",
+         "project",
+         "register"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Found By",
+      "description": "Where its tax ID comes from: a payment file; a newer payment of the project that gives the same name one; or the trade register, where one company carries the name. Null with no tax ID."
+     },
      "payments": {
       "type": "integer",
       "title": "Payments",
@@ -14297,6 +14314,7 @@
      "cui",
      "name",
      "entity",
+     "found_by",
      "payments",
      "amount",
      "match",
@@ -14464,7 +14482,7 @@
      "method": {
       "type": "string",
       "title": "Method",
-      "description": "What the link rests on."
+      "description": "What the link rests on: 'builder-cui+...' (the payment's own tax ID), 'builder-cui-of-project+...' or 'builder-name-in-register+...' (the builder found by name), then how the town hall was matched."
      },
      "partners": {
       "items": {

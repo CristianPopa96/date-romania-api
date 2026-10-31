@@ -61,7 +61,7 @@ def project_filters(
         ).like(like)
     if builder:
         named["builder"] = PROJECT.c.project_id.in_(
-            select(PniasPayment.project_id).where(PniasPayment.builder_cui == builder)
+            select(PniasPayment.project_id).where(PniasPayment.builder_found_cui == builder)
         )
     if match:
         named["match"] = PROJECT.c.match.in_(match)

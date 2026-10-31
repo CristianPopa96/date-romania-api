@@ -57,7 +57,10 @@ class Programme(Answer):
     amount: float
     projects: int
     town_halls: int = Field(description="Town halls and county councils that were paid.")
-    builders: int = Field(description="Builders named by tax ID.")
+    builders: int = Field(
+        description="Builders whose tax ID is found: given by a payment file, by a newer "
+        "payment of the project for the same name, or by the trade register for the name."
+    )
     first_day: date | None = Field(description="The day of the first payment file held.")
     last_day: date | None
     networks: list[ProgrammeGroup] = Field(description="`infra` (roads, water, sewage), `gas`.")
@@ -142,7 +145,11 @@ class TraceContract(Answer):
         description="probable: an export puts the buyer in the project's county, or no "
         "other buyer carries that name. possible: other buyers do."
     )
-    method: str = Field(description="What the link rests on.")
+    method: str = Field(
+        description="What the link rests on: 'builder-cui+...' (the payment's own tax ID), "
+        "'builder-cui-of-project+...' or 'builder-name-in-register+...' (the builder found "
+        "by name), then how the town hall was matched."
+    )
     partners: list[TraceParty] = Field(
         description="The other winners, when the contract was won by an association. "
         "The value is the whole contract's, never split."
@@ -151,6 +158,11 @@ class TraceContract(Answer):
 
 
 class TraceBuilder(TraceParty):
+    found_by: Literal["file", "project", "register"] | None = Field(
+        description="Where its tax ID comes from: a payment file; a newer payment of the "
+        "project that gives the same name one; or the trade register, where one company "
+        "carries the name. Null with no tax ID."
+    )
     payments: int = Field(description="The payments of the project that name this builder.")
     amount: float
     match: Match = Field(description="one, several, none or unnamed")

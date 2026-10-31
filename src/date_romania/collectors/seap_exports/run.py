@@ -4,7 +4,6 @@ import logging
 import re
 
 import httpx
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania import pnias_links
@@ -14,7 +13,7 @@ from date_romania.collectors.jobs import job_run, record_parse, record_skipped, 
 from date_romania.collectors.seap_exports.load import load
 from date_romania.collectors.seap_exports.parse import PARSER_VERSION, parse_contracts
 from date_romania.dates import today
-from date_romania.models import PARTIAL, PniasPayment, SourceDocument
+from date_romania.models import PARTIAL, SourceDocument
 from date_romania.sources import SEAP_EXPORTS
 from date_romania.storage import get_raw
 
@@ -49,12 +48,9 @@ def chosen(urls: list[str]) -> list[str]:
 
 
 def _suppliers(session: Session) -> set[int]:
-    """The companies whose contracts are kept: the builders the payment files name."""
-    return set(
-        session.scalars(
-            select(PniasPayment.builder_cui).where(PniasPayment.builder_cui.is_not(None)).distinct()
-        )
-    )
+    """The companies whose contracts are kept: the builders found for the payments, by a
+    file's tax ID or by name (`pnias_links.builders`)."""
+    return pnias_links.builders(session)
 
 
 def _parse_and_load(session: Session, doc: SourceDocument, suppliers: set[int]) -> int:
