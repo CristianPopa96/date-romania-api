@@ -8,12 +8,14 @@ from decimal import Decimal, InvalidOperation
 from date_romania.cui import parse_cui
 from date_romania.personal_id import mask_cnp
 
-PARSER_VERSION = 2
+PARSER_VERSION = 3
 
-# The list names a buyer as 'CUI - NAME', sometimes with RO in front of the number.
-_BUYER = re.compile(r"\s*(?:RO)?\s*(\d{2,10})\s*-\s*(.*)", re.IGNORECASE | re.DOTALL)
-# A Romanian tax ID as winners carry it: '15148952', 'RO 15425816', 'RO17789473'.
-_TAX_ID = re.compile(r"\s*(?:RO)?\s*(\d{2,10})\s*", re.IGNORECASE)
+# The list names a buyer as 'CUI - NAME', sometimes with RO, or a lone R, in front of the
+# number: 'RO 2684940 - APA CANAL SIBIU SA', 'R 361684 - Banca Nationala a Romaniei'.
+_BUYER = re.compile(r"\s*(?:RO?)?\s*(\d{2,10})\s*-\s*(.*)", re.IGNORECASE | re.DOTALL)
+# A Romanian tax ID as winners carry it: '15148952', 'RO 15425816', 'RO17789473', and
+# written by hand: 'R1718417', 'CUI RO49594720', 'RO16728583,'.
+_TAX_ID = re.compile(r"\s*(?:CUI\s*)?(?:RO?)?\s*(\d{2,10})\s*,?\s*", re.IGNORECASE)
 
 _ERRORS = (AttributeError, KeyError, TypeError, ValueError, InvalidOperation)
 

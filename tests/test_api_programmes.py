@@ -87,12 +87,14 @@ def test_the_programme_adds_up_every_payment_file(client):
 
 def test_payments_and_projects_are_counted_by_what_could_be_tied(client):
     programme = client.get(ROOT).json()
-    # By payment: a payment from a file without tax IDs cannot be tied by itself.
+    # By payment: a payment from a file without tax IDs is tied through a newer payment
+    # of its project that names the same builder with one (project 101); alone, it cannot
+    # be (project 104).
     assert programme["payments_match"] == {
-        "one": {"count": 2, "amount": 3000000},
+        "one": {"count": 3, "amount": 5400000},
         "several": {"count": 1, "amount": 950000},
         "none": {"count": 1, "amount": 310000},
-        "unnamed": {"count": 2, "amount": 2900000},
+        "unnamed": {"count": 1, "amount": 500000},
     }
     # By project: the older payment of project 101 goes with the two that name the builder.
     assert programme["projects_match"] == {
@@ -334,5 +336,5 @@ def test_a_namesake_written_with_its_county_still_makes_the_name_shared(client, 
     methods = set(session.query(PniasLink.method).filter(PniasLink.payment_id == 30001))
     assert methods == {("builder-cui+town-hall-name",)}
     programme = client.get(ROOT).json()
-    assert programme["payments_possible"]["one"] == {"count": 2, "amount": 3000000}
+    assert programme["payments_possible"]["one"] == {"count": 3, "amount": 5400000}
     assert client.get(f"{ROOT}/projects/101").json()["confidence"] == "possible"

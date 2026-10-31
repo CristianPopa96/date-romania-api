@@ -9,6 +9,12 @@ own and nothing checks it:
   probable  the text cites a financing contract number ('contract de finanțare nr.
             12321/26.08.2024'), and that is the number of one PNRR contract of the buyer
             itself. A number alone is not unique: several beneficiaries use the same ones.
+  probable  the text names the PNRR, cites no number that decides, and the buyer has one
+            PNRR contract on what the text cites: the component ('C10', 'Componenta
+            15'), narrowed by the investment ('I3', 'Investiția 6') when that leaves
+            some; with no component, only an investment spelled out counts; with
+            neither cited, the buyer's only PNRR contract. As a PNRR payment
+            belongs to a contract only when its beneficiary has one on the measure.
 The rules are written once, here: `dr link eu-seap` builds every link again, the
 collectors of either side run it after a load, and the API reads what it stored.
 """
@@ -30,11 +36,13 @@ from date_romania.models import (
     EuProject,
     EuSeapLink,
     PnrrContract,
+    PnrrContractLine,
 )
 
 # How a SEAP record was tied, and how sure the tie is (see above).
 BY_SMIS = "smis-in-text"
 BY_FINANCING_NUMBER = "financing-number+buyer"
+BY_PNRR_MEASURE = "pnrr-measure+buyer"
 PROBABLE = "probable"
 
 # 'SMIS 341497', 'cod SMIS: 331827', 'MySMIS2014 cod 120063', 'cod SMIS 2014+ 118001'.
@@ -46,9 +54,25 @@ _FINANCING = re.compile(
     r"([0-9A-Z][0-9A-Z._/-]*)",
     re.IGNORECASE,
 )
-# What a text must hold for either rule, to read only those notices and purchases from
-# the database.
-_HINT = "smis|finan[tţț][aăâ]re"
+# 'PNRR', 'Planul Național de Redresare și Reziliență', 'PNRR/2022/C10/I3', 'NRR/2022/C10'.
+# 'Redresare' alone is not the PNRR: hospitals and utilities buy financial recovery plans.
+_PNRR = re.compile(r"PNRR|redresare\s+(?:[sșş]i\s+)?rezilien|(?<!\w)NRR/", re.IGNORECASE)
+# The component and the investment of a measure, as buyers write them: 'C10', 'C 5',
+# 'Componenta 15', 'Componenta C10' (the PNRR has 16); 'I3', 'I.3', 'Investiția 6'. A
+# letter or digit right before is part of another word ('și 2' is not an investment), and
+# 'Lot C1' is a lot.
+_COMPONENT = re.compile(
+    r"(?<!\w)(?<!lot\s)(?<!lotul\s)(?:Compone?nta\s*(?:C\s*)?|C\s?)(1[0-6]|[1-9])(?!\d)",
+    re.IGNORECASE,
+)
+_INVESTMENT = re.compile(r"(?<!\w)(?:Investi[tţț]i[ae]i?|I)\s*\.?\s*(\d{1,2})(?!\d)", re.IGNORECASE)
+# With no component cited, a bare 'I 1' is as likely an annex or a lot: only the word counts.
+_INVESTMENT_WORD = re.compile(
+    r"(?<!\w)Investi[tţț]i[ae]i?\s*:?\s*(?:I\s*)?\.?\s*(\d{1,2})(?!\d)", re.IGNORECASE
+)
+# What a text must hold for any rule, to read only those notices and purchases from the
+# database.
+_HINT = "smis|finan[tţț][aăâ]re|pnrr|redresare|nrr/"
 
 
 def smis_codes(text: str) -> list[int]:
@@ -85,6 +109,48 @@ def _pnrr_contract(cited: str, contracts: list[tuple[int, str]]) -> int | None:
             (id_, number) for id_, number in found if _number_key(number) == _number_key(cited)
         ]
     return found[0][0] if len(found) == 1 else None
+
+
+def measures_cited(text: str) -> tuple[set[str], set[str]]:
+    """The PNRR components and investments a text cites, as numbers: ({'10'}, {'3'})."""
+    components = set(_COMPONENT.findall(text))
+    return components, set((_INVESTMENT if components else _INVESTMENT_WORD).findall(text))
+
+
+def _measure_parts(code: str) -> tuple[str, str | None]:
+    """'C10.I3.a' is component '10', investment '3'; a reform ('C5.R1') has no investment."""
+    component, *rest = code.split(".")
+    investment = rest[0] if rest and rest[0].startswith("I") else None
+    return component[1:], re.sub(r"\D", "", investment) if investment else None
+
+
+def _pnrr_by_measure(text: str, contracts: list[tuple[int, set[str]]]) -> tuple[int, str] | None:
+    """The one PNRR contract of the buyer on what a text cites, with the measure that
+    decided ('C10.I3'), or 'PNRR' when the text names no measure and the buyer has a
+    single contract; None when none or several fit."""
+    components, investments = measures_cited(text)
+
+    def fits(code: str, investment_too: bool) -> bool:
+        component, investment = _measure_parts(code)
+        if components and component not in components:
+            return False
+        return not investment_too or investment in investments
+
+    found = contracts
+    if components:
+        found = [each for each in found if any(fits(code, False) for code in each[1])]
+    if investments:
+        narrowed = [each for each in found if any(fits(code, True) for code in each[1])]
+        # With no component, an investment number alone must fit, or nothing is tied.
+        if narrowed or not components:
+            found = narrowed
+    if len(found) != 1:
+        return None
+    id_, codes = found[0]
+    if not components and not investments:
+        return id_, "PNRR"
+    decided = sorted(code for code in codes if fits(code, bool(investments)))
+    return id_, (decided or sorted(code for code in codes if fits(code, False)))[0]
 
 
 def _notices(session: Session) -> Iterable[tuple[int, int | None, str]]:
@@ -147,19 +213,29 @@ def link(session: Session) -> int:
     with it. The caller commits.
     """
     held = set(session.scalars(select(EuProject.smis)))
+    lines: dict[int, set[str]] = defaultdict(set)
+    for id_, code in session.execute(
+        select(PnrrContractLine.contract_id, PnrrContractLine.measure_code)
+    ):
+        lines[id_].add(code)
     pnrr: dict[int, list[tuple[int, str]]] = defaultdict(list)
+    on_measures: dict[int, list[tuple[int, set[str]]]] = defaultdict(list)
     for id_, cui, number in session.execute(
         select(PnrrContract.id, PnrrContract.beneficiary_cui, PnrrContract.number).where(
-            PnrrContract.beneficiary_cui.is_not(None), PnrrContract.number.is_not(None)
+            PnrrContract.beneficiary_cui.is_not(None)
         )
     ):
-        pnrr[cui].append((id_, number))
+        on_measures[cui].append((id_, lines[id_]))
+        if number is not None:
+            pnrr[cui].append((id_, number))
 
     links: dict[tuple[str, int, str, int], dict] = {}
+    tied: set[tuple[str, int]] = set()
     for record, rows in (("notice_id", _notices(session)), ("purchase_id", _purchases(session))):
         for id_, buyer, text in rows:
             for code in smis_codes(text):
                 if code in held:
+                    tied.add((record, id_))
                     links.setdefault(
                         (record, id_, "smis", code),
                         {record: id_, "smis": code, "cited": str(code), "method": BY_SMIS},
@@ -167,6 +243,7 @@ def link(session: Session) -> int:
             for cited in financing_numbers(text) if buyer in pnrr else ():
                 contract = _pnrr_contract(cited, pnrr[buyer])
                 if contract is not None:
+                    tied.add((record, id_))
                     links.setdefault(
                         (record, id_, "pnrr_contract_id", contract),
                         {
@@ -176,6 +253,15 @@ def link(session: Session) -> int:
                             "method": BY_FINANCING_NUMBER,
                         },
                     )
+            if (record, id_) not in tied and buyer in on_measures and _PNRR.search(text):
+                found = _pnrr_by_measure(text, on_measures[buyer])
+                if found is not None:
+                    links[record, id_, "pnrr_contract_id", found[0]] = {
+                        record: id_,
+                        "pnrr_contract_id": found[0],
+                        "cited": found[1],
+                        "method": BY_PNRR_MEASURE,
+                    }
     session.execute(delete(EuSeapLink))
     rows = [
         {

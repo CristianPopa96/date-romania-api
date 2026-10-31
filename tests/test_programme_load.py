@@ -136,6 +136,29 @@ def test_exports_keep_the_contracts_of_the_builders_and_tie_them_to_payments(ses
     assert states == {29409: "one", 30695: "one", 30437: "unnamed", 30677: "none", 29779: "none"}
 
 
+def test_a_payment_without_a_tax_id_takes_the_one_its_project_gives_that_name(session, datagov):
+    client, _ = datagov
+    pnias.collect(session, client)
+    seap_exports.collect(session, client, last_year=2025)
+    # As in the older files: the same builder of Șeica Mare, named without its tax ID.
+    session.get(PniasPayment, 29409).builder_cui = None
+    session.flush()
+    pnias_links.link(session)
+
+    tied = {link.payment_id: link.method for link in session.scalars(select(PniasLink))}
+    assert tied == {
+        29409: "builder-cui-of-project+only-town-hall-of-that-name",
+        30695: "builder-cui+only-town-hall-of-that-name",
+    }
+    states = dict(session.execute(select(PniasPayment.id, pnias_links.state())).all())
+    assert states[29409] == "one"
+    # Another name in the project, or no other payment naming it, still ties nothing.
+    session.get(PniasPayment, 29409).builder_text = "ALTA FIRMA SRL"
+    session.flush()
+    pnias_links.link(session)
+    assert set(session.scalars(select(PniasLink.payment_id))) == {30695}
+
+
 def test_reading_the_exports_again_replaces_the_rows_and_ties_them_again(session, datagov):
     client, _ = datagov
     pnias.collect(session, client)

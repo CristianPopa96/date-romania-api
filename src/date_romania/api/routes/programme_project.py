@@ -118,7 +118,10 @@ def project(session: Db, project_id: int) -> Project:
         .order_by(ExportContract.contract_date, ExportContract.id)
     ):
         linked.setdefault(link.payment_id, []).append(contract)
-        evidence[contract.id] = link
+        # A payment that names the builder by its own tax ID says best what a tie rests on.
+        known = evidence.get(contract.id)
+        if known is None or known.method.startswith(pnias_links.OF_PROJECT):
+            evidence[contract.id] = link
     contracts = list({each.id: each for found in linked.values() for each in found}.values())
     winners = _winners(session, contracts)
     parties = {role: _parties(payments, role) for role in ("builder", "designer")}

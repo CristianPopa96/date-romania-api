@@ -25,12 +25,16 @@ BY_COUNTY = "builder-cui+town-hall-name+county"
 BY_ONLY_NAME = "builder-cui+only-town-hall-of-that-name"
 BY_NAME = "builder-cui+town-hall-name"
 PROBABLE, POSSIBLE = "probable", "possible"
+# The older files name the builder without its tax ID. Inside one project, the same name
+# is the same company, so such a payment takes the tax ID a newer payment of the project
+# gives that name; its link says so, with the same confidence: 'builder-cui-of-project+...'.
+OF_PROJECT = "builder-cui-of-project"
 
 # The match states of a payment.
 ONE = "one"  # contracts of a single award notice
 SEVERAL = "several"  # more than one notice: the files do not say which
 NONE = "none"  # the builder is named by tax ID, and no contract was found
-UNNAMED = "unnamed"  # the file names the builder by name only, so nothing can be tied
+UNNAMED = "unnamed"  # the builder is named without a tax ID that could be found
 
 # Words that say what kind of place a buyer is, not which one.
 _KIND = re.compile(
@@ -172,24 +176,22 @@ def link(session: Session) -> int:
     """
     candidates = _candidates(session)
     buyers = _Buyers(session)
-    payments = session.execute(
-        select(
-            PniasPayment.id, PniasPayment.builder_cui, PniasPayment.town_hall, PniasPayment.county
-        ).where(PniasPayment.builder_cui.is_not(None))
-    )
     links = []
-    for payment_id, builder, town_hall, county in payments:
+    for payment_id, builder, of_project, town_hall, county in _builders(session):
         place = payment_place(town_hall, county)
         for contract_id, buyer_cui, buyer in candidates.get(builder, ()):
             if buyer_place(buyer, county) != place:
                 continue
             evidence = _evidence(buyers, buyer_cui, place, county)
             if evidence:
+                method = evidence[0]
+                if of_project:
+                    method = method.replace("builder-cui", OF_PROJECT, 1)
                 links.append(
                     {
                         "payment_id": payment_id,
                         "contract_id": contract_id,
-                        "method": evidence[0],
+                        "method": method,
                         "confidence": evidence[1],
                     }
                 )
@@ -202,6 +204,34 @@ def link(session: Session) -> int:
 
     projects.build(session)
     return len(links)
+
+
+def _builders(session: Session) -> list[tuple[int, int, bool, str | None, str]]:
+    """Every payment whose builder's tax ID is known, as (payment, builder, whether the ID
+    comes from another payment of the project, town hall, county)."""
+    payments = session.execute(
+        select(
+            PniasPayment.id,
+            PniasPayment.project_id,
+            PniasPayment.builder_cui,
+            PniasPayment.builder_text,
+            PniasPayment.town_hall,
+            PniasPayment.county,
+        )
+    ).all()
+    named: dict[tuple[int, str], set[int]] = {}
+    for _, project, cui, name, *_ in payments:
+        if cui is not None and name:
+            named.setdefault((project, name), set()).add(cui)
+    found = []
+    for payment_id, project, cui, name, town_hall, county in payments:
+        if cui is not None:
+            found.append((payment_id, cui, False, town_hall, county))
+            continue
+        cuis = named.get((project, name or ""), set())
+        if len(cuis) == 1:
+            found.append((payment_id, next(iter(cuis)), True, town_hall, county))
+    return found
 
 
 def only_possible() -> ColumnElement[bool]:
@@ -229,13 +259,14 @@ def notices_linked() -> ColumnElement[int]:
 
 
 def state() -> ColumnElement[str]:
-    """The match state of a payment."""
+    """The match state of a payment. One with no tax ID of its own is tied only through
+    another payment of its project that names the same builder with one."""
     linked = notices_linked()
     return case(
-        (PniasPayment.builder_cui.is_(None), UNNAMED),
-        (linked == 0, NONE),
         (linked == 1, ONE),
-        else_=SEVERAL,
+        (linked > 1, SEVERAL),
+        (PniasPayment.builder_cui.is_(None), UNNAMED),
+        else_=NONE,
     )
 
 
