@@ -1923,6 +1923,43 @@
      }
     },
     {
+     "key": "pnrr",
+     "publisher": "MIPE",
+     "first_day": null,
+     "last_day": "2026-10-15",
+     "records": 6,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 5,
+     "rejected_rows": 0,
+     "counts": {
+      "files": 5,
+      "rows": 6,
+      "payments": 7
+     }
+    },
+    {
+     "key": "eu-projects",
+     "publisher": "MIPE",
+     "first_day": "2025-08-31",
+     "last_day": "2026-09-30",
+     "records": 5,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 4,
+     "rejected_rows": 0,
+     "counts": {
+      "files": 4,
+      "rows": 5,
+      "programmes": 5,
+      "payments": 2
+     }
+    },
+    {
      "key": "local-budgets",
      "publisher": "data.gov.ro",
      "first_day": "2024-01-01",
@@ -1940,6 +1977,161 @@
       "figures": 12,
       "population": 1
      }
+    }
+   ]
+  }
+ },
+ "/v1/data-road": {
+  "status": 200,
+  "body": {
+   "documents": 16,
+   "stored_bytes": 16,
+   "rejected_rows": 2,
+   "read": [
+    {
+     "key": "direct_purchase",
+     "count": 6
+    },
+    {
+     "key": "direct_purchase_detail",
+     "count": 1
+    },
+    {
+     "key": "award_notice",
+     "count": 3
+    },
+    {
+     "key": "award_contract",
+     "count": 5
+    },
+    {
+     "key": "pnias_payment",
+     "count": 6
+    },
+    {
+     "key": "export_contract",
+     "count": 5
+    },
+    {
+     "key": "pnrr_contract",
+     "count": 6
+    },
+    {
+     "key": "pnrr_payment",
+     "count": 7
+    },
+    {
+     "key": "eu_project",
+     "count": 5
+    },
+    {
+     "key": "eu_project_payment",
+     "count": 2
+    },
+    {
+     "key": "place",
+     "count": 4
+    },
+    {
+     "key": "public_entity",
+     "count": 0
+    },
+    {
+     "key": "local_budget",
+     "count": 12
+    },
+    {
+     "key": "anaf_record",
+     "count": 0
+    },
+    {
+     "key": "register_company",
+     "count": 0
+    }
+   ],
+   "links": [
+    {
+     "rule": "eu-beneficiary",
+     "method": "administration-name+place",
+     "confidence": "probable",
+     "count": 1
+    },
+    {
+     "rule": "eu-beneficiary",
+     "method": "cui-in-list",
+     "confidence": "sure",
+     "count": 2
+    },
+    {
+     "rule": "anghel-saligny-contract",
+     "method": "builder-cui",
+     "confidence": "possible",
+     "count": 2
+    },
+    {
+     "rule": "anghel-saligny-contract",
+     "method": "builder-cui",
+     "confidence": "probable",
+     "count": 2
+    },
+    {
+     "rule": "anghel-saligny-contract",
+     "method": "builder-cui-of-project",
+     "confidence": "probable",
+     "count": 1
+    },
+    {
+     "rule": "eu-seap",
+     "method": "financing-number+buyer",
+     "confidence": "probable",
+     "count": 1
+    },
+    {
+     "rule": "eu-seap",
+     "method": "smis-in-text",
+     "confidence": "probable",
+     "count": 1
+    },
+    {
+     "rule": "pnrr-payment-contract",
+     "method": "only-contract-on-measure",
+     "confidence": null,
+     "count": 4
+    },
+    {
+     "rule": "entity-place",
+     "method": "siruta",
+     "confidence": null,
+     "count": 2
+    }
+   ],
+   "entities": 4,
+   "projects": [
+    {
+     "key": "pnrr",
+     "count": 6
+    },
+    {
+     "key": "cohesion",
+     "count": 5
+    },
+    {
+     "key": "anghel_saligny",
+     "count": 4
+    }
+   ],
+   "reach": [
+    {
+     "key": "payments",
+     "count": 6
+    },
+    {
+     "key": "beneficiary",
+     "count": 5
+    },
+    {
+     "key": "companies",
+     "count": 4
     }
    ]
   }

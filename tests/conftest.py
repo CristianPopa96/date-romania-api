@@ -23,3 +23,10 @@ def session():
         with Session(bind=connection, join_transaction_mode="create_savepoint") as session:
             yield session
         transaction.rollback()
+
+
+@pytest.fixture(autouse=True)
+def no_kept_road(monkeypatch):
+    """The road of the data is kept between requests, by the ids of what is stored; each
+    test's schema starts its ids again, so nothing kept may cross into the next test."""
+    monkeypatch.setattr("date_romania.api.routes.data_road._kept", None)

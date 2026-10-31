@@ -908,8 +908,23 @@ def test_datasets_say_what_the_site_is_built_on(client):
     direct, awards, *files = client.get("/v1/datasets").json()["items"]
     # The places seed holds a budget file, so its source is listed; the others are not
     # held here, and a source is listed only once a file of it is.
-    assert [each["key"] for each in files] == ["pnias-payments", "seap-exports", "local-budgets"]
-    budgets = files[2]
+    assert [each["key"] for each in files] == [
+        "pnias-payments",
+        "seap-exports",
+        "pnrr",
+        "eu-projects",
+        "local-budgets",
+    ]
+    # The EU money: the PNRR edition held, and the programmes' lists, each at its own day.
+    pnrr, lists = files[2], files[3]
+    assert (pnrr["last_day"], pnrr["records"], pnrr["counts"]["payments"]) == ("2026-10-15", 6, 7)
+    assert (lists["first_day"], lists["last_day"], lists["records"]) == (
+        "2025-08-31",
+        "2026-09-30",
+        5,
+    )
+    assert (lists["counts"]["programmes"], lists["counts"]["payments"]) == (5, 2)
+    budgets = files[4]
     assert (budgets["first_day"], budgets["last_day"], budgets["records"]) == (
         "2024-01-01",
         "2024-12-31",
@@ -930,7 +945,34 @@ def test_datasets_say_what_the_site_is_built_on(client):
     # Rows the parser could not read: none, two, and not known for files parsed before
     # the count was kept.
     assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
-    assert [each["rejected_rows"] for each in files] == [None, None, 0]
+    assert [each["rejected_rows"] for each in files] == [None, None, 0, 0, 0]
+
+
+def test_the_road_of_the_data_counts_each_step(client):
+    road = client.get("/v1/data-road").json()
+    read = {each["key"]: each["count"] for each in road["read"]}
+    assert (read["direct_purchase"], read["award_contract"], read["eu_project"]) == (6, 5, 5)
+    links = {(each["rule"], each["method"], each["confidence"]) for each in road["links"]}
+    assert ("eu-beneficiary", "cui-in-list", "sure") in links
+    assert ("anghel-saligny-contract", "builder-cui", "probable") in links
+    assert road["documents"] > 0 and road["entities"] > 0
+    kinds = {each["key"] for each in road["projects"]}
+    assert kinds == {"anghel_saligny", "pnrr", "cohesion"}
+
+
+def test_the_road_is_counted_again_once_something_new_is_stored(client, session):
+    first = client.get("/v1/data-road").json()["documents"]
+    session.add(
+        SourceDocument(
+            source="seap-direct",
+            url="https://example.test/r",
+            sha256="f" * 64,
+            storage_key="r",
+            size_bytes=1,
+        )
+    )
+    session.flush()
+    assert client.get("/v1/data-road").json()["documents"] == first + 1
 
 
 def test_rejected_rows_are_known_only_once_every_document_was_seen(client, session):
@@ -1580,6 +1622,7 @@ SITE_CALLS = (
     "/v1/direct-purchases?buyer=12345674&sort=date&order=desc&limit=25&offset=0",
     "/v1/direct-purchases/overview?buyer=12345674&scope=buyer",
     "/v1/datasets",
+    "/v1/data-road",
     "/v1/corrections",
     f"/v1/award-notices/{ROAD}",
     f"/v1/award-notices/{ROAD}/contracts?limit=50&offset=0",

@@ -16,22 +16,31 @@ from date_romania.models import (
     AwardContract,
     AwardNotice,
     DirectPurchase,
+    EuProject,
+    EuProjectPayment,
     ExportContract,
     JobRun,
     LocalBudget,
     Place,
     PniasPayment,
+    PnrrContract,
+    PnrrEdition,
+    PnrrPayment,
     PublicEntity,
     RegisterCompany,
     SourceDocument,
     done_days,
+    held_by_map,
 )
 from date_romania.models import Population as PopulationRow
 from date_romania.sources import (
     ANAF,
+    EU_MAP,
+    EU_PROJECTS,
     LOCAL_BUDGETS,
     ONRC,
     PNIAS_PAYMENTS,
+    PNRR,
     PUBLIC_ENTITIES,
     SEAP_AWARDS,
     SEAP_DIRECT,
@@ -131,6 +140,37 @@ def _place_datasets(session: Session) -> list[tuple]:
     ]
 
 
+def _eu_datasets(session: Session) -> list[tuple]:
+    """The EU money sources, as (source, first day, last day, records, counts): the PNRR
+    edition held, the programmes' lists (each at its own day, from the oldest to the
+    newest) and the map, at its edition's day."""
+    contracts, day = _count(
+        session, func.count(PnrrContract.id), select(func.max(PnrrEdition.day)).scalar_subquery()
+    )
+    payments = session.scalar(select(func.count()).select_from(PnrrPayment))
+    listed = ~held_by_map()
+    projects, programmes, first, last = _count(
+        session,
+        func.count().filter(listed),
+        func.count(EuProject.programme.distinct()).filter(listed),
+        func.min(EuProject.cut_off).filter(listed),
+        func.max(EuProject.cut_off).filter(listed),
+    )
+    health = session.scalar(select(func.count()).select_from(EuProjectPayment))
+    mapped, edition, given = _count(
+        session,
+        func.count().filter(held_by_map()),
+        func.max(EuProject.cut_off).filter(held_by_map()),
+        func.count(EuProject.map_cui).filter(listed),
+    )
+    return [
+        (PNRR, None, day, contracts, {"payments": payments}),
+        (EU_PROJECTS, first, last, projects, {"programmes": programmes, "payments": health}),
+        # A project of a list the map gives a tax ID to is the list's, not the map's.
+        (EU_MAP, None, edition, mapped, {"listed": given}),
+    ]
+
+
 def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict) -> list[Dataset]:
     """The sources that come as files, not as days: listed once we hold a file of theirs.
 
@@ -155,6 +195,7 @@ def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict
         (PNIAS_PAYMENTS, first_file, last_file, payments, {"projects": projects}),
         # A contract has a row for each winner and for each export it is in.
         (SEAP_EXPORTS, first_notice, last_notice, winners, {}),
+        *_eu_datasets(session),
         *_place_datasets(session),
     )
     return [

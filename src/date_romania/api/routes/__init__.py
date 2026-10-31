@@ -8,6 +8,7 @@ from date_romania.api.routes import (
     awards,
     budget,
     contract_list,
+    data_road,
     entities,
     eu_beneficiaries,
     eu_project_list,
@@ -33,6 +34,7 @@ from date_romania.api.routes import (
 router = APIRouter(prefix="/v1")
 for module in (
     stats,
+    data_road,
     entities,
     budget,
     # Before `purchases`, whose /direct-purchases/{id} would take /direct-purchases/overview.
