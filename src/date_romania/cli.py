@@ -18,6 +18,7 @@ from date_romania.collectors import (
     eu_map,
     eu_projects,
     local_budgets,
+    onrc,
     pnias,
     pnrr,
     public_entities,
@@ -160,6 +161,15 @@ def collect_eu_map() -> None:
         typer.echo(f"{eu_map.collect(session, client)} EU projects from the map")
 
 
+@collect_app.command("onrc")
+def collect_onrc() -> None:
+    """The newest edition of the trade register, when the one held is a quarter old: every
+    legal person, never the natural persons (about 790 MB to download), then the link
+    rules run again."""
+    with Session(get_engine()) as session, PoliteClient(timeout=600.0) as client:
+        typer.echo(f"{onrc.collect(session, client)} companies in the trade register")
+
+
 @collect_app.command("pnrr")
 def collect_pnrr() -> None:
     """The newest edition of MIPE's PNRR dashboard data, if it is not loaded yet."""
@@ -232,6 +242,13 @@ def reparse_eu_projects() -> None:
 def reparse_eu_map() -> None:
     """Load the newest stored edition of the map again, without calling anyone."""
     _reparse(eu_map)
+
+
+@reparse_app.command("onrc")
+def reparse_onrc() -> None:
+    """Load every stored edition of the trade register again, oldest first, without calling
+    anyone."""
+    _reparse(onrc)
 
 
 @reparse_app.command("pnrr")

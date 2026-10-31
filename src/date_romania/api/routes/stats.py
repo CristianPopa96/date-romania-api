@@ -22,6 +22,7 @@ from date_romania.models import (
     Place,
     PniasPayment,
     PublicEntity,
+    RegisterCompany,
     SourceDocument,
     done_days,
 )
@@ -29,6 +30,7 @@ from date_romania.models import Population as PopulationRow
 from date_romania.sources import (
     ANAF,
     LOCAL_BUDGETS,
+    ONRC,
     PNIAS_PAYMENTS,
     PUBLIC_ENTITIES,
     SEAP_AWARDS,
@@ -107,6 +109,12 @@ def _place_datasets(session: Session) -> list[tuple]:
         func.min(AnafRecord.asked_on),
         func.max(AnafRecord.asked_on),
     )
+    companies, deleted, edition = _count(
+        session,
+        func.count(RegisterCompany.cui),
+        func.count().filter(RegisterCompany.deleted),
+        func.max(RegisterCompany.last_seen),
+    )
     return [
         (SIRUTA, None, None, places, {"uats": uats}),
         (PUBLIC_ENTITIES, None, None, entities, {"placed": placed}),
@@ -118,6 +126,8 @@ def _place_datasets(session: Session) -> list[tuple]:
             {"figures": figures, "population": people},
         ),
         (ANAF, first_asked, last_asked, asked, {"found": found}),
+        # A list at the day of its newest edition.
+        (ONRC, None, edition, companies, {"deleted": deleted}),
     ]
 
 

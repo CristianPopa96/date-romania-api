@@ -122,6 +122,16 @@ ANAF = PublicSource(
     record_url="https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf",
 )
 
+# The trade register (ONRC) on data.gov.ro: one dataset per edition, about monthly; we read
+# one a quarter. Only legal persons are read from it, never the natural persons it lists.
+ONRC = PublicSource(
+    key="onrc",
+    publisher="ONRC",
+    dataset="Registrul Comerțului · firme înregistrate",
+    list_url="https://data.gov.ro/organization/onrc",
+    record_url="https://data.gov.ro/dataset/{id}",
+)
+
 SOURCES = {
     source.key: source
     for source in (
@@ -133,5 +143,6 @@ SOURCES = {
         PUBLIC_ENTITIES,
         LOCAL_BUDGETS,
         ANAF,
+        ONRC,
     )
 }

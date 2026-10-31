@@ -6,9 +6,19 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import ColumnElement, String, and_, cast, func, or_, select
 from sqlalchemy.orm import Session
 
-from date_romania.api.routes.common import Db, Limit, containing, list_source, summary, top
+from date_romania.api.routes.common import (
+    Db,
+    Limit,
+    containing,
+    list_source,
+    record_source,
+    summary,
+    top,
+)
 from date_romania.api.schemas import EntityOut, EntityPage, SearchResults
-from date_romania.models import DirectPurchase, Entity, search_text
+from date_romania.api.schemas.purchases import RegisterFacts
+from date_romania.models import DirectPurchase, Entity, RegisterCompany, SourceDocument, search_text
+from date_romania.sources import ONRC
 
 router = APIRouter()
 
@@ -53,6 +63,33 @@ def _entity_page(
         direct_purchases=summary(session, own == cui),
         partners=top(session, other, [own == cui], partners),
         source=list_source(session, own == cui),
+        trade_register=_register(session, cui),
+    )
+
+
+def _register(session: Session, cui: int) -> RegisterFacts | None:
+    """What the trade register says of `cui`, with the stored edition it was read from."""
+    company = session.get(RegisterCompany, cui)
+    if company is None:
+        return None
+    doc = session.get(SourceDocument, company.source_document_id)
+    dataset = f"firme-{company.last_seen:%d-%m-%Y}"
+    return RegisterFacts(
+        registration=company.registration,
+        legal_form=company.legal_form,
+        registered_on=company.registered_on,
+        states=company.states,
+        deleted=company.deleted,
+        since=company.state_since if company.state_since > company.first_seen else None,
+        edition=company.last_seen,
+        source=record_source(
+            ONRC,
+            company,
+            record=dataset,
+            url=ONRC.record_url.format(id=dataset),
+            fetched_at=doc.fetched_at,
+            sha256=doc.sha256,
+        ),
     )
 
 

@@ -17,7 +17,12 @@ EuStatus = Literal["in_progress", "finished", "terminated"]
 LinkConfidence = Literal["sure", "probable"]
 # How it was tied (see eu_links.py).
 LinkMethod = Literal[
-    "cui-in-list", "cui-in-map", "administration-name+place", "name+place", "company-name"
+    "cui-in-list",
+    "cui-in-map",
+    "administration-name+place",
+    "name+place",
+    "company-name",
+    "register-name",
 ]
 # What a programme's paid figure is (see eu_programmes.Programme.from_map).
 EuPaidAs = Literal["cumulative", "validated"]
@@ -56,7 +61,7 @@ class EuBeneficiary(Answer):
     confidence: LinkConfidence | None = Field(
         description=(
             "sure: the list, or else MIPE's map, gives the tax ID; probable: tied by name "
-            "and place."
+            "and place, or by a name one company of the trade register carries."
         )
     )
     method: LinkMethod | None

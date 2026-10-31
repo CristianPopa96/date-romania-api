@@ -7822,6 +7822,17 @@
      "entity": {
       "$ref": "#/components/schemas/EntityOut"
      },
+     "trade_register": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RegisterFacts"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Set for a company the trade register lists."
+     },
      "direct_purchases": {
       "$ref": "#/components/schemas/Summary"
      },
@@ -7840,6 +7851,7 @@
     "type": "object",
     "required": [
      "entity",
+     "trade_register",
      "direct_purchases",
      "partners",
      "source"
@@ -7909,7 +7921,7 @@
        }
       ],
       "title": "Confidence",
-      "description": "sure: the list, or else MIPE's map, gives the tax ID; probable: tied by name and place."
+      "description": "sure: the list, or else MIPE's map, gives the tax ID; probable: tied by name and place, or by a name one company of the trade register carries."
      },
      "method": {
       "anyOf": [
@@ -7920,7 +7932,8 @@
          "cui-in-map",
          "administration-name+place",
          "name+place",
-         "company-name"
+         "company-name",
+         "register-name"
         ]
        },
        {
@@ -13684,6 +13697,80 @@
      "count"
     ],
     "title": "ReachOption"
+   },
+   "RegisterFacts": {
+    "properties": {
+     "registration": {
+      "type": "string",
+      "title": "Registration",
+      "description": "'J40/1116/1991' or 'J2023001161055'."
+     },
+     "legal_form": {
+      "type": "string",
+      "title": "Legal Form",
+      "description": "'SRL', 'SA', 'SNC'..."
+     },
+     "registered_on": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Registered On"
+     },
+     "states": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "States",
+      "description": "As the register writes them: 'funcțiune', 'radiată'."
+     },
+     "deleted": {
+      "type": "boolean",
+      "title": "Deleted",
+      "description": "Struck off the register ('radiată')."
+     },
+     "since": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Since",
+      "description": "The edition its states were first seen in, when they changed after the first edition held; the register gives no date of its own."
+     },
+     "edition": {
+      "type": "string",
+      "format": "date",
+      "title": "Edition",
+      "description": "The day of the newest edition that lists it."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "registration",
+     "legal_form",
+     "registered_on",
+     "states",
+     "deleted",
+     "since",
+     "edition",
+     "source"
+    ],
+    "title": "RegisterFacts",
+    "description": "What the trade register says of a company, at its newest edition held."
    },
    "ReportIn": {
     "properties": {

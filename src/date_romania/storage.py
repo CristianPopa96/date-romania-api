@@ -3,6 +3,7 @@
 import hashlib
 from dataclasses import dataclass
 from functools import lru_cache
+from pathlib import Path
 
 import boto3
 
@@ -43,6 +44,25 @@ def put_raw(source: str, content: bytes, content_type: str | None = None) -> Sto
 
 def get_raw(key: str) -> bytes:
     return _client().get_object(Bucket=get_settings().s3_bucket, Key=key)["Body"].read()
+
+
+def put_raw_file(source: str, path: Path, content_type: str | None = None) -> StoredObject:
+    """`put_raw` for a file too large to hold in memory: hashed and sent in parts."""
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        while chunk := file.read(1 << 20):
+            digest.update(chunk)
+    sha256 = digest.hexdigest()
+    key = object_key(source, sha256)
+    extra = {"ExtraArgs": {"ContentType": content_type}} if content_type else {}
+    _client().upload_file(str(path), get_settings().s3_bucket, key, **extra)
+    return StoredObject(key=key, sha256=sha256, size_bytes=path.stat().st_size)
+
+
+def get_raw_file(key: str, path: Path) -> Path:
+    """`get_raw` into a file, for one too large to hold in memory."""
+    _client().download_file(get_settings().s3_bucket, key, str(path))
+    return path
 
 
 def storage_ok() -> bool:

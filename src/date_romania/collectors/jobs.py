@@ -5,13 +5,14 @@ import logging
 from collections.abc import Callable, Iterable, Iterator
 from contextlib import contextmanager
 from datetime import UTC, date, datetime, timedelta
+from pathlib import Path
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from date_romania.dates import BUCHAREST, day_bounds
 from date_romania.models import FAILED, RUNNING, SUCCEEDED, JobRun, SourceDocument, done_days
-from date_romania.storage import get_raw, put_raw
+from date_romania.storage import StoredObject, get_raw, put_raw, put_raw_file
 
 log = logging.getLogger(__name__)
 
@@ -82,6 +83,30 @@ def store_document(
 ) -> SourceDocument:
     """Keep the raw bytes and return their `source_document` row; same bytes, same row."""
     stored = put_raw(source, content, content_type)
+    return _document(session, source, url, stored, request_body, content_type)
+
+
+def store_file(
+    session: Session,
+    source: str,
+    url: str,
+    path: Path,
+    request_body: str | None = None,
+    content_type: str | None = None,
+) -> SourceDocument:
+    """`store_document` for a file too large to hold in memory."""
+    stored = put_raw_file(source, path, content_type)
+    return _document(session, source, url, stored, request_body, content_type)
+
+
+def _document(
+    session: Session,
+    source: str,
+    url: str,
+    stored: StoredObject,
+    request_body: str | None,
+    content_type: str | None,
+) -> SourceDocument:
     doc = session.scalar(select(SourceDocument).where(SourceDocument.sha256 == stored.sha256))
     if doc is None:
         doc = SourceDocument(

@@ -54,3 +54,10 @@
 # name builders, whose contracts the stored exports are read again for, then a new
 # export keeps those of every builder known. Each step ties the payments again.
 30 9 1 * * dr collect pnias-payments && dr reparse seap-exports && dr collect seap-exports
+
+# On the 5th of every month at 10:00 UTC: the newest edition of the trade register (ONRC,
+# data.gov.ro), when the one held is about a quarter old; on most months, two small
+# searches and nothing more. An edition is about 790 MB (the companies, their states and
+# what each state means) and loads in some minutes; the beneficiaries named without a tax
+# ID are tied again after it.
+0 10 5 * * dr collect onrc
