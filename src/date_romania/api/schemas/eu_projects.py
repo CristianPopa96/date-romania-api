@@ -16,7 +16,16 @@ from date_romania.api.schemas.purchases import Purchase
 EuStatus = Literal["in_progress", "finished", "terminated"]
 LinkConfidence = Literal["sure", "probable"]
 # How it was tied (see eu_links.py).
-LinkMethod = Literal["cui-in-list", "administration-name+place", "name+place", "company-name"]
+LinkMethod = Literal[
+    "cui-in-list", "cui-in-map", "administration-name+place", "name+place", "company-name"
+]
+# What a programme's paid figure is (see eu_programmes.Programme.from_map).
+EuPaidAs = Literal["cumulative", "validated"]
+PAID_AS = (
+    "cumulative: what the programme's list calls paid, up to its cut-off; validated: the "
+    "payments validated to the beneficiary that MIPE's map gives up to its edition's day, "
+    "for a programme with no list of its own, a different measure."
+)
 # How a SEAP record was tied to a project (see eu_seap_links.py).
 SeapLinkMethod = Literal["smis-in-text", "financing-number+buyer", "pnrr-measure+buyer"]
 
@@ -28,7 +37,10 @@ class EuProgramme(Answer):
     projects: int
     total: float | None = Field(description="Lei, the projects' total value added up.")
     paid: float | None = Field(description="Lei paid up to `cut_off`; null when not published.")
-    cut_off: date | None = Field(description="The day the programme's newest list describes.")
+    paid_as: EuPaidAs = Field(description=PAID_AS)
+    cut_off: date | None = Field(
+        description="The day the programme's newest list describes, or the map's edition."
+    )
 
 
 class EuFunds(Answer):
@@ -42,7 +54,10 @@ class EuBeneficiary(Answer):
     name: str | None = Field(description="As the list writes it.")
     entity: EntityRef | None = Field(description="The entity it is tied to, when one is.")
     confidence: LinkConfidence | None = Field(
-        description="sure: the list gives the tax ID; probable: tied by name and place."
+        description=(
+            "sure: the list, or else MIPE's map, gives the tax ID; probable: tied by name "
+            "and place."
+        )
     )
     method: LinkMethod | None
 
@@ -55,6 +70,7 @@ class EuProjectRow(Answer):
     county: str | None = Field(description="As the list writes it.")
     total: float | None
     paid: float | None
+    paid_as: EuPaidAs = Field(description=PAID_AS)
     status: EuStatus | None
     status_written: str | None = Field(description="The status as the list writes it.")
 

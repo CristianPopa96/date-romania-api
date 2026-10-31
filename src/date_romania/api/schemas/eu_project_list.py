@@ -6,7 +6,7 @@ from datetime import date
 from pydantic import Field
 
 from date_romania.api.schemas.common import Answer
-from date_romania.api.schemas.eu_projects import EuStatus
+from date_romania.api.schemas.eu_projects import PAID_AS, EuPaidAs, EuStatus
 from date_romania.api.schemas.lists import Band, Without
 
 
@@ -23,7 +23,8 @@ class ProgrammeOption(Answer):
     count: int
     total: float | None = Field(description="Lei; never add it to another programme's.")
     paid: float | None
-    cut_off: date | None = Field(description="The day its list counts `paid` up to.")
+    paid_as: EuPaidAs = Field(description=PAID_AS)
+    cut_off: date | None = Field(description="The day its list, or the map, counts `paid` up to.")
 
 
 class StatusOption(Answer):

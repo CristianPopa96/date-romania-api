@@ -65,6 +65,16 @@ EU_PROJECTS = PublicSource(
     record_url="https://mfe.gov.ro/programe/",
 )
 
+# MIPE's map of the 2021-2027 cohesion projects: one file a week, every programme, the
+# lead's tax ID on every row. It adds the projects no list of contracted projects holds.
+EU_MAP = PublicSource(
+    key="eu-map",
+    publisher="MIPE",
+    dataset="Harta fondurilor europene 2021-2027",
+    list_url="https://mfe.gov.ro/map2021/",
+    record_url="https://mfe.gov.ro/map2021/",
+)
+
 # SEAP's own quarterly exports, published by ADR. One dataset per year.
 SEAP_EXPORTS = PublicSource(
     key="seap-exports",

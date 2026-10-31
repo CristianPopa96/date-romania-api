@@ -25,11 +25,11 @@ from date_romania.api.schemas import (
     Source,
 )
 from date_romania.eu_programmes import BY_CODE, PROGRAMMES
-from date_romania.models import Entity, SourceDocument
+from date_romania.models import Entity, SourceDocument, held_by_map, programme_day
 from date_romania.models import EuProject as Project
 from date_romania.models import EuProjectPayment as Payment
 from date_romania.personal_id import mask_cnp
-from date_romania.sources import EU_PROJECTS
+from date_romania.sources import EU_MAP, EU_PROJECTS
 
 router = APIRouter(prefix="/programmes/eu-funds", tags=["programmes"])
 
@@ -49,7 +49,7 @@ def eu_funds(session: Db) -> EuFunds:
                 func.count().label("projects"),
                 func.sum(Project.total_value).label("total"),
                 func.sum(Project.paid).label("paid"),
-                func.max(Project.cut_off).label("cut_off"),
+                programme_day().label("cut_off"),
             ).group_by(Project.programme)
         )
     }
@@ -62,6 +62,7 @@ def eu_funds(session: Db) -> EuFunds:
                 projects=row.projects,
                 total=row.total,
                 paid=row.paid,
+                paid_as=each.paid_as,
                 cut_off=row.cut_off,
             )
             for each in PROGRAMMES
@@ -72,12 +73,19 @@ def eu_funds(session: Db) -> EuFunds:
 
 
 def lists_source(session: Session, *filters) -> Source:
-    """The MIPE lists behind the projects `filters` pick: how many were read for them."""
+    """The MIPE lists behind the projects `filters` pick, and the map where it holds some of
+    them: how many files were read for them."""
+    mapped = session.scalar(
+        select(func.count()).select_from(Project).where(*filters, held_by_map())
+    )
     return Source(
         publisher=EU_PROJECTS.publisher,
-        record=EU_PROJECTS.dataset,
+        record=f"{EU_PROJECTS.dataset} · {EU_MAP.dataset}" if mapped else EU_PROJECTS.dataset,
         url=EU_PROJECTS.list_url,
-        fetched_at=last_fetched(session, EU_PROJECTS),
+        fetched_at=max(
+            (day for day in (last_fetched(session, each) for each in (EU_PROJECTS, EU_MAP)) if day),
+            default=None,
+        ),
         documents=session.scalar(
             select(func.count(Project.source_document_id.distinct())).where(*filters)
         ),
@@ -123,6 +131,7 @@ def _row(project: Project, entity: Entity | None) -> dict:
         "county": project.county,
         "total": project.total_value,
         "paid": project.paid,
+        "paid_as": BY_CODE[project.programme].paid_as,
         "status": status(project.status),
         "status_written": _text(project.status),
     }
@@ -155,7 +164,9 @@ def project(session: Db, smis: int) -> EuProject:
         payments_source=payments_source,
         source=Source(
             publisher=EU_PROJECTS.publisher,
-            record=f"Lista proiectelor contractate {found.programme}",
+            record=EU_MAP.dataset
+            if doc.source == EU_MAP.key
+            else f"Lista proiectelor contractate {found.programme}",
             url=doc.url,
             fetched_at=doc.fetched_at,
             document_id=doc.id,

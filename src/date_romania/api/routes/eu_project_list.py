@@ -22,9 +22,9 @@ from date_romania.api.schemas.eu_project_list import (
     ProgrammeOption,
     StatusOption,
 )
-from date_romania.eu_programmes import status
+from date_romania.eu_programmes import BY_CODE, status
 from date_romania.models import EuProject as Project
-from date_romania.models import search_text
+from date_romania.models import programme_day, search_text
 
 router = APIRouter(prefix="/programmes/eu-funds", tags=["programmes"])
 
@@ -110,14 +110,14 @@ def eu_projects_overview(
         )
     ).one()
     programmes = [
-        ProgrammeOption.model_validate(row._mapping)
+        ProgrammeOption(**row._mapping, paid_as=BY_CODE[row.value].paid_as)
         for row in session.execute(
             select(
                 Project.programme.label("value"),
                 func.count().label("count"),
                 func.sum(Project.total_value).label("total"),
                 func.sum(Project.paid).label("paid"),
-                func.max(Project.cut_off).label("cut_off"),
+                programme_day().label("cut_off"),
             )
             .where(*filters.all("programme"))
             .group_by(Project.programme)

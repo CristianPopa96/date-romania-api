@@ -242,6 +242,8 @@ def _cohesion(session: Session) -> list[dict]:
             "beneficiary_name": project.beneficiary_name,
             "natural_person": False,
             "counties": county_codes(project.county),
+            # The UAT the map names for it, else where its beneficiary is (`_placed`).
+            "siruta": project.siruta,
             "value": project.total_value,
             "status": eu_programmes.status(project.status),
             "status_written": project.status,
