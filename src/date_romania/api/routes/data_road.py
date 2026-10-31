@@ -1,5 +1,12 @@
 """The road of the data, for the sources page: every answer kept whole, the rows read
-from them, the links our rules make between them, and the projects the site shows."""
+from them, the links our rules make between them, and the projects the site shows.
+
+Counting it scans every big table (1.9 million purchases, 2.7 million companies), so the
+answer is kept until something new is stored or a collector runs, and at most
+`KEEP_SECONDS`: the link rules run on their own change it without either.
+"""
+
+import time
 
 from fastapi import APIRouter
 from sqlalchemy import func, select
@@ -18,6 +25,7 @@ from date_romania.models import (
     EuProjectPayment,
     EuSeapLink,
     ExportContract,
+    JobRun,
     LocalBudget,
     Place,
     PniasLink,
@@ -31,6 +39,10 @@ from date_romania.models import (
 )
 
 router = APIRouter(tags=["overview"])
+
+KEEP_SECONDS = 600
+# (what the answer was counted on, when, the answer)
+_kept: tuple[tuple, float, DataRoad] | None = None
 
 # The tables the parsers write, in the order the page reads them.
 _READ = (
@@ -109,6 +121,22 @@ def _counted(session: Session, column) -> list[Counted]:
 @router.get("/data-road")
 def data_road(session: Db) -> DataRoad:
     """Each step of the road from a public source to a page, in figures."""
+    global _kept
+    state = session.execute(
+        select(
+            select(func.max(SourceDocument.id)).scalar_subquery(),
+            select(func.max(JobRun.id)).scalar_subquery(),
+        )
+    ).one()
+    now = time.monotonic()
+    if _kept is not None and _kept[0] == tuple(state) and now - _kept[1] < KEEP_SECONDS:
+        return _kept[2]
+    road = _count(session)
+    _kept = (tuple(state), now, road)
+    return road
+
+
+def _count(session: Session) -> DataRoad:
     documents, stored, rejected = session.execute(
         select(
             func.count(),

@@ -960,6 +960,21 @@ def test_the_road_of_the_data_counts_each_step(client):
     assert kinds == {"anghel_saligny", "pnrr", "cohesion"}
 
 
+def test_the_road_is_counted_again_once_something_new_is_stored(client, session):
+    first = client.get("/v1/data-road").json()["documents"]
+    session.add(
+        SourceDocument(
+            source="seap-direct",
+            url="https://example.test/r",
+            sha256="f" * 64,
+            storage_key="r",
+            size_bytes=1,
+        )
+    )
+    session.flush()
+    assert client.get("/v1/data-road").json()["documents"] == first + 1
+
+
 def test_rejected_rows_are_known_only_once_every_document_was_seen(client, session):
     session.add(
         SourceDocument(
