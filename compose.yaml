@@ -7,6 +7,10 @@ name: date-romania
 services:
   postgres:
     image: postgres:17-alpine
+    # Parallel queries share memory through /dev/shm, which Docker sizes at 64 MB: the
+    # overview of every direct purchase (1.9 million rows) needs more and failed with "could
+    # not resize shared memory segment".
+    shm_size: 512mb
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-dr}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dr}
