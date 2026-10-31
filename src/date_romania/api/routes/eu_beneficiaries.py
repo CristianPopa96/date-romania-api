@@ -19,7 +19,7 @@ from date_romania.api.schemas import (
 )
 from date_romania.eu_links import PROBABLE
 from date_romania.eu_programmes import PROGRAMMES
-from date_romania.models import Entity
+from date_romania.models import Entity, programme_day
 from date_romania.models import EuProject as Project
 from date_romania.models import PnrrContract as Contract
 from date_romania.models import PnrrContractLine as Line
@@ -44,7 +44,7 @@ def beneficiary(session: Db, cui: int) -> EuBeneficiaryFunds:
                 func.count().label("projects"),
                 func.sum(Project.total_value).label("total"),
                 func.sum(Project.paid).label("paid"),
-                func.max(Project.cut_off).label("cut_off"),
+                programme_day().label("cut_off"),
                 func.count().filter(Project.entity_confidence == PROBABLE).label("by_name"),
             )
             .where(mine)
@@ -59,6 +59,7 @@ def beneficiary(session: Db, cui: int) -> EuBeneficiaryFunds:
             projects=row.projects,
             total=row.total,
             paid=row.paid,
+            paid_as=each.paid_as,
             cut_off=row.cut_off,
             by_name=row.by_name,
         )

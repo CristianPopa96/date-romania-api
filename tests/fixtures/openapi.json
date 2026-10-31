@@ -8105,6 +8105,15 @@
       "title": "Paid",
       "description": "Lei paid up to `cut_off`; null when not published."
      },
+     "paid_as": {
+      "type": "string",
+      "enum": [
+       "cumulative",
+       "validated"
+      ],
+      "title": "Paid As",
+      "description": "cumulative: what the programme's list calls paid, up to its cut-off; validated: the payments validated to the beneficiary that MIPE's map gives up to its edition's day, for a programme with no list of its own, a different measure."
+     },
      "cut_off": {
       "anyOf": [
        {
@@ -8116,7 +8125,7 @@
        }
       ],
       "title": "Cut Off",
-      "description": "The day the programme's newest list describes."
+      "description": "The day the programme's newest list describes, or the map's edition."
      },
      "by_name": {
       "type": "integer",
@@ -8132,6 +8141,7 @@
      "projects",
      "total",
      "paid",
+     "paid_as",
      "cut_off",
      "by_name"
     ],
@@ -8253,6 +8263,15 @@
       "title": "Paid",
       "description": "Lei paid up to `cut_off`; null when not published."
      },
+     "paid_as": {
+      "type": "string",
+      "enum": [
+       "cumulative",
+       "validated"
+      ],
+      "title": "Paid As",
+      "description": "cumulative: what the programme's list calls paid, up to its cut-off; validated: the payments validated to the beneficiary that MIPE's map gives up to its edition's day, for a programme with no list of its own, a different measure."
+     },
      "cut_off": {
       "anyOf": [
        {
@@ -8264,7 +8283,7 @@
        }
       ],
       "title": "Cut Off",
-      "description": "The day the programme's newest list describes."
+      "description": "The day the programme's newest list describes, or the map's edition."
      }
     },
     "type": "object",
@@ -8275,6 +8294,7 @@
      "projects",
      "total",
      "paid",
+     "paid_as",
      "cut_off"
     ],
     "title": "EuProgramme"
@@ -8336,6 +8356,15 @@
        }
       ],
       "title": "Paid"
+     },
+     "paid_as": {
+      "type": "string",
+      "enum": [
+       "cumulative",
+       "validated"
+      ],
+      "title": "Paid As",
+      "description": "cumulative: what the programme's list calls paid, up to its cut-off; validated: the payments validated to the beneficiary that MIPE's map gives up to its edition's day, for a programme with no list of its own, a different measure."
      },
      "status": {
       "anyOf": [
@@ -8516,6 +8545,7 @@
      "county",
      "total",
      "paid",
+     "paid_as",
      "status",
      "status_written",
      "programme_name",
@@ -8674,6 +8704,15 @@
       ],
       "title": "Paid"
      },
+     "paid_as": {
+      "type": "string",
+      "enum": [
+       "cumulative",
+       "validated"
+      ],
+      "title": "Paid As",
+      "description": "cumulative: what the programme's list calls paid, up to its cut-off; validated: the payments validated to the beneficiary that MIPE's map gives up to its edition's day, for a programme with no list of its own, a different measure."
+     },
      "status": {
       "anyOf": [
        {
@@ -8712,6 +8751,7 @@
      "county",
      "total",
      "paid",
+     "paid_as",
      "status",
      "status_written"
     ],
@@ -11586,10 +11626,11 @@
       "enum": [
        "files",
        "beneficiary",
-       "cumulative"
+       "cumulative",
+       "validated"
       ],
       "title": "Paid As",
-      "description": "files: the Anghel Saligny payment files' sums for these projects; beneficiary: every PNRR payment to the beneficiary, over all its measures; cumulative: the cohesion list's paid figure up to its cut-off."
+      "description": "files: the Anghel Saligny payment files' sums for these projects; beneficiary: every PNRR payment to the beneficiary, over all its measures; cumulative: the cohesion list's paid figure up to its cut-off; validated: the payments validated to the beneficiary that MIPE's map gives, for a programme with no list of its own."
      },
      "day": {
       "anyOf": [
@@ -11602,7 +11643,7 @@
        }
       ],
       "title": "Day",
-      "description": "The last payment file's day, the PNRR edition, or the list's cut-off."
+      "description": "The last payment file's day, the PNRR edition, or the list's cut-off (the map's edition for a programme with no list)."
      }
     },
     "type": "object",
@@ -14606,6 +14647,15 @@
       ],
       "title": "Paid"
      },
+     "paid_as": {
+      "type": "string",
+      "enum": [
+       "cumulative",
+       "validated"
+      ],
+      "title": "Paid As",
+      "description": "cumulative: what the programme's list calls paid, up to its cut-off; validated: the payments validated to the beneficiary that MIPE's map gives up to its edition's day, for a programme with no list of its own, a different measure."
+     },
      "cut_off": {
       "anyOf": [
        {
@@ -14617,7 +14667,7 @@
        }
       ],
       "title": "Cut Off",
-      "description": "The day its list counts `paid` up to."
+      "description": "The day its list, or the map, counts `paid` up to."
      }
     },
     "type": "object",
@@ -14626,6 +14676,7 @@
      "count",
      "total",
      "paid",
+     "paid_as",
      "cut_off"
     ],
     "title": "ProgrammeOption",

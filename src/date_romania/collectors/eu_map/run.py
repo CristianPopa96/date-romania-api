@@ -66,9 +66,10 @@ def load(session: Session) -> int:
     for smis, project in parsed.projects.items():
         if smis in listed:
             continue
-        if BY_CODE[project["programme"]].health_page:
-            # The Health programme publishes its payments one by one, dated: those are the
-            # project's payments, never added to the map's total.
+        if not BY_CODE[project["programme"]].from_map:
+            # The map's validated payments are not what a list calls paid, and its day is
+            # not the list's: a project it adds to a list's programme has no paid figure.
+            # (Health publishes its payments one by one, dated: those are the project's.)
             project["paid"] = None
         rows.append({**project, "source_document_id": doc.id, "parser_version": PARSER_VERSION})
     if rows:

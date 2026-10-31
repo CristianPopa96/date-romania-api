@@ -23,6 +23,7 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    func,
     select,
 )
 from sqlalchemy.orm import Mapped, mapped_column
@@ -82,6 +83,15 @@ def held_by_map():
     """The projects the map holds, not a list: those loaded from one of its editions."""
     return EuProject.source_document_id.in_(
         select(SourceDocument.id).where(SourceDocument.source == EU_MAP.key)
+    )
+
+
+def programme_day():
+    """The day a programme's figures describe, over the projects grouped: its list's, where
+    a list holds some of them, else the map edition's. A project the map adds to a list's
+    programme has no paid figure, so the programme's paid is the list's, at the list's day."""
+    return func.coalesce(
+        func.max(EuProject.cut_off).filter(~held_by_map()), func.max(EuProject.cut_off)
     )
 
 

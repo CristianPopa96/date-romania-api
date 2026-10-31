@@ -2,7 +2,9 @@
 `extras.rows`, their keys as the map writes them (diacritics lost: `OPERAIUNE`).
 
 A project is listed once per fund it draws on (FEDR and FSE+, in PoIDS): its rows are
-parts of one project, and their amounts are added.
+parts of one project, and their amounts are added. A project in several counties is listed
+once, its counties together ('B,IF'), in the edition of 27.10.2026; a second row of the
+same fund is rejected, never added, so the amounts stay right if that ever changes.
 """
 
 import json
@@ -16,7 +18,7 @@ from date_romania.entities import kind_of
 from date_romania.eu_programmes import BY_MAP_NAME
 from date_romania.text import plain
 
-PARSER_VERSION = 1
+PARSER_VERSION = 2
 
 # The amounts of a project, added over its fund rows.
 _AMOUNTS = {
@@ -89,6 +91,7 @@ def _project(row: dict, cut_off: date) -> dict:
 def parse(content: bytes, cut_off: date) -> Parsed:
     """The projects of one edition, by SMIS code; `cut_off` is the edition's day."""
     parsed = Parsed()
+    funds: set[tuple[int, str | None]] = set()
     for county in json.loads(content):
         for row in (county.get("extras") or {}).get("rows") or ():
             try:
@@ -96,6 +99,11 @@ def parse(content: bytes, cut_off: date) -> Parsed:
             except (InvalidOperation, KeyError, TypeError, ValueError) as exc:
                 parsed.rejected.append((row.get("COD_SMIS"), repr(exc)))
                 continue
+            fund = (project["smis"], _text(row.get("FOND")))
+            if fund in funds:
+                parsed.rejected.append((row.get("COD_SMIS"), f"fund listed again: {fund[1]!r}"))
+                continue
+            funds.add(fund)
             held = parsed.projects.get(project["smis"])
             if held is None:
                 parsed.projects[project["smis"]] = project

@@ -11,6 +11,7 @@ import httpx
 import pytest
 from sqlalchemy import select
 
+from date_romania.api.routes.eu_projects import eu_funds
 from date_romania.collectors.eu_map import parse, run
 from date_romania.collectors.eu_projects import run as lists
 from date_romania.collectors.http import PoliteClient
@@ -24,7 +25,7 @@ ALBA_IULIA, STATIONER = 1017, 18288250
 
 def test_an_edition_is_read_one_project_per_smis_code():
     parsed = parse.parse((FIXTURES / "edition.json").read_bytes(), date(2026, 10, 27))
-    assert sorted(parsed.projects) == [312456, 400001, 400002, 400003, 400004]
+    assert sorted(parsed.projects) == [312456, 400001, 400002, 400003, 400004, 400006]
     regional = parsed.projects[400001]
     assert (regional["programme"], regional["period"]) == ("PRC", "2021-2027")
     assert (regional["map_cui"], regional["beneficiary_cui"]) == (STATIONER, None)
@@ -39,8 +40,10 @@ def test_an_edition_is_read_one_project_per_smis_code():
     )
     # A foreign lead has no tax ID here; several localities name no UAT.
     assert (parsed.projects[400004]["map_cui"], parsed.projects[400004]["siruta"]) == (None, None)
-    # A programme not known is rejected, never guessed.
-    assert [smis for smis, _ in parsed.rejected] == ["400005"]
+    # A programme not known is rejected, never guessed; so is a fund listed again, never
+    # added twice.
+    assert [smis for smis, _ in parsed.rejected] == ["400005", "400001"]
+    assert regional["paid"] == Decimal("250000")
     assert parsed.entities[STATIONER] == ("Beta Birotica SRL", "company")
 
 
@@ -110,8 +113,24 @@ def test_the_map_adds_what_no_list_holds(session, held):
     # Its lead becomes an entity, tied surely by the map's tax ID.
     assert session.get(Entity, STATIONER).kind == "company"
     assert (regional.entity_cui, regional.entity_method) == (STATIONER, "cui-in-map")
-    # Health's payments are the ministry's, dated: the map's total is not kept.
+    # Health's payments are the ministry's, dated: the map's total is not kept. Nor is it
+    # for a project the map adds to a list's programme: its validated payments are not
+    # what the list calls paid, at another day.
     assert session.get(EuProject, 400003).paid is None
+    added = session.get(EuProject, 400006)
+    assert (added.programme, added.paid, added.cut_off) == ("PEO", None, date(2026, 10, 27))
+    # A programme's day is its list's where a list holds some of its projects.
+    funds = {each.code: each for each in eu_funds(session).programmes}
+    assert (funds["PEO"].cut_off, funds["PEO"].paid, funds["PEO"].paid_as) == (
+        date(2026, 9, 30),
+        600000,
+        "cumulative",
+    )
+    assert (funds["PRC"].cut_off, funds["PRC"].paid, funds["PRC"].paid_as) == (
+        date(2026, 10, 27),
+        250000,
+        "validated",
+    )
     # The list's project stays the list's, with what the map adds next to it.
     peo = session.get(EuProject, eu_seed.PEO)
     doc = session.get(SourceDocument, peo.source_document_id)

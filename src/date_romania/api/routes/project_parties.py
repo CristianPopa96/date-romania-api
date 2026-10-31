@@ -27,6 +27,7 @@ from date_romania.models import (
     PnrrEdition,
     PnrrPayment,
     Project,
+    programme_day,
 )
 from date_romania.projects import AS, COHESION, PNRR
 
@@ -182,7 +183,7 @@ def _paid(session: Session, kind: str, programme: str, cui: int):
         select(
             func.sum(EuProject.paid),
             func.count().filter(EuProject.paid.is_(None)),
-            func.max(EuProject.cut_off),
+            programme_day(),
         ).where(EuProject.entity_cui == cui, EuProject.programme == programme)
     ).one()
-    return (None if missing else paid), day, "cumulative"
+    return (None if missing else paid), day, eu_programmes.BY_CODE[programme].paid_as

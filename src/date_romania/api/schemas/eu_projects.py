@@ -19,6 +19,13 @@ LinkConfidence = Literal["sure", "probable"]
 LinkMethod = Literal[
     "cui-in-list", "cui-in-map", "administration-name+place", "name+place", "company-name"
 ]
+# What a programme's paid figure is (see eu_programmes.Programme.from_map).
+EuPaidAs = Literal["cumulative", "validated"]
+PAID_AS = (
+    "cumulative: what the programme's list calls paid, up to its cut-off; validated: the "
+    "payments validated to the beneficiary that MIPE's map gives up to its edition's day, "
+    "for a programme with no list of its own, a different measure."
+)
 # How a SEAP record was tied to a project (see eu_seap_links.py).
 SeapLinkMethod = Literal["smis-in-text", "financing-number+buyer", "pnrr-measure+buyer"]
 
@@ -30,7 +37,10 @@ class EuProgramme(Answer):
     projects: int
     total: float | None = Field(description="Lei, the projects' total value added up.")
     paid: float | None = Field(description="Lei paid up to `cut_off`; null when not published.")
-    cut_off: date | None = Field(description="The day the programme's newest list describes.")
+    paid_as: EuPaidAs = Field(description=PAID_AS)
+    cut_off: date | None = Field(
+        description="The day the programme's newest list describes, or the map's edition."
+    )
 
 
 class EuFunds(Answer):
@@ -60,6 +70,7 @@ class EuProjectRow(Answer):
     county: str | None = Field(description="As the list writes it.")
     total: float | None
     paid: float | None
+    paid_as: EuPaidAs = Field(description=PAID_AS)
     status: EuStatus | None
     status_written: str | None = Field(description="The status as the list writes it.")
 

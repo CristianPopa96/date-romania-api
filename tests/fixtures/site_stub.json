@@ -10958,6 +10958,7 @@
      "projects": 1,
      "total": 6200000.0,
      "paid": 6100000.0,
+     "paid_as": "cumulative",
      "cut_off": "2025-08-31"
     },
     {
@@ -10967,6 +10968,7 @@
      "projects": 1,
      "total": 9000000.0,
      "paid": 0.0,
+     "paid_as": "cumulative",
      "cut_off": "2025-08-31"
     },
     {
@@ -10976,6 +10978,7 @@
      "projects": 1,
      "total": null,
      "paid": 400000.0,
+     "paid_as": "cumulative",
      "cut_off": "2025-08-31"
     },
     {
@@ -10985,6 +10988,7 @@
      "projects": 1,
      "total": 2100000.0,
      "paid": 600000.0,
+     "paid_as": "cumulative",
      "cut_off": "2026-09-30"
     },
     {
@@ -10994,6 +10998,7 @@
      "projects": 1,
      "total": 3000000.0,
      "paid": 900000.0,
+     "paid_as": "cumulative",
      "cut_off": "2026-08-31"
     }
    ],
@@ -12965,6 +12970,7 @@
    "county": "GJ",
    "total": 2100000.0,
    "paid": 600000.0,
+   "paid_as": "cumulative",
    "status": "in_progress",
    "status_written": "în implementare",
    "programme_name": "Programul Educație și Ocupare",
@@ -13011,6 +13017,7 @@
    "county": "Gorj",
    "total": 6200000.0,
    "paid": 6100000.0,
+   "paid_as": "cumulative",
    "status": "finished",
    "status_written": "Proiect finalizat",
    "programme_name": "Programul Operațional Regional",
@@ -13053,6 +13060,7 @@
    "county": "Gorj",
    "total": null,
    "paid": 400000.0,
+   "paid_as": "cumulative",
    "status": null,
    "status_written": "etapizat",
    "programme_name": "Programul Operațional Capital Uman",
@@ -13099,6 +13107,7 @@
    "county": "GJ",
    "total": 3000000.0,
    "paid": 900000.0,
+   "paid_as": "cumulative",
    "status": "in_progress",
    "status_written": "in implementare",
    "programme_name": "Programul Sănătate",
@@ -13411,6 +13420,7 @@
    "county": "Gorj",
    "total": 9000000.0,
    "paid": 0.0,
+   "paid_as": "cumulative",
    "status": "terminated",
    "status_written": "REZILIAT",
    "programme_name": "Programul Operațional Infrastructură Mare",

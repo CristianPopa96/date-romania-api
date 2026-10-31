@@ -128,13 +128,16 @@ class ProgrammeFigures(Answer):
     projects: int
     value: float | None = Field(description="Lei, the projects' values added up.")
     paid: float | None = Field(description="Lei, as `paid_as` says; null where not published.")
-    paid_as: Literal["files", "beneficiary", "cumulative"] = Field(
+    paid_as: Literal["files", "beneficiary", "cumulative", "validated"] = Field(
         description="files: the Anghel Saligny payment files' sums for these projects; "
         "beneficiary: every PNRR payment to the beneficiary, over all its measures; "
-        "cumulative: the cohesion list's paid figure up to its cut-off."
+        "cumulative: the cohesion list's paid figure up to its cut-off; validated: the "
+        "payments validated to the beneficiary that MIPE's map gives, for a programme "
+        "with no list of its own."
     )
     day: date | None = Field(
-        description="The last payment file's day, the PNRR edition, or the list's cut-off."
+        description="The last payment file's day, the PNRR edition, or the list's cut-off "
+        "(the map's edition for a programme with no list)."
     )
 
 

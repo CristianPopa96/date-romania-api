@@ -25,7 +25,7 @@ from date_romania.api.schemas import (
     Source,
 )
 from date_romania.eu_programmes import BY_CODE, PROGRAMMES
-from date_romania.models import Entity, SourceDocument, held_by_map
+from date_romania.models import Entity, SourceDocument, held_by_map, programme_day
 from date_romania.models import EuProject as Project
 from date_romania.models import EuProjectPayment as Payment
 from date_romania.personal_id import mask_cnp
@@ -49,7 +49,7 @@ def eu_funds(session: Db) -> EuFunds:
                 func.count().label("projects"),
                 func.sum(Project.total_value).label("total"),
                 func.sum(Project.paid).label("paid"),
-                func.max(Project.cut_off).label("cut_off"),
+                programme_day().label("cut_off"),
             ).group_by(Project.programme)
         )
     }
@@ -62,6 +62,7 @@ def eu_funds(session: Db) -> EuFunds:
                 projects=row.projects,
                 total=row.total,
                 paid=row.paid,
+                paid_as=each.paid_as,
                 cut_off=row.cut_off,
             )
             for each in PROGRAMMES
@@ -130,6 +131,7 @@ def _row(project: Project, entity: Entity | None) -> dict:
         "county": project.county,
         "total": project.total_value,
         "paid": project.paid,
+        "paid_as": BY_CODE[project.programme].paid_as,
         "status": status(project.status),
         "status_written": _text(project.status),
     }

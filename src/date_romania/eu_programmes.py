@@ -28,6 +28,16 @@ class Programme:
     # 2021-2027: the map's names for the programme ('Program Regional Centru').
     map_names: tuple[str, ...] = ()
 
+    @property
+    def from_map(self) -> bool:
+        """Held from MIPE's map alone, with no list of its own. Its paid figure is the
+        map's validated payments, a different measure from what a list calls paid."""
+        return not (self.dataset_code or self.posts or self.health_page)
+
+    @property
+    def paid_as(self) -> Literal["cumulative", "validated"]:
+        return "validated" if self.from_map else "cumulative"
+
 
 PROGRAMMES = (
     Programme("POR", "2014-2020", "Programul Operațional Regional", dataset_code="POR"),
