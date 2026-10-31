@@ -75,6 +75,28 @@
     }
    }
   },
+  "/v1/data-road": {
+   "get": {
+    "tags": [
+     "overview"
+    ],
+    "summary": "Data Road",
+    "description": "Each step of the road from a public source to a page, in figures.",
+    "operationId": "data_road_v1_data_road_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DataRoad"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/search": {
    "get": {
     "tags": [
@@ -7407,6 +7429,25 @@
     ],
     "title": "Corrections"
    },
+   "Counted": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "A table ('direct_purchase'), or a kind of project ('AS')."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "count"
+    ],
+    "title": "Counted"
+   },
    "Counties": {
     "properties": {
      "items": {
@@ -7643,6 +7684,73 @@
     ],
     "title": "CpvOption",
     "description": "A CPV code of a typeahead filter, with its rows under the other filters."
+   },
+   "DataRoad": {
+    "properties": {
+     "documents": {
+      "type": "integer",
+      "title": "Documents",
+      "description": "Answers and files kept whole in the raw store."
+     },
+     "stored_bytes": {
+      "type": "integer",
+      "title": "Stored Bytes"
+     },
+     "rejected_rows": {
+      "type": "integer",
+      "title": "Rejected Rows",
+      "description": "Rows the parsers could not read, logged."
+     },
+     "read": {
+      "items": {
+       "$ref": "#/components/schemas/Counted"
+      },
+      "type": "array",
+      "title": "Read",
+      "description": "Rows read, by table."
+     },
+     "links": {
+      "items": {
+       "$ref": "#/components/schemas/LinkCount"
+      },
+      "type": "array",
+      "title": "Links"
+     },
+     "entities": {
+      "type": "integer",
+      "title": "Entities",
+      "description": "Institutions and companies held."
+     },
+     "projects": {
+      "items": {
+       "$ref": "#/components/schemas/Counted"
+      },
+      "type": "array",
+      "title": "Projects",
+      "description": "Projects shown, by kind of programme."
+     },
+     "reach": {
+      "items": {
+       "$ref": "#/components/schemas/Counted"
+      },
+      "type": "array",
+      "title": "Reach",
+      "description": "Projects by how far their money is followed ('beneficiary', 'payments', 'purchases', 'companies')."
+     }
+    },
+    "type": "object",
+    "required": [
+     "documents",
+     "stored_bytes",
+     "rejected_rows",
+     "read",
+     "links",
+     "entities",
+     "projects",
+     "reach"
+    ],
+    "title": "DataRoad",
+    "description": "Each step, in figures: the answers kept whole, the rows read from them, the links\nmade between them, and the projects the site shows."
    },
    "Dataset": {
     "properties": {
@@ -9092,6 +9200,44 @@
      "count"
     ],
     "title": "KindOption"
+   },
+   "LinkCount": {
+    "properties": {
+     "rule": {
+      "type": "string",
+      "title": "Rule",
+      "description": "What is tied to what: 'eu-beneficiary' (an EU project to its beneficiary), 'anghel-saligny-contract' (a payment to a SEAP contract), 'eu-seap' (a SEAP record to an EU project), 'pnrr-payment-contract' (a PNRR payment to its contract), 'entity-place' (an institution or company to its UAT)."
+     },
+     "method": {
+      "type": "string",
+      "title": "Method",
+      "description": "How, as the rule names it ('cui-in-list', 'smis-in-text')."
+     },
+     "confidence": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Confidence",
+      "description": "sure, probable or possible; null for a fact."
+     },
+     "count": {
+      "type": "integer",
+      "title": "Count"
+     }
+    },
+    "type": "object",
+    "required": [
+     "rule",
+     "method",
+     "confidence",
+     "count"
+    ],
+    "title": "LinkCount"
    },
    "LocalBudgetOut": {
     "properties": {
