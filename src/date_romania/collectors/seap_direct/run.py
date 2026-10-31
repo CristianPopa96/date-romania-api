@@ -4,6 +4,7 @@ import logging
 from datetime import date
 
 import httpx
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.http import PoliteClient
@@ -101,6 +102,8 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
 
     One purchase that fails does not stop the rest: the run ends as `partial` and the next
     run asks again. Many failures in a row stop the run: SEAP is refusing, not one purchase.
+    An answer is kept before it is loaded: one the database refuses is not asked for again,
+    and a reparse loads it once the cause is fixed.
     """
     todo = details.due(session, limit)
     with job_run(session, DETAILS_JOB, today()) as run:
@@ -112,7 +115,6 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
                 doc = store_document(
                     session, details.SOURCE, answer.url, answer.content, None, "application/json"
                 )
-                _parse_and_load(session, answer.data, doc, answer.url)
                 session.commit()
             except (details.SeapError, httpx.HTTPError) as exc:
                 session.rollback()
@@ -123,14 +125,30 @@ def collect_details(session: Session, client: PoliteClient, limit: int | None = 
                     log.error("%d failures in a row: stopped until the next run", in_a_row)
                     break
                 continue
-            done += 1
             in_a_row = 0
+            try:
+                _parse_and_load(session, answer.data, doc, answer.url)
+                session.commit()
+            except DBAPIError as exc:
+                # Kept and logged as a rejected row, never asked for again: the next runs go
+                # on to the other purchases, and a reparse loads it once the cause is fixed.
+                session.rollback()
+                record_parse(
+                    doc, [(answer.url, f"not loaded: {exc.orig!r}")], DETAIL_PARSER_VERSION
+                )
+                session.commit()
+                failed += 1
+                continue
+            done += 1
             if done % 500 == 0:
                 log.info("%d of %d purchases", done, len(todo))
         run.records = done
         if failed:
             run.status = PARTIAL
-            run.error = f"{failed} of {len(todo)} purchases failed; run again to retry them"
+            run.error = (
+                f"{failed} of {len(todo)} purchases failed: one SEAP refused is asked for "
+                "again on the next run, one not loaded waits for a reparse"
+            )
     log.info("%d purchase details collected, %d failed", done, failed)
     return done
 

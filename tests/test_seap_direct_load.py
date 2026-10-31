@@ -8,6 +8,7 @@ from pathlib import Path
 import httpx
 import pytest
 from sqlalchemy import delete, func, select, update
+from sqlalchemy.exc import DataError
 from sqlalchemy.orm import Session
 
 from date_romania.collectors.http import PoliteClient
@@ -247,6 +248,43 @@ def test_an_answer_the_parser_cannot_read_is_not_asked_for_again(session, raw_st
     with PoliteClient(transport=seap(), sleep=no_sleep) as client:
         assert run.collect_details(session, client) == 0
     assert ids
+
+
+def test_a_line_s_unit_can_be_long(session, raw_store):
+    """A buyer can write a whole package as the unit (purchase 123342914, 73 letters)."""
+    ids = held_purchases(session)
+    unit = "Cutie cu 10 pungi din poliolefine (freeflex) a 300 ml solutie perfuzabila"
+
+    def long_unit(request: httpx.Request) -> httpx.Response:
+        data = json.loads(DETAIL.read_text(encoding="utf-8"))
+        data["directAcquisitionID"] = int(request.url.path.rsplit("/", 1)[1])
+        for item in data["directAcquisitionItems"]:
+            item["itemMeasureUnit"] = unit
+        return httpx.Response(200, json=data)
+
+    with PoliteClient(transport=httpx.MockTransport(long_unit), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 2
+    assert set(session.scalars(select(DirectPurchaseItem.unit))) == {unit}
+    assert ids
+
+
+def test_a_purchase_the_database_refuses_does_not_stop_the_run(session, raw_store, monkeypatch):
+    ids = held_purchases(session)
+    loaded = run.load
+
+    def refuse_the_newest(session, parsed, document_id):
+        if parsed.details and parsed.details[0]["purchase_id"] == ids[1]:
+            raise DataError("INSERT ...", {}, Exception("value too long"))
+        loaded(session, parsed, document_id)
+
+    monkeypatch.setattr(run, "load", refuse_the_newest)
+    with PoliteClient(transport=seap(), sleep=no_sleep) as client:
+        assert run.collect_details(session, client) == 1
+        # Kept and logged, so it is not asked for again: a reparse loads it.
+        assert run.collect_details(session, client) == 0
+    assert details_held(session) == [ids[0]]
+    docs = session.scalars(select(SourceDocument).where(SourceDocument.source == run.DETAILS_JOB))
+    assert sorted(doc.rejected_rows for doc in docs) == [0, 1]
 
 
 def test_a_reparse_reads_list_pages_and_purchase_pages_apart(session, raw_store):
