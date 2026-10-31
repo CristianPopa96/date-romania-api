@@ -62,6 +62,11 @@ def test_a_pnrr_measure_is_read_as_buyers_write_it():
     assert eu_seap_links.measures_cited("PNRR - Componenta C5 - Valul renovării") == ({"5"}, set())
     # Inside a word, a letter and a number are not a measure.
     assert eu_seap_links.measures_cited("lucrări și 2 loturi, SC10 SRL") == (set(), set())
+    # A lot is not a component, and the PNRR has 16.
+    assert eu_seap_links.measures_cited("Lot C1 si Lot C2, C17") == (set(), set())
+    # With no component, a bare 'I 1' is an annex as often as an investment.
+    assert eu_seap_links.measures_cited("Anexa I 1, PNRR") == (set(), set())
+    assert eu_seap_links.measures_cited("PNRR, INVESTIȚIA: 3") == (set(), {"3"})
 
 
 def test_records_are_tied_by_smis_code_and_by_the_buyers_own_contract_number(session):
@@ -143,9 +148,17 @@ def test_records_are_tied_by_smis_code_and_by_the_buyers_own_contract_number(ses
     notice(11, pnrr_seed.STATIONER, "Laptopuri PNRR Investitia 4")
     # A number that decides is read first, and the record is tied once.
     notice(12, eu_seed.TOWN_HALL, "Lucrari PNRR C10, contract de finantare nr. 12321")
+    # 'Redresare' alone is a financial recovery plan, not the PNRR.
+    purchase(13, pnrr_seed.STATIONER, "Consultanta plan de redresare financiara")
+    # A bare 'I 3' with no component is an annex: it does not choose between two contracts.
+    notice(14, eu_seed.TOWN_HALL, "Echipamente IT, Anexa I 3, PNRR")
+    # The investment spelled out does, and is what decided.
+    notice(15, eu_seed.TOWN_HALL, "Lucrari PNRR, Investitia 3")
+    # Lots are not components.
+    notice(16, eu_seed.TOWN_HALL, "Lucrari PNRR, Lot C10 si Lot C2")
     session.flush()
 
-    assert eu_seap_links.link(session) == 7
+    assert eu_seap_links.link(session) == 8
     links = {
         (each.notice_id or each.purchase_id, each.smis or each.pnrr_contract_id, each.method)
         for each in session.query(EuSeapLink)
@@ -158,11 +171,12 @@ def test_records_are_tied_by_smis_code_and_by_the_buyers_own_contract_number(ses
         (7, pnrr_seed.ONE, eu_seap_links.BY_PNRR_MEASURE),
         (10, pnrr_seed.MANY_MEASURES, eu_seap_links.BY_PNRR_MEASURE),
         (12, pnrr_seed.ONE, eu_seap_links.BY_FINANCING_NUMBER),
+        (15, pnrr_seed.ONE, eu_seap_links.BY_PNRR_MEASURE),
     }
     cited = {
         each.notice_id or each.purchase_id: each.cited
         for each in session.query(EuSeapLink).filter_by(method=eu_seap_links.BY_PNRR_MEASURE)
     }
-    assert cited == {7: "C10.I3", 10: "PNRR"}
+    assert cited == {7: "C10.I3", 10: "PNRR", 15: "C10.I3"}
     # Built again from scratch, not added to.
-    assert eu_seap_links.link(session) == 7
+    assert eu_seap_links.link(session) == 8
