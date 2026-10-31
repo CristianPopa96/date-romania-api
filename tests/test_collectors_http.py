@@ -77,3 +77,16 @@ def test_does_not_retry_a_client_error():
     with pytest.raises(httpx.HTTPStatusError):
         client(handler, FakeTime()).request("GET", "https://example.test/a")
     assert len(calls) == 1
+
+
+def test_downloads_a_file_to_disk_retrying_from_the_start(tmp_path):
+    answers = [httpx.Response(503), httpx.Response(200, content=b"a^b\r\n" * 3)]
+
+    def handler(request):
+        return answers.pop(0)
+
+    fake = FakeTime()
+    path = tmp_path / "file.csv"
+    client(handler, fake).download("https://example.test/file.csv", path)
+    assert path.read_bytes() == b"a^b\r\n" * 3
+    assert fake.sleeps == [2.0]

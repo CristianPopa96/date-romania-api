@@ -13,7 +13,14 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from date_romania.counties import CODES, county_name
-from date_romania.models import AnafRecord, Entity, Place, PniasPayment, PublicEntity
+from date_romania.models import (
+    AnafRecord,
+    Entity,
+    Place,
+    PniasPayment,
+    PublicEntity,
+    RegisterCompany,
+)
 from date_romania.text import plain
 
 COUNTY, MUNICIPALITY, TOWN, COMMUNE, SECTOR, VILLAGE = (
@@ -229,8 +236,9 @@ def locate(session: Session) -> int:
     have a UAT.
 
     The Finance Ministry's list comes first: it names the UAT an institution works in.
-    ANAF's registered office comes next, for the rest and for companies. The funder is
-    the first main credit holder that is another entity we hold.
+    The trade register's registered office comes next, for a company it lists, then ANAF's,
+    for the rest. A company the register lists also takes its name from it, the official
+    one. The funder is the first main credit holder that is another entity we hold.
     """
     places = {place.siruta: place for place in session.scalars(select(Place))}
     index = PlaceIndex(list(places.values()))
@@ -242,6 +250,15 @@ def locate(session: Session) -> int:
     funders: dict[int, int] = {}
     for row in session.scalars(select(AnafRecord).where(AnafRecord.siruta.is_not(None))):
         found[row.cui] = row.siruta
+    named: dict[int, str] = {}
+    for cui, name, siruta in session.execute(
+        select(RegisterCompany.cui, RegisterCompany.name, RegisterCompany.siruta).join(
+            Entity, Entity.cui == RegisterCompany.cui
+        )
+    ):
+        named[cui] = name
+        if siruta is not None:
+            found[cui] = siruta
     for row in session.scalars(select(PublicEntity)):
         if row.siruta is not None:
             found[row.cui] = row.siruta
@@ -251,19 +268,23 @@ def locate(session: Session) -> int:
         )
         if funder in held:
             funders[row.cui] = funder
-    rows = []
-    for cui in held:
-        place = places.get(found.get(cui, 0))
-        county = places.get(place.county) if place and place.county else None
-        rows.append(
-            {
-                "cui": cui,
-                "siruta": place.siruta if place else None,
-                "locality": place.name if place else None,
-                "county": county_name(county_key(county.name)) if county else None,
-                "parent_cui": funders.get(cui),
-            }
-        )
+    rows = [
+        {"cui": cui, **placed(places, found.get(cui)), "parent_cui": funders.get(cui)}
+        for cui in held
+    ]
     if rows:
         session.execute(update(Entity), rows)
+    if named:
+        session.execute(update(Entity), [{"cui": cui, "name": name} for cui, name in named.items()])
     return sum(1 for row in rows if row["siruta"] is not None)
+
+
+def placed(places: dict[int, Place], siruta: int | None) -> dict:
+    """An entity's place columns for the UAT `siruta`: the UAT, its name, its county's."""
+    place = places.get(siruta or 0)
+    county = places.get(place.county) if place and place.county else None
+    return {
+        "siruta": place.siruta if place else None,
+        "locality": place.name if place else None,
+        "county": county_name(county_key(county.name)) if county else None,
+    }

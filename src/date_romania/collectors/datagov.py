@@ -49,10 +49,14 @@ def resources(client: PoliteClient, dataset: str) -> list[Resource]:
     return sorted(found, key=lambda each: (each.created, each.url))
 
 
-def datasets(client: PoliteClient, query: str, prefix: str) -> list[str]:
+def datasets(client: PoliteClient, query: str, prefix: str, newest: bool = False) -> list[str]:
     """The names of the datasets found by `query` that start with `prefix`: for a
-    publisher that opens a new dataset for every edition."""
-    answer = client.request("GET", SEARCH_URL, params={"q": query, "rows": 50}).json()
+    publisher that opens a new dataset for every edition. `newest` asks for the 50 last
+    published, for a publisher with more editions than that."""
+    params: dict = {"q": query, "rows": 50}
+    if newest:
+        params["sort"] = "metadata_created desc"
+    answer = client.request("GET", SEARCH_URL, params=params).json()
     if not answer.get("success"):
         raise DatagovError(f"{query}: {str(answer.get('error'))[:500]}")
     names = [found["name"] for found in answer["result"]["results"]]

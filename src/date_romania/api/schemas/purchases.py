@@ -105,8 +105,27 @@ class Partner(EntityRef):
     value: float
 
 
+class RegisterFacts(Answer):
+    """What the trade register says of a company, at its newest edition held."""
+
+    registration: str = Field(description="'J40/1116/1991' or 'J2023001161055'.")
+    legal_form: str = Field(description="'SRL', 'SA', 'SNC'...")
+    registered_on: date | None
+    states: list[str] = Field(description="As the register writes them: 'funcțiune', 'radiată'.")
+    deleted: bool = Field(description="Struck off the register ('radiată').")
+    since: date | None = Field(
+        description="The edition its states were first seen in, when they changed after the "
+        "first edition held; the register gives no date of its own."
+    )
+    edition: date = Field(description="The day of the newest edition that lists it.")
+    source: Source
+
+
 class EntityPage(Answer):
     entity: EntityOut
+    trade_register: RegisterFacts | None = Field(
+        description="Set for a company the trade register lists."
+    )
     direct_purchases: Summary
     partners: list[Partner] = Field(
         description="The suppliers of an institution, or the institutions a supplier sold to, "

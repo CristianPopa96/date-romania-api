@@ -3,6 +3,7 @@
 import logging
 import time
 from collections.abc import Callable
+from pathlib import Path
 from urllib.parse import urlsplit
 
 import httpx
@@ -68,5 +69,29 @@ class PoliteClient:
                 raise httpx.HTTPError(f"{method} {url} failed after {attempt + 1} tries: {problem}")
             delay = 2.0 * 2**attempt
             log.warning("%s %s: %s, retrying in %.0fs", method, url, problem, delay)
+            self._sleep(delay)
+        raise AssertionError("unreachable")
+
+    def download(self, url: str, path: Path) -> str | None:
+        """Save one file to `path` as it arrives, never whole in memory; returns its content
+        type. Retried like `request`, each try from the start."""
+        host = urlsplit(url).netloc
+        for attempt in range(self._retries + 1):
+            self._wait_for_turn(host)
+            try:
+                with self._client.stream("GET", url, follow_redirects=True) as response:
+                    if response.status_code not in RETRY_STATUSES:
+                        response.raise_for_status()
+                        with path.open("wb") as file:
+                            for chunk in response.iter_bytes(1 << 20):
+                                file.write(chunk)
+                        return response.headers.get("content-type")
+                    problem = f"HTTP {response.status_code}"
+            except httpx.TransportError as exc:
+                problem = repr(exc)
+            if attempt == self._retries:
+                raise httpx.HTTPError(f"GET {url} failed after {attempt + 1} tries: {problem}")
+            delay = 2.0 * 2**attempt
+            log.warning("GET %s: %s, retrying in %.0fs", url, problem, delay)
             self._sleep(delay)
         raise AssertionError("unreachable")

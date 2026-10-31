@@ -37,6 +37,7 @@ from date_romania.models.pnrr import (
 )
 from date_romania.models.programme import ExportBuyer, ExportContract, PniasLink, PniasPayment
 from date_romania.models.projects import Project
+from date_romania.models.register import RegisterCompany
 from date_romania.models.reports import Report
 from date_romania.models.seap_awards import (
     AwardContract,
@@ -76,6 +77,7 @@ __all__ = [
     "ExportBuyer",
     "PniasLink",
     "Project",
+    "RegisterCompany",
     "Report",
     "Place",
     "PublicEntity",

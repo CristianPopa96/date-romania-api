@@ -2,7 +2,8 @@
 
 Every list names the beneficiary; only some give its tax ID (the 2021-2027 lists of PEO,
 PoIDS and Health, and POCU's), and MIPE's map gives it for every 2021-2027 project it
-lists. The others are tied by name and place, never surely. The
+lists. The others are tied by name and place, never surely: first to the entities held,
+then to the companies of the trade register, which become entities when tied. The
 rule is written once, here: the collector runs it after every load, `dr link eu-projects`
 runs it alone, and the API reads what it stored on `eu_project`.
 """
@@ -12,6 +13,7 @@ import re
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
+from date_romania import register
 from date_romania.models import Entity, EuProject, Place
 from date_romania.places import PlaceIndex, governed
 from date_romania.text import plain
@@ -22,7 +24,9 @@ from date_romania.text import plain
 #             place it names, in the project's county, has one town hall or council; or the
 #             name is that of one entity in the project's county (or, when the county has
 #             several, one in the UAT the list names); or the name is a company's, which
-#             the trade register keeps unique in the country, and one entity carries it
+#             the trade register keeps unique in the country, and one entity carries it;
+#             or, when no entity ties, the name is that of one company in the trade register,
+#             in the country or else in the project's county
 # A name that ties nothing whole is tried again without what follows a '/', where some
 # lists add the department that runs the project: 'MUNICIPIUL ZALĂU/Entitate de drept
 # public', 'COMUNA HOLBOCA/primarie'. The tie keeps the method of the part that matched.
@@ -31,6 +35,7 @@ BY_MAP_CUI = "cui-in-map"
 BY_ADMINISTRATION = "administration-name+place"
 BY_NAME = "name+place"
 BY_COMPANY_NAME = "company-name"
+BY_REGISTER = "register-name"
 SURE, PROBABLE = "sure", "probable"
 
 # What some lists put before an administration's own name: 'UAT Orasul Cugir'.
@@ -65,7 +70,7 @@ def link(session: Session) -> int:
     for cui, name, siruta in session.execute(select(Entity.cui, Entity.name, Entity.siruta)):
         county = places[siruta].county if siruta in places else None
         named.setdefault(name_key(name), []).append((cui, siruta, county))
-    rows = []
+    rows, untied = [], []
     for smis, cui, map_cui, name, county, locality in session.execute(
         select(
             EuProject.smis,
@@ -77,6 +82,8 @@ def link(session: Session) -> int:
         )
     ):
         found = _tie(index, places, named, cui, map_cui, name, county, locality)
+        if found is None and name:
+            untied.append((len(rows), name, county))
         entity, method, confidence = found or (None, None, None)
         rows.append(
             {
@@ -86,9 +93,37 @@ def link(session: Session) -> int:
                 "entity_confidence": confidence,
             }
         )
+    _in_register(session, index, rows, untied)
     if rows:
         session.execute(update(EuProject), rows)
     return sum(1 for row in rows if row["entity_cui"] is not None)
+
+
+def _in_register(session: Session, index: PlaceIndex, rows: list[dict], untied: list) -> None:
+    """Tie the projects no entity ties to the company of the trade register that carries
+    the beneficiary's name, whole or before a '/', and give it an entity."""
+    names = [
+        (row, [name_key(name), name_key(name.split("/")[0])], county)
+        for row, name, county in untied
+    ]
+    carriers = register.carriers(session, (key for _, keys, _ in names for key in keys))
+    tied = set()
+    for row, keys, county in names:
+        in_county = index.county(county)
+        for key in keys:
+            found = {cui for cui, _ in carriers.get(key, ())}
+            if len(found) != 1:
+                found = {
+                    cui for cui, each in carriers.get(key, ()) if in_county and each == in_county
+                }
+            if len(found) == 1:
+                cui = found.pop()
+                rows[row].update(
+                    entity_cui=cui, entity_method=BY_REGISTER, entity_confidence=PROBABLE
+                )
+                tied.add(cui)
+                break
+    register.add_entities(session, tied)
 
 
 def _tie(index, places, named, cui, map_cui, name, county, locality) -> tuple[int, str, str] | None:
