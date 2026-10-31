@@ -62,6 +62,12 @@ class PniasPayment(Base):
     # No foreign key: most builders are not otherwise held, and get no page of their own.
     builder_cui: Mapped[int | None] = mapped_column(BigInteger, index=True)
     builder_text: Mapped[str | None] = mapped_column(Text)
+    # The builder's tax ID as the link rule finds it (`pnias_links.link`), and from where:
+    # 'file' (this payment's own), 'project' (a newer payment of the project gives the same
+    # name one) or 'register' (one company of the trade register carries the name). Null
+    # when none is found. Every page reads the builder from here.
+    builder_found_cui: Mapped[int | None] = mapped_column(BigInteger, index=True)
+    builder_found_by: Mapped[str | None] = mapped_column(String(16))
     designer_cui: Mapped[int | None] = mapped_column(BigInteger, index=True)
     designer_text: Mapped[str | None] = mapped_column(Text)
     estimated_end: Mapped[date | None] = mapped_column(Date)

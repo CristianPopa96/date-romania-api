@@ -8,11 +8,13 @@ written once, here: the collectors build the links with it and the API reads the
 
 import re
 
-from sqlalchemy import ColumnElement, Subquery, case, delete, func, insert, select
+from sqlalchemy import ColumnElement, Subquery, case, delete, func, insert, select, update
 from sqlalchemy.dialects.postgresql import distinct_on
 from sqlalchemy.orm import Session
 
+from date_romania import register
 from date_romania.counties import COUNTIES
+from date_romania.eu_links import name_key
 from date_romania.models import ExportBuyer, ExportContract, PniasLink, PniasPayment
 from date_romania.text import plain
 
@@ -29,6 +31,12 @@ PROBABLE, POSSIBLE = "probable", "possible"
 # is the same company, so such a payment takes the tax ID a newer payment of the project
 # gives that name; its link says so, with the same confidence: 'builder-cui-of-project+...'.
 OF_PROJECT = "builder-cui-of-project"
+# When no payment of the project gives it, the tax ID of the one company in the trade
+# register that carries the name, with the same confidence: 'builder-name-in-register+...'.
+OF_REGISTER = "builder-name-in-register"
+# Where a payment's builder tax ID was found (`PniasPayment.builder_found_by`).
+FROM_FILE, FROM_PROJECT, FROM_REGISTER = "file", "project", "register"
+_METHOD_OF = {FROM_PROJECT: OF_PROJECT, FROM_REGISTER: OF_REGISTER}
 
 # The match states of a payment.
 ONE = "one"  # contracts of a single award notice
@@ -177,7 +185,7 @@ def link(session: Session) -> int:
     candidates = _candidates(session)
     buyers = _Buyers(session)
     links = []
-    for payment_id, builder, of_project, town_hall, county in _builders(session):
+    for payment_id, builder, found_by, town_hall, county in _builders(session):
         place = payment_place(town_hall, county)
         for contract_id, buyer_cui, buyer in candidates.get(builder, ()):
             if buyer_place(buyer, county) != place:
@@ -185,8 +193,8 @@ def link(session: Session) -> int:
             evidence = _evidence(buyers, buyer_cui, place, county)
             if evidence:
                 method = evidence[0]
-                if of_project:
-                    method = method.replace("builder-cui", OF_PROJECT, 1)
+                if found_by in _METHOD_OF:
+                    method = method.replace("builder-cui", _METHOD_OF[found_by], 1)
                 links.append(
                     {
                         "payment_id": payment_id,
@@ -206,9 +214,13 @@ def link(session: Session) -> int:
     return len(links)
 
 
-def _builders(session: Session) -> list[tuple[int, int, bool, str | None, str]]:
-    """Every payment whose builder's tax ID is known, as (payment, builder, whether the ID
-    comes from another payment of the project, town hall, county)."""
+def _builders(session: Session) -> list[tuple[int, int, str, str | None, str]]:
+    """Every payment whose builder's tax ID is found, as (payment, builder, where it was
+    found, town hall, county), kept on the payment (`builder_found_cui`, `builder_found_by`).
+
+    The payment's own comes first, then the one a newer payment of the project gives the
+    same name, then the one company of the trade register that carries the name, in the
+    whole country: a builder works away from its seat, so its county tells nothing."""
     payments = session.execute(
         select(
             PniasPayment.id,
@@ -223,15 +235,47 @@ def _builders(session: Session) -> list[tuple[int, int, bool, str | None, str]]:
     for _, project, cui, name, *_ in payments:
         if cui is not None and name:
             named.setdefault((project, name), set()).add(cui)
-    found = []
+    unnamed = {
+        name_key(name)
+        for _, project, cui, name, *_ in payments
+        if cui is None and name and len(named.get((project, name), ())) != 1
+    }
+    carriers = register.carriers(session, unnamed)
+    found, rows = [], []
     for payment_id, project, cui, name, town_hall, county in payments:
-        if cui is not None:
-            found.append((payment_id, cui, False, town_hall, county))
-            continue
         cuis = named.get((project, name or ""), set())
-        if len(cuis) == 1:
-            found.append((payment_id, next(iter(cuis)), True, town_hall, county))
+        in_register = {each for each, _ in carriers.get(name_key(name), ())} if name else set()
+        if cui is not None:
+            by = FROM_FILE
+        elif len(cuis) == 1:
+            cui, by = next(iter(cuis)), FROM_PROJECT
+        elif len(in_register) == 1:
+            cui, by = next(iter(in_register)), FROM_REGISTER
+        else:
+            by = None
+        rows.append({"id": payment_id, "builder_found_cui": cui, "builder_found_by": by})
+        if cui is not None:
+            found.append((payment_id, cui, by, town_hall, county))
+    if rows:
+        session.execute(update(PniasPayment), rows)
     return found
+
+
+def by_own_tax_id(method: str) -> bool:
+    """True for a link through the tax ID the payment itself gives its builder."""
+    return method.startswith("builder-cui+")
+
+
+def builders(session: Session) -> set[int]:
+    """The tax IDs of every builder found: the companies whose contracts the exports keep.
+    Found again by `link()`, so a reparse of the exports follows it."""
+    return set(
+        session.scalars(
+            select(PniasPayment.builder_found_cui)
+            .where(PniasPayment.builder_found_cui.is_not(None))
+            .distinct()
+        )
+    )
 
 
 def only_possible() -> ColumnElement[bool]:
@@ -260,12 +304,13 @@ def notices_linked() -> ColumnElement[int]:
 
 def state() -> ColumnElement[str]:
     """The match state of a payment. One with no tax ID of its own is tied only through
-    another payment of its project that names the same builder with one."""
+    the one its builder is found by: another payment of its project that names the same
+    builder with one, or the trade register."""
     linked = notices_linked()
     return case(
         (linked == 1, ONE),
         (linked > 1, SEVERAL),
-        (PniasPayment.builder_cui.is_(None), UNNAMED),
+        (PniasPayment.builder_found_cui.is_(None), UNNAMED),
         else_=NONE,
     )
 
@@ -275,8 +320,8 @@ def projects() -> Subquery:
     and its match state.
 
     A project is tied to one notice when every payment of it that could be tied points
-    to the same one. Payments from files without tax IDs take no part, so a project is
-    `unnamed` only when none of its payments names the builder by tax ID.
+    to the same one. Payments whose builder's tax ID is not found take no part, so a
+    project is `unnamed` only when none is found for any of its payments.
     """
     latest = (
         select(PniasPayment)
@@ -289,7 +334,7 @@ def projects() -> Subquery:
             PniasPayment.project_id,
             func.count().label("payments"),
             func.sum(PniasPayment.amount).label("paid"),
-            func.count(PniasPayment.builder_cui).label("named"),
+            func.count(PniasPayment.builder_found_cui).label("named"),
         )
         .group_by(PniasPayment.project_id)
         .subquery("totals")

@@ -68,10 +68,12 @@ def _parties(
     """The payments of a project by who built (or designed) it, as (CUI, name, payments).
 
     The older files name a company without its tax ID. Inside one project, the same name
-    is the same company, so those payments join the ones that carry the tax ID.
+    is the same company, so those payments join the ones that carry the tax ID. A builder
+    is the one the link rule found (`builder_found_cui`), the register's included.
     """
+    column = "builder_found_cui" if role == "builder" else f"{role}_cui"
     named = [
-        (getattr(payment, f"{role}_cui"), getattr(payment, f"{role}_text"), payment)
+        (getattr(payment, column), getattr(payment, f"{role}_text"), payment)
         for payment in payments
     ]
     cui_of = {name: cui for cui, name, _ in named if cui}
@@ -81,6 +83,14 @@ def _parties(
         if cui or name:
             groups.setdefault(cui or name, [cui, name, []])[2].append(payment)
     return [(cui, name, theirs) for cui, name, theirs in groups.values()]
+
+
+def _found_by(payments: list[PniasPayment]) -> str | None:
+    """Where a builder's tax ID comes from: a payment file, when any payment gives it."""
+    found = {payment.builder_found_by for payment in payments}
+    if pnias_links.FROM_FILE in found:
+        return pnias_links.FROM_FILE
+    return next((each for each in found if each), None)
 
 
 def _match(cui: int | None, contracts: list[ExportContract]) -> str:
@@ -120,7 +130,7 @@ def project(session: Db, project_id: int) -> Project:
         linked.setdefault(link.payment_id, []).append(contract)
         # A payment that names the builder by its own tax ID says best what a tie rests on.
         known = evidence.get(contract.id)
-        if known is None or known.method.startswith(pnias_links.OF_PROJECT):
+        if known is None or not pnias_links.by_own_tax_id(known.method):
             evidence[contract.id] = link
     contracts = list({each.id: each for found in linked.values() for each in found}.values())
     winners = _winners(session, contracts)
@@ -169,6 +179,7 @@ def project(session: Db, project_id: int) -> Project:
         builders.append(
             TraceBuilder(
                 **party(cui, name),
+                found_by=_found_by(theirs) if cui else None,
                 payments=len(theirs),
                 amount=sum(payment.amount for payment in theirs),
                 match=_match(cui, list(found.values())),

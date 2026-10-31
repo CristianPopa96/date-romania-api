@@ -49,7 +49,7 @@ def programme_name(programme: str) -> tuple[str, str | None]:
 
 
 def _built(cui: int):
-    return select(PniasPayment.project_id).where(PniasPayment.builder_cui == cui)
+    return select(PniasPayment.project_id).where(PniasPayment.builder_found_cui == cui)
 
 
 def _won(column, cui: int):

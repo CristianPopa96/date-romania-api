@@ -255,6 +255,7 @@ def test_a_project_whose_chain_stops_at_the_builder(client):
             "cui": None,
             "name": "Sigma Canal SRL",
             "entity": None,
+            "found_by": None,
             "payments": 1,
             "amount": 500000,
             "match": "unnamed",
