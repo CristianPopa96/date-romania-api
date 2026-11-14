@@ -3,6 +3,7 @@ for a year, from the same helpers as every other page."""
 
 from datetime import date
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import extract, func, select
 from sqlalchemy.orm import Session
@@ -23,6 +24,8 @@ from date_romania.models import (
 )
 from date_romania.national import MILLION
 from date_romania.sources import BUDGET_EXECUTION, EUROSTAT_COFOG, PNIAS_PAYMENTS, SEAP_AWARDS
+
+EUROSTAT_ZONE = ZoneInfo("Europe/Luxembourg")
 
 
 def lei(million: Decimal) -> float:
@@ -66,7 +69,8 @@ def execution_source(session: Session, period_end: date) -> Source:
     )
     return Source(
         publisher=BUDGET_EXECUTION.publisher,
-        record=f"{BUDGET_EXECUTION.dataset} · {period_end:%d.%m.%Y}",
+        # The ministry's own name for the file: "bgc30092026.xlsx".
+        record=doc.url.rsplit("/", 1)[-1],
         url=doc.url,
         fetched_at=doc.fetched_at,
         document_id=doc.id,
@@ -245,7 +249,9 @@ def domains(session: Session) -> Domains | None:
     return Domains(
         year=year,
         total=lei(everyone[national.COFOG_TOTAL]),
-        updated_at=updated,
+        # The day as Eurostat gives it: its time stamps are Luxembourg time, and 23:00
+        # there is already the next day in Bucharest.
+        updated_on=updated.astimezone(EUROSTAT_ZONE).date(),
         divisions=sorted(divisions, key=lambda division: division.total, reverse=True),
         source=cofog_source(session),
     )

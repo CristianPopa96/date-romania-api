@@ -8167,10 +8167,11 @@
       "type": "number",
       "title": "Total"
      },
-     "updated_at": {
+     "updated_on": {
       "type": "string",
-      "format": "date-time",
-      "title": "Updated At"
+      "format": "date",
+      "title": "Updated On",
+      "description": "When Eurostat last updated the table, its own day."
      },
      "divisions": {
       "items": {
@@ -8187,7 +8188,7 @@
     "required": [
      "year",
      "total",
-     "updated_at",
+     "updated_on",
      "divisions",
      "source"
     ],

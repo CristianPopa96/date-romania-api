@@ -2137,7 +2137,7 @@ def test_the_country_budget_is_planned_executed_and_split(client):
     # The seed holds December 2024's figures again for September 2026.
     assert (executed["period_end"], executed["months"]) == ("2026-09-30", 9)
     assert executed["spending"] == pytest.approx(727_316_168_000)
-    assert executed["source"]["record"].endswith("30.09.2026")
+    assert executed["source"]["record"] == "bgc30092026.xlsx"
     assert budget["executed_share"] == pytest.approx(727_316.168 / 864_283.7)
     categories = budget["categories"]
     # Largest first, the lines not named last, and together the whole of spending.
@@ -2196,6 +2196,8 @@ def test_a_difference_is_given_only_where_the_figures_compare(client):
 def test_the_domains_share_comes_from_cofog_alone(client):
     domains = client.get("/v1/national").json()["domains"]
     assert (domains["year"], domains["total"]) == (2024, 761_482_500_000)
+    # 23:00 in Luxembourg on 21.10, already 22.10 in Bucharest: Eurostat's day is kept.
+    assert domains["updated_on"] == "2026-10-21"
     divisions = {division["cofog"]: division for division in domains["divisions"]}
     assert len(divisions) == 10
     assert divisions["GF02"]["local"] == 0

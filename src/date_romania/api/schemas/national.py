@@ -1,6 +1,6 @@
 """The country's budget against what our data shows (the home page, design round 18)."""
 
-from datetime import date, datetime
+from datetime import date
 from typing import Literal
 
 from pydantic import Field
@@ -113,7 +113,7 @@ class Domains(Answer):
 
     year: int
     total: float
-    updated_at: datetime
+    updated_on: date = Field(description="When Eurostat last updated the table, its own day.")
     divisions: list[Division]
     source: Source
 
