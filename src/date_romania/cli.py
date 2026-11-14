@@ -15,6 +15,8 @@ from sqlalchemy.orm import Session
 from date_romania import eu_links, eu_seap_links, places, pnias_links, projects, reports
 from date_romania.collectors import (
     anaf,
+    budget_execution,
+    cofog,
     eu_map,
     eu_projects,
     local_budgets,
@@ -214,6 +216,22 @@ def collect_anaf(
         typer.echo(f"{anaf.collect(session, client, limit)} records")
 
 
+@collect_app.command("eurostat-cofog")
+def collect_eurostat_cofog() -> None:
+    """Eurostat's spending of the public administration by purpose (COFOG), every year
+    from 2015, by level of government; loaded when the answer is new."""
+    with Session(get_engine()) as session, PoliteClient(timeout=120.0) as client:
+        typer.echo(f"{cofog.collect(session, client)} COFOG figures")
+
+
+@collect_app.command("budget-execution")
+def collect_budget_execution() -> None:
+    """The Finance Ministry's monthly execution of the consolidated general budget, every
+    month since January 2024 not held yet."""
+    with Session(get_engine()) as session, PoliteClient(timeout=120.0) as client:
+        typer.echo(f"{budget_execution.collect(session, client)} budget execution figures")
+
+
 @reparse_app.command("seap-direct")
 def reparse_seap_direct() -> None:
     """Parse the stored SEAP direct purchase responses again, without calling SEAP."""
@@ -285,6 +303,18 @@ def reparse_local_budgets() -> None:
 def reparse_anaf() -> None:
     """Load the stored ANAF answers again, without calling ANAF."""
     _reparse(anaf)
+
+
+@reparse_app.command("eurostat-cofog")
+def reparse_eurostat_cofog() -> None:
+    """Load the newest stored COFOG answer again, without calling Eurostat."""
+    _reparse(cofog)
+
+
+@reparse_app.command("budget-execution")
+def reparse_budget_execution() -> None:
+    """Load the stored budget execution workbooks again, without calling the ministry."""
+    _reparse(budget_execution)
 
 
 @link_app.command("places")

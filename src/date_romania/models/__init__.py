@@ -20,6 +20,7 @@ from date_romania.models.eu_projects import (
     held_by_map,
     programme_day,
 )
+from date_romania.models.national import BudgetExecution, CofogSpending
 from date_romania.models.places import (
     AnafRecord,
     LocalBudget,
@@ -64,6 +65,8 @@ __all__ = [
     "SourceDocument",
     "JobRun",
     "Entity",
+    "BudgetExecution",
+    "CofogSpending",
     "DirectPurchase",
     "DirectPurchaseDetail",
     "DirectPurchaseItem",

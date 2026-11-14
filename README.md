@@ -174,6 +174,8 @@ uv run dr collect siruta                          # the national list of places 
 uv run dr collect public-entities                 # the Finance Ministry's list of public entities
 uv run dr collect local-budgets                   # town hall and county council budgets, population
 uv run dr collect anaf                            # ANAF's record of every entity not asked yet (100 a call, ~10 min the first time)
+uv run dr collect budget-execution                # the Finance Ministry's budget execution, every month since 01.2024 not held
+uv run dr collect eurostat-cofog                  # Eurostat's spending by purpose (COFOG), every year since 2015
 uv run dr link places                             # give every entity its county and UAT again
 uv run dr reparse siruta                          # also public-entities, local-budgets, anaf
 ```
@@ -191,6 +193,8 @@ uv run dr reparse siruta                          # also public-entities, local-
 | `public-entities`     | The Finance Ministry's monthly list of public entities: the UAT each works in and the institutions that fund it                                                                                                                                         | `public_entity`                                                                                             |
 | `local-budgets`       | The Ministry of Development's yearly executed budget of every UAT and county council (2024), and UAT population (2021 to 2024)                                                                                                                          | `local_budget`, `population`                                                                                |
 | `anaf`                | ANAF's register, asked by tax ID: the county and locality of the registered office (never the street), CAEN code, VAT and inactive status                                                                                                               | `anaf_record`                                                                                               |
+| `budget-execution`    | The Finance Ministry's monthly execution of the consolidated general budget (mfinante.gov.ro, annex 1 xlsx): every line in every budget column, from 1 January to the month's end, cash                                                                 | `budget_execution`                                                                                          |
+| `eurostat-cofog`      | Eurostat's spending of the public administration by purpose (COFOG, `gov_10a_exp`), every year from 2015, all of it and each level of government; replaced whole by each new answer                                                                     | `cofog_spending`                                                                                            |
 
 Only `seap-direct` and `seap-awards` are collected by day. `pnrr` reads MIPE's PNRR
 dashboard files (`contains.json` lists the editions): the newest complete edition replaces
@@ -244,6 +248,8 @@ one record).
 | 08:30 every day                 | `dr collect anaf`                                                                                                                                               |
 | 09:00 every day                 | `dr collect pnrr` (one small request; about 6.5 MB when an edition is new, every two weeks or so)                                                               |
 | 09:15 every Monday              | `dr collect eu-projects` (about ten small requests; a list only when new)                                                                                       |
+| 10:15 every day                 | `dr collect budget-execution` (one small request; a workbook when a month is out, about four weeks after it ends)                                               |
+| 10:30 every Monday              | `dr collect eurostat-cofog` (one request of about 50 KB; loaded only when it changed)                                                                           |
 | 09:30 on the 1st of every month | `dr collect pnias-payments`, then `dr reparse seap-exports` and `dr collect seap-exports`                                                                       |
 
 The file collectors run monthly: payment files appear about monthly, exports quarterly.

@@ -47,6 +47,17 @@
 # a few seconds). The two collectors of EU projects also tie them after every load.
 45 9 * * * dr link eu-seap
 
+# Every day at 10:15 UTC: the Finance Ministry's execution of the consolidated general
+# budget for every month since January 2024 not held yet (mfinante.gov.ro). A month comes
+# about four weeks after it ends, on no fixed day: one small request on most days, a
+# workbook of about 370 KB when a month is out.
+15 10 * * * dr collect budget-execution
+
+# Every Monday at 10:30 UTC: Eurostat's spending of the public administration by purpose
+# (COFOG, gov_10a_exp), loaded when the answer changed. One request of about 100 KB;
+# Eurostat updates it about once a year, in the autumn.
+30 10 * * 1 dr collect eurostat-cofog
+
 # On the 1st of every month at 09:30 UTC: the Anghel Saligny payment files and SEAP's
 # contract exports (data.gov.ro) not held yet. The ministry adds a payment file about
 # monthly and SEAP an export each quarter; a file already held is not downloaded again,
