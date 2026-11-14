@@ -15,6 +15,8 @@ tells us, and what it does not.
 | [List of public entities](https://extranet.anaf.mfinante.gov.ro/anaf/extranet/EXECUTIEBUGETARA)                                 | Finance Ministry                       | Every public institution, where it is, and which institution funds it (a school and its town hall, for example)                  |
 | [Local budgets and population](https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale)                                 | Ministry of Development                | What every town hall and county council received and spent in 2024, and how many people live in each town and commune            |
 | [ANAF register](https://www.anaf.ro/anaf/internet/ANAF/servicii_online/servicii_web_anaf)                                       | The tax agency                         | For each institution and company: the town of its office (never the street), its activity, VAT status and whether it is inactive |
+| [Budget execution](https://mfinante.gov.ro/domenii/bugetul-de-stat/informatii-executie-bugetara)                                | Finance Ministry                       | What the whole state spent and collected from 1 January to the end of each month, cash: by kind of spending (salaries, pensions and other social help, goods and services, interest, EU and PNRR projects, investments) and by budget (state, local, health, social insurance…) |
+| [Spending by purpose (COFOG)](https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table)                         | Eurostat, from INS and the Finance Ministry | What all of the public administration spent each year on education, health, transport and the other purposes, and how much of it local government spent                                                                                                                         |
 
 ## What each source does not tell us
 
@@ -25,6 +27,8 @@ tells us, and what it does not.
 | Anghel Saligny payments | The day of the payment. The town hall is named only by name, without its tax ID. Only files from 27 August 2026 on give the builder's tax ID.                                                       |
 | SEAP contract lists     | Used only to follow the programme, never in totals: they repeat each contract in every later list and list an association once per member.                                                          |
 | Local budgets           | Only town halls and county councils, only for whole years.                                                                                                                                          |
+| Budget execution        | Who was paid: it gives totals by kind of spending, never a payment or a supplier. No split by purpose (education, health…). Each month about four weeks after it ends.                              |
+| Spending by purpose     | Whole years only, the latest two years back (2024 in November 2026). It is national accounts (what was owed in the year), not cash paid, so it is never subtracted from the budget execution.       |
 
 ## The period held
 

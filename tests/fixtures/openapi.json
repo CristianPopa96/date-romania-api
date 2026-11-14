@@ -75,6 +75,28 @@
     }
    }
   },
+  "/v1/national": {
+   "get": {
+    "tags": [
+     "overview"
+    ],
+    "summary": "National",
+    "description": "The country's budget against what our data shows. Official figures and ours each\nkeep their own source and period; a difference is given only where both measure the\nsame thing over the same period (`comparable`), and every check says why they differ.\nAmounts are lei: official ones as the ministry gives them (cash, with VAT where paid),\nours without VAT.",
+    "operationId": "national_v1_national_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/National"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/v1/data-road": {
    "get": {
     "tags": [
@@ -6758,6 +6780,95 @@
     ],
     "title": "BeneficiaryTypeOption"
    },
+   "Budget": {
+    "properties": {
+     "year": {
+      "type": "integer",
+      "title": "Year"
+     },
+     "planned": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Planned"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Total spending planned; null if not entered."
+     },
+     "planned_revenue": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Planned"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "executed": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Executed"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null until the year's execution is held."
+     },
+     "executed_share": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Executed Share",
+      "description": "Executed spending over planned, 0 to 1: the same measure for one year."
+     },
+     "categories": {
+      "items": {
+       "$ref": "#/components/schemas/Category"
+      },
+      "type": "array",
+      "title": "Categories",
+      "description": "Largest first, `other` last."
+     },
+     "band": {
+      "items": {
+       "$ref": "#/components/schemas/Segment"
+      },
+      "type": "array",
+      "title": "Band",
+      "description": "In this order: not_procurement, procurement, rest."
+     },
+     "ours": {
+      "items": {
+       "$ref": "#/components/schemas/Ours"
+      },
+      "type": "array",
+      "title": "Ours",
+      "description": "Our figures for the year, beside the band: never subtracted from it."
+     }
+    },
+    "type": "object",
+    "required": [
+     "year",
+     "planned",
+     "planned_revenue",
+     "executed",
+     "executed_share",
+     "categories",
+     "band",
+     "ours"
+    ],
+    "title": "Budget",
+    "description": "Block 1 (\"Bugetul țării\") and block 2 (\"Ce parte din acești bani putem urmări\")."
+   },
    "Capital": {
     "properties": {
      "amount": {
@@ -6786,6 +6897,25 @@
     ],
     "title": "Capital",
     "description": "Capital spending executed in a year, by town halls (and a county's council)."
+   },
+   "Category": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "A group of spending lines; `other` holds the lines not named."
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "amount"
+    ],
+    "title": "Category"
    },
    "ChapterAmount": {
     "properties": {
@@ -6819,6 +6949,119 @@
      "amount"
     ],
     "title": "ChapterAmount"
+   },
+   "Check": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "official": {
+      "$ref": "#/components/schemas/Figure"
+     },
+     "ours": {
+      "$ref": "#/components/schemas/Figure"
+     },
+     "comparable": {
+      "type": "boolean",
+      "title": "Comparable"
+     },
+     "difference": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Difference",
+      "description": "Ours minus official, in lei."
+     },
+     "difference_share": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Difference Share",
+      "description": "`difference` over the official figure."
+     },
+     "paid_share": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paid Share",
+      "description": "For a plan against its payments: paid over planned, 0 to 1."
+     },
+     "reason": {
+      "type": "string",
+      "title": "Reason",
+      "description": "Why they differ or do not compare; always given."
+     },
+     "parts": {
+      "items": {
+       "$ref": "#/components/schemas/CheckPart"
+      },
+      "type": "array",
+      "title": "Parts"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "official",
+     "ours",
+     "comparable",
+     "difference",
+     "difference_share",
+     "paid_share",
+     "reason",
+     "parts"
+    ],
+    "title": "Check",
+    "description": "An official figure against ours. `difference` only when `comparable`."
+   },
+   "CheckPart": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key",
+      "description": "Our chapter, by `local_money.CHAPTERS`."
+     },
+     "divisions": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Divisions",
+      "description": "The COFOG divisions it is set against."
+     },
+     "official": {
+      "type": "number",
+      "title": "Official"
+     },
+     "ours": {
+      "type": "number",
+      "title": "Ours"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "divisions",
+     "official",
+     "ours"
+    ],
+    "title": "CheckPart"
    },
    "Contract": {
     "properties": {
@@ -7876,6 +8119,80 @@
      "items"
     ],
     "title": "Datasets"
+   },
+   "Division": {
+    "properties": {
+     "cofog": {
+      "type": "string",
+      "title": "Cofog"
+     },
+     "label": {
+      "type": "string",
+      "title": "Label",
+      "description": "Eurostat's English label; the site words it."
+     },
+     "total": {
+      "type": "number",
+      "title": "Total",
+      "description": "All of public administration, lei."
+     },
+     "local": {
+      "type": "number",
+      "title": "Local",
+      "description": "Local government, lei."
+     },
+     "local_share": {
+      "type": "number",
+      "title": "Local Share",
+      "description": "Local over total, 0 to 1, both from COFOG."
+     }
+    },
+    "type": "object",
+    "required": [
+     "cofog",
+     "label",
+     "total",
+     "local",
+     "local_share"
+    ],
+    "title": "Division"
+   },
+   "Domains": {
+    "properties": {
+     "year": {
+      "type": "integer",
+      "title": "Year"
+     },
+     "total": {
+      "type": "number",
+      "title": "Total"
+     },
+     "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Updated At"
+     },
+     "divisions": {
+      "items": {
+       "$ref": "#/components/schemas/Division"
+      },
+      "type": "array",
+      "title": "Divisions"
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "year",
+     "total",
+     "updated_at",
+     "divisions",
+     "source"
+    ],
+    "title": "Domains",
+    "description": "Block 4 (\"Pe domenii\"): COFOG by division, largest first."
    },
    "EntityOut": {
     "properties": {
@@ -9050,6 +9367,138 @@
     ],
     "title": "EuSeapPurchase"
    },
+   "Executed": {
+    "properties": {
+     "period_start": {
+      "type": "string",
+      "format": "date",
+      "title": "Period Start"
+     },
+     "period_end": {
+      "type": "string",
+      "format": "date",
+      "title": "Period End"
+     },
+     "months": {
+      "type": "integer",
+      "title": "Months",
+      "description": "How many months of the year the execution covers."
+     },
+     "spending": {
+      "type": "number",
+      "title": "Spending",
+      "description": "Lei."
+     },
+     "revenue": {
+      "type": "number",
+      "title": "Revenue",
+      "description": "Lei."
+     },
+     "source": {
+      "$ref": "#/components/schemas/Source"
+     }
+    },
+    "type": "object",
+    "required": [
+     "period_start",
+     "period_end",
+     "months",
+     "spending",
+     "revenue",
+     "source"
+    ],
+    "title": "Executed",
+    "description": "The execution of the consolidated general budget from 1 January, cash."
+   },
+   "Figure": {
+    "properties": {
+     "amount": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Amount",
+      "description": "Lei."
+     },
+     "count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Count",
+      "description": "Records behind the figure."
+     },
+     "unit": {
+      "type": "string",
+      "enum": [
+       "lei",
+       "contracts"
+      ],
+      "title": "Unit",
+      "default": "lei"
+     },
+     "period_start": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period Start"
+     },
+     "period_end": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period End"
+     },
+     "collected": {
+      "type": "boolean",
+      "title": "Collected",
+      "description": "False while we do not hold this figure.",
+      "default": true
+     },
+     "source": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Source"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "amount",
+     "count",
+     "unit",
+     "period_start",
+     "period_end",
+     "collected",
+     "source"
+    ],
+    "title": "Figure",
+    "description": "One figure with its own period and source; our figures are without VAT."
+   },
    "HTTPValidationError": {
     "properties": {
      "detail": {
@@ -9547,6 +9996,47 @@
     ],
     "title": "MeasureOption"
    },
+   "National": {
+    "properties": {
+     "budget": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Budget"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null until the budget execution is held."
+     },
+     "checks": {
+      "items": {
+       "$ref": "#/components/schemas/Check"
+      },
+      "type": "array",
+      "title": "Checks",
+      "description": "Comparable checks first, largest official figure first; then the rest."
+     },
+     "domains": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Domains"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Null until COFOG is held."
+     }
+    },
+    "type": "object",
+    "required": [
+     "budget",
+     "checks",
+     "domains"
+    ],
+    "title": "National"
+   },
    "NearLimitPair": {
     "properties": {
      "buyer": {
@@ -9898,6 +10388,99 @@
     "title": "Others",
     "description": "The rest of the value after the largest parties."
    },
+   "Ours": {
+    "properties": {
+     "amount": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Amount",
+      "description": "Lei."
+     },
+     "count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Count",
+      "description": "Records behind the figure."
+     },
+     "unit": {
+      "type": "string",
+      "enum": [
+       "lei",
+       "contracts"
+      ],
+      "title": "Unit",
+      "default": "lei"
+     },
+     "period_start": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period Start"
+     },
+     "period_end": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Period End"
+     },
+     "collected": {
+      "type": "boolean",
+      "title": "Collected",
+      "description": "False while we do not hold this figure.",
+      "default": true
+     },
+     "source": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Source"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "key": {
+      "type": "string",
+      "title": "Key"
+     }
+    },
+    "type": "object",
+    "required": [
+     "amount",
+     "count",
+     "unit",
+     "period_start",
+     "period_end",
+     "collected",
+     "source",
+     "key"
+    ],
+    "title": "Ours"
+   },
    "Partner": {
     "properties": {
      "cui": {
@@ -10177,6 +10760,50 @@
      "items"
     ],
     "title": "PlaceResults"
+   },
+   "Planned": {
+    "properties": {
+     "amount": {
+      "type": "number",
+      "title": "Amount",
+      "description": "Lei."
+     },
+     "document": {
+      "type": "string",
+      "title": "Document",
+      "description": "The document's title."
+     },
+     "act": {
+      "type": "string",
+      "title": "Act",
+      "description": "The act it goes with, as the site names it."
+     },
+     "published_on": {
+      "type": "string",
+      "format": "date",
+      "title": "Published On"
+     },
+     "page": {
+      "type": "integer",
+      "title": "Page",
+      "description": "The page of the PDF the figure is printed on."
+     },
+     "url": {
+      "type": "string",
+      "title": "Url"
+     }
+    },
+    "type": "object",
+    "required": [
+     "amount",
+     "document",
+     "act",
+     "published_on",
+     "page",
+     "url"
+    ],
+    "title": "Planned",
+    "description": "A figure of the planned year, entered by hand from its document."
    },
    "PnrrBeneficiaryBar": {
     "properties": {
@@ -14041,6 +14668,44 @@
      "items"
     ],
     "title": "SearchResults"
+   },
+   "Segment": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "enum": [
+       "not_procurement",
+       "procurement",
+       "rest"
+      ],
+      "title": "Key"
+     },
+     "amount": {
+      "type": "number",
+      "title": "Amount"
+     },
+     "share": {
+      "type": "integer",
+      "title": "Share",
+      "description": "Whole percent of the total; the three add up to 100."
+     },
+     "lines": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Lines",
+      "description": "The execution's lines it holds; empty for `rest`."
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "amount",
+     "share",
+     "lines"
+    ],
+    "title": "Segment"
    },
    "Source": {
     "properties": {

@@ -35,6 +35,561 @@
    }
   }
  },
+ "/v1/national": {
+  "status": 200,
+  "body": {
+   "budget": {
+    "year": 2026,
+    "planned": {
+     "amount": 864283700000.0,
+     "document": "Raport privind situația macroeconomică pe anul 2026 și proiecția acesteia pe anii 2027-2029",
+     "act": "Legea nr. 43/2026",
+     "published_on": "2026-03-27",
+     "page": 24,
+     "url": "https://www.senat.ro/PAGINI/Buget/2026/Buget%20de%20stat/Raport%20buget%202026.pdf"
+    },
+    "planned_revenue": {
+     "amount": 736532000000.0,
+     "document": "Raport privind situația macroeconomică pe anul 2026 și proiecția acesteia pe anii 2027-2029",
+     "act": "Legea nr. 43/2026",
+     "published_on": "2026-03-27",
+     "page": 59,
+     "url": "https://www.senat.ro/PAGINI/Buget/2026/Buget%20de%20stat/Raport%20buget%202026.pdf"
+    },
+    "executed": {
+     "period_start": "2026-01-01",
+     "period_end": "2026-09-30",
+     "months": 9,
+     "spending": 727316168000.0,
+     "revenue": 574598756000.0,
+     "source": {
+      "publisher": "Ministerul Finanțelor",
+      "record": "Execuția bugetului general consolidat · 30.09.2026",
+      "url": "https://mfinante.gov.ro/static/10/Mfp/buletin/executii/bgc30092026.xlsx",
+      "fetched_at": "2026-10-07T04:30:00Z",
+      "document_id": 18,
+      "sha256": "55c8cc3ffa68460b4ebbf905790cc453132c5c7952242149ee1bc8467845e533",
+      "parser_version": 1,
+      "documents": null
+     }
+    },
+    "executed_share": 0.8415248002478816,
+    "categories": [
+     {
+      "key": "social_assistance",
+      "amount": 223932323000.0
+     },
+     {
+      "key": "personnel",
+      "amount": 164595398000.0
+     },
+     {
+      "key": "goods_services",
+      "amount": 93658779000.0
+     },
+     {
+      "key": "capital",
+      "amount": 65194034000.0
+     },
+     {
+      "key": "eu_projects",
+      "amount": 46742241000.0
+     },
+     {
+      "key": "interest",
+      "amount": 36278272000.0
+     },
+     {
+      "key": "pnrr_projects",
+      "amount": 23505488000.0
+     },
+     {
+      "key": "other",
+      "amount": 73409633000.0
+     }
+    ],
+    "band": [
+     {
+      "key": "not_procurement",
+      "amount": 424805993000.0,
+      "share": 58,
+      "lines": [
+       "social_assistance",
+       "personnel",
+       "interest"
+      ]
+     },
+     {
+      "key": "procurement",
+      "amount": 229100542000.0,
+      "share": 32,
+      "lines": [
+       "goods_services",
+       "capital",
+       "eu_projects",
+       "eu_projects_2014_2020",
+       "pnrr_grants",
+       "pnrr_loans"
+      ]
+     },
+     {
+      "key": "rest",
+      "amount": 73409633000.0,
+      "share": 10,
+      "lines": []
+     }
+    ],
+    "ours": [
+     {
+      "amount": 6380000.0,
+      "count": 3,
+      "unit": "lei",
+      "period_start": "2026-10-05",
+      "period_end": "2026-10-07",
+      "collected": true,
+      "source": {
+       "publisher": "SEAP",
+       "record": null,
+       "url": "https://e-licitatie.ro/pub/notices/contract-award-notices/list/0/0",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 1
+      },
+      "key": "contracts"
+     },
+     {
+      "amount": 4200.0,
+      "count": 5,
+      "unit": "lei",
+      "period_start": "2026-10-05",
+      "period_end": "2026-10-07",
+      "collected": true,
+      "source": {
+       "publisher": "SEAP",
+       "record": null,
+       "url": "https://e-licitatie.ro/pub/direct-acquisitions/list/1",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 1
+      },
+      "key": "direct_purchases"
+     },
+     {
+      "amount": 7160000.0,
+      "count": 6,
+      "unit": "lei",
+      "period_start": "2026-05-18",
+      "period_end": "2026-08-27",
+      "collected": true,
+      "source": {
+       "publisher": "data.gov.ro",
+       "record": "MDLPA · Plăți PNIAS 2026-prezent",
+       "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 2
+      },
+      "key": "anghel_saligny"
+     },
+     {
+      "amount": null,
+      "count": null,
+      "unit": "lei",
+      "period_start": null,
+      "period_end": null,
+      "collected": false,
+      "source": null,
+      "key": "institution_payments"
+     }
+    ]
+   },
+   "checks": [
+    {
+     "key": "local_domains",
+     "official": {
+      "amount": 166215800000.0,
+      "count": 10,
+      "unit": "lei",
+      "period_start": "2024-01-01",
+      "period_end": "2024-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "Eurostat",
+       "record": "Cheltuielile administrației publice pe funcții (COFOG) · gov_10a_exp",
+       "url": "https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 1
+      }
+     },
+     "ours": {
+      "amount": 9800000.0,
+      "count": 1,
+      "unit": "lei",
+      "period_start": "2024-01-01",
+      "period_end": "2024-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "data.gov.ro",
+       "record": "MDLPA · Politici fiscale și bugetare locale",
+       "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 1
+      }
+     },
+     "comparable": true,
+     "difference": -166206000000.0,
+     "difference_share": -0.9999410405027681,
+     "paid_share": null,
+     "reason": "classifications_close",
+     "parts": [
+      {
+       "key": "general_services",
+       "divisions": [
+        "GF01"
+       ],
+       "official": 20449100000.0,
+       "ours": 1300000.0
+      },
+      {
+       "key": "defence_order",
+       "divisions": [
+        "GF02",
+        "GF03"
+       ],
+       "official": 2164600000.0,
+       "ours": 0.0
+      },
+      {
+       "key": "economic_affairs",
+       "divisions": [
+        "GF04"
+       ],
+       "official": 35348800000.0,
+       "ours": 6500000.0
+      },
+      {
+       "key": "environment",
+       "divisions": [
+        "GF05"
+       ],
+       "official": 10588700000.0,
+       "ours": 0.0
+      },
+      {
+       "key": "housing",
+       "divisions": [
+        "GF06"
+       ],
+       "official": 18338300000.0,
+       "ours": 0.0
+      },
+      {
+       "key": "health",
+       "divisions": [
+        "GF07"
+       ],
+       "official": 31003900000.0,
+       "ours": 0.0
+      },
+      {
+       "key": "culture",
+       "divisions": [
+        "GF08"
+       ],
+       "official": 12489300000.0,
+       "ours": 0.0
+      },
+      {
+       "key": "education",
+       "divisions": [
+        "GF09"
+       ],
+       "official": 13164000000.0,
+       "ours": 2000000.0
+      },
+      {
+       "key": "social",
+       "divisions": [
+        "GF10"
+       ],
+       "official": 22669100000.0,
+       "ours": 0.0
+      }
+     ]
+    },
+    {
+     "key": "local_budgets",
+     "official": {
+      "amount": 157114624000.0,
+      "count": null,
+      "unit": "lei",
+      "period_start": "2024-01-01",
+      "period_end": "2024-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "Ministerul Finanțelor",
+       "record": "Execuția bugetului general consolidat · 31.12.2024",
+       "url": "https://mfinante.gov.ro/static/10/Mfp/buletin/executii/bgc31122024.xlsx",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": 17,
+       "sha256": "8f7b580c4265493cf074345826f830ccaf50a6bffb88da9d39b4e7fa87afd24c",
+       "parser_version": 1,
+       "documents": null
+      }
+     },
+     "ours": {
+      "amount": 9800000.0,
+      "count": 1,
+      "unit": "lei",
+      "period_start": "2024-01-01",
+      "period_end": "2024-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "data.gov.ro",
+       "record": "MDLPA · Politici fiscale și bugetare locale",
+       "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 1
+      }
+     },
+     "comparable": true,
+     "difference": -157104824000.0,
+     "difference_share": -0.9999376251570319,
+     "paid_share": null,
+     "reason": "local_scope",
+     "parts": []
+    },
+    {
+     "key": "anghel_saligny",
+     "official": {
+      "amount": 6000000000.0,
+      "count": null,
+      "unit": "lei",
+      "period_start": "2026-01-01",
+      "period_end": "2026-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "Legea nr. 43/2026",
+       "record": "Raport privind situația macroeconomică pe anul 2026 și proiecția acesteia pe anii 2027-2029",
+       "url": "https://www.senat.ro/PAGINI/Buget/2026/Buget%20de%20stat/Raport%20buget%202026.pdf",
+       "fetched_at": null,
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": null
+      }
+     },
+     "ours": {
+      "amount": 7160000.0,
+      "count": 6,
+      "unit": "lei",
+      "period_start": "2026-05-18",
+      "period_end": "2026-08-27",
+      "collected": true,
+      "source": {
+       "publisher": "data.gov.ro",
+       "record": "MDLPA · Plăți PNIAS 2026-prezent",
+       "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 2
+      }
+     },
+     "comparable": true,
+     "difference": null,
+     "difference_share": null,
+     "paid_share": 0.0011933333333333334,
+     "reason": "credits_for_the_year",
+     "parts": []
+    },
+    {
+     "key": "eu_funds",
+     "official": {
+      "amount": 46742241000.0,
+      "count": null,
+      "unit": "lei",
+      "period_start": "2026-01-01",
+      "period_end": "2026-09-30",
+      "collected": true,
+      "source": {
+       "publisher": "Ministerul Finanțelor",
+       "record": "Execuția bugetului general consolidat · 30.09.2026",
+       "url": "https://mfinante.gov.ro/static/10/Mfp/buletin/executii/bgc30092026.xlsx",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": 18,
+       "sha256": "55c8cc3ffa68460b4ebbf905790cc453132c5c7952242149ee1bc8467845e533",
+       "parser_version": 1,
+       "documents": null
+      }
+     },
+     "ours": {
+      "amount": null,
+      "count": null,
+      "unit": "lei",
+      "period_start": null,
+      "period_end": null,
+      "collected": false,
+      "source": null
+     },
+     "comparable": false,
+     "difference": null,
+     "difference_share": null,
+     "paid_share": null,
+     "reason": "payments_undated",
+     "parts": []
+    },
+    {
+     "key": "pnrr",
+     "official": {
+      "amount": 23505488000.0,
+      "count": null,
+      "unit": "lei",
+      "period_start": "2026-01-01",
+      "period_end": "2026-09-30",
+      "collected": true,
+      "source": {
+       "publisher": "Ministerul Finanțelor",
+       "record": "Execuția bugetului general consolidat · 30.09.2026",
+       "url": "https://mfinante.gov.ro/static/10/Mfp/buletin/executii/bgc30092026.xlsx",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": 18,
+       "sha256": "55c8cc3ffa68460b4ebbf905790cc453132c5c7952242149ee1bc8467845e533",
+       "parser_version": 1,
+       "documents": null
+      }
+     },
+     "ours": {
+      "amount": null,
+      "count": 6,
+      "unit": "contracts",
+      "period_start": null,
+      "period_end": "2026-10-15",
+      "collected": true,
+      "source": {
+       "publisher": "MIPE",
+       "record": "Tabloul de bord PNRR",
+       "url": "https://mfe.gov.ro/pnrr-dashboard/",
+       "fetched_at": null,
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": null
+      }
+     },
+     "comparable": false,
+     "difference": null,
+     "difference_share": null,
+     "paid_share": null,
+     "reason": "contracts_not_payments",
+     "parts": []
+    }
+   ],
+   "domains": {
+    "year": 2024,
+    "total": 761482500000.0,
+    "updated_at": "2026-10-21T21:00:00Z",
+    "divisions": [
+     {
+      "cofog": "GF10",
+      "label": "Social protection",
+      "total": 239367800000.0,
+      "local": 22669100000.0,
+      "local_share": 0.09470404958394571
+     },
+     {
+      "cofog": "GF04",
+      "label": "Economic affairs",
+      "total": 118444500000.0,
+      "local": 35348800000.0,
+      "local_share": 0.29844188628429347
+     },
+     {
+      "cofog": "GF01",
+      "label": "General public services",
+      "total": 102559800000.0,
+      "local": 20449100000.0,
+      "local_share": 0.19938708928839566
+     },
+     {
+      "cofog": "GF07",
+      "label": "Health",
+      "total": 91132400000.0,
+      "local": 31003900000.0,
+      "local_share": 0.3402072149970812
+     },
+     {
+      "cofog": "GF09",
+      "label": "Education",
+      "total": 70927800000.0,
+      "local": 13164000000.0,
+      "local_share": 0.1855971847427948
+     },
+     {
+      "cofog": "GF03",
+      "label": "Public order and safety",
+      "total": 49584000000.0,
+      "local": 2164600000.0,
+      "local_share": 0.04365521135850274
+     },
+     {
+      "cofog": "GF02",
+      "label": "Defence",
+      "total": 28866800000.0,
+      "local": 0.0,
+      "local_share": 0.0
+     },
+     {
+      "cofog": "GF06",
+      "label": "Housing and community amenities",
+      "total": 26551300000.0,
+      "local": 18338300000.0,
+      "local_share": 0.6906742796021287
+     },
+     {
+      "cofog": "GF08",
+      "label": "Recreation, culture and religion",
+      "total": 18916700000.0,
+      "local": 12489300000.0,
+      "local_share": 0.6602261493812346
+     },
+     {
+      "cofog": "GF05",
+      "label": "Environmental protection",
+      "total": 15131400000.0,
+      "local": 10588700000.0,
+      "local_share": 0.6997832322190941
+     }
+    ],
+    "source": {
+     "publisher": "Eurostat",
+     "record": "Cheltuielile administrației publice pe funcții (COFOG) · gov_10a_exp",
+     "url": "https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table",
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "document_id": null,
+     "sha256": null,
+     "parser_version": null,
+     "documents": 1
+    }
+   }
+  }
+ },
  "/v1/search?q=tantareni&limit=30": {
   "status": 200,
   "body": {
@@ -1977,6 +2532,42 @@
       "figures": 12,
       "population": 1
      }
+    },
+    {
+     "key": "budget-execution",
+     "publisher": "Ministerul Finanțelor",
+     "first_day": "2024-01-01",
+     "last_day": "2026-09-30",
+     "records": 1006,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 2,
+     "rejected_rows": 0,
+     "counts": {
+      "files": 2,
+      "rows": 1006,
+      "months": 2
+     }
+    },
+    {
+     "key": "eurostat-cofog",
+     "publisher": "Eurostat",
+     "first_day": "2023-01-01",
+     "last_day": "2024-12-31",
+     "records": 640,
+     "complete": true,
+     "fetched_at": "2026-10-07T04:30:00Z",
+     "days_collected": 0,
+     "days_partial": 0,
+     "documents": 1,
+     "rejected_rows": 0,
+     "counts": {
+      "files": 1,
+      "rows": 640,
+      "years": 2
+     }
     }
    ]
   }
@@ -1984,8 +2575,8 @@
  "/v1/data-road": {
   "status": 200,
   "body": {
-   "documents": 16,
-   "stored_bytes": 16,
+   "documents": 19,
+   "stored_bytes": 19,
    "rejected_rows": 2,
    "read": [
     {

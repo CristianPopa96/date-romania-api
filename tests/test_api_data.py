@@ -10,6 +10,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import eu_seed
+import national_seed
 import places_seed
 import pnrr_seed
 import programme_seed
@@ -30,6 +31,8 @@ from date_romania.models import (
     AwardNoticeDetail,
     AwardNoticeVersion,
     AwardWinner,
+    BudgetExecution,
+    CofogSpending,
     DirectPurchase,
     DirectPurchaseDetail,
     DirectPurchaseItem,
@@ -328,6 +331,7 @@ def client(session):
     places_seed.seed(session)
     pnrr_seed.seed(session)
     eu_seed.seed(session)
+    national_seed.seed(session)
     eu_seap_links.link(session)
 
     app.dependency_overrides[get_session] = lambda: session
@@ -914,7 +918,17 @@ def test_datasets_say_what_the_site_is_built_on(client):
         "pnrr",
         "eu-projects",
         "local-budgets",
+        "budget-execution",
+        "eurostat-cofog",
     ]
+    execution, cofog = files[-2], files[-1]
+    assert (execution["first_day"], execution["last_day"]) == ("2024-01-01", "2026-09-30")
+    assert execution["counts"]["months"] == 2
+    assert (cofog["first_day"], cofog["last_day"], cofog["counts"]["years"]) == (
+        "2023-01-01",
+        "2024-12-31",
+        2,
+    )
     # The EU money: the PNRR edition held, and the programmes' lists, each at its own day.
     pnrr, lists = files[2], files[3]
     assert (pnrr["last_day"], pnrr["records"], pnrr["counts"]["payments"]) == ("2026-10-15", 6, 7)
@@ -945,7 +959,7 @@ def test_datasets_say_what_the_site_is_built_on(client):
     # Rows the parser could not read: none, two, and not known for files parsed before
     # the count was kept.
     assert (direct["rejected_rows"], awards["rejected_rows"]) == (0, 2)
-    assert [each["rejected_rows"] for each in files] == [None, None, 0, 0, 0]
+    assert [each["rejected_rows"] for each in files] == [None, None, 0, 0, 0, 0, 0]
 
 
 def test_the_road_of_the_data_counts_each_step(client):
@@ -1585,6 +1599,7 @@ def test_the_projects_as_a_file_carry_the_filters(client):
 SITE_CALLS = (
     "/v1/health",
     "/v1/stats",
+    "/v1/national",
     "/v1/search?q=tantareni&limit=30",
     "/v1/search?q=zzzz&limit=30",
     # A CUI typed in the search box: one that buys, one that sells, one we do not hold.
@@ -2110,3 +2125,93 @@ def test_a_place_lists_the_projects_landing_in_it(client):
         ("pnrr", pnrr_seed.FOREST),
     }
     assert keys(places_seed.FLORESTI) == set()
+
+
+def test_the_country_budget_is_planned_executed_and_split(client):
+    budget = client.get("/v1/national").json()["budget"]
+    assert budget["year"] == 2026
+    assert budget["planned"]["amount"] == 864_283_700_000
+    assert budget["planned"]["page"] == 24
+    assert budget["planned"]["act"] == "Legea nr. 43/2026"
+    executed = budget["executed"]
+    # The seed holds December 2024's figures again for September 2026.
+    assert (executed["period_end"], executed["months"]) == ("2026-09-30", 9)
+    assert executed["spending"] == pytest.approx(727_316_168_000)
+    assert executed["source"]["record"].endswith("30.09.2026")
+    assert budget["executed_share"] == pytest.approx(727_316.168 / 864_283.7)
+    categories = budget["categories"]
+    # Largest first, the lines not named last, and together the whole of spending.
+    assert categories[-1]["key"] == "other"
+    named = [category["amount"] for category in categories[:-1]]
+    assert named == sorted(named, reverse=True)
+    assert sum(category["amount"] for category in categories) == pytest.approx(executed["spending"])
+    band = budget["band"]
+    assert [segment["key"] for segment in band] == ["not_procurement", "procurement", "rest"]
+    assert sum(segment["share"] for segment in band) == 100
+    assert sum(segment["amount"] for segment in band) == pytest.approx(executed["spending"])
+    assert band[2]["amount"] == pytest.approx(
+        categories[-1]["amount"]
+        + sum(category["amount"] for category in categories if category["key"] == "subsidies")
+    )
+    ours = {figure["key"]: figure for figure in budget["ours"]}
+    assert ours["institution_payments"]["collected"] is False
+    assert (
+        ours["direct_purchases"]["amount"]
+        == client.get("/v1/stats").json()["direct_purchases"]["value"]
+    )
+    assert ours["anghel_saligny"]["period_start"] == "2026-05-18"
+
+
+def test_a_difference_is_given_only_where_the_figures_compare(client):
+    checks = client.get("/v1/national").json()["checks"]
+    by_key = {check["key"]: check for check in checks}
+    local = by_key["local_budgets"]
+    assert local["comparable"] is True
+    assert local["official"]["amount"] == pytest.approx(157_114_624_000)
+    assert local["difference"] == pytest.approx(
+        local["ours"]["amount"] - local["official"]["amount"]
+    )
+    assert local["reason"] == "local_scope"
+    domains = by_key["local_domains"]
+    assert {part["key"] for part in domains["parts"]} >= {"education", "defence_order"}
+    assert domains["official"]["amount"] == pytest.approx(
+        sum(part["official"] for part in domains["parts"])
+    )
+    for key in ("pnrr", "eu_funds"):
+        assert by_key[key]["comparable"] is False
+        assert by_key[key]["difference"] is None
+        assert by_key[key]["reason"]
+    assert by_key["pnrr"]["ours"]["unit"] == "contracts"
+    assert by_key["eu_funds"]["ours"]["collected"] is False
+    saligny = by_key["anghel_saligny"]
+    assert saligny["difference"] is None
+    assert saligny["paid_share"] == pytest.approx(saligny["ours"]["amount"] / 6_000_000_000)
+    # Comparable first, largest official figure first; then the rest.
+    comparable = [check["comparable"] for check in checks]
+    assert comparable == sorted(comparable, reverse=True)
+    first = [check["official"]["amount"] for check in checks if check["comparable"]]
+    assert first == sorted(first, reverse=True)
+
+
+def test_the_domains_share_comes_from_cofog_alone(client):
+    domains = client.get("/v1/national").json()["domains"]
+    assert (domains["year"], domains["total"]) == (2024, 761_482_500_000)
+    divisions = {division["cofog"]: division for division in domains["divisions"]}
+    assert len(divisions) == 10
+    assert divisions["GF02"]["local"] == 0
+    assert divisions["GF09"]["local_share"] == pytest.approx(
+        divisions["GF09"]["local"] / divisions["GF09"]["total"]
+    )
+    totals = [division["total"] for division in domains["divisions"]]
+    assert totals == sorted(totals, reverse=True)
+
+
+def test_nothing_official_held_says_so(client, session):
+    session.execute(delete(BudgetExecution))
+    session.execute(delete(CofogSpending))
+    answer = client.get("/v1/national").json()
+    assert answer["budget"] is None
+    assert answer["domains"] is None
+    local = {check["key"]: check for check in answer["checks"]}["local_budgets"]
+    assert local["official"]["collected"] is False
+    assert (local["comparable"], local["difference"]) == (False, None)

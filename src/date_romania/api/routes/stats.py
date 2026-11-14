@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from date_romania import money
 from date_romania import places as places_
 from date_romania.api.routes.common import Db, list_source, summary
+from date_romania.api.routes.national_common import datasets as national_datasets
 from date_romania.api.schemas import Dataset, Datasets, Stats
 from date_romania.models import (
     SUCCEEDED,
@@ -197,6 +198,7 @@ def _file_datasets(session: Session, fetched: dict, stored: dict, rejected: dict
         (SEAP_EXPORTS, first_notice, last_notice, winners, {}),
         *_eu_datasets(session),
         *_place_datasets(session),
+        *national_datasets(session),
     )
     return [
         Dataset(
