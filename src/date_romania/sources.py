@@ -132,6 +132,26 @@ ONRC = PublicSource(
     record_url="https://data.gov.ro/dataset/{id}",
 )
 
+# Eurostat's yearly spending of the public administration by purpose (COFOG), by level of
+# government. One JSON answer holds every year; a year has no page of its own.
+EUROSTAT_COFOG = PublicSource(
+    key="eurostat-cofog",
+    publisher="Eurostat",
+    dataset="Cheltuielile administrației publice pe funcții (COFOG) · gov_10a_exp",
+    list_url="https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table",
+    record_url="https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table",
+)
+
+# The Finance Ministry's monthly cash execution of the consolidated general budget (BGC),
+# from 1 January to the month's end: one workbook a month, about four weeks after it.
+BUDGET_EXECUTION = PublicSource(
+    key="budget-execution",
+    publisher="Ministerul Finanțelor",
+    dataset="Execuția bugetului general consolidat",
+    list_url="https://mfinante.gov.ro/domenii/bugetul-de-stat/informatii-executie-bugetara",
+    record_url="https://mfinante.gov.ro/domenii/bugetul-de-stat/informatii-executie-bugetara",
+)
+
 SOURCES = {
     source.key: source
     for source in (
@@ -144,5 +164,7 @@ SOURCES = {
         LOCAL_BUDGETS,
         ANAF,
         ONRC,
+        EUROSTAT_COFOG,
+        BUDGET_EXECUTION,
     )
 }
