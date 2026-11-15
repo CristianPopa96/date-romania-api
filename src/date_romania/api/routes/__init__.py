@@ -14,6 +14,7 @@ from date_romania.api.routes import (
     eu_project_list,
     eu_projects,
     eu_seap,
+    national,
     patterns,
     places,
     pnrr,
@@ -34,6 +35,7 @@ from date_romania.api.routes import (
 router = APIRouter(prefix="/v1")
 for module in (
     stats,
+    national,
     data_road,
     entities,
     budget,

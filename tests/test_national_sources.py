@@ -11,6 +11,7 @@ import httpx
 import pytest
 from sqlalchemy import func, select
 
+from date_romania import national
 from date_romania.collectors import budget_execution, cofog
 from date_romania.collectors.budget_execution.parse import (
     SPENDING,
@@ -191,3 +192,23 @@ def test_cofog_is_loaded_once_per_answer(session, published):
     assert total == Decimal("761482.5")
     assert cofog.reparse(session) == 1
     assert session.scalar(select(func.count()).select_from(CofogSpending)) == 640
+
+
+def test_the_spending_lines_add_up_to_the_total():
+    """`national.SPENDING_PARTS` are the lines that make total spending, nothing twice, in
+    every column: what "other" is the rest of."""
+    parsed = parse_execution(EXECUTION)
+    for budget in ("consolidated", "local", "state"):
+        lines = {
+            row["line"]: row["amount"]
+            for row in parsed.rows
+            if row["section"] == SPENDING and row["budget"] == budget
+        }
+        parts = sum((lines.get(line, Decimal(0)) for line in national.SPENDING_PARTS), Decimal(0))
+        assert parts == pytest.approx(lines["total"], abs=Decimal("0.01"))
+
+
+def test_whole_shares_add_up_to_a_hundred():
+    assert national.whole_shares([Decimal(360.81), Decimal(186.99), Decimal(53.2)]) == [60, 31, 9]
+    assert national.whole_shares([Decimal(1), Decimal(1), Decimal(1)]) == [34, 33, 33]
+    assert national.whole_shares([Decimal(0), Decimal(0)]) == [0, 0]

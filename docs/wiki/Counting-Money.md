@@ -81,6 +81,37 @@ networks) and spending by **chapter** (transport, education, and so on).
 The Anghel Saligny payments to the town hall are shown as a separate card and never
 added to the state subsidies, because they cover a different period.
 
+## Against the official totals
+
+The home page sets the country's budget beside what our data shows. Two rules decide what
+it may say:
+
+- **A difference only between figures that measure the same thing over the same period.**
+  The budgets of town halls and county councils for 2024 are cash spent in 2024 on both
+  sides, so their difference is shown, in lei and percent, with what one side holds that
+  the other does not (the official figure also holds the institutions they fund apart).
+  The budget law's credits for Anghel Saligny against the ministry's payments is a plan
+  against what was paid, so it is shown as a share ("plătit {p} % din credite"). Two
+  figures that are different measures never compare, now or later ("Nu se compară"):
+  Eurostat's local spending by domain counts what was owed in the year (accrual), our
+  budgets what was paid. Anything else does not compare yet ("Nu se compară încă"): PNRR
+  and EU projects are paid amounts in the execution, while we hold contracts and
+  contracted values. The table lists the comparable checks first, then the different
+  measures, then the rest, each group by the largest official figure.
+- **Most of the budget never goes through procurement.** Pensions and other social help,
+  salaries and interest are about 60 % of what the state spends, and no supplier is ever
+  paid for them, so no contract can explain them. The home page shows that part muted,
+  and never says what share of the money "we found". Goods and services, investments and
+  EU and PNRR projects are the part that can meet a contract; even there the figures are
+  not subtracted: the execution is cash paid with VAT in the months it covers, a contract
+  is a value signed without VAT, often paid over several years, published in SEAP weeks
+  after it was signed.
+
+The planned year comes from the documents that go with the budget law, entered by hand
+with the page each figure is printed on (`budget_law.py`); a rectification adds its own
+rows, nothing is overwritten. The shares of the spending band are whole percents that
+add up to 100.
+
 ## The Anghel Saligny contract lists
 
 To follow the programme, Date România also reads SEAP's older quarterly lists of
