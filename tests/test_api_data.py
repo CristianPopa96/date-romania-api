@@ -2166,19 +2166,22 @@ def test_a_difference_is_given_only_where_the_figures_compare(client):
     checks = client.get("/v1/national").json()["checks"]
     by_key = {check["key"]: check for check in checks}
     local = by_key["local_budgets"]
-    assert local["comparable"] is True
+    assert local["state"] == "comparable"
     assert local["official"]["amount"] == pytest.approx(157_114_624_000)
     assert local["difference"] == pytest.approx(
         local["ours"]["amount"] - local["official"]["amount"]
     )
     assert local["reason"] == "local_scope"
     domains = by_key["local_domains"]
+    # COFOG is accrual, our budgets cash: two measures, never a difference (design Q90).
+    assert (domains["state"], domains["difference"]) == ("different_measures", None)
+    assert domains["reason"] == "accrual_not_cash"
     assert {part["key"] for part in domains["parts"]} >= {"education", "defence_order"}
     assert domains["official"]["amount"] == pytest.approx(
         sum(part["official"] for part in domains["parts"])
     )
     for key in ("pnrr", "eu_funds"):
-        assert by_key[key]["comparable"] is False
+        assert by_key[key]["state"] == "not_yet"
         assert by_key[key]["difference"] is None
         assert by_key[key]["reason"]
     assert by_key["pnrr"]["ours"]["unit"] == "contracts"
@@ -2186,11 +2189,15 @@ def test_a_difference_is_given_only_where_the_figures_compare(client):
     saligny = by_key["anghel_saligny"]
     assert saligny["difference"] is None
     assert saligny["paid_share"] == pytest.approx(saligny["ours"]["amount"] / 6_000_000_000)
-    # Comparable first, largest official figure first; then the rest.
-    comparable = [check["comparable"] for check in checks]
-    assert comparable == sorted(comparable, reverse=True)
-    first = [check["official"]["amount"] for check in checks if check["comparable"]]
-    assert first == sorted(first, reverse=True)
+    # Comparable, then different measures, then not yet; each the largest official first.
+    states = ["comparable", "different_measures", "not_yet"]
+    order = [states.index(check["state"]) for check in checks]
+    assert order == sorted(order)
+    for state in states:
+        amounts = [c["official"]["amount"] or 0 for c in checks if c["state"] == state]
+        assert amounts == sorted(amounts, reverse=True)
+    keys = [check["key"] for check in checks]
+    assert keys.index("local_budgets") < keys.index("local_domains")
 
 
 def test_the_domains_share_comes_from_cofog_alone(client):
@@ -2216,4 +2223,4 @@ def test_nothing_official_held_says_so(client, session):
     assert answer["domains"] is None
     local = {check["key"]: check for check in answer["checks"]}["local_budgets"]
     assert local["official"]["collected"] is False
-    assert (local["comparable"], local["difference"]) == (False, None)
+    assert (local["state"], local["difference"]) == ("not_yet", None)

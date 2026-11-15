@@ -111,13 +111,13 @@ def _budget(session: Session) -> Budget | None:
 def _compared(key: str, official: Figure, ours: Figure, reason: str, **extra) -> Check:
     """A check both sides of which measure the same thing over the same period."""
     if official.amount is None or ours.amount is None:
-        return Check(key=key, official=official, ours=ours, comparable=False, reason=reason)
+        return Check(key=key, official=official, ours=ours, state=rules.NOT_YET, reason=reason)
     difference = ours.amount - official.amount
     return Check(
         key=key,
         official=official,
         ours=ours,
-        comparable=True,
+        state=rules.COMPARABLE,
         difference=difference,
         difference_share=difference / official.amount if official.amount else None,
         reason=reason,
@@ -197,12 +197,14 @@ def _local_checks(session: Session) -> list[Check]:
         else not_collected(period_start=date(year, 1, 1), period_end=december)
     )
     by_chapter = ours.model_copy(update={"amount": float(sum(chapters.values(), Decimal(0)))})
+    # COFOG counts what was owed in the year, our budgets what was paid: two measures.
     checks.append(
-        _compared(
-            rules.LOCAL_DOMAINS,
-            official_domains,
-            by_chapter,
-            rules.REASON_CLASSIFICATIONS,
+        Check(
+            key=rules.LOCAL_DOMAINS,
+            official=official_domains,
+            ours=by_chapter,
+            state=rules.DIFFERENT_MEASURES if local else rules.NOT_YET,
+            reason=rules.REASON_ACCRUAL_NOT_CASH,
             parts=parts if local else [],
         )
     )
@@ -235,7 +237,7 @@ def _year_checks(session: Session, budget: Budget | None) -> list[Check]:
                 key=rules.ANGHEL_SALIGNY,
                 official=planned,
                 ours=ours,
-                comparable=True,
+                state=rules.COMPARABLE,
                 paid_share=ours.amount / planned.amount,
                 reason=rules.REASON_CREDITS_YEAR,
             )
@@ -254,7 +256,7 @@ def _year_checks(session: Session, budget: Budget | None) -> list[Check]:
                 collected=pnrr_contracts > 0,
                 source=Source(publisher=PNRR.publisher, record=PNRR.dataset, url=PNRR.list_url),
             ),
-            comparable=False,
+            state=rules.NOT_YET,
             reason=rules.REASON_CONTRACTS_NOT_PAYMENTS,
         )
     )
@@ -263,7 +265,7 @@ def _year_checks(session: Session, budget: Budget | None) -> list[Check]:
             key=rules.EU_FUNDS,
             official=official(rules.EU_PROJECT_LINES),
             ours=not_collected(),
-            comparable=False,
+            state=rules.NOT_YET,
             reason=rules.REASON_PAYMENTS_UNDATED,
         )
     )
@@ -271,15 +273,19 @@ def _year_checks(session: Session, budget: Budget | None) -> list[Check]:
 
 
 def _ordered(checks: list[Check]) -> list[Check]:
-    """Comparable first, largest official figure first; then the rest, the same way."""
-    return sorted(checks, key=lambda check: (not check.comparable, -(check.official.amount or 0)))
+    """By state (comparable, different measures, not yet), each the largest official
+    figure first."""
+    return sorted(
+        checks,
+        key=lambda check: (rules.STATES.index(check.state), -(check.official.amount or 0)),
+    )
 
 
 @router.get("/national")
 def national(session: Db) -> National:
     """The country's budget against what our data shows. Official figures and ours each
     keep their own source and period; a difference is given only where both measure the
-    same thing over the same period (`comparable`), and every check says why they differ.
+    same thing over the same period (`state`), and every check says why they differ.
     Amounts are lei: official ones as the ministry gives them (cash, with VAT where paid),
     ours without VAT."""
     budget = _budget(session)

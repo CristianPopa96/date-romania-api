@@ -91,9 +91,13 @@ it may say:
   sides, so their difference is shown, in lei and percent, with what one side holds that
   the other does not (the official figure also holds the institutions they fund apart).
   The budget law's credits for Anghel Saligny against the ministry's payments is a plan
-  against what was paid, so it is shown as a share ("plătit {p} % din credite"). Anything
-  else stands side by side with the reason: PNRR and EU projects are paid amounts in the
-  execution, while we hold contracts and contracted values.
+  against what was paid, so it is shown as a share ("plătit {p} % din credite"). Two
+  figures that are different measures never compare, now or later ("Nu se compară"):
+  Eurostat's local spending by domain counts what was owed in the year (accrual), our
+  budgets what was paid. Anything else does not compare yet ("Nu se compară încă"): PNRR
+  and EU projects are paid amounts in the execution, while we hold contracts and
+  contracted values. The table lists the comparable checks first, then the different
+  measures, then the rest, each group by the largest official figure.
 - **Most of the budget never goes through procurement.** Pensions and other social help,
   salaries and interest are about 60 % of what the state spends, and no supplier is ever
   paid for them, so no contract can explain them. The home page shows that part muted,

@@ -211,6 +211,96 @@
    },
    "checks": [
     {
+     "key": "local_budgets",
+     "official": {
+      "amount": 157114624000.0,
+      "count": null,
+      "unit": "lei",
+      "period_start": "2024-01-01",
+      "period_end": "2024-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "Ministerul Finanțelor",
+       "record": "bgc31122024.xlsx",
+       "url": "https://mfinante.gov.ro/static/10/Mfp/buletin/executii/bgc31122024.xlsx",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": 17,
+       "sha256": "8f7b580c4265493cf074345826f830ccaf50a6bffb88da9d39b4e7fa87afd24c",
+       "parser_version": 1,
+       "documents": null
+      }
+     },
+     "ours": {
+      "amount": 9800000.0,
+      "count": 1,
+      "unit": "lei",
+      "period_start": "2024-01-01",
+      "period_end": "2024-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "data.gov.ro",
+       "record": "MDLPA · Politici fiscale și bugetare locale",
+       "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 1
+      }
+     },
+     "state": "comparable",
+     "difference": -157104824000.0,
+     "difference_share": -0.9999376251570319,
+     "paid_share": null,
+     "reason": "local_scope",
+     "parts": []
+    },
+    {
+     "key": "anghel_saligny",
+     "official": {
+      "amount": 6000000000.0,
+      "count": null,
+      "unit": "lei",
+      "period_start": "2026-01-01",
+      "period_end": "2026-12-31",
+      "collected": true,
+      "source": {
+       "publisher": "Legea nr. 43/2026",
+       "record": "Raport privind situația macroeconomică pe anul 2026 și proiecția acesteia pe anii 2027-2029",
+       "url": "https://www.senat.ro/PAGINI/Buget/2026/Buget%20de%20stat/Raport%20buget%202026.pdf",
+       "fetched_at": null,
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": null
+      }
+     },
+     "ours": {
+      "amount": 7160000.0,
+      "count": 6,
+      "unit": "lei",
+      "period_start": "2026-05-18",
+      "period_end": "2026-08-27",
+      "collected": true,
+      "source": {
+       "publisher": "data.gov.ro",
+       "record": "MDLPA · Plăți PNIAS 2026-prezent",
+       "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
+       "fetched_at": "2026-10-07T04:30:00Z",
+       "document_id": null,
+       "sha256": null,
+       "parser_version": null,
+       "documents": 2
+      }
+     },
+     "state": "comparable",
+     "difference": null,
+     "difference_share": null,
+     "paid_share": 0.0011933333333333334,
+     "reason": "credits_for_the_year",
+     "parts": []
+    },
+    {
      "key": "local_domains",
      "official": {
       "amount": 166215800000.0,
@@ -248,11 +338,11 @@
        "documents": 1
       }
      },
-     "comparable": true,
-     "difference": -166206000000.0,
-     "difference_share": -0.9999410405027681,
+     "state": "different_measures",
+     "difference": null,
+     "difference_share": null,
      "paid_share": null,
-     "reason": "classifications_close",
+     "reason": "accrual_not_cash",
      "parts": [
       {
        "key": "general_services",
@@ -330,96 +420,6 @@
      ]
     },
     {
-     "key": "local_budgets",
-     "official": {
-      "amount": 157114624000.0,
-      "count": null,
-      "unit": "lei",
-      "period_start": "2024-01-01",
-      "period_end": "2024-12-31",
-      "collected": true,
-      "source": {
-       "publisher": "Ministerul Finanțelor",
-       "record": "bgc31122024.xlsx",
-       "url": "https://mfinante.gov.ro/static/10/Mfp/buletin/executii/bgc31122024.xlsx",
-       "fetched_at": "2026-10-07T04:30:00Z",
-       "document_id": 17,
-       "sha256": "8f7b580c4265493cf074345826f830ccaf50a6bffb88da9d39b4e7fa87afd24c",
-       "parser_version": 1,
-       "documents": null
-      }
-     },
-     "ours": {
-      "amount": 9800000.0,
-      "count": 1,
-      "unit": "lei",
-      "period_start": "2024-01-01",
-      "period_end": "2024-12-31",
-      "collected": true,
-      "source": {
-       "publisher": "data.gov.ro",
-       "record": "MDLPA · Politici fiscale și bugetare locale",
-       "url": "https://data.gov.ro/dataset/politici-fiscale-si-bugetare-locale",
-       "fetched_at": "2026-10-07T04:30:00Z",
-       "document_id": null,
-       "sha256": null,
-       "parser_version": null,
-       "documents": 1
-      }
-     },
-     "comparable": true,
-     "difference": -157104824000.0,
-     "difference_share": -0.9999376251570319,
-     "paid_share": null,
-     "reason": "local_scope",
-     "parts": []
-    },
-    {
-     "key": "anghel_saligny",
-     "official": {
-      "amount": 6000000000.0,
-      "count": null,
-      "unit": "lei",
-      "period_start": "2026-01-01",
-      "period_end": "2026-12-31",
-      "collected": true,
-      "source": {
-       "publisher": "Legea nr. 43/2026",
-       "record": "Raport privind situația macroeconomică pe anul 2026 și proiecția acesteia pe anii 2027-2029",
-       "url": "https://www.senat.ro/PAGINI/Buget/2026/Buget%20de%20stat/Raport%20buget%202026.pdf",
-       "fetched_at": null,
-       "document_id": null,
-       "sha256": null,
-       "parser_version": null,
-       "documents": null
-      }
-     },
-     "ours": {
-      "amount": 7160000.0,
-      "count": 6,
-      "unit": "lei",
-      "period_start": "2026-05-18",
-      "period_end": "2026-08-27",
-      "collected": true,
-      "source": {
-       "publisher": "data.gov.ro",
-       "record": "MDLPA · Plăți PNIAS 2026-prezent",
-       "url": "https://data.gov.ro/dataset/plati-programul-national-de-investitii-anghel-saligny-pnias-2026-prezent",
-       "fetched_at": "2026-10-07T04:30:00Z",
-       "document_id": null,
-       "sha256": null,
-       "parser_version": null,
-       "documents": 2
-      }
-     },
-     "comparable": true,
-     "difference": null,
-     "difference_share": null,
-     "paid_share": 0.0011933333333333334,
-     "reason": "credits_for_the_year",
-     "parts": []
-    },
-    {
      "key": "eu_funds",
      "official": {
       "amount": 46742241000.0,
@@ -448,7 +448,7 @@
       "collected": false,
       "source": null
      },
-     "comparable": false,
+     "state": "not_yet",
      "difference": null,
      "difference_share": null,
      "paid_share": null,
@@ -493,7 +493,7 @@
        "documents": null
       }
      },
-     "comparable": false,
+     "state": "not_yet",
      "difference": null,
      "difference_share": null,
      "paid_share": null,

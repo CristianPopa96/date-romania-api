@@ -81,7 +81,7 @@
      "overview"
     ],
     "summary": "National",
-    "description": "The country's budget against what our data shows. Official figures and ours each\nkeep their own source and period; a difference is given only where both measure the\nsame thing over the same period (`comparable`), and every check says why they differ.\nAmounts are lei: official ones as the ministry gives them (cash, with VAT where paid),\nours without VAT.",
+    "description": "The country's budget against what our data shows. Official figures and ours each\nkeep their own source and period; a difference is given only where both measure the\nsame thing over the same period (`state`), and every check says why they differ.\nAmounts are lei: official ones as the ministry gives them (cash, with VAT where paid),\nours without VAT.",
     "operationId": "national_v1_national_get",
     "responses": {
      "200": {
@@ -6962,9 +6962,15 @@
      "ours": {
       "$ref": "#/components/schemas/Figure"
      },
-     "comparable": {
-      "type": "boolean",
-      "title": "Comparable"
+     "state": {
+      "type": "string",
+      "enum": [
+       "comparable",
+       "different_measures",
+       "not_yet"
+      ],
+      "title": "State",
+      "description": "comparable: same measure, same period, a difference is given; different_measures: never compared; not_yet: a side is not held in a form that compares."
      },
      "difference": {
       "anyOf": [
@@ -7020,7 +7026,7 @@
      "key",
      "official",
      "ours",
-     "comparable",
+     "state",
      "difference",
      "difference_share",
      "paid_share",
@@ -7028,7 +7034,7 @@
      "parts"
     ],
     "title": "Check",
-    "description": "An official figure against ours. `difference` only when `comparable`."
+    "description": "An official figure against ours. `difference` only when `state` is comparable."
    },
    "CheckPart": {
     "properties": {

@@ -83,12 +83,16 @@ class CheckPart(Answer):
 
 
 class Check(Answer):
-    """An official figure against ours. `difference` only when `comparable`."""
+    """An official figure against ours. `difference` only when `state` is comparable."""
 
     key: str
     official: Figure
     ours: Figure
-    comparable: bool
+    state: Literal["comparable", "different_measures", "not_yet"] = Field(
+        description="comparable: same measure, same period, a difference is given; "
+        "different_measures: never compared; not_yet: a side is not held in a form that "
+        "compares."
+    )
     difference: float | None = Field(None, description="Ours minus official, in lei.")
     difference_share: float | None = Field(
         None, description="`difference` over the official figure."

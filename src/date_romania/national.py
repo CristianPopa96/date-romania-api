@@ -91,9 +91,17 @@ CHAPTER_DIVISIONS: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
     "social": (("social",), ("GF10",)),
 }
 
+# Whether the two figures of a check compare (design D24, round 19): the same measure
+# over the same period (a difference is given); two different measures (never compared,
+# now or later); or a side not held yet in a form that compares.
+COMPARABLE = "comparable"
+DIFFERENT_MEASURES = "different_measures"
+NOT_YET = "not_yet"
+STATES = (COMPARABLE, DIFFERENT_MEASURES, NOT_YET)  # the table's order of the groups
+
 # Why the figures of a check differ, or do not compare. The site words each.
 REASON_LOCAL_SCOPE = "local_scope"  # town halls and county councils only
-REASON_CLASSIFICATIONS = "classifications_close"
+REASON_ACCRUAL_NOT_CASH = "accrual_not_cash"  # COFOG is owed in the year, ours is paid
 REASON_CREDITS_YEAR = "credits_for_the_year"  # credits for the year, payments to a file
 REASON_CONTRACTS_NOT_PAYMENTS = "contracts_not_payments"
 REASON_PAYMENTS_UNDATED = "payments_undated"
