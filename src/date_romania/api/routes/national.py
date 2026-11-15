@@ -56,10 +56,33 @@ def _planned(year: int, figure: str) -> Planned | None:
     )
 
 
+def _ours(session: Session, year: int) -> list[Ours]:
+    return [
+        contracts(session, year),
+        direct_purchases(session, year),
+        anghel_saligny(session, year),
+        # Named per institution, payments do not name the supplier: not held.
+        Ours(key="institution_payments", collected=False),
+    ]
+
+
 def _budget(session: Session) -> Budget | None:
     period_end = latest_execution(session)
     if period_end is None:
-        return None
+        # The law's plan is ours to give before any month of the execution is held.
+        year = budget_law.latest_year(budget_law.SPENDING)
+        if year is None:
+            return None
+        return Budget(
+            year=year,
+            planned=_planned(year, budget_law.SPENDING),
+            planned_revenue=_planned(year, budget_law.REVENUE),
+            executed=None,
+            executed_share=None,
+            categories=[],
+            band=[],
+            ours=_ours(session, year),
+        )
     year = period_end.year
     spent = execution_lines(session, period_end, rules.CONSOLIDATED, "spending")
     earned = execution_lines(session, period_end, rules.CONSOLIDATED, "revenue")
@@ -98,13 +121,7 @@ def _budget(session: Session) -> Budget | None:
                 strict=True,
             )
         ],
-        ours=[
-            contracts(session, year),
-            direct_purchases(session, year),
-            anghel_saligny(session, year),
-            # Named per institution, payments do not name the supplier: not held.
-            Ours(key="institution_payments", collected=False),
-        ],
+        ours=_ours(session, year),
     )
 
 

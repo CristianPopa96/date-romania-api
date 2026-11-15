@@ -61,6 +61,11 @@ PLANNED: tuple[Planned, ...] = (
 )
 
 
+def latest_year(figure: str) -> int | None:
+    """The newest year the figure is entered for."""
+    return max((row.year for row in PLANNED if row.figure == figure), default=None)
+
+
 def planned(year: int, figure: str) -> Planned | None:
     """The figure in force for a year: the newest document's."""
     rows = [row for row in PLANNED if row.year == year and row.figure == figure]

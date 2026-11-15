@@ -2219,7 +2219,10 @@ def test_nothing_official_held_says_so(client, session):
     session.execute(delete(BudgetExecution))
     session.execute(delete(CofogSpending))
     answer = client.get("/v1/national").json()
-    assert answer["budget"] is None
+    # The law's plan is still given; the execution and its parts are not held.
+    budget = answer["budget"]
+    assert budget["planned"]["amount"] == pytest.approx(864_283_700_000)
+    assert (budget["executed"], budget["executed_share"], budget["band"]) == (None, None, [])
     assert answer["domains"] is None
     local = {check["key"]: check for check in answer["checks"]}["local_budgets"]
     assert local["official"]["collected"] is False
